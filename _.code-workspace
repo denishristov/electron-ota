@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "backend"
+		},
+		{
+			"path": "frontend"
+		},
+	],
+	"settings": {
+		"search.exclude": {
+			"**/dist": true
+		},
+		"editor.insertSpaces": false
+	},
+}
