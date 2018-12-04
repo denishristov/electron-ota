@@ -10,8 +10,8 @@
   "scripts": {
     "start": "npm run serve",
     "build": "npm run build-sass && npm run build-ts && npm run tslint && npm run copy-static-assets",
-    "serve": "node dist/server.js",
-    "watch-node": "nodemon dist/server.js",
+    "serve": "node dist/app.js",
+    "watch-node": "nodemon dist/app.js",
     "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run watch-node\"",
     "test": "jest --forceExit --coverage --verbose",
     "watch-test": "npm run test -- --watchAll",
@@ -19,7 +19,7 @@
     "watch-ts": "tsc -w",
     "tslint": "tslint -c tslint.json -p tsconfig.json",
     "debug": "npm run build && npm run watch-debug",
-    "serve-debug": "nodemon --inspect=0.0.0.0:9229 dist/server.js",
+    "serve-debug": "nodemon --inspect=0.0.0.0:9229 dist/app.js",
     "watch-debug": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run serve-debug\""
   },
   "dependencies": {
@@ -34,6 +34,7 @@
     "lusca": "1.6.1",
     "mongoose": "5.3.14",
     "request": "2.88.0",
+    "socket.io": "2.2.0",
     "winston": "2.4.4"
   },
   "devDependencies": {
@@ -50,6 +51,7 @@
     "@types/mongodb": "^3.1.16",
     "@types/mongoose": "^5.3.2",
     "@types/node": "^10.12.12",
+    "@types/socket.io": "^2.1.0",
     "@types/supertest": "^2.0.6",
     "@types/winston": "^2.4.4",
     "chai": "^4.2.0",

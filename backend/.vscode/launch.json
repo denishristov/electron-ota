@@ -3,10 +3,13 @@
 	"configurations": [
 		{
 			"type": "node",
-			"request": "attach",
-			"name": "Start",
-			"port": 9229,
-			"preLaunchTask": "npm: watch-debug",
+			"request": "launch",
+			"name": "Launch Back end",
+			"runtimeExecutable": "${workspaceFolder}/node_modules/.bin/nodemon",
+			"program": "${workspaceFolder}/dist/app.js",
+			"restart": true,
+			"console": "internalConsole",
+			"preLaunchTask": "npm: watch-ts",
 		},
 	],
 }

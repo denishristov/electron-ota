@@ -10,20 +10,22 @@
     "not op_mini all"
   ],
   "scripts": {
-    "start": "react-scripts start",
+    "start": "BROWSER=none react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
   "dependencies": {
     "react": "16.6.3",
-    "react-dom": "16.6.3"
+    "react-dom": "16.6.3",
+    "socket.io-client": "2.2.0"
   },
   "devDependencies": {
     "@types/jest": "^23.3.10",
     "@types/node": "^10.12.12",
     "@types/react": "^16.7.12",
     "@types/react-dom": "^16.0.11",
+    "@types/socket.io-client": "^1.4.32",
     "react-scripts": "2.1.1",
     "typescript": "^3.2.1"
   }

@@ -1,16 +1,18 @@
 {
 	"folders": [
 		{
-			"path": "backend"
+			"path": "backend",
+			"name": "Back end",
 		},
 		{
-			"path": "frontend"
+			"path": "frontend",
+			"name": "Front end",
 		},
 	],
 	"settings": {
 		"search.exclude": {
-			"**/dist": true
+			"**/dist": true,
 		},
-		"editor.insertSpaces": false
+		"editor.insertSpaces": false,
 	},
 }
