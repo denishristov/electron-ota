@@ -8,6 +8,10 @@
 			"path": "frontend",
 			"name": "Front end",
 		},
+		{
+			"path": "shared",
+			"name": "Shared",
+		}
 	],
 	"settings": {
 		"search.exclude": {

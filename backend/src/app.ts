@@ -7,6 +7,8 @@ import lusca from 'lusca'
 import mongoose from 'mongoose'
 import path from 'path'
 import socketio from 'socket.io'
+import { EventTypes } from 'shared'
+
 
 import { MONGODB_URI } from './util/env'
 
@@ -69,4 +71,9 @@ io.on('connection', function(client) {
 	client.on('disconnect', function() {
 		console.log('disconnect', arguments)
 	})
+	client.on(EventTypes.Login, function() {
+		console.log(EventTypes.Login, arguments)
+	})
 })
+
+export default app

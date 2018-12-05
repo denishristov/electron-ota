@@ -1,0 +1,14 @@
+{
+  "name": "shared",
+  "version": "0.0.0",
+  "main": "dist/index.js",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w"
+  },
+  "devDependencies": {
+    "typescript": "^3.2.1"
+  }
+}

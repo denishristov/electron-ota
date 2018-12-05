@@ -1,21 +1,24 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import io from 'socket.io-client'
+import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import { Provider } from 'mobx-react'
 
-import App from './App';
+import Login from './Login';
+import UserAPI from './stores/UserAPI'
 
 import './index.css';
+import UserStore from './stores/UserStore';
 
+const stores = {
+	userStore: new UserStore(new UserAPI())
+}
 
-const socket = io('http://localhost:4000');
-socket.on('connect', function() {
-	console.log('connect', arguments)
-});
-socket.on('event', function() {
-	console.log('event', arguments)
-});
-socket.on('disconnect', function() {
-	console.log('disconnect', arguments)
-});
-
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render(
+	<Provider {...stores}>
+		<Router>
+			<div>
+				<Route exact path="/" component={Login} />
+			</div>
+		</Router>
+	</Provider>
+, document.getElementById('root'));
