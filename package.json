@@ -1,4 +1,17 @@
 {
   "private": true,
-  "workspaces": ["backend", "frontend", "shared"]
+  "workspaces": [
+    "backend",
+    "frontend",
+    "shared"
+  ],
+  "husky": {
+    "hooks": {
+      "post-checkout": "cd shared && yarn run build",
+      "pre-commit": "cd shared && yarn run build"
+    }
+  },
+  "devDependencies": {
+    "husky": "^1.2.0"
+  }
 }
