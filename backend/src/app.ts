@@ -9,8 +9,12 @@ import path from 'path'
 import socketio from 'socket.io'
 import { EventTypes } from 'shared'
 
+import UserManager from './managers/UserManager'
+import { UserModel } from './models/User'
+
 
 import { MONGODB_URI } from './util/env'
+import ClientSocket from './util/ClientSocket';
 
 
 // Create Express server
@@ -26,17 +30,13 @@ mongoose.connect(mongoUrl, { useNewUrlParser: true }).then(
 	// process.exit();
 })
 
-const db = mongoose.connection
+// const db = mongoose.connection
 
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', function() {
-	const userSchema = new mongoose.Schema({
-		email: String,
-		password: String
-	})
-	  
-	const User = db.model('User', userSchema);
-});
+// db.on('error', console.error.bind(console, 'connection error:'));
+// db.once('open', function() {
+// 	console.log(db)
+	
+// });
 
 // Express configuration
 app.set('port', process.env.PORT || 4000)
@@ -74,18 +74,20 @@ server.listen(app.get('port'), () => {
 	)
 })
 
+
 const io = socketio(server)
+
 io.on('connection', function(client) {
-	console.log('connection', arguments)
-	client.on('event', function() {
-		console.log('event', arguments)
+	const clientSocket = new ClientSocket(client)
+	const userManager = new UserManager(clientSocket)
+	// console.log('connection', ...arguments)
+	client.on('error', function() {
+		console.log('error', ...arguments)
 	})
-	client.on('disconnect', function() {
-		console.log('disconnect', arguments)
-	})
-	client.on(EventTypes.Login, function(client) {
-		
-	})
+	// client.on('disconnect', function() {
+	// 	console.log('disconnect', ...arguments)
+	// })
+	// client.on(EventTypes.Login, userManager.handleLogin)
 })
 
 export default app

@@ -12,6 +12,7 @@ export default class UserStore {
 
 	@action.bound 
 	login(email: string, password: string): void {
+		// console.log(...arguments)
 		this.api.login(email, password)
 	}
 }

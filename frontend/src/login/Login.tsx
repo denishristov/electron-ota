@@ -1,17 +1,8 @@
-import React, { Component, FormEvent } from 'react';
+import React, { FormEvent } from 'react';
 import { inject, observer } from 'mobx-react'
-import UserStore from '../stores/UserStore'
+import { ILoginFormElements, ILoginProps } from './Interfaces'
 
 import './Login.css';
-
-interface ILoginProps {
-	userStore: UserStore
-}
-
-interface ILoginFormElements extends HTMLFormControlsCollection {
-	email: HTMLInputElement
-	password: HTMLInputElement
-}
 
 function Login({ userStore }: ILoginProps){
 	function handleSubmit(event: FormEvent<HTMLFormElement>): void {
