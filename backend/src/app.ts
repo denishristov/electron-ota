@@ -26,6 +26,18 @@ mongoose.connect(mongoUrl, { useNewUrlParser: true }).then(
 	// process.exit();
 })
 
+const db = mongoose.connection
+
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function() {
+	const userSchema = new mongoose.Schema({
+		email: String,
+		password: String
+	})
+	  
+	const User = db.model('User', userSchema);
+});
+
 // Express configuration
 app.set('port', process.env.PORT || 4000)
 app.set('views', path.join(__dirname, '../views'))
@@ -71,8 +83,8 @@ io.on('connection', function(client) {
 	client.on('disconnect', function() {
 		console.log('disconnect', arguments)
 	})
-	client.on(EventTypes.Login, function() {
-		console.log(EventTypes.Login, arguments)
+	client.on(EventTypes.Login, function(client) {
+		
 	})
 })
 

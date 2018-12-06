@@ -5,24 +5,13 @@ import bind from 'bind-decorator'
 
 export default class UserStore {
 	private readonly api: UserAPI
-	// @action.bound handleSubmit(event: FormEvent<HTMLFormElement>) {
-	// 	event.preventDefault()
-		
-	// }
+
 	constructor(api: UserAPI) {
 		this.api = api
 	}
 
-	@bind 
-	handleSubmit(event: FormEvent<HTMLFormElement>): void {
-		event.preventDefault()
-
-		const form = event.target as HTMLFormElement
-		const elements = form.elements as any
-
-		const email = (elements.email as HTMLInputElement).value
-		const password = (elements.password as HTMLInputElement).value
-
+	@action.bound 
+	login(email: string, password: string): void {
 		this.api.login(email, password)
 	}
 }

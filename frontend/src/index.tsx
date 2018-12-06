@@ -1,19 +1,19 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import { Provider } from 'mobx-react'
 
-import Login from './Login';
+import Login from './login/Login';
 import UserAPI from './stores/UserAPI'
+import UserStore from './stores/UserStore';
 
 import './index.css';
-import UserStore from './stores/UserStore';
 
 const stores = {
 	userStore: new UserStore(new UserAPI())
 }
 
-ReactDOM.render(
+const app = (
 	<Provider {...stores}>
 		<Router>
 			<div>
@@ -21,4 +21,6 @@ ReactDOM.render(
 			</div>
 		</Router>
 	</Provider>
-, document.getElementById('root'));
+)
+
+ReactDOM.render(app, document.getElementById('root'));

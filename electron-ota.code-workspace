@@ -2,15 +2,15 @@
 	"folders": [
 		{
 			"path": "backend",
-			"name": "Back end",
+			"name": "back-end",
 		},
 		{
 			"path": "frontend",
-			"name": "Front end",
+			"name": "front-end",
 		},
 		{
 			"path": "shared",
-			"name": "Shared",
+			"name": "shared",
 		}
 	],
 	"settings": {
