@@ -10,11 +10,11 @@ import socketio from 'socket.io'
 import { EventTypes } from 'shared'
 
 import UserManager from './managers/UserManager'
-import { UserModel } from './models/User'
-
+import { UserDocument } from './models/User'
 
 import { MONGODB_URI } from './util/env'
 import ClientSocket from './util/ClientSocket';
+import UserService from './services/UserService';
 
 
 // Create Express server
@@ -40,7 +40,7 @@ mongoose.connect(mongoUrl, { useNewUrlParser: true }).then(
 
 // Express configuration
 app.set('port', process.env.PORT || 4000)
-app.set('views', path.join(__dirname, '../views'))
+// app.set('views', path.join(__dirname, '../views'))
 app.use(compression())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
@@ -79,7 +79,8 @@ const io = socketio(server)
 
 io.on('connection', function(client) {
 	const clientSocket = new ClientSocket(client)
-	const userManager = new UserManager(clientSocket)
+	const userService = new UserService()
+	const userManager = new UserManager(clientSocket, userService)
 	// console.log('connection', ...arguments)
 	client.on('error', function() {
 		console.log('error', ...arguments)
@@ -89,5 +90,8 @@ io.on('connection', function(client) {
 	// })
 	// client.on(EventTypes.Login, userManager.handleLogin)
 })
+
+require('./util/extensions')
+
 
 export default app

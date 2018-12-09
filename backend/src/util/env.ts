@@ -11,8 +11,10 @@ if (fs.existsSync('.env')) {
 }
 export const ENVIRONMENT = process.env.NODE_ENV
 const isProductionEnvironment = ENVIRONMENT === 'production' // Anything else is treated as 'dev'
-
-export const MONGODB_URI = isProductionEnvironment ? process.env['MONGODB_URI'] : process.env['MONGODB_URI_LOCAL']
+export const MONGODB_URI = isProductionEnvironment ? process.env.MONGODB_URI : process.env.MONGODB_URI_LOCAL
+export const AUTH_PRIVATE_KEY = fs.readFileSync('./src/util/private.key', 'utf8')
+export const AUTH_PUBLIC_KEY = fs.readFileSync('./src/util/public.key', 'utf8')
+export const AUTH_TOKEN_SALT = process.env.AUTH_TOKEN_SALT
 
 if (!MONGODB_URI) {
 	logger.error('No mongo connection string. Set MONGODB_URI environment variable.')

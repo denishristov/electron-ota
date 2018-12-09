@@ -1,46 +1,29 @@
-import User, { UserModel, IUser } from '../models/User'
-import { EventTypes } from 'shared';
-import bind from 'bind-decorator'
-import ClientSocket from '../util/ClientSocket';
+import User, { UserDocument, IUser } from '../models/User'
+import { EventTypes } from 'shared'
+import ClientSocket from '../util/ClientSocket'
 
-interface IUserLoginResponse {
-	isLoginSuccessful: boolean
-	authToken?: string
-	error?: string
-}
+import { IUserService } from '../services/UserService'
+
 
 export default class UserManager {
-	constructor(client: ClientSocket) {
-		client.on(EventTypes.Login, this.handleLogin)
+	private readonly client: ClientSocket
+	private readonly userService: IUserService
+
+	constructor(client: ClientSocket, userService: IUserService) {
+		this.client = client
+		this.userService = userService
+
+		client.subscribe(EventTypes.Login, this.userService.handleLogin)
+		client.subscribe(EventTypes.Authentication, this.userService.handleAuthentication)
 
 		// this.register({
 		// 	email: 'guz@guz',
-		// 	password: 'guz'
+		// 	password: 'guz',
+		// 	name: 'tumor'
 		// })
 	}
 
-	@bind
-	public async handleLogin({ email, password }: UserModel): Promise<IUserLoginResponse> {
-		try {
-			const user = await User.findOne({ email }) as UserModel
-			
-			if (!await user.matchesPassword(password)) {
-				throw new Error('Invalid password')
-			}
-
-			return { 
-				isLoginSuccessful: true,
-				authToken: user._id.toHexString()
-			}
-		} catch (error) {
-			return { 
-				isLoginSuccessful: false,
-				error: 'Invalid password'
-			}
-		}
-	}
-
-	private async register(user: IUser): Promise<void> {
-		User.create(user)
+	private register(user: any): Promise<UserDocument> {
+		return User.create(user)
 	}
 }

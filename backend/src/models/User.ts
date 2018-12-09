@@ -2,14 +2,10 @@ import bcrypt from 'bcrypt-nodejs'
 import mongoose from 'mongoose'
 
 export interface IUser {
-	email: string,
-	password: string
-}
-
-export type UserModel = mongoose.Document & {
 	email: string
+	name: string
 	password: string
-	matchesPassword: (password: string) => Promise<boolean>
+	authTokens: Array<string>
 }
 
 const userSchema = new mongoose.Schema({
@@ -17,23 +13,18 @@ const userSchema = new mongoose.Schema({
 		type: String, 
 		unique: true 
 	},
+	name: String,
 	password: String,
-	
+	authTokens: [{ 
+		type: String,
+		unique: true
+	}]
 }, { 
 	timestamps: true 
 })
 
-userSchema.methods.matchesPassword = function(password: string): Promise<boolean> {
-	return new Promise((resolve, reject) => {
-		bcrypt.compare(password, this.password, (error: mongoose.Error, isMatch: boolean) => {
-			error && reject(error)
-			resolve(isMatch)
-		});
-	})
-}
-
 userSchema.pre("save", function save(next) {
-	const user = this as UserModel
+	const user = this as UserDocument
 
 	if (!user.isModified("password")) { 
 		return next()
@@ -44,24 +35,18 @@ userSchema.pre("save", function save(next) {
 			return next(error)
 		}
 
-		bcrypt.hash(user.password, salt, undefined, (error: mongoose.Error, hash) => {
+		bcrypt.hash(user.password, salt, void 0, (error: mongoose.Error, hash) => {
 			if (error) { 
 				return next(error)
 			}
 				 
 			user.password = hash
 			next()
-		});
-	});
-});
+		})
+	})
+})
 
-const User = mongoose.model('User', userSchema)
+export type UserDocument = mongoose.Document & IUser
 
-// const admin = new User({
-// 	email: 'admin@ora.pm',
-// 	password: 'admin'
-// })
-
-// admin.save(console.log)
-  
+const User = mongoose.model<UserDocument>('User', userSchema)
 export default User

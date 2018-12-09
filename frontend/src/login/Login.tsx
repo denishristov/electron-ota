@@ -1,16 +1,14 @@
-import React, { FormEvent } from 'react';
+import React from 'react';
 import { inject, observer } from 'mobx-react'
-import { ILoginFormElements, ILoginProps } from './Interfaces'
+import { ILoginFormElement, ILoginProps } from './Interfaces'
 
 import './Login.css';
 
-function Login({ userStore }: ILoginProps){
-	function handleSubmit(event: FormEvent<HTMLFormElement>): void {
+function Login({ userStore }: ILoginProps) {
+	function handleSubmit(event: ILoginFormElement): void {
 		event.preventDefault()
 
-		const form = event.target as HTMLFormElement
-		const { email, password } = form.elements as ILoginFormElements
-
+		const { email, password } = event.target.elements
 		userStore.login(email.value, password.value)
 	}
 
