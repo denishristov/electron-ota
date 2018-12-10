@@ -1,25 +1,18 @@
-import mongoose from 'mongoose'
+import { Document, Schema, model } from 'mongoose'
 
-export interface IApplication {
+export interface ApplicationDocument extends Document {
 	name: string
 	iconUploadId: string
+	isCritical: boolean
 }
 
-export interface IApplicationUpdate {
-	id: string
-	name?: string
-	iconUploadId?: string
-}
-
-const applicationSchema = new mongoose.Schema({
+export const ApplicationSchema = new Schema({
 	name: String,
 	iconUploadId: String,
-	
+	isCritical: Boolean
 }, { 
 	timestamps: true 
 })
 
-export type ApplicationDocument = mongoose.Document & IApplication
-
-const Application = mongoose.model<ApplicationDocument>('application', applicationSchema)
+const Application = model<ApplicationDocument>('application', ApplicationSchema)
 export default Application

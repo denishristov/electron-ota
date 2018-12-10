@@ -1,7 +1,7 @@
 import bind from 'bind-decorator'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt-nodejs'
-import User from '../models/User'
+import User, { UserDocument, RegisterPreHook } from '../models/User'
 import { AUTH_PRIVATE_KEY, AUTH_PUBLIC_KEY, AUTH_TOKEN_SALT } from '../util/env'
 import { 
 	IUserLoginRequest,
@@ -9,13 +9,20 @@ import {
 	IUserAuthenticationRequest,
 	IUserAuthenticationResponse
 } from 'shared'
+import { HookNextFunction } from 'mongoose';
 
 export interface IUserService {
-	handleLogin: (userLoginRequest: IUserLoginRequest) => Promise<IUserLoginResponse>
-	handleAuthentication: (userAuthenticationRequest: IUserAuthenticationRequest) => Promise<IUserAuthenticationResponse>
+	handleLogin(userLoginRequest: IUserLoginRequest): Promise<IUserLoginResponse>
+	handleAuthentication(userAuthenticationRequest: IUserAuthenticationRequest): Promise<IUserAuthenticationResponse>
 }
 
 export default class UserService {
+	// private readonly authenticatedUsers: IAuthenticatedUser[]
+
+	constructor() {
+		RegisterPreHook("save", this.hashPasswordHook)
+	}
+
 	@bind
 	async handleLogin({ email, password }: IUserLoginRequest): Promise<IUserLoginResponse> {
 		try {
@@ -94,6 +101,27 @@ export default class UserService {
 			bcrypt.hash(authToken, AUTH_TOKEN_SALT, void 0, (error, result) => {
 				error && reject(error)
 				resolve(result)
+			})
+		})
+	}
+
+	private hashPasswordHook(this: UserDocument, next: HookNextFunction): void {
+		if (!this.isModified("password")) { 
+			return next()
+		}
+	
+		bcrypt.genSalt(10, (error, salt) => {
+			if (error) { 
+				return next(error)
+			}
+	
+			bcrypt.hash(this.password, salt, void 0, (error: Error, hash) => {
+				if (error) { 
+					return next(error)
+				}
+					 
+				this.password = hash
+				next()
 			})
 		})
 	}

@@ -15,6 +15,8 @@ import { UserDocument } from './models/User'
 import { MONGODB_URI } from './util/env'
 import ClientSocket from './util/ClientSocket';
 import UserService from './services/UserService';
+import ApplicationService from './services/ApplicationService';
+import ApplicationManager from './managers/ApplicationManager'
 
 
 // Create Express server
@@ -22,10 +24,8 @@ const app = express()
 
 // Connect to MongoDB
 const mongoUrl = MONGODB_URI;
-(<any>mongoose).Promise = bluebird
-mongoose.connect(mongoUrl, { useNewUrlParser: true }).then(
-	() => { /** ready to use. The `mongoose.connect()` promise resolves to undefined. */ },
-).catch(err => {
+mongoose.Promise = bluebird
+mongoose.connect(mongoUrl, { useNewUrlParser: true }).catch(err => {
 	console.log('MongoDB connection error. Please make sure MongoDB is running. ' + err)
 	// process.exit();
 })
@@ -77,12 +77,17 @@ server.listen(app.get('port'), () => {
 
 const io = socketio(server)
 
+const userService = new UserService()
+const applicationService = new ApplicationService()
+
 io.on('connection', function(client) {
 	const clientSocket = new ClientSocket(client)
-	const userService = new UserService()
+
 	const userManager = new UserManager(clientSocket, userService)
+	const applicationManager = new ApplicationManager(clientSocket, applicationService)
+
 	// console.log('connection', ...arguments)
-	client.on('error', function() {
+	client.on(EventTypes.GetApplications, function() {
 		console.log('error', ...arguments)
 	})
 	// client.on('disconnect', function() {

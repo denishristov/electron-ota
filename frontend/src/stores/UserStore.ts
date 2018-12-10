@@ -1,45 +1,41 @@
-import { action, observable } from 'mobx'
-import UserAPI from './UserAPI'
+import { action, observable, computed } from 'mobx'
 import bind from 'bind-decorator'
-import { IUserLoginResponse, IUserAuthenticationResponse } from 'shared'
+import { IUserLoginResponse, IUserAuthenticationResponse, IUserLoginRequest, EventTypes, IUserAuthenticationRequest } from 'shared'
 import Cookies from 'js-cookie'
+import { IApi } from '../util/Api'
 
 export default class UserStore {
-	private readonly userAPI: UserAPI
-
 	private authToken: string | null = null
 
 	@observable
-	private isLoggedIn: boolean = false
+	isAuthenticated: boolean = false
 
-	constructor(userAPI: UserAPI) {
-		this.userAPI = userAPI
-
+	constructor(private readonly api: IApi) {
 		const authToken = Cookies.get('authToken')
+		
 		if (authToken) {
-			console.log(authToken);
 			this.authToken = authToken
 			this.authenticate()
 		}
-
-		this.userAPI.onLogin(this.handleLoginResponse)
-		this.userAPI.onAuthentication(this.handleAuthenticationResponse)
 	}
 
-	@bind
-	login(email: string, password: string): void {
-		this.userAPI.login(email, password)
-	}
-
-	@bind
-	authenticate(): void {
-		if (this.authToken) {
-			this.userAPI.authenticate(this.authToken)
-		}
+	@computed
+	get isLoading(): boolean {
+		return this.authToken 
+			? !this.isAuthenticated
+			: true
 	}
 
 	@action.bound
-	handleLoginResponse({ authToken, errorMessage, isAuthenticated }: IUserLoginResponse) {
+	async login(email: string, password: string): Promise<void> {
+		const { 
+			authToken,
+			errorMessage, 
+			isAuthenticated
+		} = await this.api.emit
+		<IUserLoginRequest, IUserLoginResponse>
+		(EventTypes.Login, { email, password })
+
 		errorMessage && console.warn(errorMessage)
 
 		if (isAuthenticated) {
@@ -48,17 +44,38 @@ export default class UserStore {
 				Cookies.set(`authToken`, authToken)
 			}
 
-			this.isLoggedIn = true
+			this.isAuthenticated = true
+			this.api.preEmit(this.getAuthToken)
 		}
 	}
 
 	@action.bound
-	handleAuthenticationResponse({ errorMessage, isAuthenticated }: IUserAuthenticationResponse) {
+	private async authenticate(): Promise<void> {
+		if (!this.authToken) {
+			return
+		}
+
+		const { 
+			errorMessage, 
+			isAuthenticated 
+		} = await this.api.emit
+		<IUserAuthenticationRequest, IUserAuthenticationResponse>
+		(EventTypes.Authentication, this.getAuthToken())
+
 		errorMessage && console.warn(errorMessage)
-		console.log(isAuthenticated, `au`)
 
 		if (isAuthenticated) {
-			this.isLoggedIn = true
+			this.isAuthenticated = true
+			this.api.preEmit(this.getAuthToken)
 		}
+	}
+
+	@bind
+	private getAuthToken(): { authToken: string } {
+		if (!this.authToken) {
+			throw new Error('No auth token')
+		}
+
+		return { authToken: this.authToken }
 	}
 }

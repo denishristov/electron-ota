@@ -1,9 +1,8 @@
-import User, { UserDocument, IUser } from '../models/User'
+import User, { UserDocument } from '../models/User'
 import { EventTypes } from 'shared'
 import ClientSocket from '../util/ClientSocket'
 
 import { IUserService } from '../services/UserService'
-
 
 export default class UserManager {
 	private readonly client: ClientSocket

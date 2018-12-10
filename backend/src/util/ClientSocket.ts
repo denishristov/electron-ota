@@ -1,5 +1,5 @@
-import { Socket } from 'socket.io';
-import bind from 'bind-decorator';
+import { Socket } from 'socket.io'
+import bind from 'bind-decorator'
 
 interface ISubscription {
 	eventType: string
@@ -17,20 +17,17 @@ class Subscription implements ISubscription {
 }
 
 export default class ClientSocket {
-	private readonly client: Socket
 	// private readonly subscriptions: ISubscription[]
 
-	constructor(socket: Socket) {
-		this.client = socket
-	}
+	constructor(private readonly client: Socket) {}
 
 	@bind
 	subscribe(eventType: string, callback: (...args: any[]) => Promise<any>) {
-		const responseCallback = async (...args: any[]) => {
-			const response = await callback(...args)
+		const responseCallback = async (data: any, ack: Function) => {
+			const response = await callback(data)
 
 			if (response) {
-				this.client.emit(eventType, response)
+				ack(response)
 			}
 		}
 

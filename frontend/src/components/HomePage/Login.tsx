@@ -1,11 +1,11 @@
 import React from 'react';
 import { inject, observer } from 'mobx-react'
-import { ILoginFormElement, ILoginProps } from './Interfaces'
+import { ILoginFormEvent, ILoginProps } from './Interfaces'
 
-import './Login.css';
+import './Login.css'
 
-function Login({ userStore }: ILoginProps) {
-	function handleSubmit(event: ILoginFormElement): void {
+const Login = ({ userStore }: ILoginProps) => {
+	const handleSubmit = (event: ILoginFormEvent): void => {
 		event.preventDefault()
 
 		const { email, password } = event.target.elements
@@ -31,5 +31,4 @@ function Login({ userStore }: ILoginProps) {
 	)
 }
 			
-
-export default inject('userStore')(observer(Login));
+export default inject(stores => ({ userStore: stores.userStore }))(observer(Login))

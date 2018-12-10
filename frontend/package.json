@@ -16,17 +16,21 @@
     "eject": "react-scripts eject"
   },
   "dependencies": {
+    "@types/history": "^4.7.2",
     "@types/js-cookie": "^2.2.0",
+    "@types/react-router": "^4.4.1",
     "@types/react-router-dom": "4.3.1",
     "bind-decorator": "1.0.11",
     "js-cookie": "^2.2.0",
     "mobx": "5.7.0",
     "mobx-react": "5.4.2",
+    "mobx-react-router": "4.0.5",
     "react": "16.6.3",
     "react-dom": "16.6.3",
     "react-router": "4.3.1",
     "react-router-dom": "4.3.1",
-    "socket.io-client": "2.2.0"
+    "socket.io-client": "2.2.0",
+    "typelevel-ts": "^0.3.4"
   },
   "devDependencies": {
     "@types/jest": "^23.3.10",

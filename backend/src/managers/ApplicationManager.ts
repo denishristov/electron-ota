@@ -1,29 +1,19 @@
-import bind from 'bind-decorator';
-import Application, { ApplicationDocument, IApplication, IApplicationUpdate } from '../models/Application'
+import { EventTypes } from 'shared'
+import ClientSocket from '../util/ClientSocket';
+import { IApplicationService } from '../services/ApplicationService';
 
 export default class ApplicationManager {
-	constructor() {
+	constructor(client: ClientSocket, applicationService: IApplicationService) {
+		const {
+			CreateApplication,
+			UpdateApplication,
+			DeleteApplication,
+			GetApplications
+		} = EventTypes
 
-	}
-
-	@bind
-	async getApplications(): Promise<Map<string, ApplicationDocument>> {
-		const applications = await Application.find() 
-		return applications.toMap(application => [application._id.toHexString(), application])
-	}
-
-	@bind
-	async createApplication(application: IApplication): Promise<ApplicationDocument> {
-		return await Application.create(application)
-	}
-
-	@bind
-	async updateApplication({ id, ...application }: IApplicationUpdate): Promise<ApplicationDocument> {
-		return await Application.findByIdAndUpdate(id, { $set: application })
-	}
-
-	@bind
-	async deleteApplication(applicationId: string): Promise<ApplicationDocument> {
-		return await Application.deleteOne({ _id: applicationId })
+		client.subscribe(GetApplications, applicationService.getApplications)
+		client.subscribe(CreateApplication, applicationService.createApplication)
+		client.subscribe(UpdateApplication, applicationService.updateApplication)
+		client.subscribe(DeleteApplication, applicationService.deleteApplication)
 	}
 }

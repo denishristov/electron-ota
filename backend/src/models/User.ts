@@ -1,14 +1,13 @@
-import bcrypt from 'bcrypt-nodejs'
-import mongoose from 'mongoose'
+import { Document, Schema, model } from 'mongoose'
 
-export interface IUser {
+export interface UserDocument extends Document {
 	email: string
 	name: string
 	password: string
 	authTokens: Array<string>
 }
 
-const userSchema = new mongoose.Schema({
+const UserSchema = new Schema({
 	email: { 
 		type: String, 
 		unique: true 
@@ -23,30 +22,7 @@ const userSchema = new mongoose.Schema({
 	timestamps: true 
 })
 
-userSchema.pre("save", function save(next) {
-	const user = this as UserDocument
+export const RegisterPreHook = UserSchema.pre
 
-	if (!user.isModified("password")) { 
-		return next()
-	}
-
-	bcrypt.genSalt(10, (error, salt) => {
-		if (error) { 
-			return next(error)
-		}
-
-		bcrypt.hash(user.password, salt, void 0, (error: mongoose.Error, hash) => {
-			if (error) { 
-				return next(error)
-			}
-				 
-			user.password = hash
-			next()
-		})
-	})
-})
-
-export type UserDocument = mongoose.Document & IUser
-
-const User = mongoose.model<UserDocument>('User', userSchema)
+const User = model<UserDocument>('User', UserSchema)
 export default User
