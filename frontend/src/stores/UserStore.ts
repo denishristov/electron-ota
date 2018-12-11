@@ -1,6 +1,6 @@
 import { action, observable, computed } from 'mobx'
 import bind from 'bind-decorator'
-import { IUserLoginResponse, IUserAuthenticationResponse, IUserLoginRequest, EventTypes, IUserAuthenticationRequest } from 'shared'
+import { IUserLoginResponse, IUserAuthenticationResponse, IUserLoginRequest, EventTypes, IUserAuthenticationRequest, DefaultEventTypes } from 'shared'
 import Cookies from 'js-cookie'
 import { IApi } from '../util/Api'
 
@@ -16,7 +16,8 @@ export default class UserStore {
 		if (authToken) {
 			this.authToken = authToken
 			this.api.preEmit(this.getAuthToken)
-			this.authenticate()
+
+			this.api.on(DefaultEventTypes.Connect, this.authenticate)
 		}
 	}
 
@@ -29,12 +30,14 @@ export default class UserStore {
 
 	@action.bound
 	async login(email: string, password: string): Promise<void> {
+		console.log('ss')
 		const { 
 			authToken,
 			errorMessage, 
 			isAuthenticated
 		} = await this.api.emit<IUserLoginRequest, IUserLoginResponse>(EventTypes.Login, { email, password })
-		
+		console.log('sffsfgs')
+
 		errorMessage && console.warn(errorMessage)
 		
 		if (isAuthenticated) {
@@ -44,7 +47,6 @@ export default class UserStore {
 			}
 
 			this.isAuthenticated = true
-			
 		}
 	}
 

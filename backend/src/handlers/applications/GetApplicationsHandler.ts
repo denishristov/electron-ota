@@ -4,7 +4,9 @@ import { IApplicationService } from '../../services/ApplicationService'
 import bind from "bind-decorator";
 
 export default class GetApplicationsHandler implements IHandler<IRequest, object> {
-	constructor(readonly eventType: EventTypes, private readonly service: IApplicationService) {}
+	readonly eventType: EventTypes = EventTypes.GetApplications
+	
+	constructor(private readonly service: IApplicationService) {}
 
 	@bind
 	handle(req: IRequest) {

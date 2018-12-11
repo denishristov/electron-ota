@@ -24,7 +24,7 @@ configure({
 	isolateGlobalState: true 
 })
 
-const api = new Api(io('http://localhost:4000/admins'))
+const api = new Api(io('http://localhost:4000/'))
 
 const stores = {
 	routeStore: new RouterStore(),

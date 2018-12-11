@@ -6,15 +6,18 @@ import express from 'express'
 import lusca from 'lusca'
 import mongoose from 'mongoose'
 import socketio from 'socket.io'
-import { EventTypes } from 'shared'
+import { EventTypes, DefaultEventTypes } from 'shared'
 
 import { MONGODB_URI } from './util/env'
 import UserService from './services/UserService';
 import ApplicationService from './services/ApplicationService';
-import Mediator from './handlers/Mediator';
+import { Mediator, NamespaceMediator } from './handlers/Mediator';
 import UserLoginHandler from './handlers/user/UserLoginHandler';
 import UserAuthenticationHandler from './handlers/user/UserAuthenticationHandler';
 import GetApplicationsHandler from './handlers/applications/GetApplicationsHandler';
+import CreateApplicationHandler from './handlers/applications/CreateApplicationHandler';
+import UpdateApplicationHandler from './handlers/applications/UpdateApplicationHandler';
+import DeleteApplicationHandler from './handlers/applications/DeleteApplicationHandler';
 
 require('./util/extensions')
 
@@ -22,8 +25,9 @@ require('./util/extensions')
 const app = express()
 
 // Connect to MongoDB
-const mongoUrl = MONGODB_URI;
+const mongoUrl = MONGODB_URI
 mongoose.Promise = bluebird
+mongoose.set('useCreateIndex', true)
 mongoose.connect(mongoUrl, { useNewUrlParser: true })
 	.catch(err => {
 	console.log('MongoDB connection error. Please make sure MongoDB is running. ' + err)
@@ -76,12 +80,12 @@ server.listen(app.get('port'), () => {
 
 
 const io = socketio(server)
-const admins = io.of('/admins')
+const adminsNamespace = io.of('/admins')
 
 const userService = new UserService()
 const applicationService = new ApplicationService()
 
-const adminsMediator = new Mediator(admins)
+const adminsMediator = new NamespaceMediator(adminsNamespace)
 
 const preOnHook = async (data: any) => {
 	const { isAuthenticated } = await userService.handleAuthentication(data)
@@ -91,15 +95,31 @@ const preOnHook = async (data: any) => {
 	}
 }
 
-adminsMediator.registerOnHook({ 
+const authHook = { 
 	hook: preOnHook,
 	exceptions: [EventTypes.Login, EventTypes.Authentication], 
 	eventType: EventTypes.Authentication 
-})
+}
 
-adminsMediator.registerHandler(new UserLoginHandler(EventTypes.Login, userService))
-adminsMediator.registerHandler(new UserAuthenticationHandler(EventTypes.Authentication, userService))
-adminsMediator.registerHandler(new GetApplicationsHandler(EventTypes.GetApplications, applicationService))
+adminsMediator.registerOnHook(authHook)
+
+adminsMediator.registerHandler(new CreateApplicationHandler(applicationService))
+adminsMediator.registerHandler(new UpdateApplicationHandler(applicationService))
+adminsMediator.registerHandler(new DeleteApplicationHandler(applicationService))
+
+
+io.on(DefaultEventTypes.Connect, (client: SocketIO.Socket) => {
+	console.log('join io')
+	const userMediator = new Mediator()
+
+	userMediator.registerOnHook(authHook)
+
+	userMediator.registerHandler(new UserLoginHandler(userService))
+	userMediator.registerHandler(new UserAuthenticationHandler(userService))
+	userMediator.registerHandler(new GetApplicationsHandler(applicationService))
+
+	userMediator.attachListeners(client)
+})
 
 
 export default app

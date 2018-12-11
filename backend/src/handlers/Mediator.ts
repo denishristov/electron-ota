@@ -1,18 +1,16 @@
-import { IMediator, IHandler } from "./Interfaces"
-import { IRequest, IResponse, IUserLoginResponse, IUserLoginRequest, EventTypes } from "shared";
+import { IMediator, IHandler, ISocketConnection } from "./Interfaces"
+import { IRequest, IResponse, IUserLoginResponse, IUserLoginRequest, EventTypes, DefaultEventTypes } from "shared";
 import bind from "bind-decorator";
 import { Socket } from "socket.io";
 
 type Hook = (data: any) => Promise<any>
 type OnHook = { hook: Hook, exceptions: EventTypes[], eventType: EventTypes }
 
-export default class Mediator implements IMediator {
+abstract class AbstractMediator implements IMediator {
 	readonly handlers: Map<EventTypes, IHandler[]> = new Map()
 	readonly hooks: OnHook[] = []
 
-	constructor(readonly clients: SocketIO.Namespace) {
-		this.clients.on('connection', this.join)
-	}
+	constructor() {}
 
 	@bind
 	registerHandler<Req extends IRequest | IUserLoginRequest, Res extends IResponse>(...handlers: IHandler<Req, Res>[]): void {
@@ -30,36 +28,6 @@ export default class Mediator implements IMediator {
 	@bind
 	registerOnHook(hook: OnHook): void {
 		this.hooks.push(hook)
-	}
-
-	@bind
-	private join(client: Socket) {
-		client.join(this.clients.name, () => {
-			client.on('disconnect', () => {
-				client.leaveAll()
-			})
-
-			this.handlers.forEach((handlers, eventType) => {
-				handlers.forEach(handler => {
-					client.on(eventType, async (request: any, ack: Function) => {
-						// console.log(eventType, ' before hook', request)
-						const data = await this.hookRequest(eventType, request)
-
-						if (!data) {
-							return
-						}
-
-						const response = await handler.handle(data)
-						
-						console.log(eventType, 'request', data, 'response', response)
-						
-						if (response) {
-							ack(response)
-						}
-					})
-				})
-			})
-		})
 	}
 
 	@bind
@@ -85,5 +53,59 @@ export default class Mediator implements IMediator {
 		}
 		
 		return data
+	}
+
+	@bind
+	attachListeners(client: Socket) {
+		this.handlers.forEach((handlers, eventType) => {
+			handlers.forEach(handler => {
+				client.on(eventType, async (request: any, ack: Function) => {
+					// console.log(ack)
+					const data = await this.hookRequest(eventType, request)
+
+					console.log(request, data)
+
+					if (!data) {
+						return
+					}
+
+					const response = await handler.handle(data)
+					
+					console.log(eventType, 'request', data, 'response', response)
+					
+					if (response) {
+						ack(response)
+					}
+				})
+			})
+		})
+	}
+}
+
+export class Mediator extends AbstractMediator {
+	// constructor(readonly client: Socket) {
+	// 	super(client)
+	// }
+	// attach()
+}
+
+export class NamespaceMediator extends AbstractMediator {
+	constructor(readonly clients: SocketIO.Namespace) {
+		super()
+
+		this.clients.on(DefaultEventTypes.Connect, this.join)
+	}
+
+	@bind
+	join(client: Socket) {
+		client.join(this.clients.name, () => {
+			console.log('join namespace')
+
+			client.on(DefaultEventTypes.Disconnect, () => {
+				client.leaveAll()
+			})
+
+			this.attachListeners(client)
+		})
 	}
 }

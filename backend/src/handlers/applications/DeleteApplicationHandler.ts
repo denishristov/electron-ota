@@ -4,7 +4,9 @@ import { IApplicationService } from '../../services/ApplicationService'
 import bind from "bind-decorator";
 
 export default class DeleteApplicationHandler implements IHandler<IDeleteApplicationRequest, IDeleteApplicationResponse> {
-	constructor(readonly eventType: EventTypes, private readonly service: IApplicationService) {}
+	readonly eventType: EventTypes = EventTypes.DeleteApplication
+	
+	constructor(private readonly service: IApplicationService) {}
 
 	@bind
 	handle(req: IDeleteApplicationRequest) {
