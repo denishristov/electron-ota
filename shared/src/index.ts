@@ -1,5 +1,6 @@
 export * from './enums/EventTypes'
 
-export * from './interfaces/UserLogin'
-export * from './interfaces/UserAuthentication'
-export * from './interfaces/Application'
+export * from './interfaces/requests/Generic'
+export * from './interfaces/requests/UserLogin'
+export * from './interfaces/requests/UserAuthentication'
+export * from './interfaces/requests/Application'

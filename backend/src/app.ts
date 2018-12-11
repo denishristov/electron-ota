@@ -9,14 +9,15 @@ import path from 'path'
 import socketio from 'socket.io'
 import { EventTypes } from 'shared'
 
-import UserManager from './managers/UserManager'
 import { UserDocument } from './models/User'
 
 import { MONGODB_URI } from './util/env'
 import ClientSocket from './util/ClientSocket';
 import UserService from './services/UserService';
 import ApplicationService from './services/ApplicationService';
-import ApplicationManager from './managers/ApplicationManager'
+import Mediator from './handlers/Mediator';
+import UserLoginHandler from './handlers/user/UserLoginHandler';
+import UserAuthenticationHandler from './handlers/user/UserAuthenticationHandler';
 
 
 // Create Express server
@@ -25,7 +26,8 @@ const app = express()
 // Connect to MongoDB
 const mongoUrl = MONGODB_URI;
 mongoose.Promise = bluebird
-mongoose.connect(mongoUrl, { useNewUrlParser: true }).catch(err => {
+mongoose.connect(mongoUrl, { useNewUrlParser: true })
+	.catch(err => {
 	console.log('MongoDB connection error. Please make sure MongoDB is running. ' + err)
 	// process.exit();
 })
@@ -76,25 +78,15 @@ server.listen(app.get('port'), () => {
 
 
 const io = socketio(server)
+const admins = io.of('/admins')
 
 const userService = new UserService()
 const applicationService = new ApplicationService()
 
-io.on('connection', function(client) {
-	const clientSocket = new ClientSocket(client)
+const adminsMediator = new Mediator(admins)
 
-	const userManager = new UserManager(clientSocket, userService)
-	const applicationManager = new ApplicationManager(clientSocket, applicationService)
-
-	// console.log('connection', ...arguments)
-	client.on(EventTypes.GetApplications, function() {
-		console.log('error', ...arguments)
-	})
-	// client.on('disconnect', function() {
-	// 	console.log('disconnect', ...arguments)
-	// })
-	// client.on(EventTypes.Login, userManager.handleLogin)
-})
+adminsMediator.registerHandler(new UserLoginHandler(EventTypes.Login, userService))
+adminsMediator.registerHandler(new UserAuthenticationHandler(EventTypes.Authentication, userService))
 
 require('./util/extensions')
 

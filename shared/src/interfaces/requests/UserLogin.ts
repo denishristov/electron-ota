@@ -1,10 +1,11 @@
+import { IRequest, IResponse } from "./Generic";
+
 export interface IUserLoginRequest {
 	email: string
 	password: string
 }
 
-export interface IUserLoginResponse {
+export interface IUserLoginResponse extends IResponse {
 	isAuthenticated: boolean
 	authToken?: string
-	errorMessage?: string
 }

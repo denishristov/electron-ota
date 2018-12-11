@@ -10,7 +10,7 @@ import {
 } from 'shared'
 
 export interface IApplicationService {
-	getApplications(): Promise<Map<string, ApplicationDocument>>
+	getApplications(): Promise<any>
 	createApplication(createRequest: ICreateApplicationRequest): Promise<ICreateApplicationResponse>
 	updateApplication(updateRequest: IUpdateApplicationRequest): Promise<IUpdateApplicationResponse>
 	deleteApplication(deleteRequest: IDeleteApplicationRequest): Promise<IDeleteApplicationResponse>

@@ -10,7 +10,7 @@ export interface IApi {
 export default class Api {
 	private readonly preEmitHooks: Function[] = []
 
-	constructor(private client: SocketIOClient.Socket) {}
+	constructor(private socket: SocketIOClient.Socket) {}
 
 	@bind
 	preEmit<Req extends object, T>(ack: (data: T) => T & Req): void {
@@ -20,13 +20,13 @@ export default class Api {
 	@bind
 	emit<Req extends object, Res extends object = {}>(eventType: string, request: Req): Promise<Res> {
 		return new Promise((resolve) => {
-			this.client.emit(eventType, this.attachData(request), resolve)
+			this.socket.emit(eventType, this.attachData(request), resolve)
 		})
 	}
 
 	@bind
 	on<Res extends object>(eventType: string, ack: (res: Res) => void): void {
-		this.client.on(eventType, ack)
+		this.socket.on(eventType, ack)
 	}
 
 	private attachData<Req extends object>(request: Req): Req & { authToken: string | null; } {

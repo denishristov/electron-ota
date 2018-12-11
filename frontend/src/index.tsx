@@ -17,7 +17,7 @@ import ApplicationsStore from './stores/ApplicationsStore';
 
 require('./util/extensions')
 
-const api = new Api(io('http://localhost:4000'))
+const api = new Api(io('http://localhost:4000/admins'))
 
 const stores = {
 	routeStore: new RouterStore(),
@@ -33,7 +33,6 @@ const app = (
 		<Router history={history}>
 			<div>
 				<Route
-					exact 
 					path="/"
 					component={HomePage}
 				/>

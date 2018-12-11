@@ -22,7 +22,5 @@ const UserSchema = new Schema({
 	timestamps: true 
 })
 
-export const RegisterPreHook = UserSchema.pre
-
 const User = model<UserDocument>('User', UserSchema)
 export default User
