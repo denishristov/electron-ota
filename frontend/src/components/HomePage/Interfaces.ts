@@ -1,6 +1,7 @@
 import UserStore from '../../stores/UserStore'
 import { FormEvent } from 'react';
 import { RouterStore } from 'mobx-react-router'
+import { RouteComponentProps } from 'react-router';
 
 interface ILoginFormEventTargetElements {
 	email: HTMLInputElement
@@ -19,6 +20,6 @@ export interface ILoginProps {
 	userStore: UserStore
 }
 
-export interface IHomePageProps {
+export interface IHomePageProps extends RouteComponentProps {
 	userStore: UserStore
 }

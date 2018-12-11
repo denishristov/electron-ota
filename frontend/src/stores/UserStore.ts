@@ -15,6 +15,7 @@ export default class UserStore {
 		
 		if (authToken) {
 			this.authToken = authToken
+			this.api.preEmit(this.getAuthToken)
 			this.authenticate()
 		}
 	}
@@ -28,15 +29,14 @@ export default class UserStore {
 
 	@action.bound
 	async login(email: string, password: string): Promise<void> {
-		console.log(email, password)
 		const { 
 			authToken,
 			errorMessage, 
 			isAuthenticated
 		} = await this.api.emit<IUserLoginRequest, IUserLoginResponse>(EventTypes.Login, { email, password })
-
+		
 		errorMessage && console.warn(errorMessage)
-		console.log('da')
+		
 		if (isAuthenticated) {
 			if (authToken) {
 				this.authToken = authToken
@@ -44,7 +44,7 @@ export default class UserStore {
 			}
 
 			this.isAuthenticated = true
-			this.api.preEmit(this.getAuthToken)
+			
 		}
 	}
 
@@ -53,23 +53,16 @@ export default class UserStore {
 		if (!this.authToken) {
 			return
 		}
-
+		
 		const { 
 			errorMessage, 
 			isAuthenticated 
-		} = await this.api.emit<
-			IUserAuthenticationRequest,
-			IUserAuthenticationResponse
-		>(
-			EventTypes.Authentication, 
-			this.getAuthToken()
-		)
-
+		} = await this.api.emit<IUserAuthenticationRequest, IUserAuthenticationResponse>(EventTypes.Authentication, this.getAuthToken())
+			
 		errorMessage && console.warn(errorMessage)
 
 		if (isAuthenticated) {
 			this.isAuthenticated = true
-			this.api.preEmit(this.getAuthToken)
 		}
 	}
 

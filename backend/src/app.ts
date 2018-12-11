@@ -5,20 +5,18 @@ import errorHandler from 'errorhandler'
 import express from 'express'
 import lusca from 'lusca'
 import mongoose from 'mongoose'
-import path from 'path'
 import socketio from 'socket.io'
 import { EventTypes } from 'shared'
 
-import { UserDocument } from './models/User'
-
 import { MONGODB_URI } from './util/env'
-import ClientSocket from './util/ClientSocket';
 import UserService from './services/UserService';
 import ApplicationService from './services/ApplicationService';
 import Mediator from './handlers/Mediator';
 import UserLoginHandler from './handlers/user/UserLoginHandler';
 import UserAuthenticationHandler from './handlers/user/UserAuthenticationHandler';
+import GetApplicationsHandler from './handlers/applications/GetApplicationsHandler';
 
+require('./util/extensions')
 
 // Create Express server
 const app = express()
@@ -85,10 +83,23 @@ const applicationService = new ApplicationService()
 
 const adminsMediator = new Mediator(admins)
 
+const preOnHook = async (data: any) => {
+	const { isAuthenticated } = await userService.handleAuthentication(data)
+	// console.log('wow', isAuthenticated, data)
+	if (isAuthenticated) {
+		return data
+	}
+}
+
+adminsMediator.registerOnHook({ 
+	hook: preOnHook,
+	exceptions: [EventTypes.Login, EventTypes.Authentication], 
+	eventType: EventTypes.Authentication 
+})
+
 adminsMediator.registerHandler(new UserLoginHandler(EventTypes.Login, userService))
 adminsMediator.registerHandler(new UserAuthenticationHandler(EventTypes.Authentication, userService))
-
-require('./util/extensions')
+adminsMediator.registerHandler(new GetApplicationsHandler(EventTypes.GetApplications, applicationService))
 
 
 export default app

@@ -1,11 +1,11 @@
 import { IHandler } from "../Interfaces"
-import { IRequest, ICreateApplicationRequest, ICreateApplicationResponse } from "shared";
+import { ICreateApplicationRequest, ICreateApplicationResponse, EventTypes } from "shared";
 import { IApplicationService } from '../../services/ApplicationService'
 import bind from "bind-decorator";
 
 export default class CreateApplicationHandler implements IHandler<ICreateApplicationRequest, ICreateApplicationResponse> {
 	constructor(
-		readonly eventType: string, 
+		readonly eventType: EventTypes, 
 		private readonly service: IApplicationService
 	) {}
 

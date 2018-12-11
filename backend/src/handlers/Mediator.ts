@@ -1,10 +1,14 @@
 import { IMediator, IHandler } from "./Interfaces"
-import { IRequest, IResponse, IUserLoginResponse, IUserLoginRequest } from "shared";
+import { IRequest, IResponse, IUserLoginResponse, IUserLoginRequest, EventTypes } from "shared";
 import bind from "bind-decorator";
 import { Socket } from "socket.io";
 
+type Hook = (data: any) => Promise<any>
+type OnHook = { hook: Hook, exceptions: EventTypes[], eventType: EventTypes }
+
 export default class Mediator implements IMediator {
-	readonly handlers: Map<string, IHandler<any, any>[]> = new Map()
+	readonly handlers: Map<EventTypes, IHandler[]> = new Map()
+	readonly hooks: OnHook[] = []
 
 	constructor(readonly clients: SocketIO.Namespace) {
 		this.clients.on('connection', this.join)
@@ -24,16 +28,30 @@ export default class Mediator implements IMediator {
 	}
 
 	@bind
+	registerOnHook(hook: OnHook): void {
+		this.hooks.push(hook)
+	}
+
+	@bind
 	private join(client: Socket) {
 		client.join(this.clients.name, () => {
-			console.log('joined', this.clients)
-			
+			client.on('disconnect', () => {
+				client.leaveAll()
+			})
+
 			this.handlers.forEach((handlers, eventType) => {
 				handlers.forEach(handler => {
-					client.on(eventType, async (data: any, ack: Function) => {
-						console.log('req', data)
+					client.on(eventType, async (request: any, ack: Function) => {
+						// console.log(eventType, ' before hook', request)
+						const data = await this.hookRequest(eventType, request)
+
+						if (!data) {
+							return
+						}
+
 						const response = await handler.handle(data)
-						console.log('res', response)
+						
+						console.log(eventType, 'request', data, 'response', response)
 						
 						if (response) {
 							ack(response)
@@ -42,5 +60,30 @@ export default class Mediator implements IMediator {
 				})
 			})
 		})
+	}
+
+	@bind
+	async hookRequest(eventType: EventTypes, request: object): Promise<object | null> {
+		if (!this.hooks.length) {
+			return
+		}
+		
+		const data = { ...request }
+
+		for (const hook of this.hooks) {
+			if (hook.exceptions.some(excludedType => excludedType === eventType)) {
+				continue
+			}
+
+			const hookedData = await hook.hook(data)
+
+			if (!hookedData) {
+				return null
+			}
+
+			Object.assign(data, hookedData)
+		}
+		
+		return data
 	}
 }

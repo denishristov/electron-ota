@@ -19,11 +19,11 @@ export default class UserService {
 	// private readonly authenticatedUsers: IAuthenticatedUser[]
 
 	constructor() {
-		this.register({
-			email: 'a@a',
-			password: 'a',
-			name: 'a'
-		})
+		// this.register({
+		// 	email: 'a@a',
+		// 	password: 'a',
+		// 	name: 'a'
+		// })
 	}
 
 	@bind
@@ -115,10 +115,7 @@ export default class UserService {
 	private hashPassword(password: string): Promise<string> {
 		return new Promise((resolve, reject) => {
 			bcrypt.genSalt(10, (error, salt) => {
-				if (error) { 
-					error && reject(error)
-				}
-				console.log(salt)
+				error && reject(error)
 	
 				bcrypt.hash(password, salt, void 0, (error: Error, hash) => {
 					error && reject(error)

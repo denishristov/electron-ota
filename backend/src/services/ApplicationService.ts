@@ -35,7 +35,7 @@ export default class ApplicationService {
 	@bind
 	async updateApplication(updateRequest: IUpdateApplicationRequest): Promise<IUpdateApplicationResponse> {
 		const { id, ...application } = updateRequest
-		await Application.findByIdAndUpdate(id, { $set: application })
+		await Application.find(id, { $set: application })
 		return updateRequest  
 	}
 

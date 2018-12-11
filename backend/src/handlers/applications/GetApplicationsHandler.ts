@@ -1,13 +1,13 @@
 import { IHandler } from "../Interfaces"
-import { IRequest, IUpdateApplicationRequest, IUpdateApplicationResponse } from "shared";
+import { IRequest, IUpdateApplicationRequest, IUpdateApplicationResponse, EventTypes } from "shared";
 import { IApplicationService } from '../../services/ApplicationService'
 import bind from "bind-decorator";
 
-export default class UpdateApplicationHandler implements IHandler<IUpdateApplicationRequest, IUpdateApplicationResponse> {
-	constructor(readonly eventType: string, private readonly service: IApplicationService) {}
+export default class GetApplicationsHandler implements IHandler<IRequest, object> {
+	constructor(readonly eventType: EventTypes, private readonly service: IApplicationService) {}
 
 	@bind
-	handle(req: IUpdateApplicationRequest) {
-		return this.service.updateApplication(req)
+	handle(req: IRequest) {
+		return this.service.getApplications()
 	}
 }

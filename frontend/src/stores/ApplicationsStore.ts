@@ -13,6 +13,6 @@ export default class ApplicationsStore {
 	}
 
 	@bind async fetch(){
-		console.log(await this.api.emit<any,any>(EventTypes.GetApplications, {}))
+		// console.log(await this.api.emit<any,any>(EventTypes.GetApplications, {}))
 	}	
 }
