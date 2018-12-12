@@ -1,8 +1,14 @@
 import { action, observable, computed } from 'mobx'
 import bind from 'bind-decorator'
-import { IUserLoginResponse, IUserAuthenticationResponse, IUserLoginRequest, EventTypes, IUserAuthenticationRequest, DefaultEventTypes } from 'shared'
+import { IUserLoginResponse, IUserAuthenticationResponse, IUserLoginRequest, IUserAuthenticationRequest, EventType } from 'shared'
 import Cookies from 'js-cookie'
 import { IApi } from '../util/Api'
+
+export interface IUserStore {
+	isAuthenticated: boolean
+	isLoading: boolean
+	login(email: string, password: string): Promise<void>
+}
 
 export default class UserStore {
 	private authToken: string | null = null
@@ -17,7 +23,7 @@ export default class UserStore {
 			this.authToken = authToken
 			this.api.preEmit(this.getAuthToken)
 
-			this.api.on(DefaultEventTypes.Connect, this.authenticate)
+			this.api.on(EventType.Connect, this.authenticate)
 		}
 	}
 
@@ -30,13 +36,11 @@ export default class UserStore {
 
 	@action.bound
 	async login(email: string, password: string): Promise<void> {
-		console.log('ss')
 		const { 
 			authToken,
 			errorMessage, 
 			isAuthenticated
-		} = await this.api.emit<IUserLoginRequest, IUserLoginResponse>(EventTypes.Login, { email, password })
-		console.log('sffsfgs')
+		} = await this.api.emit<IUserLoginResponse>(EventType.Login, { email, password })
 
 		errorMessage && console.warn(errorMessage)
 		
@@ -59,7 +63,10 @@ export default class UserStore {
 		const { 
 			errorMessage, 
 			isAuthenticated 
-		} = await this.api.emit<IUserAuthenticationRequest, IUserAuthenticationResponse>(EventTypes.Authentication, this.getAuthToken())
+		} = await this.api.emit<IUserAuthenticationResponse>(
+			EventType.Authentication, 
+			this.getAuthToken()
+		)
 			
 		errorMessage && console.warn(errorMessage)
 

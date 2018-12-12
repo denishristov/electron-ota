@@ -1,5 +1,5 @@
 export interface IRequest {
-	authToken: string
+	authToken?: string
 }
 
 export interface IResponse {

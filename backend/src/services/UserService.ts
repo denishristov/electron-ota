@@ -11,8 +11,13 @@ import {
 } from 'shared'
 
 export interface IUserService {
-	handleLogin(userLoginRequest: IUserLoginRequest): Promise<IUserLoginResponse>
-	handleAuthentication(userAuthenticationRequest: IUserAuthenticationRequest): Promise<IUserAuthenticationResponse>
+	handleLogin(
+		userLoginRequest: IUserLoginRequest
+	): Promise<IUserLoginResponse>
+
+	handleAuthentication(
+		userAuthenticationRequest: IUserAuthenticationRequest
+	): Promise<IUserAuthenticationResponse>
 }
 
 export default class UserService {
@@ -57,11 +62,7 @@ export default class UserService {
 	@bind
 	async handleAuthentication({ authToken }: IUserAuthenticationRequest): Promise<IUserAuthenticationResponse> {
 		try {
-			const { id, exp } = jwt.verify(authToken, AUTH_PUBLIC_KEY, { algorithms: ["RS256"] }) as any
-
-			if (!id) {
-				throw new Error('Bad id')
-			}
+			const { id } = jwt.verify(authToken, AUTH_PUBLIC_KEY, { algorithms: ["RS256"] }) as any
 
 			const user = await User.findById(id)
 

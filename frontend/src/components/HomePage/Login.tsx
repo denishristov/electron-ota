@@ -1,8 +1,22 @@
-import React from 'react';
+import React, { FormEvent } from 'react'
 import { inject, observer } from 'mobx-react'
-import { ILoginFormEvent, ILoginProps } from './Interfaces'
+
+import { IUserStore } from '../../stores/UserStore'
 
 import './Login.css'
+
+interface ILoginFormEvent extends FormEvent<HTMLFormElement> {
+	target: EventTarget & {
+		elements: {
+			email: HTMLInputElement
+			password: HTMLInputElement
+		}
+	}
+}
+
+interface ILoginProps {
+	userStore: IUserStore
+}
 
 const Login = ({ userStore }: ILoginProps) => {
 	const handleSubmit = (event: ILoginFormEvent): void => {

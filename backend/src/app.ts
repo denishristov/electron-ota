@@ -6,18 +6,23 @@ import express from 'express'
 import lusca from 'lusca'
 import mongoose from 'mongoose'
 import socketio from 'socket.io'
-import { EventTypes, DefaultEventTypes } from 'shared'
+
+import { EventType } from 'shared'
 
 import { MONGODB_URI } from './util/env'
-import UserService from './services/UserService';
-import ApplicationService from './services/ApplicationService';
-import { Mediator, NamespaceMediator } from './handlers/Mediator';
-import UserLoginHandler from './handlers/user/UserLoginHandler';
-import UserAuthenticationHandler from './handlers/user/UserAuthenticationHandler';
-import GetApplicationsHandler from './handlers/applications/GetApplicationsHandler';
-import CreateApplicationHandler from './handlers/applications/CreateApplicationHandler';
-import UpdateApplicationHandler from './handlers/applications/UpdateApplicationHandler';
-import DeleteApplicationHandler from './handlers/applications/DeleteApplicationHandler';
+
+import UserService from './services/UserService'
+import AppService from './services/AppService'
+
+import MediatorBuilder from './util/mediator/MediatorBuilder'
+
+import UserLoginHandler from './handlers/user/UserLoginHandler'
+import UserAuthenticationHandler from './handlers/user/UserAuthenticationHandler'
+import GetAppsHandler from './handlers/apps/GetAppsHandler'
+import CreateAppHandler from './handlers/apps/CreateAppHandler'
+import UpdateAppHandler from './handlers/apps/UpdateAppHandler'
+import DeleteAppHandler from './handlers/apps/DeleteAppHandler'
+import NewAdminConnectionHandler from './handlers/NewAdminConnectionHandler';
 
 require('./util/extensions')
 
@@ -31,16 +36,16 @@ mongoose.set('useCreateIndex', true)
 mongoose.connect(mongoUrl, { useNewUrlParser: true })
 	.catch(err => {
 	console.log('MongoDB connection error. Please make sure MongoDB is running. ' + err)
-	// process.exit();
+	// process.exit()
 })
 
 // const db = mongoose.connection
 
-// db.on('error', console.error.bind(console, 'connection error:'));
+// db.on('error', console.error.bind(console, 'connection error:'))
 // db.once('open', function() {
 // 	console.log(db)
 	
-// });
+// })
 
 // Express configuration
 app.set('port', process.env.PORT || 4000)
@@ -80,46 +85,37 @@ server.listen(app.get('port'), () => {
 
 
 const io = socketio(server)
-const adminsNamespace = io.of('/admins')
 
 const userService = new UserService()
-const applicationService = new ApplicationService()
+const appService = new AppService()
 
-const adminsMediator = new NamespaceMediator(adminsNamespace)
-
-const preOnHook = async (data: any) => {
-	const { isAuthenticated } = await userService.handleAuthentication(data)
-	// console.log('wow', isAuthenticated, data)
-	if (isAuthenticated) {
-		return data
-	}
-}
+const userHandlers = [
+	new UserLoginHandler(userService),
+	new UserAuthenticationHandler(userService),
+	new GetAppsHandler(appService),
+]
 
 const authHook = { 
-	hook: preOnHook,
-	exceptions: [EventTypes.Login, EventTypes.Authentication], 
-	eventType: EventTypes.Authentication 
+	exceptions: [EventType.Login, EventType.Authentication],
+	handle: async (eventType: EventType, data: any) => {
+		const { isAuthenticated } = await userService.handleAuthentication(data)
+		console.log('wow', isAuthenticated, data)
+		if (isAuthenticated) {
+			return data
+		}
+	},
 }
 
-adminsMediator.registerOnHook(authHook)
+const userMediator = MediatorBuilder.buildMediator(userHandlers, [authHook])
 
-adminsMediator.registerHandler(new CreateApplicationHandler(applicationService))
-adminsMediator.registerHandler(new UpdateApplicationHandler(applicationService))
-adminsMediator.registerHandler(new DeleteApplicationHandler(applicationService))
+const adminHandlers = [
+	new NewAdminConnectionHandler(userMediator),
+	new CreateAppHandler(appService),
+	new UpdateAppHandler(appService),
+	new DeleteAppHandler(appService),
+]
 
-
-io.on(DefaultEventTypes.Connect, (client: SocketIO.Socket) => {
-	console.log('join io')
-	const userMediator = new Mediator()
-
-	userMediator.registerOnHook(authHook)
-
-	userMediator.registerHandler(new UserLoginHandler(userService))
-	userMediator.registerHandler(new UserAuthenticationHandler(userService))
-	userMediator.registerHandler(new GetApplicationsHandler(applicationService))
-
-	userMediator.attachListeners(client)
-})
-
+const adminsNamespace = io.of('/admins')
+MediatorBuilder.buildNamespaceMediator(adminsNamespace, adminHandlers)
 
 export default app

@@ -6,7 +6,7 @@ declare module "mobx-react" {
 		mapStoreToProps: (stores: any) => D
 	): <A extends D>(
 		component: React.ComponentType<A>
-	) => React.ComponentType<Omit<A, keyof D> & Partial<D>>
+	) => React.SFC<Omit<A, keyof D> & Partial<D>>
 }
 
 export {}

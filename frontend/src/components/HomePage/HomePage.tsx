@@ -2,15 +2,18 @@ import React from 'react'
 import { Redirect } from 'react-router'
 import Login from './Login'
 import { inject, observer } from 'mobx-react'
+import { IUserStore } from '../../stores/UserStore'
+import { RouteComponentProps } from 'react-router'
 
-import { IHomePageProps } from './Interfaces'
+interface IHomePageProps extends RouteComponentProps {
+	userStore: IUserStore
+}
 
 const HomePage = ({ userStore, location }: IHomePageProps) => {
-	// console.log(userStore.isAuthenticated, userStore.isLoading)
 	return userStore.isAuthenticated
-		? location.pathname === '/applications'
+		? location.pathname === '/apps'
 			? null
-			: <Redirect to="/applications" />
+			: <Redirect to="/apps" />
 		: userStore.isLoading
 			? <div>Loading...</div>
 			: <Login />

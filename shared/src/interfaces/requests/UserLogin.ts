@@ -1,6 +1,6 @@
 import { IRequest, IResponse } from "./Generic";
 
-export interface IUserLoginRequest {
+export interface IUserLoginRequest extends IRequest {
 	email: string
 	password: string
 }
