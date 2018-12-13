@@ -10,7 +10,7 @@ export interface IAppModel {
 export interface IGetAppsRequest extends IRequest {}
 
 export interface IGetAppsResponse extends IResponse {
-	[appId: string]: IAppModel | string
+	apps: IAppModel[]
 }
 
 export interface ICreateAppRequest extends IRequest {

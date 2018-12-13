@@ -26,7 +26,9 @@ const Login = ({ userStore }: ILoginProps) => {
 		userStore.login(email.value, password.value)
 	}
 
-	return (
+	return userStore.isLoading
+	? <div>Loading...</div>
+	: (
 		<form onSubmit={handleSubmit}>
 			<input 
 				type="email"

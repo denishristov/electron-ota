@@ -20,7 +20,7 @@ export default class Api implements IApi {
 	emit<Res extends IResponse = IResponse>(eventType: EventType, request?: object): Promise<Res> {
 		return new Promise((resolve, reject) => {
 			this.socket.emit(eventType, this.attachData(request || {}), (data: Res) => {
-				if (data.errorMessage) {
+				if (data!.errorMessage) {
 					reject(data)
 				} else {
 					resolve(data)
@@ -32,7 +32,7 @@ export default class Api implements IApi {
 	@bind
 	on<Res extends IResponse = IResponse>(eventType: string, ack: (res: Res) => void): void {
 		this.socket.on(eventType, (res: Res) => {
-			if (res.errorMessage) {
+			if (res && res.errorMessage) {
 				throw new Error(res.errorMessage)
 			} else {
 				ack(res)

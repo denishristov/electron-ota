@@ -20,17 +20,20 @@ export default class AppService {
 	async getApps(): Promise<IGetAppsResponse> {
 		const apps = await App.find()
 
-		return apps.map(({
-			id,
-			bundleId,
-			pictureUrl,
-			name
-		}) => ({
-			id,
-			bundleId,
-			pictureUrl,
-			name
-		})).toObject(app => [app.id, app]) as IGetAppsResponse
+		return { 
+			apps: apps.map(({
+				id,
+				bundleId,
+				pictureUrl,
+				name
+			}) => ({
+				id,
+				bundleId,
+				pictureUrl,
+				name
+			}))
+		}
+		// .toObject(app => [app.id, app]) as IGetAppsResponse
 	}
 
 	async createApp(createRequest: ICreateAppRequest): Promise<ICreateAppResponse> {

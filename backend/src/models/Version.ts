@@ -1,7 +1,7 @@
 import { Document, Schema, model } from 'mongoose'
 
 export interface VersionDocument extends Document {
-	versionString: string
+	versionName: string
 	downloadUrl: string
 	isCritical: boolean
 	isBase: boolean
@@ -14,7 +14,7 @@ export const VersionSchema = new Schema({
 		type: Schema.Types.ObjectId,
 		ref: 'App'
 	},
-	versionString: String,
+	versionName: String,
 	downloadUrl: String,
 	isCritical: Boolean,
 	isBase: Boolean,

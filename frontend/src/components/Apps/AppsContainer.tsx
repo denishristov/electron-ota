@@ -67,6 +67,7 @@ class AppsContainer extends React.Component<IAppsProps> {
 						Create app
 					</button>
 				</form>
+				<h1>Apps</h1>
 				{renderableApps.map((app: any) => <App app={app} key={app.id} />)}
 			</div>
 		)

@@ -16,8 +16,10 @@ import AppsContainer from './components/Apps/AppsContainer'
 import './index.css'
 import AppsStore from './stores/AppsStore'
 import Login from './components/HomePage/Login';
+import AppPage from './components/Apps/AppPage';
+import 'shared'
 
-require('./util/extensions')
+import './util/extensions'
 
 configure({ 
 	enforceActions: 'always', 
@@ -53,6 +55,10 @@ const app = (
 					exact
 					path="/apps"
 					component={AppsContainer}
+				/>
+				<Route
+					path="/apps/:id"
+					component={AppPage}
 				/>
 			</React.Fragment>
 		</Router>

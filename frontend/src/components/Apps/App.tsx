@@ -1,12 +1,15 @@
 import React, { Component } from 'react'
-import { observer, inject } from 'mobx-react';
-import AppsStore from '../../stores/AppsStore';
-import bind from 'bind-decorator';
-import { IAppModel } from 'shared';
+import { observer, inject } from 'mobx-react'
+import AppsStore from '../../stores/AppsStore'
+import bind from 'bind-decorator'
+import { IAppModel } from 'shared'
+import { RouterStore } from 'mobx-react-router'
+import { Link } from 'react-router-dom'
 
 interface IProps {
 	app: IAppModel
 	appsStore: AppsStore
+	routeStore: RouterStore
 }
 
 class App extends Component<IProps> {
@@ -19,6 +22,7 @@ class App extends Component<IProps> {
 
 	render() {
 		const {
+			id,
 			name,
 			bundleId,
 			pictureUrl
@@ -29,6 +33,11 @@ class App extends Component<IProps> {
 				<img src={pictureUrl} />
 				<h1>{name}</h1>
 				<h2>{`Bundle id: ${bundleId}`}</h2>
+				<Link to={`/apps/${id}`}>
+					<button>
+						Open
+					</button>
+				</Link>
 				<button onClick={this.handleDeleteApp}>
 					Delete
 				</button>
@@ -37,4 +46,4 @@ class App extends Component<IProps> {
 	}
 }
 
-export default inject(({ appsStore }) => ({ appsStore }))(observer(App))
+export default inject(({ appsStore, routeStore }) => ({ appsStore, routeStore }))(observer(App))

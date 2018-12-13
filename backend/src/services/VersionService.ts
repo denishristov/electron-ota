@@ -21,29 +21,32 @@ export default class VersionService {
 	async getVersions({ appId }: IGetVersionsRequest): Promise<IGetVersionsResponse> {
 		const versions = await Version.find({ appId })
 
-		return versions.map(({
-			id,
-			versionString,
-			downloadUrl,
-			isCritical,
-			isBase,
-			isPublished,
-			appId,
-		}) => ({
-			id,
-			versionString,
-			downloadUrl,
-			isCritical,
-			isBase,
-			isPublished,
-			appId,
-		})).toObject(versions => [versions.id, versions]) as IGetVersionsResponse
+		return {
+			versions: versions.map(({
+				id,
+				versionName,
+				downloadUrl,
+				isCritical,
+				isBase,
+				isPublished,
+				appId,
+			}) => ({
+				id,
+				versionName,
+				downloadUrl,
+				isCritical,
+				isBase,
+				isPublished,
+				appId,
+			}))
+		}
+		// .toObject(versions => [versions.id, versions]) as IGetVersionsResponse
 	}
 
 	async createVersion(createRequest: ICreateVersionRequest): Promise<ICreateVersionResponse> {
 		const {
 			id,
-			versionString,
+			versionName,
 			downloadUrl,
 			isCritical,
 			isBase,
@@ -53,7 +56,7 @@ export default class VersionService {
 
 		return {
 			id,
-			versionString,
+			versionName,
 			downloadUrl,
 			isCritical,
 			isBase,

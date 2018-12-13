@@ -1,5 +1,6 @@
 export enum EventType {
 	Connection = 'connection',
+	Connect = 'connect',	
 	Disconnect = 'disconnect',
 	Error = 'error',
 	Login = 'login',

@@ -5,3 +5,5 @@ export * from './interfaces/requests/UserLogin'
 export * from './interfaces/requests/UserAuthentication'
 export * from './interfaces/requests/App'
 export * from './interfaces/requests/Version'
+
+import './extensions'

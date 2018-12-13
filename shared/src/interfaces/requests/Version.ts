@@ -2,7 +2,7 @@ import { IRequest, IResponse } from "./Generic"
 
 export interface IVersionModel {
 	id: string
-	versionString: string
+	versionName: string
 	downloadUrl: string
 	isCritical: boolean
 	isBase: boolean
@@ -12,7 +12,7 @@ export interface IVersionModel {
 
 export interface IVersionEditModel {
 	id: string
-	versionString?: string
+	versionName?: string
 	downloadUrl?: string
 	isCritical?: boolean
 	isBase?: boolean
@@ -30,11 +30,11 @@ export interface IVersionResponse extends IResponse {
 export interface IGetVersionsRequest extends IVersionRequest {}
 
 export interface IGetVersionsResponse extends IVersionResponse {
-	[versionId: string]: IVersionModel | string
+	versions: IVersionModel[]
 }
 
 export interface ICreateVersionRequest extends IVersionRequest {
-	versionString: string
+	versionName: string
 	downloadUrl: string
 	isCritical: boolean
 	isBase: boolean

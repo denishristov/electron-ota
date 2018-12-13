@@ -106,7 +106,7 @@ const authHook = {
 	exceptions: [EventType.Login, EventType.Authentication, EventType.Connection],
 	handle: async (eventType: EventType, data: any) => {
 		const { isAuthenticated } = await userService.handleAuthentication(data)
-		console.log(eventType, 'is auth', isAuthenticated, data)
+		// console.log(eventType, 'is auth', isAuthenticated, data)
 		if (isAuthenticated) {
 			return data
 		}

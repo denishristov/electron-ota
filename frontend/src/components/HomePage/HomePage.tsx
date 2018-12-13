@@ -11,12 +11,12 @@ interface IHomePageProps extends RouteComponentProps {
 
 const HomePage = ({ userStore, location }: IHomePageProps) => {
 	return userStore.isAuthenticated
-		? location.pathname === '/apps'
-			? null
-			: <Redirect to="/apps" />
-		: userStore.isLoading
-			? <div>Loading...</div>
-			: <Redirect to="/login" />
+		? location.pathname === '/login'
+			? <Redirect to="/apps" />
+			: null
+		: location.pathname !== '/login' 
+			? <Redirect to="/login" />
+			: null
 }
 
 export default inject(stores => ({ userStore: stores.userStore }))(observer(HomePage))

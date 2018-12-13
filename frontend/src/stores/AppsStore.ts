@@ -3,9 +3,11 @@ import { observable, ObservableMap, action, computed } from "mobx"
 import { EventType, ICreateAppResponse, IUpdateAppRequest, IUpdateAppResponse, IDeleteAppRequest, IDeleteAppResponse, IGetAppsResponse, IAppModel } from "shared"
 import bind from 'bind-decorator'
 import { ICreateAppRequest } from 'shared'
+import App from "./App";
+import { string } from "prop-types";
 
 export default class AppsStore {
-	private readonly apps: ObservableMap<string, IAppModel> = observable.map({})
+	private readonly apps: ObservableMap<string, App> = observable.map({})
 
 	constructor(private readonly api: IApi) {
 		this.api.on(EventType.CreateApp, this.handleCreateApp)
@@ -14,19 +16,21 @@ export default class AppsStore {
 	}
 
 	@computed
-	get renderableApps(): IAppModel[] {
+	get renderableApps(): App[] {
 		return [...this.apps.values()]
 	}
 
 	@action
 	async fetchApps(): Promise<void> { 
-		this.apps.merge(await this.api.emit<IGetAppsResponse>(EventType.GetApps))
+		const { apps } = await this.api.emit<IGetAppsResponse>(EventType.GetApps)
+		const appMap = apps.map(app => new App(app, this.api)).group(app => [app.id, app])
+		this.apps.merge(appMap)
 	}
 
 	@action.bound
 	handleCreateApp(createAppResponse: ICreateAppResponse): void {
 		console.log(createAppResponse)
-		this.apps.set(createAppResponse.id, createAppResponse)
+		this.apps.set(createAppResponse.id, new App(createAppResponse, this.api))
 	}
 
 	@action.bound
@@ -40,17 +44,14 @@ export default class AppsStore {
 		this.apps.delete(deleteAppResponse.id)
 	}
 
-	@bind
 	emitCreateApp(createAppRequest: ICreateAppRequest): Promise<ICreateAppResponse> {
 		return this.api.emit<ICreateAppResponse>(EventType.CreateApp, createAppRequest)
 	}
 
-	@bind
 	emitUpdateApp(updateAppRequest: IUpdateAppRequest): Promise<IUpdateAppResponse> {
 		return this.api.emit<IUpdateAppResponse>(EventType.UpdateApp, updateAppRequest)
 	}
 
-	@bind
 	emitDeleteApp(deleteAppRequest: IDeleteAppRequest): Promise<IDeleteAppResponse> {
 		return this.api.emit<IDeleteAppResponse>(EventType.DeleteApp, deleteAppRequest)
 	}
