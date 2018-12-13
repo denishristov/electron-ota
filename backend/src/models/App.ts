@@ -2,14 +2,15 @@ import { Document, Schema, model } from 'mongoose'
 
 export interface AppDocument extends Document {
 	name: string
-	iconUploadId: string
-	isCritical: boolean
+	pictureUrl: string
+	bundleId: string
+	// versions: 
 }
 
 export const AppSchema = new Schema({
 	name: String,
-	iconUploadId: String,
-	isCritical: Boolean
+	pictureUrl: String,
+	bundleId: String
 }, { 
 	timestamps: true 
 })

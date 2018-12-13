@@ -41,14 +41,16 @@ export default class Mediator implements IMediator {
 
 		for (const hook of hooks) {
 			if (hook.exceptions && hook.exceptions.some(excludedType => excludedType === eventType)) {
-				break
+				continue
 			}
 		
 			const hookedData = await hook.handle(eventType, request)
 			
-			if (hookedData) {
-				Object.assign(data, hookedData)
-			}			
+			if (!hookedData) {
+				return null
+			}		
+
+			Object.assign(data, hookedData)
 		}
 		
 		return data
@@ -78,7 +80,7 @@ export default class Mediator implements IMediator {
 				
 				if (response) {
 					ack(response)
-					this.applyHooks(this.postRespondHooks, handler.eventType, request)
+					this.applyHooks(this.postRespondHooks, handler.eventType, response)
 				}
 			}
 		}

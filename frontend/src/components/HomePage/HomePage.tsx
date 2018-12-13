@@ -16,7 +16,7 @@ const HomePage = ({ userStore, location }: IHomePageProps) => {
 			: <Redirect to="/apps" />
 		: userStore.isLoading
 			? <div>Loading...</div>
-			: <Login />
+			: <Redirect to="/login" />
 }
 
 export default inject(stores => ({ userStore: stores.userStore }))(observer(HomePage))

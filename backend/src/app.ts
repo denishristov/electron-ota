@@ -22,7 +22,7 @@ import GetAppsHandler from './handlers/apps/GetAppsHandler'
 import CreateAppHandler from './handlers/apps/CreateAppHandler'
 import UpdateAppHandler from './handlers/apps/UpdateAppHandler'
 import DeleteAppHandler from './handlers/apps/DeleteAppHandler'
-import NewAdminConnectionHandler from './handlers/NewAdminConnectionHandler';
+import ConnectionHandler from './handlers/ConnectionHandler';
 
 require('./util/extensions')
 
@@ -96,10 +96,10 @@ const userHandlers = [
 ]
 
 const authHook = { 
-	exceptions: [EventType.Login, EventType.Authentication],
+	exceptions: [EventType.Login, EventType.Authentication, EventType.Connection],
 	handle: async (eventType: EventType, data: any) => {
 		const { isAuthenticated } = await userService.handleAuthentication(data)
-		console.log('wow', isAuthenticated, data)
+		console.log(eventType, 'is auth', isAuthenticated, data)
 		if (isAuthenticated) {
 			return data
 		}
@@ -109,13 +109,13 @@ const authHook = {
 const userMediator = MediatorBuilder.buildMediator(userHandlers, [authHook])
 
 const adminHandlers = [
-	new NewAdminConnectionHandler(userMediator),
 	new CreateAppHandler(appService),
 	new UpdateAppHandler(appService),
 	new DeleteAppHandler(appService),
 ]
 
 const adminsNamespace = io.of('/admins')
-MediatorBuilder.buildNamespaceMediator(adminsNamespace, adminHandlers)
+adminsNamespace.on('connection', userMediator.subscribe.bind(userMediator))
+MediatorBuilder.buildNamespaceMediator(adminsNamespace, adminHandlers, [authHook])
 
 export default app

@@ -8,7 +8,7 @@ import { IUserService } from "../services/UserService";
 import { IAppService } from "../services/AppService";
 
 
-export default class NewAdminConnectionHandler implements IHandler<SocketIO.Socket> {
+export default class ConnectionHandler implements IHandler<SocketIO.Socket> {
 	readonly eventType: EventType = EventType.Connection
 	
 	constructor(

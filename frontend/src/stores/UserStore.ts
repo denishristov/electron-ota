@@ -50,6 +50,7 @@ export default class UserStore {
 				Cookies.set(`authToken`, authToken)
 			}
 
+			this.api.preEmit(this.getAuthToken)
 			this.isAuthenticated = true
 		}
 	}

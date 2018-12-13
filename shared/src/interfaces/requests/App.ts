@@ -2,27 +2,29 @@ import { IRequest, IResponse } from "./Generic";
 
 export interface ICreateAppRequest extends IRequest {
 	name: string
-	iconUploadId: string
-	isCritical: boolean
+	pictureUrl: string
+	bundleId: string
 }
 
 export interface ICreateAppResponse extends IResponse {
 	id: string
 	name: string
-	iconUploadId: string
-	isCritical: boolean
+	pictureUrl: string
+	bundleId: string
 }
 
 export interface IUpdateAppRequest extends IRequest {
 	id: string
 	name?: string
-	iconUploadId?: string
+	pictureUrl?: string
+	bundleId?: string
 }
 
 export interface IUpdateAppResponse extends IResponse {
 	id: string
 	name?: string
-	iconUploadId?: string
+	pictureUrl?: string
+	bundleId?: string
 }
 
 export interface IDeleteAppRequest extends IRequest {

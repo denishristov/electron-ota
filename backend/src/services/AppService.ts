@@ -17,23 +17,41 @@ export interface IAppService {
 
 export default class AppService {
 	async getApps(): Promise<any> {
-		return (await App.find()).toObject(({ id, name, isCritical, iconUploadId }) => [id, { 
-			id, 
-			name, 
-			isCritical,
-			iconUploadId 
-		}])
+		const apps = await App.find()
+
+		return apps.map(({
+			id,
+			bundleId,
+			pictureUrl,
+			name
+		}) => ({
+			id,
+			bundleId,
+			pictureUrl,
+			name
+		})).toObject(app => [app.id, app])
 	}
 
 	async createApp(createRequest: ICreateAppRequest): Promise<ICreateAppResponse> {
-		const app = await App.create(createRequest)
-		return { id: app.id, ...app as ICreateAppResponse }
+		const {
+			id,
+			pictureUrl,
+			bundleId,
+			name,
+		} = await App.create(createRequest)
+
+		return {
+			id,
+			pictureUrl,
+			bundleId,
+			name
+		}
 	}
 
 	async updateApp(updateRequest: IUpdateAppRequest): Promise<IUpdateAppResponse> {
 		const { id, ...app } = updateRequest
 		await App.find(id, { $set: app })
-		return updateRequest  
+		return null  
 	}
 
 	async deleteApp({ id }: IDeleteAppRequest): Promise<IDeleteAppResponse> {

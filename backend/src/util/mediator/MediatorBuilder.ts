@@ -1,6 +1,6 @@
 import Mediator from "./Mediator"
 import { EventType } from "shared"
-import { IMediator, IHandler, IHook } from "./Interfaces";
+import { IMediator, IHandler, IHook } from "./Interfaces"
 
 export default abstract class MediatorBuilder {
 	private constructor() {}
@@ -13,7 +13,6 @@ export default abstract class MediatorBuilder {
 	): IMediator {
 		const mediator = MediatorBuilder.buildMediator(handlers, preHooks, postHooks)
 		const roomName = clients.name.substring(1, clients.name.length)
-		mediator.subscribe(clients)
 
 		clients.on(EventType.Connection, (client: SocketIO.Socket) => {
 			client.join(roomName, () => {

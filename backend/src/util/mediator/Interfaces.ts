@@ -1,7 +1,7 @@
 import { IRequest, IResponse, IUserLoginRequest, EventType } from "shared";
 
 export interface IClient {
-	on(event: EventType, listener: Function): IClient
+	on(event: string, listener: Function): IClient
 	// emit
 }
 
@@ -11,7 +11,7 @@ export interface IHandler<Req = any, Res = any> {
 }
 
 export interface IMediator {
-	addHandlers<Req extends IRequest | IUserLoginRequest, Res extends IResponse>(...handlers: IHandler<Req, Res>[]): void
+	addHandlers(...handlers: IHandler[]): void
 	subscribe(client: IClient): void
 	usePreRespond(...hooks: IHook[]): void 
 	usePostRespond(...hooks: IHook[]): void 

@@ -11,10 +11,11 @@ import UserStore from './stores/UserStore'
 import Api from './util/Api'
 
 import HomePage from './components/HomePage/HomePage'
-import AppContainer from './components/Apps/AppContainer'
+import AppsContainer from './components/Apps/AppsContainer'
 
 import './index.css'
-import AppStore from './stores/AppStore'
+import AppsStore from './stores/AppsStore'
+import Login from './components/HomePage/Login';
 
 require('./util/extensions')
 
@@ -29,7 +30,7 @@ const api = new Api(io('http://localhost:4000/admins'))
 const stores = {
 	routeStore: new RouterStore(),
 	userStore: new UserStore(api),
-	appsStore: new AppStore(api)
+	appsStore: new AppsStore(api)
 }
 
 const browserHistory = createBrowserHistory()
@@ -45,8 +46,13 @@ const app = (
 				/>
 				<Route
 					exact
+					path="/login"
+					component={Login}
+				/>
+				<Route
+					exact
 					path="/apps"
-					component={AppContainer}
+					component={AppsContainer}
 				/>
 			</React.Fragment>
 		</Router>

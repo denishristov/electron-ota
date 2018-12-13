@@ -1,6 +1,6 @@
 import React, { FormEvent } from 'react'
 import { observer, inject } from 'mobx-react'
-import AppStore from '../../stores/AppStore'
+import AppStore from '../../stores/AppsStore'
 import App from './App'
 import bind from 'bind-decorator'
 
@@ -8,7 +8,8 @@ interface ICreateAppEvent extends FormEvent<HTMLFormElement> {
 	target: EventTarget & {
 		elements: {
 			name: HTMLInputElement
-			isCritical: HTMLInputElement
+			pictureUrl: HTMLInputElement
+			bundleId: HTMLInputElement
 		}
 	}
 }
@@ -26,22 +27,18 @@ class AppsContainer extends React.Component<IAppsProps> {
 	handleCreateApp(event: ICreateAppEvent) {
 		event.preventDefault()
 
-		const { name, isCritical } = event.target.elements
+		const { name, pictureUrl, bundleId } = event.target.elements
 
 		this.props.appsStore.emitCreateApp({ 
 			name: name.value, 
-			isCritical: isCritical.checked, 
-			iconUploadId: 'wow' 
+			pictureUrl: pictureUrl.value, 
+			bundleId: bundleId.value 
 		})
 	}
 	
 	render() {
-		const {
-			emitCreateApp,
-			emitUpdateApp,
-			emitDeleteApp,
-			renderableApps,
-		} = this.props.appsStore
+		const { renderableApps } = this.props.appsStore
+
 		return (
 			<div>
 				<form onSubmit={this.handleCreateApp}>
@@ -51,11 +48,21 @@ class AppsContainer extends React.Component<IAppsProps> {
 						placeholder="Name"
 					/>
 					<input 
+						type="text"
+						name="bundleId"
+						placeholder="Bundle"
+					/>
+					<input 
+						type="text"
+						name="pictureUrl"
+						placeholder="Picture url"
+					/>
+					{/* <input 
 						type="checkbox"
 						name="isCritical"
 						value="true"
 						placeholder="Is critical?"
-					/>
+					/> */}
 					<button type="submit">
 						Create app
 					</button>
