@@ -1,17 +1,25 @@
 import { IRequest, IResponse } from "./Generic";
 
+export interface IAppModel {
+	id: string
+	name: string
+	pictureUrl: string
+	bundleId: string
+}
+
+export interface IGetAppsRequest extends IRequest {}
+
+export interface IGetAppsResponse extends IResponse {
+	[appId: string]: IAppModel | string
+}
+
 export interface ICreateAppRequest extends IRequest {
 	name: string
 	pictureUrl: string
 	bundleId: string
 }
 
-export interface ICreateAppResponse extends IResponse {
-	id: string
-	name: string
-	pictureUrl: string
-	bundleId: string
-}
+export interface ICreateAppResponse extends IResponse, IAppModel {}
 
 export interface IUpdateAppRequest extends IRequest {
 	id: string

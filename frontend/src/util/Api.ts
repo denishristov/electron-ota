@@ -30,8 +30,14 @@ export default class Api implements IApi {
 	}
 
 	@bind
-	on<Res extends object>(eventType: string, ack: (res: Res) => void): void {
-		this.socket.on(eventType, ack)
+	on<Res extends IResponse = IResponse>(eventType: string, ack: (res: Res) => void): void {
+		this.socket.on(eventType, (res: Res) => {
+			if (res.errorMessage) {
+				throw new Error(res.errorMessage)
+			} else {
+				ack(res)
+			}
+		})
 	}
 
 	private attachData<Req extends object>(request: Req): Req & { authToken: string | null; } {

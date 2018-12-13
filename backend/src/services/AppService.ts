@@ -1,5 +1,6 @@
 import App, { AppDocument } from '../models/App'
-import { 
+import {
+	IGetAppsResponse,
 	ICreateAppRequest,
 	ICreateAppResponse,
 	IUpdateAppRequest,
@@ -9,14 +10,14 @@ import {
 } from 'shared'
 
 export interface IAppService {
-	getApps(): Promise<any>
+	getApps(): Promise<IGetAppsResponse>
 	createApp(createRequest: ICreateAppRequest): Promise<ICreateAppResponse>
 	updateApp(updateRequest: IUpdateAppRequest): Promise<IUpdateAppResponse>
 	deleteApp(deleteRequest: IDeleteAppRequest): Promise<IDeleteAppResponse>
 }
 
 export default class AppService {
-	async getApps(): Promise<any> {
+	async getApps(): Promise<IGetAppsResponse> {
 		const apps = await App.find()
 
 		return apps.map(({
@@ -29,7 +30,7 @@ export default class AppService {
 			bundleId,
 			pictureUrl,
 			name
-		})).toObject(app => [app.id, app])
+		})).toObject(app => [app.id, app]) as IGetAppsResponse
 	}
 
 	async createApp(createRequest: ICreateAppRequest): Promise<ICreateAppResponse> {

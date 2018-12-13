@@ -1,6 +1,5 @@
 export enum EventType {
-	Connection = 'connection', // back end
-	Connect = 'connect', // front end
+	Connection = 'connection',
 	Disconnect = 'disconnect',
 	Error = 'error',
 	Login = 'login',
@@ -9,4 +8,8 @@ export enum EventType {
 	CreateApp = 'app.create',
 	UpdateApp = 'app.update',
 	DeleteApp = 'app.delete',
+	GetVersions = 'version.get',
+	CreateVersion = 'version.create',
+	UpdateVersion = 'version.update',
+	DeleteVersion = 'version.delete',
 }

@@ -23,6 +23,11 @@ import CreateAppHandler from './handlers/apps/CreateAppHandler'
 import UpdateAppHandler from './handlers/apps/UpdateAppHandler'
 import DeleteAppHandler from './handlers/apps/DeleteAppHandler'
 import ConnectionHandler from './handlers/ConnectionHandler';
+import VersionService from './services/VersionService';
+import GetVersionsHandler from './handlers/version/GetVersionsHandler';
+import CreateVersionHandler from './handlers/version/CreateVersionHandler';
+import UpdateVersionHandler from './handlers/version/UpdateVersionHandler';
+import DeleteVersionHandler from './handlers/version/DeleteVersionHandler';
 
 require('./util/extensions')
 
@@ -88,11 +93,13 @@ const io = socketio(server)
 
 const userService = new UserService()
 const appService = new AppService()
+const versionService = new VersionService()
 
 const userHandlers = [
 	new UserLoginHandler(userService),
 	new UserAuthenticationHandler(userService),
 	new GetAppsHandler(appService),
+	new GetVersionsHandler(versionService),
 ]
 
 const authHook = { 
@@ -112,6 +119,9 @@ const adminHandlers = [
 	new CreateAppHandler(appService),
 	new UpdateAppHandler(appService),
 	new DeleteAppHandler(appService),
+	new CreateVersionHandler(versionService),
+	new UpdateVersionHandler(versionService),
+	new DeleteVersionHandler(versionService)
 ]
 
 const adminsNamespace = io.of('/admins')

@@ -1,11 +1,11 @@
 import { IApi } from "../util/Api"
 import { observable, ObservableMap, action, computed } from "mobx"
-import { EventType, ICreateAppResponse, IUpdateAppRequest, IUpdateAppResponse, IDeleteAppRequest, IDeleteAppResponse } from "shared"
+import { EventType, ICreateAppResponse, IUpdateAppRequest, IUpdateAppResponse, IDeleteAppRequest, IDeleteAppResponse, IGetAppsResponse, IAppModel } from "shared"
 import bind from 'bind-decorator'
 import { ICreateAppRequest } from 'shared'
 
 export default class AppsStore {
-	private readonly apps: ObservableMap<string, any> = observable.map({})
+	private readonly apps: ObservableMap<string, IAppModel> = observable.map({})
 
 	constructor(private readonly api: IApi) {
 		this.api.on(EventType.CreateApp, this.handleCreateApp)
@@ -14,13 +14,13 @@ export default class AppsStore {
 	}
 
 	@computed
-	get renderableApps(): object[] {
+	get renderableApps(): IAppModel[] {
 		return [...this.apps.values()]
 	}
 
 	@action
 	async fetchApps(): Promise<void> { 
-		this.apps.merge(await this.api.emit<object>(EventType.GetApps))
+		this.apps.merge(await this.api.emit<IGetAppsResponse>(EventType.GetApps))
 	}
 
 	@action.bound

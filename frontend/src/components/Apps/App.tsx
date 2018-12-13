@@ -2,12 +2,11 @@ import React, { Component } from 'react'
 import { observer, inject } from 'mobx-react';
 import AppsStore from '../../stores/AppsStore';
 import bind from 'bind-decorator';
+import { IAppModel } from 'shared';
 
 interface IProps {
-	app: any
+	app: IAppModel
 	appsStore: AppsStore
-	// emitUpdateApp: Function
-	// emitDeleteApp: Function
 }
 
 class App extends Component<IProps> {
@@ -20,17 +19,10 @@ class App extends Component<IProps> {
 
 	render() {
 		const {
-			app,
-			appsStore
-			// emitUpdateApp,
-			// emitDeleteApp
-		} = this.props
-
-		const {
 			name,
 			bundleId,
 			pictureUrl
-		} = app
+		} = this.props.app
 
 		return (
 			<div>
