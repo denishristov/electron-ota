@@ -1,8 +1,10 @@
 import { action, observable, computed } from 'mobx'
 import bind from 'bind-decorator'
-import { IUserLoginResponse, IUserAuthenticationResponse, IUserLoginRequest, IUserAuthenticationRequest, EventType } from 'shared'
+import { IUserLoginResponse, IUserAuthenticationResponse, EventType } from 'shared'
 import Cookies from 'js-cookie'
 import { IApi } from '../util/Api'
+import { injectable, inject } from 'inversify';
+import { TYPES } from '../util/types';
 
 export interface IUserStore {
 	isAuthenticated: boolean
@@ -10,13 +12,17 @@ export interface IUserStore {
 	login(email: string, password: string): Promise<void>
 }
 
-export default class UserStore {
+@injectable()
+class UserStore {
+	@inject(TYPES.Api) 
+	api: IApi
+	
 	private authToken: string | null = null
 
 	@observable
 	isAuthenticated: boolean = false
 
-	constructor(private readonly api: IApi) {
+	constructor() {
 		const authToken = Cookies.get('authToken')
 		
 		if (authToken) {
@@ -85,3 +91,5 @@ export default class UserStore {
 		return { authToken: this.authToken }
 	}
 }
+
+export default UserStore

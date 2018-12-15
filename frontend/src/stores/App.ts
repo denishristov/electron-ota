@@ -1,6 +1,9 @@
-import { observable, ObservableMap, action } from "mobx";
-import { IAppModel, IGetVersionsRequest, EventType, IGetVersionsResponse, ICreateVersionRequest, ICreateVersionResponse, IUpdateVersionResponse } from "shared";
+import { observable, ObservableMap, action, computed } from "mobx";
+import { IAppModel, EventType, IGetVersionsResponse, ICreateVersionResponse, IVersionModel } from "shared";
 import { IApi } from "../util/Api";
+
+import { TYPES } from "../util/types";
+import { inject } from "inversify";
 
 interface ICreateVersionInput {
 	versionName: string
@@ -20,43 +23,32 @@ export default class App {
 	@observable
 	bundleId: string
 
-	private readonly versions: ObservableMap = observable.map({})
+	readonly versions: ObservableMap = observable.map({})
 
-	constructor({ id, name, pictureUrl, bundleId }: IAppModel, private readonly api: IApi) {
+	@inject(TYPES.Api) 
+	api: IApi	
+
+	constructor({ id, name, pictureUrl, bundleId }: IAppModel) {
 		this.id = id
 		this.name = name
 		this.pictureUrl = pictureUrl
 		this.bundleId = bundleId
+	}
 
-		this.api.on(EventType.CreateVersion, this.handleCreateVersion)
-		this.api.on(EventType.UpdateVersion, this.handleUpdateVersion)
-		this.api.on(EventType.DeleteVersion, this.handleDeleteVersion)
+	@computed
+	get renderableVersions(): IVersionModel[] {
+		return [...this.versions.values()]
 	}
 
 	@action
 	async fetchVersions() {
-		const { versions } = await this.api.emit<IGetVersionsResponse>(EventType.GetVersions, { id: this.id })
+		const { versions } = await this.api.emit<IGetVersionsResponse>(EventType.GetVersions, { appId: this.id })
 		
 		this.versions.merge(versions.group(version => [version.id, version]))
 	}
 
-	@action.bound
-	handleCreateVersion(response: ICreateVersionResponse) {
-		this.versions.set(response.id, response)
-	}
-
-	@action.bound
-	handleUpdateVersion(response: IUpdateVersionResponse) {
-		// const existingVersion = this.versions.get(response.app)
-	}
-
-	@action.bound
-	handleDeleteVersion(response: ICreateVersionResponse) {
-		// this.versions.set(response.id, response)
-	}
-
 	emitCreateVersion(inputFields: ICreateVersionInput) {
-		this.api.emit<ICreateVersionResponse>(EventType.CreateApp, { appId: this.id, ...inputFields })
+		this.api.emit<ICreateVersionResponse>(EventType.CreateVersion, { appId: this.id, ...inputFields })
 	}
 
 	// emitUpdateVersion(inputFields: ICreateVersionInput) {

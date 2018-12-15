@@ -1,6 +1,5 @@
 type Pair<V> = [string, V]
 
-
 declare global {
 	interface Array<T> {
 		toMap<K, V>(cb: (el: T) => ReadonlyArray<[K, V]>): Map<K, V>

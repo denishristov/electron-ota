@@ -1,10 +1,18 @@
 import React, { Component, FormEvent } from 'react'
-import { observer } from 'mobx-react';
+import { observer, inject } from 'mobx-react';
 import App from '../../stores/App';
 import { bind } from 'bind-decorator';
+import AppsStore from '../../stores/AppsStore';
+import { RouteComponentProps, Redirect } from 'react-router';
+import { computed } from 'mobx';
+import { injectAppsStore } from '../../stores/RootStore';
 
-interface IProps {
-	app: App
+interface IParams {
+	id: string
+}
+
+interface IProps extends RouteComponentProps<IParams> {
+	appsStore: AppsStore
 }
 
 interface ICreateVersionEvent extends FormEvent<HTMLFormElement> {
@@ -19,7 +27,14 @@ interface ICreateVersionEvent extends FormEvent<HTMLFormElement> {
 
 class AppPage extends Component<IProps> {
 	componentDidMount() {
-		this.props.app.fetchVersions()
+		if (this.app) {
+			this.app.fetchVersions()
+		}
+	}
+
+	@computed
+	get app(): App | null {
+		return this.props.appsStore.getApp(this.props.match.params.id)
 	}
 
 	@bind
@@ -28,7 +43,7 @@ class AppPage extends Component<IProps> {
 
 		const { versionName, isCritical, isBase } = event.target.elements
 
-		this.props.app.emitCreateVersion({ 
+		this.app!.emitCreateVersion({ 
 			versionName: versionName.value, 
 			isCritical: isCritical.checked, 
 			isBase: isBase.checked 
@@ -36,6 +51,15 @@ class AppPage extends Component<IProps> {
 	}
 
 	render() {
+		if (!this.app) {
+			return <Redirect to='/apps' />
+		}
+
+		const {
+			name,
+			renderableVersions
+		} = this.app
+
 		return (
 			<div>
 				<form onSubmit={this.handleCreateVersion}>
@@ -54,14 +78,27 @@ class AppPage extends Component<IProps> {
 						name="isBase"
 						placeholder="Is base?"
 					/>
+					<input
+						type="file"
+						name="app"
+						placeholder="wow"
+						// onChange={x => console.log(x.nativeEvent.target.files[0])}
+					/>
 					<button type="submit">
 						Create version
 					</button>
 				</form>
+				<h1>{name}</h1>
+				<h2>Versions</h2>
+				{renderableVersions.map(version => (
+					<div key={version.id}>
+						<h1>{version.versionName}</h1>
+					</div>
+				))}
 			</div>
 		)
 	}
 }
 
 
-export default observer(AppPage)
+export default inject(injectAppsStore)(observer(AppPage))

@@ -1,25 +1,27 @@
+import "reflect-metadata"
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { Router, Route } from "react-router-dom"
-import { Provider } from 'mobx-react'
 import { configure } from 'mobx'
 import createBrowserHistory from 'history/createBrowserHistory'
-import { RouterStore, syncHistoryWithStore } from 'mobx-react-router'
-import io from 'socket.io-client'
-
-import UserStore from './stores/UserStore'
-import Api from './util/Api'
+// import { RouterStore, syncHistoryWithStore } from 'mobx-react-router' remove this bitch
 
 import HomePage from './components/HomePage/HomePage'
 import AppsContainer from './components/Apps/AppsContainer'
 
 import './index.css'
-import AppsStore from './stores/AppsStore'
-import Login from './components/HomePage/Login';
-import AppPage from './components/Apps/AppPage';
+
+import Login from './components/HomePage/Login'
+import AppPage from './components/Apps/AppPage'
+
 import 'shared'
 
+import container from './inversify.config';
 import './util/extensions'
+
+import { Provider } from 'mobx-react';
+import { IRootStore } from './stores/RootStore';
+import { TYPES } from './util/types';
 
 configure({ 
 	enforceActions: 'always', 
@@ -27,20 +29,12 @@ configure({
 	isolateGlobalState: true 
 })
 
-const api = new Api(io('http://localhost:4000/admins'))
-
-const stores = {
-	routeStore: new RouterStore(),
-	userStore: new UserStore(api),
-	appsStore: new AppsStore(api)
-}
-
+const rootStore = container.get<IRootStore>(TYPES.RootStore)
 const browserHistory = createBrowserHistory()
-const history = syncHistoryWithStore(browserHistory, stores.routeStore)
 
 const app = (
-	<Provider {...stores}>
-		<Router history={history}>
+	<Provider {...rootStore}>
+		<Router history={browserHistory}>
 			<React.Fragment>
 				<Route
 					path="/"

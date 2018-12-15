@@ -1,22 +1,33 @@
 {
   "compilerOptions": {
     "target": "es6",
-    "allowJs": true,
+    "lib": [
+      "es5",
+      "es6",
+      "dom",
+      "es2017"
+    ],
+    "types": [
+      "reflect-metadata"
+    ],
     "skipLibCheck": false,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
+    "strictPropertyInitialization": false,
     "forceConsistentCasingInFileNames": true,
     "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true,
     "experimentalDecorators": true,
     "jsx": "preserve",
     "typeRoots": [
       "node_modules/@types"
-    ]
+    ],
+    "emitDecoratorMetadata": true,
+    "allowJs": true,
+    "noEmit": true
   },
   "include": [
     "src"

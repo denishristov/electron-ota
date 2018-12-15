@@ -3,13 +3,12 @@ import { observer, inject } from 'mobx-react'
 import AppsStore from '../../stores/AppsStore'
 import bind from 'bind-decorator'
 import { IAppModel } from 'shared'
-import { RouterStore } from 'mobx-react-router'
 import { Link } from 'react-router-dom'
+import { injectAppsStore } from '../../stores/RootStore';
 
 interface IProps {
 	app: IAppModel
 	appsStore: AppsStore
-	routeStore: RouterStore
 }
 
 class App extends Component<IProps> {
@@ -46,4 +45,4 @@ class App extends Component<IProps> {
 	}
 }
 
-export default inject(({ appsStore, routeStore }) => ({ appsStore, routeStore }))(observer(App))
+export default inject(injectAppsStore)(observer(App))

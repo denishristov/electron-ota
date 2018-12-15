@@ -3,6 +3,7 @@ import { observer, inject } from 'mobx-react'
 import AppStore from '../../stores/AppsStore'
 import App from './App'
 import bind from 'bind-decorator'
+import { injectAppsStore } from '../../stores/RootStore';
 
 interface ICreateAppEvent extends FormEvent<HTMLFormElement> {
 	target: EventTarget & {
@@ -75,4 +76,4 @@ class AppsContainer extends React.Component<IAppsProps> {
 }
 
 
-export default inject(({ appsStore }) => ({ appsStore }))(observer(AppsContainer))
+export default inject(injectAppsStore)(observer(AppsContainer))
