@@ -16,20 +16,9 @@ import { MONGODB_URI } from './util/env'
 
 import MediatorBuilder from './util/mediator/MediatorBuilder'
 
-import UserLoginHandler from './handlers/user/UserLoginHandler'
-import UserAuthenticationHandler from './handlers/user/UserAuthenticationHandler'
-
-import GetAppsHandler from './handlers/apps/GetAppsHandler'
-import CreateAppHandler from './handlers/apps/CreateAppHandler'
-import UpdateAppHandler from './handlers/apps/UpdateAppHandler'
-import DeleteAppHandler from './handlers/apps/DeleteAppHandler'
-
-
-import GetVersionsHandler from './handlers/version/GetVersionsHandler';
-import CreateVersionHandler from './handlers/version/CreateVersionHandler';
-import UpdateVersionHandler from './handlers/version/UpdateVersionHandler';
-import DeleteVersionHandler from './handlers/version/DeleteVersionHandler';
 import { IHandler } from './util/mediator/Interfaces';
+import container from './dependencies/inversify.config';
+import { Handlers } from './dependencies/symbols';
 
 require('./util/extensions')
 
@@ -92,17 +81,15 @@ server.listen(app.get('port'), () => {
 
 
 const io = socketio(server)
-
 // const  = new UserService()
-// const  = new AppService()
+// const  = new AppService()	
 // const  = new VersionService()
 
 const userHandlers: IHandler[] = [
-	new UserLoginHandler(),
-	new UserAuthenticationHandler(),
-	new GetAppsHandler(),
-	new GetVersionsHandler(),
-]
+	Handlers.App.Get,
+	...Object.values(Handlers.User),
+	Handlers.Version.Get
+].map(x => container.get<IHandler>(x))
 
 const authHook = { 
 	exceptions: [EventType.Login, EventType.Authentication, EventType.Connection],
@@ -117,14 +104,14 @@ const authHook = {
 
 const userMediator = MediatorBuilder.buildMediator(userHandlers, [authHook])
 
-const adminHandlers = [
-	new CreateAppHandler(),
-	new UpdateAppHandler(),
-	new DeleteAppHandler(),
-	new CreateVersionHandler(),
-	new UpdateVersionHandler(),
-	new DeleteVersionHandler()
-]
+const adminHandlers: IHandler[] = [
+	Handlers.App.Create,
+	Handlers.App.Update,
+	Handlers.App.Delete,
+	Handlers.Version.Create,
+	Handlers.Version.Update,
+	Handlers.Version.Delete,
+].map(x => container.get<IHandler>(x))
 
 const adminsNamespace = io.of('/admins')
 adminsNamespace.on('connection', userMediator.subscribe.bind(userMediator))

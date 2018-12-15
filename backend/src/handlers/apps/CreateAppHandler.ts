@@ -2,11 +2,12 @@ import { IHandler } from "../../util/mediator/Interfaces"
 import { ICreateAppRequest, ICreateAppResponse, EventType } from "shared";
 import { IAppService } from '../../services/AppService'
 import bind from "bind-decorator";
-import { inject } from "inversify";
-import { SERVICES } from "../../dependencies/symbols";
+import { inject, injectable } from "inversify";
+import { Services } from "../../dependencies/symbols";
 
+@injectable()
 export default class CreateAppHandler implements IHandler<ICreateAppRequest, ICreateAppResponse> {
-	@inject(SERVICES.APP)
+	@inject(Services.App)
 	private readonly service: IAppService
 	
 	readonly eventType: EventType = EventType.CreateApp
