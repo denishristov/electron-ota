@@ -27,7 +27,7 @@
     ],
     "emitDecoratorMetadata": true,
     "allowJs": true,
-    "noEmit": true
+    "noEmit": false
   },
   "include": [
     "src"

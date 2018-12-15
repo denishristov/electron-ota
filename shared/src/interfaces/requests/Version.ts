@@ -29,7 +29,7 @@ export interface IVersionResponse extends IResponse {
 
 export interface IGetVersionsRequest extends IVersionRequest {}
 
-export interface IGetVersionsResponse extends IVersionResponse {
+export interface IGetVersionsResponse extends IResponse {
 	versions: IVersionModel[]
 }
 

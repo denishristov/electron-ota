@@ -1,14 +1,18 @@
 import { IHandler } from "../../util/mediator/Interfaces"
-import { IRequest, IDeleteAppRequest, IDeleteAppResponse, EventType } from "shared";
+import { IDeleteAppRequest, IDeleteAppResponse, EventType } from "shared";
 import { IAppService } from '../../services/AppService'
+import { inject } from "inversify";
+import { SERVICES } from "../../dependencies/symbols";
 import bind from "bind-decorator";
 
 export default class DeleteAppHandler implements IHandler<IDeleteAppRequest, IDeleteAppResponse> {
-	readonly eventType: EventType = EventType.DeleteApp
+	@inject(SERVICES.APP)
+	private readonly service: IAppService
 	
-	constructor(private readonly service: IAppService) {}
+	readonly eventType: EventType = EventType.DeleteApp
 
-	handle(req: IDeleteAppRequest) {
-		return this.service.deleteApp(req)
+	@bind
+	handle() {
+		return this.service.deleteApp(arguments[0])
 	}
 }

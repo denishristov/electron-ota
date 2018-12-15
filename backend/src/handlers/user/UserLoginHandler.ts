@@ -1,15 +1,18 @@
 import { IHandler } from "../../util/mediator/Interfaces"
 import { EventType, IUserLoginRequest, IUserAuthenticationResponse } from "shared";
-import bind from "bind-decorator";
 import { IUserService } from "../../services/UserService";
+import { inject } from "inversify";
+import { SERVICES } from "../../dependencies/symbols";
+import bind from "bind-decorator";
 
 export default class UserLoginHandler implements IHandler<IUserLoginRequest, IUserAuthenticationResponse> {
+	@inject(SERVICES.USER)
+	private readonly service: IUserService
+	
 	readonly eventType: EventType = EventType.Login
 	
-	constructor(private readonly service: IUserService) {}
-
 	@bind
-	handle(req: IUserLoginRequest) {
-		return this.service.handleLogin(req)
+	handle() {
+		return this.service.handleLogin(arguments[0])
 	}
 }

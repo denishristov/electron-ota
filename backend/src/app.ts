@@ -7,27 +7,29 @@ import lusca from 'lusca'
 import mongoose from 'mongoose'
 import socketio from 'socket.io'
 
+import 'reflect-metadata'
+import './dependencies/inversify.config'
+
 import { EventType } from 'shared'
 
 import { MONGODB_URI } from './util/env'
-
-import UserService from './services/UserService'
-import AppService from './services/AppService'
 
 import MediatorBuilder from './util/mediator/MediatorBuilder'
 
 import UserLoginHandler from './handlers/user/UserLoginHandler'
 import UserAuthenticationHandler from './handlers/user/UserAuthenticationHandler'
+
 import GetAppsHandler from './handlers/apps/GetAppsHandler'
 import CreateAppHandler from './handlers/apps/CreateAppHandler'
 import UpdateAppHandler from './handlers/apps/UpdateAppHandler'
 import DeleteAppHandler from './handlers/apps/DeleteAppHandler'
-import ConnectionHandler from './handlers/ConnectionHandler';
-import VersionService from './services/VersionService';
+
+
 import GetVersionsHandler from './handlers/version/GetVersionsHandler';
 import CreateVersionHandler from './handlers/version/CreateVersionHandler';
 import UpdateVersionHandler from './handlers/version/UpdateVersionHandler';
 import DeleteVersionHandler from './handlers/version/DeleteVersionHandler';
+import { IHandler } from './util/mediator/Interfaces';
 
 require('./util/extensions')
 
@@ -91,21 +93,21 @@ server.listen(app.get('port'), () => {
 
 const io = socketio(server)
 
-const userService = new UserService()
-const appService = new AppService()
-const versionService = new VersionService()
+// const  = new UserService()
+// const  = new AppService()
+// const  = new VersionService()
 
-const userHandlers = [
-	new UserLoginHandler(userService),
-	new UserAuthenticationHandler(userService),
-	new GetAppsHandler(appService),
-	new GetVersionsHandler(versionService),
+const userHandlers: IHandler[] = [
+	new UserLoginHandler(),
+	new UserAuthenticationHandler(),
+	new GetAppsHandler(),
+	new GetVersionsHandler(),
 ]
 
 const authHook = { 
 	exceptions: [EventType.Login, EventType.Authentication, EventType.Connection],
 	handle: async (eventType: EventType, data: any) => {
-		const { isAuthenticated } = await userService.handleAuthentication(data)
+		const { isAuthenticated } = await userHandlers[1].handle(data)
 		// console.log(eventType, 'is auth', isAuthenticated, data)
 		if (isAuthenticated) {
 			return data
@@ -116,12 +118,12 @@ const authHook = {
 const userMediator = MediatorBuilder.buildMediator(userHandlers, [authHook])
 
 const adminHandlers = [
-	new CreateAppHandler(appService),
-	new UpdateAppHandler(appService),
-	new DeleteAppHandler(appService),
-	new CreateVersionHandler(versionService),
-	new UpdateVersionHandler(versionService),
-	new DeleteVersionHandler(versionService)
+	new CreateAppHandler(),
+	new UpdateAppHandler(),
+	new DeleteAppHandler(),
+	new CreateVersionHandler(),
+	new UpdateVersionHandler(),
+	new DeleteVersionHandler()
 ]
 
 const adminsNamespace = io.of('/admins')

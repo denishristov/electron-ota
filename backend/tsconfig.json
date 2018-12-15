@@ -9,6 +9,9 @@
 		"outDir": "dist",
 		"baseUrl": ".",
 		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true,
+		"types": ["reflect-metadata"],
+		"lib": ["es6"],
 		"paths": {
 			"*": [
 				"node_modules/*",

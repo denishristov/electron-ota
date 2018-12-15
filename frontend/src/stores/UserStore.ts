@@ -13,16 +13,13 @@ export interface IUserStore {
 }
 
 @injectable()
-class UserStore {
-	@inject(TYPES.Api) 
-	api: IApi
-	
+class UserStore {	
 	private authToken: string | null = null
 
 	@observable
 	isAuthenticated: boolean = false
 
-	constructor() {
+	constructor(@inject(TYPES.Api) private api: IApi) {
 		const authToken = Cookies.get('authToken')
 		
 		if (authToken) {

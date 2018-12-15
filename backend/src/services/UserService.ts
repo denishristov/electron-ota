@@ -9,6 +9,7 @@ import {
 	IUserAuthenticationRequest,
 	IUserAuthenticationResponse
 } from 'shared'
+import { injectable } from 'inversify';
 
 export interface IUserService {
 	handleLogin(
@@ -20,6 +21,7 @@ export interface IUserService {
 	): Promise<IUserAuthenticationResponse>
 }
 
+@injectable()
 export default class UserService {
 	// private readonly authenticatedUsers: IAuthenticatedUser[]
 

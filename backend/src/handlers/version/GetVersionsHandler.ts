@@ -1,13 +1,18 @@
 import { IHandler } from "../../util/mediator/Interfaces"
 import { EventType, IGetVersionsRequest, IGetVersionsResponse } from "shared";
 import { IVersionService } from "../../services/VersionService";
+import { inject } from "inversify";
+import { SERVICES } from "../../dependencies/symbols";
+import bind from "bind-decorator";
 
 export default class GetVersionsHandler implements IHandler<IGetVersionsRequest, IGetVersionsResponse> {
+	@inject(SERVICES.VERSION)
+	private readonly service: IVersionService
+	
 	readonly eventType: EventType = EventType.GetVersions
 	
-	constructor(private readonly service: IVersionService) {}
-
-	handle(req: IGetVersionsRequest) {
-		return this.service.getVersions(req)
+	@bind
+	handle() {
+		return this.service.getVersions(arguments[0])
 	}
 }

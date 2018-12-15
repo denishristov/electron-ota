@@ -8,6 +8,7 @@ import {
 	IDeleteAppRequest,
 	IDeleteAppResponse
 } from 'shared'
+import { injectable } from 'inversify';
 
 export interface IAppService {
 	getApps(): Promise<IGetAppsResponse>
@@ -16,6 +17,7 @@ export interface IAppService {
 	deleteApp(deleteRequest: IDeleteAppRequest): Promise<IDeleteAppResponse>
 }
 
+@injectable()
 export default class AppService {
 	async getApps(): Promise<IGetAppsResponse> {
 		const apps = await App.find()

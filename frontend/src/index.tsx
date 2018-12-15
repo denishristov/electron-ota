@@ -22,6 +22,9 @@ import './util/extensions'
 import { Provider } from 'mobx-react';
 import { IRootStore } from './stores/RootStore';
 import { TYPES } from './util/types';
+import UserStore from "./stores/UserStore";
+import Api from "./util/Api";
+import AppsStore from "./stores/AppsStore";
 
 configure({ 
 	enforceActions: 'always', 
@@ -29,7 +32,12 @@ configure({
 	isolateGlobalState: true 
 })
 
-const rootStore = container.get<IRootStore>(TYPES.RootStore)
+const api = new Api()
+
+const rootStore = {
+	userStore: new UserStore(api),
+	appsStore: new AppsStore(api)
+}
 const browserHistory = createBrowserHistory()
 
 const app = (

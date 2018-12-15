@@ -9,6 +9,7 @@ import {
 	IDeleteVersionResponse, 
 	IGetVersionsResponse
 } from "shared"
+import { injectable } from "inversify";
 
 export interface IVersionService {
 	getVersions({ appId }: IGetVersionsRequest): Promise<IGetVersionsResponse>
@@ -17,6 +18,7 @@ export interface IVersionService {
 	deleteVersion({ id, appId }: IDeleteVersionRequest): Promise<IDeleteVersionResponse>
 }
 
+@injectable()
 export default class VersionService {
 	async getVersions({ appId }: IGetVersionsRequest): Promise<IGetVersionsResponse> {
 		const versions = await Version.find({ appId })

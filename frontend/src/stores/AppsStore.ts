@@ -22,12 +22,9 @@ export interface IAppsStore {
 
 @injectable()
 export default class AppsStore implements IAppsStore {
-	@inject(TYPES.Api) 
-	api: IApi
-	
 	private readonly apps: ObservableMap<string, App> = observable.map({})
 
-	constructor() {
+	constructor(@inject(TYPES.Api) private api: IApi) {
 		this.api.on(EventType.CreateApp, this.handleCreateApp)
 		this.api.on(EventType.UpdateApp, this.handleUpdateApp)
 		this.api.on(EventType.DeleteApp, this.handleDeleteApp)
@@ -49,14 +46,14 @@ export default class AppsStore implements IAppsStore {
 	@action
 	async fetchApps(): Promise<void> { 
 		const { apps } = await this.api.emit<IGetAppsResponse>(EventType.GetApps)
-		const appMap = apps.map(app => new App(app)).group(app => [app.id, app])
+		const appMap = apps.map(app => new App(app, this.api)).group(app => [app.id, app])
 		this.apps.merge(appMap)
 	}
 
 	@action.bound
 	handleCreateApp(createAppResponse: ICreateAppResponse): void {
 		console.log(createAppResponse)
-		this.apps.set(createAppResponse.id, new App(createAppResponse))
+		this.apps.set(createAppResponse.id, new App(createAppResponse, this.api))
 	}
 
 	@action.bound

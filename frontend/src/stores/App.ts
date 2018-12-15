@@ -25,10 +25,7 @@ export default class App {
 
 	readonly versions: ObservableMap = observable.map({})
 
-	@inject(TYPES.Api) 
-	api: IApi	
-
-	constructor({ id, name, pictureUrl, bundleId }: IAppModel) {
+	constructor({ id, name, pictureUrl, bundleId }: IAppModel, @inject(TYPES.Api) private api: IApi) {
 		this.id = id
 		this.name = name
 		this.pictureUrl = pictureUrl
