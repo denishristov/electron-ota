@@ -20,8 +20,8 @@ import { IHandler } from './util/mediator/Interfaces';
 import container from './dependencies/inversify.config';
 import { Handlers } from './dependencies/symbols';
 
-require('./util/extensions')
-
+import './util/extensions'
+import AWS from 'aws-sdk'
 // Create Express server
 const app = express()
 
@@ -116,5 +116,19 @@ const adminHandlers: IHandler[] = [
 const adminsNamespace = io.of('/admins')
 adminsNamespace.on('connection', userMediator.subscribe.bind(userMediator))
 MediatorBuilder.buildNamespaceMediator(adminsNamespace, adminHandlers, [authHook])
+
+// AWS.config.region = 'us-east-2'; // Region
+AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+    IdentityPoolId: 'us-east-2:32adaf7c-546c-4163-9e1d-4a6ff1680fb9',
+});
+
+AWS.config.loadFromPath('./src/util/awsCredentials.json')
+const s3 = new AWS.S3()
+
+s3.getBucketPolicy({ Bucket: 'electron-ota' },
+ function (data, error) {
+	error && console.log(error)
+	data && console.log(data)
+})
 
 export default app
