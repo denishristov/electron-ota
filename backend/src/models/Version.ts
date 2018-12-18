@@ -1,6 +1,6 @@
-import { Document, Schema, model } from 'mongoose'
+import { Document, Schema } from 'mongoose'
 
-export interface VersionDocument extends Document {
+export interface IVersionDocument extends Document {
 	versionName: string
 	downloadUrl: string
 	isCritical: boolean
@@ -22,6 +22,3 @@ export const VersionSchema = new Schema({
 }, { 
 	timestamps: true 
 })
-
-const Version = model<VersionDocument>('Version', VersionSchema)
-export default Version

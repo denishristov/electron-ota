@@ -1,8 +1,7 @@
-import { IRequest, IResponse, IUserLoginRequest, EventType } from "shared";
+import { EventType } from "shared";
 
 export interface IClient {
 	on(event: string, listener: Function): IClient
-	// emit
 }
 
 export interface IHandler<Req = any, Res = any> {

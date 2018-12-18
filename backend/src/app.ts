@@ -8,7 +8,6 @@ import mongoose from 'mongoose'
 import socketio from 'socket.io'
 
 import 'reflect-metadata'
-import './dependencies/inversify.config'
 
 import { EventType } from 'shared'
 
@@ -18,17 +17,17 @@ import MediatorBuilder from './util/mediator/MediatorBuilder'
 
 import { IHandler } from './util/mediator/Interfaces';
 import container from './dependencies/inversify.config';
-import { Handlers, Services } from './dependencies/symbols';
+import { Handlers } from './dependencies/symbols';
 
-import './util/extensions'
-import { IS3Service } from './services/S3Service';
-import { Service } from 'aws-sdk';
+// import './util/extensions'
+
+import http from 'http'
 // Create Express server
 const app = express()
 
 // Connect to MongoDB
 const mongoUrl = MONGODB_URI
-mongoose.Promise = bluebird
+// mongoose.Promise = bluebird
 mongoose.set('useCreateIndex', true)
 mongoose.connect(mongoUrl, { useNewUrlParser: true })
 	.catch(err => {
@@ -47,19 +46,19 @@ mongoose.connect(mongoUrl, { useNewUrlParser: true })
 // Express configuration
 app.set('port', process.env.PORT || 4000)
 // app.set('views', path.join(__dirname, '../views'))
-app.use(compression())
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: true }))
+// app.use(compression())
+// app.use(bodyParser.json())
+// app.use(bodyParser.urlencoded({ extended: true }))
 
-app.use(lusca.xframe('SAMEORIGIN'))
-app.use(lusca.xssProtection(true))
+// app.use(lusca.xframe('SAMEORIGIN'))
+// app.use(lusca.xssProtection(true))
 
 /**
  * Primary app routes.
  */
-app.get('/', (_, res) => {
-	res.sendStatus(204)
-})
+// app.get('/', (_, res) => {
+// 	res.sendStatus(204)
+// })
 
 
 /**
@@ -67,7 +66,7 @@ app.get('/', (_, res) => {
  */
 process.env.NODE_ENV !== 'production' && app.use(errorHandler())
 
-const server = require('http').createServer(app)
+const server = http.createServer()
 
 /**
  * Start Express server.
@@ -82,9 +81,6 @@ server.listen(app.get('port'), () => {
 
 
 const io = socketio(server)
-// const  = new UserService()
-// const  = new AppService()	
-// const  = new VersionService()
 
 const userHandlers: IHandler[] = [
 	...Object.values(Handlers.User),
@@ -97,7 +93,7 @@ const authHook = {
 	exceptions: [EventType.Login, EventType.Authentication, EventType.Connection],
 	handle: async (eventType: EventType, data: any) => {
 		const { isAuthenticated } = await userHandlers[0].handle(data)
-		// console.log(eventType, 'is auth', isAuthenticated, data)
+
 		if (isAuthenticated) {
 			return data
 		}

@@ -1,4 +1,4 @@
-import App, { AppDocument } from '../models/App'
+import { IAppDocument } from '../models/App'
 import {
 	IGetAppsResponse,
 	ICreateAppRequest,
@@ -8,7 +8,9 @@ import {
 	IDeleteAppRequest,
 	IDeleteAppResponse
 } from 'shared'
-import { injectable } from 'inversify';
+import { injectable, inject } from 'inversify';
+import { Models } from '../dependencies/symbols';
+import { Model } from 'mongoose';
 
 export interface IAppService {
 	getApps(): Promise<IGetAppsResponse>
@@ -19,8 +21,12 @@ export interface IAppService {
 
 @injectable()
 export default class AppService {
+	constructor(
+		@inject(Models.App) private readonly appModel: Model<IAppDocument>
+	) {}
+
 	async getApps(): Promise<IGetAppsResponse> {
-		const apps = await App.find()
+		const apps = await this.appModel.find()
 
 		return { 
 			apps: apps.map(({
@@ -44,7 +50,7 @@ export default class AppService {
 			pictureUrl,
 			bundleId,
 			name,
-		} = await App.create(createRequest)
+		} = await this.appModel.create(createRequest)
 
 		return {
 			id,
@@ -56,12 +62,12 @@ export default class AppService {
 
 	async updateApp(updateRequest: IUpdateAppRequest): Promise<IUpdateAppResponse> {
 		const { id, ...app } = updateRequest
-		await App.find(id, { $set: app })
+		await this.appModel.find(id, { $set: app })
 		return null  
 	}
 
 	async deleteApp({ id }: IDeleteAppRequest): Promise<IDeleteAppResponse> {
-		await App.deleteOne({ _id: id })
+		await this.appModel.deleteOne({ _id: id })
 		return { id }
 	}
 }

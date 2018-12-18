@@ -1,6 +1,6 @@
 import { Container } from "inversify"
 
-import { Services, Handlers } from "./symbols"
+import { Services, Handlers, Models } from "./symbols"
 
 import { IUserService } from "../services/UserService"
 import { IAppService } from "../services/AppService"
@@ -25,6 +25,11 @@ import DeleteVersionHandler from "../handlers/version/DeleteVersionHandler"
 import CreateVersionHandler from "../handlers/version/CreateVersionHandler"
 import UpdateVersionHandler from "../handlers/version/UpdateVersionHandler"
 import SignUploadVersionHandler from "../handlers/s3/SignUploadVersionHandler"
+import { IUserDocument, UserSchema } from "../models/User";
+import { Model, model } from "mongoose";
+import { IAppDocument } from "../models/App";
+import { AppSchema } from '../models/App';
+import { VersionSchema, IVersionDocument } from '../models/Version';
 
 const container = new Container()
 
@@ -44,6 +49,17 @@ container.bind<IS3Service>(Services.S3)
 	.to(S3Service)
 	.inSingletonScope()
 
+
+container.bind<Model<IUserDocument>>(Models.User)
+	.toConstantValue(model<IUserDocument>('User', UserSchema))
+
+container.bind<Model<IAppDocument>>(Models.App)
+	.toConstantValue(model<IAppDocument>('App', AppSchema))
+
+container.bind<Model<IVersionDocument>>(Models.Version)
+	.toConstantValue(model<IVersionDocument>('Version', VersionSchema))
+
+
 const handlers = {
 	[Handlers.User.Login]: UserLoginHandler,
 	[Handlers.User.Authentication]: UserAuthenticationHandler,
@@ -59,59 +75,10 @@ const handlers = {
 }
 
 Object.getOwnPropertySymbols(handlers).forEach((key: any) => {
-	console.log(key, handlers[key])
 	container.bind<IHandler>(key)
 		.to(handlers[key])
 		.inSingletonScope()
 })
-// for (const handlerKey of Object.getOwnPropertySymbols(handlers)) {
-// 	console.log(handlerKey, 'dhdhdh')
-// 	// container.bind<IHandler>(handlerKey)
-// 	// 	.to(handlers[handlerKey])
-// 	// 	.inSingletonScope()
-// }
-
-// container.bind<IHandler>(Handlers.User.Login)
-// 	.to(UserLoginHandler)
-// 	.inSingletonScope()
-
-// container.bind<IHandler>(Handlers.User.Authentication)
-// 	.to(UserAuthenticationHandler)
-// 	.inSingletonScope()
-
-
-// container.bind<IHandler>(Handlers.App.Get)
-// 	.to(GetAppsHandler)
-// 	.inSingletonScope()
-
-// container.bind<IHandler>(Handlers.App.Update)
-// 	.to(UpdateAppHandler)
-// 	.inSingletonScope()
-
-// container.bind<IHandler>(Handlers.App.Create)
-// 	.to(CreateAppHandler)
-// 	.inSingletonScope()
-
-// container.bind<IHandler>(Handlers.App.Delete)
-// 	.to(DeleteAppHandler)
-// 	.inSingletonScope()
-
-
-// container.bind<IHandler>(Handlers.Version.Get)
-// 	.to(GetVersionsHandler)
-// 	.inSingletonScope()
-
-// container.bind<IHandler>(Handlers.Version.Update)
-// 	.to(UpdateVersionHandler)
-// 	.inSingletonScope()
-
-// container.bind<IHandler>(Handlers.Version.Create)
-// 	.to(CreateVersionHandler)
-// 	.inSingletonScope()
-
-// container.bind<IHandler>(Handlers.Version.Delete)
-// 	.to(DeleteVersionHandler)
-// 	.inSingletonScope()
 
 
 export default container

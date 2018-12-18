@@ -1,4 +1,4 @@
-import Version from "../models/Version"
+import { IVersionDocument } from "../models/Version"
 import { 
 	IGetVersionsRequest, 
 	ICreateVersionRequest, 
@@ -9,7 +9,9 @@ import {
 	IDeleteVersionResponse, 
 	IGetVersionsResponse
 } from "shared"
-import { injectable } from "inversify"
+import { injectable, inject } from "inversify"
+import { Models } from "../dependencies/symbols";
+import { Model } from "mongoose";
 
 export interface IVersionService {
 	getVersions({ appId }: IGetVersionsRequest): Promise<IGetVersionsResponse>
@@ -20,8 +22,12 @@ export interface IVersionService {
 
 @injectable()
 export default class VersionService {
+	constructor(
+		@inject(Models.Version) private readonly versionModel: Model<IVersionDocument>
+	) {}
+
 	async getVersions({ appId }: IGetVersionsRequest): Promise<IGetVersionsResponse> {
-		const versions = await Version.find({ appId })
+		const versions = await this.versionModel.find({ appId })
 
 		return {
 			versions: versions.map(({
@@ -54,7 +60,7 @@ export default class VersionService {
 			isBase,
 			isPublished,
 			appId,
-		} = await Version.create(createRequest)
+		} = await this.versionModel.create(createRequest)
 
 		return {
 			id,
@@ -69,12 +75,12 @@ export default class VersionService {
 
 	async updateVersion(updateRequest: IUpdateVersionRequest): Promise<IUpdateVersionResponse> {
 		const { id, ...app } = updateRequest
-		await Version.find(id, { $set: app })
+		await this.versionModel.find(id, { $set: app })
 		return updateRequest  
 	}
 
 	async deleteVersion({ id, appId }: IDeleteVersionRequest): Promise<IDeleteVersionResponse> {
-		await Version.deleteOne({ _id: id })
+		await this.versionModel.deleteOne({ _id: id })
 		return { id, appId }
 	}
 }

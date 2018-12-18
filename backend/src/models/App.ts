@@ -1,11 +1,11 @@
-import { Document, Schema, model } from 'mongoose'
-import { VersionDocument } from './Version';
+import { Document, Schema, Model } from 'mongoose'
+import { IVersionDocument } from './Version'
 
-export interface AppDocument extends Document {
+export interface IAppDocument extends Document {
 	name: string
 	pictureUrl: string
 	bundleId: string
-	versions: VersionDocument[]
+	versions: IVersionDocument[]
 }
 
 export const AppSchema = new Schema({
@@ -19,6 +19,3 @@ export const AppSchema = new Schema({
 }, { 
 	timestamps: true 
 })
-
-const App = model<AppDocument>('App', AppSchema)
-export default App

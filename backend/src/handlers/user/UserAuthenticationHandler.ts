@@ -9,7 +9,9 @@ import bind from "bind-decorator";
 export default class UserAuthenticationHandler implements IHandler<IUserAuthenticationRequest, IUserAuthenticationResponse> {
 	readonly eventType: EventType = EventType.Authentication
 
-	constructor(@inject(Services.User) private readonly service: IUserService) {}
+	constructor(
+		@inject(Services.User) private readonly service: IUserService
+	) {}
 
 	@bind
 	handle() {

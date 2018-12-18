@@ -1,7 +1,6 @@
 import bind from 'bind-decorator'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt-nodejs'
-import User from '../models/User'
 import { AUTH_PRIVATE_KEY, AUTH_PUBLIC_KEY, AUTH_TOKEN_SALT } from '../util/env'
 import { 
 	IUserLoginRequest,
@@ -9,7 +8,10 @@ import {
 	IUserAuthenticationRequest,
 	IUserAuthenticationResponse
 } from 'shared'
-import { injectable } from 'inversify';
+import { injectable, inject } from 'inversify';
+import { IUserDocument } from '../models/User';
+import { Models } from '../dependencies/symbols';
+import { Model } from 'mongoose';
 
 export interface IUserService {
 	handleLogin(
@@ -23,20 +25,14 @@ export interface IUserService {
 
 @injectable()
 export default class UserService {
-	// private readonly authenticatedUsers: IAuthenticatedUser[]
-
-	constructor() {
-		// this.register({
-		// 	email: 'a@a',
-		// 	password: 'a',
-		// 	name: 'a'
-		// })
-	}
+	constructor(
+		@inject(Models.User) private readonly userModel: Model<IUserDocument>
+	) {}
 
 	@bind
 	async handleLogin({ email, password }: IUserLoginRequest): Promise<IUserLoginResponse> {
 		try {
-			const user = await User.findOne({ email })
+			const user = await this.userModel.findOne({ email })
 			
 			if (!await this.doesPasswordMatch(password, user.password)) {
 				throw new Error('Invalid password')
@@ -66,7 +62,7 @@ export default class UserService {
 		try {
 			const { id } = jwt.verify(authToken, AUTH_PUBLIC_KEY, { algorithms: ["RS256"] }) as any
 
-			const user = await User.findById(id)
+			const user = await this.userModel.findById(id)
 
 			if (!user) {
 				throw new Error('Invalid token')
@@ -112,7 +108,7 @@ export default class UserService {
 	}
 
 	private async register(user: { name: string, password: string, email: string }) {
-		User.create({ ... user, password: await this.hashPassword(user.password) })
+		this.userModel.create({ ... user, password: await this.hashPassword(user.password) })
 	}
 
 	private hashPassword(password: string): Promise<string> {
