@@ -10,7 +10,11 @@ export default class CreateAppHandler implements IHandler<ICreateAppRequest, ICr
 	@inject(Services.App)
 	private readonly service: IAppService
 	
-	readonly eventType: EventType = EventType.CreateApp
+	private readonly _eventType: EventType = EventType.CreateApp
+
+	public get eventType(): EventType {
+		return this._eventType;
+	}
 
 	@bind
 	handle() {

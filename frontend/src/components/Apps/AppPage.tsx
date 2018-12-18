@@ -29,6 +29,7 @@ class AppPage extends Component<IProps> {
 	componentDidMount() {
 		if (this.app) {
 			this.app.fetchVersions()
+			this.app.fetchSignedCreateVersionUrl()
 		}
 	}
 

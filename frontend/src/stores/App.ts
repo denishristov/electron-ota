@@ -1,5 +1,5 @@
 import { observable, ObservableMap, action, computed } from "mobx";
-import { IAppModel, EventType, IGetVersionsResponse, ICreateVersionResponse, IVersionModel } from "shared";
+import { IAppModel, EventType, IGetVersionsResponse, ICreateVersionResponse, IVersionModel, ISignedUrlResponse } from "shared";
 import { IApi } from "../util/Api";
 
 import { TYPES } from "../util/types";
@@ -47,9 +47,17 @@ export default class App {
 		this.versions.merge(versions.group(version => [version.id, version]))
 	}
 
+	@action
+	async fetchSignedCreateVersionUrl() {
+		const url = await this.api.emit<ISignedUrlResponse>(EventType.SignCreateVersionUrl)
+		console.log(url)
+	}
+
 	emitCreateVersion(inputFields: ICreateVersionInput) {
 		this.api.emit<ICreateVersionResponse>(EventType.CreateVersion, { appId: this.id, ...inputFields })
 	}
+
+
 
 	// emitUpdateVersion(inputFields: ICreateVersionInput) {
 	// 	this.api.emit<ICreateVersionResponse>(EventType.CreateApp, { appId: this.id, ...inputFields })

@@ -9,7 +9,7 @@ import {
 	IDeleteVersionResponse, 
 	IGetVersionsResponse
 } from "shared"
-import { injectable } from "inversify";
+import { injectable } from "inversify"
 
 export interface IVersionService {
 	getVersions({ appId }: IGetVersionsRequest): Promise<IGetVersionsResponse>

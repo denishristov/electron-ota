@@ -18,10 +18,11 @@ import MediatorBuilder from './util/mediator/MediatorBuilder'
 
 import { IHandler } from './util/mediator/Interfaces';
 import container from './dependencies/inversify.config';
-import { Handlers } from './dependencies/symbols';
+import { Handlers, Services } from './dependencies/symbols';
 
 import './util/extensions'
-import AWS from 'aws-sdk'
+import { IS3Service } from './services/S3Service';
+import { Service } from 'aws-sdk';
 // Create Express server
 const app = express()
 
@@ -86,15 +87,16 @@ const io = socketio(server)
 // const  = new VersionService()
 
 const userHandlers: IHandler[] = [
-	Handlers.App.Get,
 	...Object.values(Handlers.User),
-	Handlers.Version.Get
+	Handlers.App.Get,
+	Handlers.Version.Get,
+	Handlers.S3.SignUploadVersion,
 ].map(x => container.get<IHandler>(x))
 
 const authHook = { 
 	exceptions: [EventType.Login, EventType.Authentication, EventType.Connection],
 	handle: async (eventType: EventType, data: any) => {
-		const { isAuthenticated } = await userHandlers[1].handle(data)
+		const { isAuthenticated } = await userHandlers[0].handle(data)
 		// console.log(eventType, 'is auth', isAuthenticated, data)
 		if (isAuthenticated) {
 			return data
@@ -117,18 +119,7 @@ const adminsNamespace = io.of('/admins')
 adminsNamespace.on('connection', userMediator.subscribe.bind(userMediator))
 MediatorBuilder.buildNamespaceMediator(adminsNamespace, adminHandlers, [authHook])
 
-// AWS.config.region = 'us-east-2'; // Region
-AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-    IdentityPoolId: 'us-east-2:32adaf7c-546c-4163-9e1d-4a6ff1680fb9',
-});
+// container.get<IS3Service>(Services.S3).signUploadUrl().then(console.log)
 
-AWS.config.loadFromPath('./src/util/awsCredentials.json')
-const s3 = new AWS.S3()
-
-s3.getBucketPolicy({ Bucket: 'electron-ota' },
- function (data, error) {
-	error && console.log(error)
-	data && console.log(data)
-})
 
 export default app
