@@ -24,6 +24,7 @@ export const Handlers = {
 	},
 	S3: {
 		SignUploadVersion: Symbol.for("S3.SignUploadVersion"),
+		SignUploadPicture: Symbol.for("S3.SignUploadPicture"),
 	},
 }
 

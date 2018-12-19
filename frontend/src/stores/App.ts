@@ -1,5 +1,13 @@
 import { observable, ObservableMap, action, computed } from "mobx";
-import { IAppModel, EventType, IGetVersionsResponse, ICreateVersionResponse, IVersionModel, ISignedUrlResponse } from "shared";
+import { 
+	IAppModel, 
+	EventType, 
+	IGetVersionsResponse, 
+	ICreateVersionResponse, 
+	IVersionModel, 
+	IS3SignUrlRequest,
+	IS3SignUrlResponse
+} from "shared";
 import { IApi } from "../util/Api";
 
 import { TYPES } from "../util/types";
@@ -9,6 +17,7 @@ interface ICreateVersionInput {
 	versionName: string
 	isCritical: boolean
 	isBase: boolean
+	downloadUrl: string
 }
 
 export default class App {
@@ -48,9 +57,9 @@ export default class App {
 	}
 
 	@action
-	async fetchSignedCreateVersionUrl() {
-		const url = await this.api.emit<ISignedUrlResponse>(EventType.SignCreateVersionUrl)
-		console.log(url)
+	async fetchSignedUploadVersionUrl(req: IS3SignUrlRequest) {
+		console.log('tumor');
+		return await this.api.emit<IS3SignUrlResponse>(EventType.SignUploadVersionUrl, req)
 	}
 
 	emitCreateVersion(inputFields: ICreateVersionInput) {

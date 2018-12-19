@@ -9,8 +9,10 @@ interface ICreateAppEvent extends FormEvent<HTMLFormElement> {
 	target: EventTarget & {
 		elements: {
 			name: HTMLInputElement
-			pictureUrl: HTMLInputElement
 			bundleId: HTMLInputElement
+			picture: HTMLInputElement & {
+				files: FileList
+			}
 		}
 	}
 }
@@ -25,14 +27,24 @@ class AppsContainer extends React.Component<IAppsProps> {
 	}
 
 	@bind
-	handleCreateApp(event: ICreateAppEvent) {
+	async handleCreateApp(event: ICreateAppEvent) {
 		event.preventDefault()
 
-		const { name, pictureUrl, bundleId } = event.target.elements
+		const { name, picture, bundleId } = event.target.elements
+
+		const pictureFile = picture.files[0]
+		const { name: pictureName, type } = pictureFile
+
+		const { downloadUrl, signedRequest } = await this.props.appsStore.fetchUploadPictureUrl({ name: pictureName, type })
+
+		await fetch(signedRequest, {
+			body: pictureFile,
+			method: 'PUT',
+		}).then(console.log)
 
 		this.props.appsStore.emitCreateApp({ 
 			name: name.value, 
-			pictureUrl: pictureUrl.value, 
+			pictureUrl: downloadUrl, 
 			bundleId: bundleId.value 
 		})
 	}
@@ -54,8 +66,8 @@ class AppsContainer extends React.Component<IAppsProps> {
 						placeholder="Bundle"
 					/>
 					<input 
-						type="text"
-						name="pictureUrl"
+						type="file"
+						name="picture"
 						placeholder="Picture url"
 					/>
 					{/* <input 

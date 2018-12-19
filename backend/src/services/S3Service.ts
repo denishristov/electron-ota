@@ -1,39 +1,56 @@
 import AWS from 'aws-sdk'
 import { injectable } from 'inversify';
-import { ISignedUrlResponse } from 'shared';
-
-AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-	IdentityPoolId: 'us-east-2:32adaf7c-546c-4163-9e1d-4a6ff1680fb9',
-})
+import { IS3SignUrlRequest, IS3SignUrlResponse } from 'shared';
 
 AWS.config.loadFromPath('./src/util/awsCredentials.json')
 
-// console.log(AWS.config)
-
-const defaultBucketParams = { 
-	Bucket: 'electron-ota',
-	Key: 'versions',
-	Expires: 60 * 15
+enum S3Action {
+	Get = 'getObject',
+	Upload = 'putObject',
 }
 
 export interface IS3Service {
-	signUploadUrl(): Promise<ISignedUrlResponse>
+	signVersionUploadUrl(req: IS3SignUrlRequest): Promise<IS3SignUrlResponse>
+	signPictureUploadUrl(req: IS3SignUrlRequest): Promise<IS3SignUrlResponse>
 }
 
 @injectable()
 export default class S3Service {
 	private readonly s3 = new AWS.S3()
 
-	signUploadUrl(): Promise<ISignedUrlResponse> {
-		return this.signUrl('putObject')
+	private static readonly defaultParams = {
+		Bucket: 'electron-ota',
+		ACL: 'public-read',
+		Expires: 60 * 20,
 	}
 
-	private signUrl(action: string): Promise<ISignedUrlResponse> {
+	async signVersionUploadUrl(req: IS3SignUrlRequest): Promise<IS3SignUrlResponse> {
+		return await this.constructUrls('versions', req)
+	}
+
+	async signPictureUploadUrl(req: IS3SignUrlRequest): Promise<IS3SignUrlResponse> {
+		return await this.constructUrls('pictures', req)
+	}
+
+	private signUrl(action: S3Action, params: any): Promise<string> {
 		return new Promise((resolve, reject) => 
-			this.s3.getSignedUrl(action, defaultBucketParams, (error, url) => {
+			this.s3.getSignedUrl(action, params, (error, signedRequest) => {
 				error && reject(error)
-				url && resolve({ url })
+				signedRequest && resolve(signedRequest)
 			})
 		)
+	}
+
+	private async constructUrls(folderName: string, { name, type }: IS3SignUrlRequest): Promise<IS3SignUrlResponse> {
+		const params = {
+			...S3Service.defaultParams,
+			ContentType: type,
+			Key: `${folderName}/${name}`,
+		}
+
+		return {
+			downloadUrl: `https://s3.amazonaws.com/${params.Bucket}/${params.Key}`,
+			signedRequest: await this.signUrl(S3Action.Upload, params),
+		}
 	}
 }

@@ -27,7 +27,7 @@ const app = express()
 
 // Connect to MongoDB
 const mongoUrl = MONGODB_URI
-// mongoose.Promise = bluebird
+mongoose.Promise = bluebird
 mongoose.set('useCreateIndex', true)
 mongoose.connect(mongoUrl, { useNewUrlParser: true })
 	.catch(err => {
@@ -66,7 +66,7 @@ app.set('port', process.env.PORT || 4000)
  */
 process.env.NODE_ENV !== 'production' && app.use(errorHandler())
 
-const server = http.createServer()
+const server = http.createServer(app)
 
 /**
  * Start Express server.
@@ -87,11 +87,13 @@ const userHandlers: IHandler[] = [
 	Handlers.App.Get,
 	Handlers.Version.Get,
 	Handlers.S3.SignUploadVersion,
+	Handlers.S3.SignUploadPicture,
 ].map(x => container.get<IHandler>(x))
 
 const authHook = { 
 	exceptions: [EventType.Login, EventType.Authentication, EventType.Connection],
 	handle: async (eventType: EventType, data: any) => {
+		console.log('hook')
 		const { isAuthenticated } = await userHandlers[0].handle(data)
 
 		if (isAuthenticated) {
@@ -114,8 +116,6 @@ const adminHandlers: IHandler[] = [
 const adminsNamespace = io.of('/admins')
 adminsNamespace.on('connection', userMediator.subscribe.bind(userMediator))
 MediatorBuilder.buildNamespaceMediator(adminsNamespace, adminHandlers, [authHook])
-
-// container.get<IS3Service>(Services.S3).signUploadUrl().then(console.log)
 
 
 export default app

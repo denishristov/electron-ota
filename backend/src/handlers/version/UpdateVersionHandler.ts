@@ -10,7 +10,7 @@ export default class UpdateVersionHandler implements IHandler<IUpdateVersionRequ
 	@inject(Services.Version)
 	private readonly service: IVersionService
 	
-	readonly eventType: EventType = EventType.CreateVersion
+	readonly eventType: EventType = EventType.UpdateVersion
 	
 	@bind
 	handle() {

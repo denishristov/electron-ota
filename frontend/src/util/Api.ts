@@ -1,5 +1,5 @@
 import bind from "bind-decorator"
-import { EventType, IRequest, IResponse, IUserLoginRequest } from 'shared'
+import { EventType, IResponse } from 'shared'
 import connection from './connection'
 import { injectable } from "inversify";
 
@@ -20,7 +20,9 @@ export default class Api implements IApi {
 
 	emit<Res extends IResponse = IResponse>(eventType: EventType, request?: object): Promise<Res> {
 		return new Promise((resolve, reject) => {
+			const timeout = setTimeout(() => reject('timeout'), 1000 * 30)
 			connection.emit(eventType, this.attachData(request || {}), (data: Res) => {
+				clearTimeout(timeout)
 				if (data!.errorMessage) {
 					reject(data)
 				} else {

@@ -9,7 +9,9 @@ import {
 	IDeleteAppResponse, 
 	IGetAppsResponse, 
 	ICreateVersionResponse, 
-	IUpdateVersionResponse 
+	IUpdateVersionResponse, 
+	IS3SignUrlResponse,
+	IS3SignUrlRequest
 } from "shared"
 import { ICreateAppRequest } from 'shared'
 import App from "./App";
@@ -50,9 +52,12 @@ export default class AppsStore implements IAppsStore {
 		this.apps.merge(appMap)
 	}
 
+	fetchUploadPictureUrl(req: IS3SignUrlRequest): Promise<IS3SignUrlResponse> {
+		return this.api.emit<IS3SignUrlResponse>(EventType.SignUploadPictureUrl, req)
+	}
+
 	@action.bound
 	handleCreateApp(createAppResponse: ICreateAppResponse): void {
-		console.log(createAppResponse)
 		this.apps.set(createAppResponse.id, new App(createAppResponse, this.api))
 	}
 
@@ -84,7 +89,6 @@ export default class AppsStore implements IAppsStore {
 	@action.bound
 	handleDeleteVersion(response: ICreateVersionResponse) {
 		this.apps.get(response.appId)!.versions.delete(response.id)
-		// this.versions.set(response.id, response)
 	}
 
 	emitCreateApp(createAppRequest: ICreateAppRequest): Promise<ICreateAppResponse> {

@@ -25,11 +25,13 @@ import DeleteVersionHandler from "../handlers/version/DeleteVersionHandler"
 import CreateVersionHandler from "../handlers/version/CreateVersionHandler"
 import UpdateVersionHandler from "../handlers/version/UpdateVersionHandler"
 import SignUploadVersionHandler from "../handlers/s3/SignUploadVersionHandler"
-import { IUserDocument, UserSchema } from "../models/User";
-import { Model, model } from "mongoose";
-import { IAppDocument } from "../models/App";
-import { AppSchema } from '../models/App';
-import { VersionSchema, IVersionDocument } from '../models/Version';
+import SignUploadPictureHandler from "../handlers/s3/SignUploadPictureHandler"
+
+import { IUserDocument, UserSchema } from "../models/User"
+import { IAppDocument, AppSchema } from "../models/App"
+import { VersionSchema, IVersionDocument } from '../models/Version'
+
+import { Model, model } from "mongoose"
 
 const container = new Container()
 
@@ -72,9 +74,10 @@ const handlers = {
 	[Handlers.Version.Delete]: DeleteVersionHandler,
 	[Handlers.Version.Create]: CreateVersionHandler,
 	[Handlers.S3.SignUploadVersion]: SignUploadVersionHandler,
+	[Handlers.S3.SignUploadPicture]: SignUploadPictureHandler,
 }
 
-Object.getOwnPropertySymbols(handlers).forEach((key: any) => {
+Object.getOwnPropertySymbols(handlers).forEach((key: keyof object) => {
 	container.bind<IHandler>(key)
 		.to(handlers[key])
 		.inSingletonScope()

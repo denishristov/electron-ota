@@ -13,5 +13,6 @@ export enum EventType {
 	CreateVersion = 'version.create',
 	UpdateVersion = 'version.update',
 	DeleteVersion = 'version.delete',
-	SignCreateVersionUrl = 's3.versions.sign.create'
+	SignUploadVersionUrl = 's3.sign.upload.versions',
+	SignUploadPictureUrl = 's3.sign.upload.pictures',
 }

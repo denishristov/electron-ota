@@ -6,6 +6,7 @@ import AppsStore from '../../stores/AppsStore';
 import { RouteComponentProps, Redirect } from 'react-router';
 import { computed } from 'mobx';
 import { injectAppsStore } from '../../stores/RootStore';
+import { IVersionModel } from 'shared';
 
 interface IParams {
 	id: string
@@ -21,6 +22,9 @@ interface ICreateVersionEvent extends FormEvent<HTMLFormElement> {
 			versionName: HTMLInputElement
 			isCritical: HTMLInputElement
 			isBase: HTMLInputElement
+			version: HTMLInputElement & {
+				files: FileList
+			}
 		}
 	}
 }
@@ -29,7 +33,6 @@ class AppPage extends Component<IProps> {
 	componentDidMount() {
 		if (this.app) {
 			this.app.fetchVersions()
-			this.app.fetchSignedCreateVersionUrl()
 		}
 	}
 
@@ -39,16 +42,28 @@ class AppPage extends Component<IProps> {
 	}
 
 	@bind
-	handleCreateVersion(event: ICreateVersionEvent) {
+	async handleCreateVersion(event: ICreateVersionEvent) {
 		event.preventDefault()
 
-		const { versionName, isCritical, isBase } = event.target.elements
+		const { versionName, isCritical, isBase, version } = event.target.elements
 
-		this.app!.emitCreateVersion({ 
-			versionName: versionName.value, 
-			isCritical: isCritical.checked, 
-			isBase: isBase.checked 
-		})
+		if (this.app) {
+			const versionFile = version.files[0]
+			const { name, type } = versionFile
+			const { downloadUrl, signedRequest } = await this.app.fetchSignedUploadVersionUrl({ name, type })
+
+			await fetch(signedRequest, {
+				method: 'PUT',
+				body: versionFile,
+			}).then(console.log)
+			
+			this.app.emitCreateVersion({ 
+				versionName: versionName.value, 
+				isCritical: isCritical.checked, 
+				isBase: isBase.checked,
+				downloadUrl
+			})
+		}
 	}
 
 	render() {
@@ -81,9 +96,9 @@ class AppPage extends Component<IProps> {
 					/>
 					<input
 						type="file"
-						name="app"
+						name="version"
 						placeholder="wow"
-						// onChange={x => console.log(x.nativeEvent.target.files[0])}
+						// onChange={x => console.log(x.nativeEvent)}
 					/>
 					<button type="submit">
 						Create version
@@ -91,11 +106,29 @@ class AppPage extends Component<IProps> {
 				</form>
 				<h1>{name}</h1>
 				<h2>Versions</h2>
-				{renderableVersions.map(version => (
-					<div key={version.id}>
-						<h1>{version.versionName}</h1>
-					</div>
-				))}
+				{renderableVersions.length
+					? <table>
+						<thead>
+							<tr>
+								{Object.keys(renderableVersions[0]).map(key =>
+									<th key={key}>{key}</th>
+								)}
+							</tr>
+						</thead>
+						<tbody>
+							{renderableVersions.map(version => 
+								<tr key={version.id}>
+									{Object.values(version).map(value => 
+										<th key={value}>
+											{String(value)}
+										</th>
+									)}
+								</tr>	
+							)}
+						</tbody>
+					</table>
+					: null
+				}
 			</div>
 		)
 	}
