@@ -1,16 +1,16 @@
-import { IAppDocument } from '../models/App'
+import { inject, injectable } from 'inversify'
+import { Model } from 'mongoose'
 import {
-	IGetAppsResponse,
 	ICreateAppRequest,
 	ICreateAppResponse,
+	IDeleteAppRequest,
+	IDeleteAppResponse,
+	IGetAppsResponse,
 	IUpdateAppRequest,
 	IUpdateAppResponse,
-	IDeleteAppRequest,
-	IDeleteAppResponse
 } from 'shared'
-import { injectable, inject } from 'inversify';
-import { Models } from '../dependencies/symbols';
-import { Model } from 'mongoose';
+import { Models } from '../dependencies/symbols'
+import { IAppDocument } from '../models/App'
 
 export interface IAppService {
 	getApps(): Promise<IGetAppsResponse>
@@ -22,29 +22,29 @@ export interface IAppService {
 @injectable()
 export default class AppService {
 	constructor(
-		@inject(Models.App) private readonly appModel: Model<IAppDocument>
+		@inject(Models.App) private readonly appModel: Model<IAppDocument>,
 	) {}
 
-	async getApps(): Promise<IGetAppsResponse> {
+	public async getApps(): Promise<IGetAppsResponse> {
 		const apps = await this.appModel.find()
 
-		return { 
+		return {
 			apps: apps.map(({
-				id,
 				bundleId,
+				id,
+				name,
 				pictureUrl,
-				name
 			}) => ({
-				id,
 				bundleId,
+				id,
+				name,
 				pictureUrl,
-				name
-			}))
+			})),
 		}
 		// .toObject(app => [app.id, app]) as IGetAppsResponse
 	}
 
-	async createApp(createRequest: ICreateAppRequest): Promise<ICreateAppResponse> {
+	public async createApp(createRequest: ICreateAppRequest): Promise<ICreateAppResponse> {
 		const {
 			id,
 			pictureUrl,
@@ -53,20 +53,20 @@ export default class AppService {
 		} = await this.appModel.create(createRequest)
 
 		return {
-			id,
-			pictureUrl,
 			bundleId,
-			name
+			id,
+			name,
+			pictureUrl,
 		}
 	}
 
-	async updateApp(updateRequest: IUpdateAppRequest): Promise<IUpdateAppResponse> {
+	public async updateApp(updateRequest: IUpdateAppRequest): Promise<IUpdateAppResponse> {
 		const { id, ...app } = updateRequest
 		await this.appModel.find(id, { $set: app })
-		return null  
+		return null
 	}
 
-	async deleteApp({ id }: IDeleteAppRequest): Promise<IDeleteAppResponse> {
+	public async deleteApp({ id }: IDeleteAppRequest): Promise<IDeleteAppResponse> {
 		await this.appModel.deleteOne({ _id: id })
 		return { id }
 	}

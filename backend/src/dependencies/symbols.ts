@@ -2,7 +2,7 @@ export const Services = {
 	User: Symbol.for('User.Service'),
 	App: Symbol.for('App.Service'),
 	Version: Symbol.for('Version.Service'),
-	S3: Symbol.for("S3.Service"),
+	S3: Symbol.for('S3.Service'),
 }
 
 export const Handlers = {
@@ -23,8 +23,8 @@ export const Handlers = {
 		Delete: Symbol.for('Version.Delete'),
 	},
 	S3: {
-		SignUploadVersion: Symbol.for("S3.SignUploadVersion"),
-		SignUploadPicture: Symbol.for("S3.SignUploadPicture"),
+		SignUploadVersion: Symbol.for('S3.SignUploadVersion'),
+		SignUploadPicture: Symbol.for('S3.SignUploadPicture'),
 	},
 }
 

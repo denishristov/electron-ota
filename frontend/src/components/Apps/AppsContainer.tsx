@@ -1,9 +1,10 @@
-import React, { FormEvent } from 'react'
-import { observer, inject } from 'mobx-react'
-import AppStore from '../../stores/AppsStore'
-import App from './App'
 import bind from 'bind-decorator'
-import { injectAppsStore } from '../../stores/RootStore';
+import { inject, observer } from 'mobx-react'
+import React, { FormEvent } from 'react'
+import { IAppModel } from 'shared'
+import AppStore from '../../stores/AppsStore'
+import { injectAppsStore } from '../../stores/RootStore'
+import App from './App'
 
 interface ICreateAppEvent extends FormEvent<HTMLFormElement> {
 	target: EventTarget & {
@@ -11,9 +12,9 @@ interface ICreateAppEvent extends FormEvent<HTMLFormElement> {
 			name: HTMLInputElement
 			bundleId: HTMLInputElement
 			picture: HTMLInputElement & {
-				files: FileList
-			}
-		}
+				files: FileList,
+			},
+		},
 	}
 }
 
@@ -22,12 +23,12 @@ interface IAppsProps {
 }
 
 class AppsContainer extends React.Component<IAppsProps> {
-	componentDidMount() {
+	public componentDidMount() {
 		this.props.appsStore.fetchApps()
 	}
 
 	@bind
-	async handleCreateApp(event: ICreateAppEvent) {
+	public async handleCreateApp(event: ICreateAppEvent) {
 		event.preventDefault()
 
 		const { name, picture, bundleId } = event.target.elements
@@ -40,52 +41,52 @@ class AppsContainer extends React.Component<IAppsProps> {
 		await fetch(signedRequest, {
 			body: pictureFile,
 			method: 'PUT',
+		// tslint:disable-next-line:no-console
 		}).then(console.log)
 
-		this.props.appsStore.emitCreateApp({ 
-			name: name.value, 
-			pictureUrl: downloadUrl, 
-			bundleId: bundleId.value 
+		this.props.appsStore.emitCreateApp({
+			bundleId: bundleId.value,
+			name: name.value,
+			pictureUrl: downloadUrl,
 		})
 	}
-	
-	render() {
+
+	public render() {
 		const { renderableApps } = this.props.appsStore
 
 		return (
 			<div>
 				<form onSubmit={this.handleCreateApp}>
-					<input 
-						type="text"
-						name="name"
-						placeholder="Name"
+					<input
+						type='text'
+						name='name'
+						placeholder='Name'
 					/>
-					<input 
-						type="text"
-						name="bundleId"
-						placeholder="Bundle"
+					<input
+						type='text'
+						name='bundleId'
+						placeholder='Bundle'
 					/>
-					<input 
-						type="file"
-						name="picture"
-						placeholder="Picture url"
+					<input
+						type='file'
+						name='picture'
+						placeholder='Picture url'
 					/>
-					{/* <input 
+					{/* <input
 						type="checkbox"
 						name="isCritical"
 						value="true"
 						placeholder="Is critical?"
 					/> */}
-					<button type="submit">
+					<button type='submit'>
 						Create app
 					</button>
 				</form>
 				<h1>Apps</h1>
-				{renderableApps.map((app: any) => <App app={app} key={app.id} />)}
+				{renderableApps.map((app: IAppModel) => <App app={app} key={app.id} />)}
 			</div>
 		)
 	}
 }
-
 
 export default inject(injectAppsStore)(observer(AppsContainer))

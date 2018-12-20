@@ -1,12 +1,12 @@
+import { bind } from 'bind-decorator'
+import { computed } from 'mobx'
+import { inject, observer } from 'mobx-react'
 import React, { Component, FormEvent } from 'react'
-import { observer, inject } from 'mobx-react';
-import App from '../../stores/App';
-import { bind } from 'bind-decorator';
-import AppsStore from '../../stores/AppsStore';
-import { RouteComponentProps, Redirect } from 'react-router';
-import { computed } from 'mobx';
-import { injectAppsStore } from '../../stores/RootStore';
-import { IVersionModel } from 'shared';
+import { Redirect, RouteComponentProps } from 'react-router'
+import { IVersionModel } from 'shared'
+import App from '../../stores/App'
+import AppsStore from '../../stores/AppsStore'
+import { injectAppsStore } from '../../stores/RootStore'
 
 interface IParams {
 	id: string
@@ -23,14 +23,14 @@ interface ICreateVersionEvent extends FormEvent<HTMLFormElement> {
 			isCritical: HTMLInputElement
 			isBase: HTMLInputElement
 			version: HTMLInputElement & {
-				files: FileList
-			}
-		}
+				files: FileList,
+			},
+		},
 	}
 }
 
 class AppPage extends Component<IProps> {
-	componentDidMount() {
+	public componentDidMount() {
 		if (this.app) {
 			this.app.fetchVersions()
 		}
@@ -42,7 +42,7 @@ class AppPage extends Component<IProps> {
 	}
 
 	@bind
-	async handleCreateVersion(event: ICreateVersionEvent) {
+	public async handleCreateVersion(event: ICreateVersionEvent) {
 		event.preventDefault()
 
 		const { versionName, isCritical, isBase, version } = event.target.elements
@@ -53,54 +53,55 @@ class AppPage extends Component<IProps> {
 			const { downloadUrl, signedRequest } = await this.app.fetchSignedUploadVersionUrl({ name, type })
 
 			await fetch(signedRequest, {
-				method: 'PUT',
 				body: versionFile,
+				method: 'PUT',
+			// tslint:disable-next-line:no-console
 			}).then(console.log)
-			
-			this.app.emitCreateVersion({ 
-				versionName: versionName.value, 
-				isCritical: isCritical.checked, 
+
+			this.app.emitCreateVersion({
+				downloadUrl,
 				isBase: isBase.checked,
-				downloadUrl
+				isCritical: isCritical.checked,
+				versionName: versionName.value,
 			})
 		}
 	}
 
-	render() {
+	public render() {
 		if (!this.app) {
 			return <Redirect to='/apps' />
 		}
 
 		const {
 			name,
-			renderableVersions
+			renderableVersions,
 		} = this.app
 
 		return (
 			<div>
 				<form onSubmit={this.handleCreateVersion}>
-					<input 
-						type="text"
-						name="versionName"
-						placeholder="Version"
-					/>
-					<input 
-						type="checkbox"
-						name="isCritical"
-						placeholder="Is critical?"
-					/>
-					<input 
-						type="checkbox"
-						name="isBase"
-						placeholder="Is base?"
+					<input
+						type='text'
+						name='versionName'
+						placeholder='Version'
 					/>
 					<input
-						type="file"
-						name="version"
-						placeholder="wow"
+						type='checkbox'
+						name='isCritical'
+						placeholder='Is critical?'
+					/>
+					<input
+						type='checkbox'
+						name='isBase'
+						placeholder='Is base?'
+					/>
+					<input
+						type='file'
+						name='version'
+						placeholder='wow'
 						// onChange={x => console.log(x.nativeEvent)}
 					/>
-					<button type="submit">
+					<button type='submit'>
 						Create version
 					</button>
 				</form>
@@ -110,20 +111,20 @@ class AppPage extends Component<IProps> {
 					? <table>
 						<thead>
 							<tr>
-								{Object.keys(renderableVersions[0]).map(key =>
-									<th key={key}>{key}</th>
+								{Object.keys(renderableVersions[0]).map((key) =>
+									<th key={key}>{key}</th>,
 								)}
 							</tr>
 						</thead>
 						<tbody>
-							{renderableVersions.map(version => 
+							{renderableVersions.map((version) =>
 								<tr key={version.id}>
-									{Object.values(version).map(value => 
+									{Object.values(version).map((value) =>
 										<th key={value}>
 											{String(value)}
-										</th>
+										</th>,
 									)}
-								</tr>	
+								</tr>,
 							)}
 						</tbody>
 					</table>
@@ -133,6 +134,5 @@ class AppPage extends Component<IProps> {
 		)
 	}
 }
-
 
 export default inject(injectAppsStore)(observer(AppPage))

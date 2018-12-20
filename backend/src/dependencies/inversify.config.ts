@@ -1,37 +1,37 @@
-import { Container } from "inversify"
+import { Container } from 'inversify'
 
-import { Services, Handlers, Models } from "./symbols"
+import { Handlers, Models, Services } from './symbols'
 
-import { IUserService } from "../services/UserService"
-import { IAppService } from "../services/AppService"
-import { IVersionService } from "../services/VersionService"
-import { IHandler } from "../util/mediator/Interfaces"
+import { IAppService } from '../services/AppService'
+import { IUserService } from '../services/UserService'
+import { IVersionService } from '../services/VersionService'
+import { IHandler } from '../util/mediator/Interfaces'
 
-import UserService from "../services/UserService"
-import AppService from "../services/AppService"
-import VersionService from "../services/VersionService"
-import S3Service, { IS3Service } from "../services/S3Service"
+import AppService from '../services/AppService'
+import S3Service, { IS3Service } from '../services/S3Service'
+import UserService from '../services/UserService'
+import VersionService from '../services/VersionService'
 
-import UserAuthenticationHandler from "../handlers/user/UserAuthenticationHandler"
-import UserLoginHandler from "../handlers/user/UserLoginHandler"
+import UserAuthenticationHandler from '../handlers/user/UserAuthenticationHandler'
+import UserLoginHandler from '../handlers/user/UserLoginHandler'
 
-import CreateAppHandler from "../handlers/apps/CreateAppHandler"
-import UpdateAppHandler from "../handlers/apps/UpdateAppHandler"
-import GetAppsHandler from "../handlers/apps/GetAppsHandler"
-import DeleteAppHandler from "../handlers/apps/DeleteAppHandler"
+import CreateAppHandler from '../handlers/apps/CreateAppHandler'
+import DeleteAppHandler from '../handlers/apps/DeleteAppHandler'
+import GetAppsHandler from '../handlers/apps/GetAppsHandler'
+import UpdateAppHandler from '../handlers/apps/UpdateAppHandler'
 
-import GetVersionsHandler from "../handlers/version/GetVersionsHandler"
-import DeleteVersionHandler from "../handlers/version/DeleteVersionHandler"
-import CreateVersionHandler from "../handlers/version/CreateVersionHandler"
-import UpdateVersionHandler from "../handlers/version/UpdateVersionHandler"
-import SignUploadVersionHandler from "../handlers/s3/SignUploadVersionHandler"
-import SignUploadPictureHandler from "../handlers/s3/SignUploadPictureHandler"
+import SignUploadPictureHandler from '../handlers/s3/SignUploadPictureHandler'
+import SignUploadVersionHandler from '../handlers/s3/SignUploadVersionHandler'
+import CreateVersionHandler from '../handlers/version/CreateVersionHandler'
+import DeleteVersionHandler from '../handlers/version/DeleteVersionHandler'
+import GetVersionsHandler from '../handlers/version/GetVersionsHandler'
+import UpdateVersionHandler from '../handlers/version/UpdateVersionHandler'
 
-import { IUserDocument, UserSchema } from "../models/User"
-import { IAppDocument, AppSchema } from "../models/App"
-import { VersionSchema, IVersionDocument } from '../models/Version'
+import { AppSchema, IAppDocument } from '../models/App'
+import { IUserDocument, UserSchema } from '../models/User'
+import { IVersionDocument, VersionSchema } from '../models/Version'
 
-import { Model, model } from "mongoose"
+import { Model, model } from 'mongoose'
 
 const container = new Container()
 
@@ -51,7 +51,6 @@ container.bind<IS3Service>(Services.S3)
 	.to(S3Service)
 	.inSingletonScope()
 
-
 container.bind<Model<IUserDocument>>(Models.User)
 	.toConstantValue(model<IUserDocument>('User', UserSchema))
 
@@ -60,7 +59,6 @@ container.bind<Model<IAppDocument>>(Models.App)
 
 container.bind<Model<IVersionDocument>>(Models.Version)
 	.toConstantValue(model<IVersionDocument>('Version', VersionSchema))
-
 
 const handlers = {
 	[Handlers.User.Login]: UserLoginHandler,
@@ -82,6 +80,5 @@ Object.getOwnPropertySymbols(handlers).forEach((key: keyof object) => {
 		.to(handlers[key])
 		.inSingletonScope()
 })
-
 
 export default container

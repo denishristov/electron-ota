@@ -1,4 +1,4 @@
-import { Document, Schema, Model } from 'mongoose'
+import { Document, Schema } from 'mongoose'
 import { IVersionDocument } from './Version'
 
 export interface IAppDocument extends Document {
@@ -9,13 +9,13 @@ export interface IAppDocument extends Document {
 }
 
 export const AppSchema = new Schema({
+	bundleId: String,
 	name: String,
 	pictureUrl: String,
-	bundleId: String,
 	versions: [{
+		ref: 'Version',
 		type: Schema.Types.ObjectId,
-		ref: 'Version'
-	}] 
-}, { 
-	timestamps: true 
+	}],
+}, {
+	timestamps: true,
 })

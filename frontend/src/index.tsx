@@ -1,42 +1,42 @@
-import "reflect-metadata"
+import createBrowserHistory from 'history/createBrowserHistory'
+import { configure } from 'mobx'
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { Router, Route } from "react-router-dom"
-import { configure } from 'mobx'
-import createBrowserHistory from 'history/createBrowserHistory'
+import { Route, Router } from 'react-router-dom'
+import 'reflect-metadata'
 // import { RouterStore, syncHistoryWithStore } from 'mobx-react-router' remove this bitch
 
-import HomePage from './components/HomePage/HomePage'
 import AppsContainer from './components/Apps/AppsContainer'
+import HomePage from './components/HomePage/HomePage'
 
 import './index.css'
 
-import Login from './components/HomePage/Login'
 import AppPage from './components/Apps/AppPage'
+import Login from './components/HomePage/Login'
 
 import 'shared'
 
-import container from './inversify.config';
+import container from './inversify.config'
 import './util/extensions'
 
-import { Provider } from 'mobx-react';
-import { IRootStore } from './stores/RootStore';
-import { TYPES } from './util/types';
-import UserStore from "./stores/UserStore";
-import Api from "./util/Api";
-import AppsStore from "./stores/AppsStore";
+import { Provider } from 'mobx-react'
+import AppsStore from './stores/AppsStore'
+import { IRootStore } from './stores/RootStore'
+import UserStore from './stores/UserStore'
+import Api from './util/Api'
+import { TYPES } from './util/types'
 
-configure({ 
-	enforceActions: 'always', 
-	computedRequiresReaction: true, 
-	isolateGlobalState: true 
+configure({
+	computedRequiresReaction: true,
+	enforceActions: 'always',
+	isolateGlobalState: true,
 })
 
 const api = new Api()
 
 const rootStore = {
+	appsStore: new AppsStore(api),
 	userStore: new UserStore(api),
-	appsStore: new AppsStore(api)
 }
 const browserHistory = createBrowserHistory()
 
@@ -45,21 +45,21 @@ const app = (
 		<Router history={browserHistory}>
 			<React.Fragment>
 				<Route
-					path="/"
+					path='/'
 					component={HomePage}
 				/>
 				<Route
 					exact
-					path="/login"
+					path='/login'
 					component={Login}
 				/>
 				<Route
 					exact
-					path="/apps"
+					path='/apps'
 					component={AppsContainer}
 				/>
 				<Route
-					path="/apps/:id"
+					path='/apps/:id'
 					component={AppPage}
 				/>
 			</React.Fragment>

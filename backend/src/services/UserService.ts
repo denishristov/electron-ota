@@ -1,66 +1,67 @@
-import bind from 'bind-decorator'
-import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt-nodejs'
-import { AUTH_PRIVATE_KEY, AUTH_PUBLIC_KEY, AUTH_TOKEN_SALT } from '../util/env'
-import { 
+import bind from 'bind-decorator'
+import { inject, injectable } from 'inversify'
+import jwt from 'jsonwebtoken'
+import { Model } from 'mongoose'
+import {
+	IUserAuthenticationRequest,
+	IUserAuthenticationResponse,
 	IUserLoginRequest,
 	IUserLoginResponse,
-	IUserAuthenticationRequest,
-	IUserAuthenticationResponse
 } from 'shared'
-import { injectable, inject } from 'inversify';
-import { IUserDocument } from '../models/User';
-import { Models } from '../dependencies/symbols';
-import { Model } from 'mongoose';
+import { Models } from '../dependencies/symbols'
+import { IUserDocument } from '../models/User'
+import { AUTH_PRIVATE_KEY, AUTH_PUBLIC_KEY, AUTH_TOKEN_SALT } from '../util/env'
 
 export interface IUserService {
 	handleLogin(
-		userLoginRequest: IUserLoginRequest
+		userLoginRequest: IUserLoginRequest,
 	): Promise<IUserLoginResponse>
 
 	handleAuthentication(
-		userAuthenticationRequest: IUserAuthenticationRequest
+		userAuthenticationRequest: IUserAuthenticationRequest,
 	): Promise<IUserAuthenticationResponse>
 }
 
 @injectable()
 export default class UserService {
 	constructor(
-		@inject(Models.User) private readonly userModel: Model<IUserDocument>
+		@inject(Models.User) private readonly userModel: Model<IUserDocument>,
 	) {}
 
 	@bind
-	async handleLogin({ email, password }: IUserLoginRequest): Promise<IUserLoginResponse> {
+	public async handleLogin({ email, password }: IUserLoginRequest): Promise<IUserLoginResponse> {
 		try {
 			const user = await this.userModel.findOne({ email })
-			
+
 			if (!await this.doesPasswordMatch(password, user.password)) {
 				throw new Error('Invalid password')
 			}
 
 			const authToken = this.generateToken(user._id)
-			this.hashAuthToken(authToken).then(hashedToken => {
+			this.hashAuthToken(authToken).then((hashedToken) => {
 				user.authTokens.push(hashedToken)
 				user.save()
 			})
 
-			return { 
+			return {
+				authToken,
 				isAuthenticated: true,
-				authToken
 			}
 		} catch (error) {
+			// tslint:disable-next-line:no-console
 			console.log(error)
-			return { 
+			return {
+				errorMessage: error.message,
 				isAuthenticated: false,
-				errorMessage: error.message
 			}
 		}
 	}
 
 	@bind
-	async handleAuthentication({ authToken }: IUserAuthenticationRequest): Promise<IUserAuthenticationResponse> {
+	public async handleAuthentication({ authToken }: IUserAuthenticationRequest): Promise<IUserAuthenticationResponse> {
 		try {
-			const { id } = jwt.verify(authToken, AUTH_PUBLIC_KEY, { algorithms: ["RS256"] }) as any
+			const { id } = jwt.verify(authToken, AUTH_PUBLIC_KEY, { algorithms: ['RS256'] }) as { id: string }
 
 			const user = await this.userModel.findById(id)
 
@@ -69,25 +70,26 @@ export default class UserService {
 			}
 
 			const hashedToken = await this.hashAuthToken(authToken)
- 
+
 			return {
-				isAuthenticated: Boolean(user.authTokens.find(token => token === hashedToken))
+				isAuthenticated: Boolean(user.authTokens.find((token) => token === hashedToken)),
 			}
 		} catch (error) {
+			// tslint:disable-next-line:no-console
 			console.log(error)
 			return {
+				errorMessage: error.message,
 				isAuthenticated: false,
-				errorMessage: error.message
 			}
 		}
 	}
 
 	@bind
 	private generateToken(userId: string, expiresIn: string = '30d'): string {
-		return jwt.sign({ id: userId }, AUTH_PRIVATE_KEY, { expiresIn, algorithm: "RS256" })
+		return jwt.sign({ id: userId }, AUTH_PRIVATE_KEY, { expiresIn, algorithm: 'RS256' })
 	}
 
-	@bind 
+	@bind
 	private doesPasswordMatch(password: string, hashedPassword: string): Promise<boolean> {
 		return new Promise((resolve, reject) => {
 			bcrypt.compare(password, hashedPassword, (error, isMatch: boolean) => {
@@ -95,7 +97,7 @@ export default class UserService {
 				resolve(isMatch)
 			})
 		})
-	}	
+	}
 
 	@bind
 	private hashAuthToken(authToken: string): Promise<string> {
@@ -115,7 +117,7 @@ export default class UserService {
 		return new Promise((resolve, reject) => {
 			bcrypt.genSalt(10, (error, salt) => {
 				error && reject(error)
-	
+
 				bcrypt.hash(password, salt, void 0, (error: Error, hash) => {
 					error && reject(error)
 					resolve(hash)

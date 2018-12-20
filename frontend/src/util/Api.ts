@@ -1,24 +1,25 @@
-import bind from "bind-decorator"
+import bind from 'bind-decorator'
+import { injectable } from 'inversify'
 import { EventType, IResponse } from 'shared'
 import connection from './connection'
-import { injectable } from "inversify";
 
 export interface IApi {
 	emit<Res extends IResponse = IResponse>(eventType: EventType, request?: object | undefined): Promise<Res>
 	on<Res extends IResponse>(eventType: string, ack: (res: Res) => void): void
-	preEmit<Req extends object, T>(ack: (data: T) => T & Req): void
+	preEmit(ack: Hook): void
 }
 
+type Hook = (req: object) => object
 @injectable()
 export default class Api implements IApi {
-	private readonly preEmitHooks: Function[] = []
+	private readonly preEmitHooks: Hook[] = []
 
 	@bind
-	preEmit<Req extends object, T>(ack: (data: T) => T & Req): void {
+	public preEmit(ack: Hook): void {
 		this.preEmitHooks.push(ack)
 	}
 
-	emit<Res extends IResponse = IResponse>(eventType: EventType, request?: object): Promise<Res> {
+	public emit<Res extends IResponse = IResponse>(eventType: EventType, request?: object): Promise<Res> {
 		return new Promise((resolve, reject) => {
 			const timeout = setTimeout(() => reject('timeout'), 1000 * 30)
 			connection.emit(eventType, this.attachData(request || {}), (data: Res) => {
@@ -33,7 +34,7 @@ export default class Api implements IApi {
 	}
 
 	@bind
-	on<Res extends IResponse = IResponse>(eventType: string, ack: (res: Res) => void): void {
+	public on<Res extends IResponse = IResponse>(eventType: string, ack: (res: Res) => void): void {
 		connection.on(eventType, (res: Res) => {
 			if (res && res.errorMessage) {
 				throw new Error(res.errorMessage)
@@ -44,6 +45,6 @@ export default class Api implements IApi {
 	}
 
 	private attachData<Req extends object>(request: Req): Req & { authToken: string | null; } {
-		return Object.assign(request, ...this.preEmitHooks.map(ack => ack(request)))
+		return Object.assign(request, ...this.preEmitHooks.map((ack) => ack(request)))
 	}
 }

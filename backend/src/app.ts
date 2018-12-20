@@ -15,13 +15,14 @@ import { MONGODB_URI } from './util/env'
 
 import MediatorBuilder from './util/mediator/MediatorBuilder'
 
-import { IHandler } from './util/mediator/Interfaces';
-import container from './dependencies/inversify.config';
-import { Handlers } from './dependencies/symbols';
+import container from './dependencies/inversify.config'
+import { Handlers } from './dependencies/symbols'
+import { IHandler } from './util/mediator/Interfaces'
 
 // import './util/extensions'
 
 import http from 'http'
+import { IUserAuthenticationResponse } from '../../shared/src/interfaces/requests/UserAuthentication'
 // Create Express server
 const app = express()
 
@@ -30,7 +31,8 @@ const mongoUrl = MONGODB_URI
 mongoose.Promise = bluebird
 mongoose.set('useCreateIndex', true)
 mongoose.connect(mongoUrl, { useNewUrlParser: true })
-	.catch(err => {
+	.catch((err) => {
+	// tslint:disable-next-line:no-console
 	console.log('MongoDB connection error. Please make sure MongoDB is running. ' + err)
 	// process.exit()
 })
@@ -40,7 +42,7 @@ mongoose.connect(mongoUrl, { useNewUrlParser: true })
 // db.on('error', console.error.bind(console, 'connection error:'))
 // db.once('open', function() {
 // 	console.log(db)
-	
+
 // })
 
 // Express configuration
@@ -60,7 +62,6 @@ app.set('port', process.env.PORT || 4000)
 // 	res.sendStatus(204)
 // })
 
-
 /**
  * Error Handler. Provides full stack - remove for production
  */
@@ -72,13 +73,13 @@ const server = http.createServer(app)
  * Start Express server.
  */
 server.listen(app.get('port'), () => {
+	// tslint:disable-next-line:no-console
 	console.log(
 		'App is running at http://localhost:%d in %s mode',
 		app.get('port'),
-		app.get('env')
+		app.get('env'),
 	)
 })
-
 
 const io = socketio(server)
 
@@ -88,13 +89,14 @@ const userHandlers: IHandler[] = [
 	Handlers.Version.Get,
 	Handlers.S3.SignUploadVersion,
 	Handlers.S3.SignUploadPicture,
-].map(x => container.get<IHandler>(x))
+].map((x) => container.get<IHandler>(x))
 
-const authHook = { 
+const authHook = {
 	exceptions: [EventType.Login, EventType.Authentication, EventType.Connection],
-	handle: async (eventType: EventType, data: any) => {
+	handle: async (_: EventType, data: object) => {
+		// tslint:disable-next-line:no-console
 		console.log('hook')
-		const { isAuthenticated } = await userHandlers[0].handle(data)
+		const { isAuthenticated } = await userHandlers[0].handle(data) as IUserAuthenticationResponse
 
 		if (isAuthenticated) {
 			return data
@@ -111,11 +113,10 @@ const adminHandlers: IHandler[] = [
 	Handlers.Version.Create,
 	Handlers.Version.Update,
 	Handlers.Version.Delete,
-].map(x => container.get<IHandler>(x))
+].map((x) => container.get<IHandler>(x))
 
 const adminsNamespace = io.of('/admins')
 adminsNamespace.on('connection', userMediator.subscribe.bind(userMediator))
 MediatorBuilder.buildNamespaceMediator(adminsNamespace, adminHandlers, [authHook])
-
 
 export default app

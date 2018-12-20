@@ -1,17 +1,17 @@
-import { observable, ObservableMap, action, computed } from "mobx";
-import { 
-	IAppModel, 
-	EventType, 
-	IGetVersionsResponse, 
-	ICreateVersionResponse, 
-	IVersionModel, 
+import { action, computed, observable, ObservableMap } from 'mobx'
+import {
+	EventType,
+	IAppModel,
+	ICreateVersionResponse,
+	IGetVersionsResponse,
 	IS3SignUrlRequest,
-	IS3SignUrlResponse
-} from "shared";
-import { IApi } from "../util/Api";
+	IS3SignUrlResponse,
+	IVersionModel,
+} from 'shared'
+import { IApi } from '../util/Api'
 
-import { TYPES } from "../util/types";
-import { inject } from "inversify";
+import { inject } from 'inversify'
+import { TYPES } from '../util/types'
 
 interface ICreateVersionInput {
 	versionName: string
@@ -21,22 +21,22 @@ interface ICreateVersionInput {
 }
 
 export default class App {
-	id: string
+	public id: string
 
 	@observable
-	name: string
+	public name: string
 
 	@observable
-	pictureUrl: string
+	public pictureUrl: string
 
 	@observable
-	bundleId: string
+	public bundleId: string
 
-	readonly versions: ObservableMap = observable.map({})
+	public readonly versions: ObservableMap = observable.map({})
 
 	constructor(
 		{ id, name, pictureUrl, bundleId }: IAppModel,
-		private api: IApi
+		private api: IApi,
 	) {
 		this.id = id
 		this.name = name
@@ -50,23 +50,22 @@ export default class App {
 	}
 
 	@action
-	async fetchVersions() {
+	public async fetchVersions() {
 		const { versions } = await this.api.emit<IGetVersionsResponse>(EventType.GetVersions, { appId: this.id })
-		
-		this.versions.merge(versions.group(version => [version.id, version]))
+
+		this.versions.merge(versions.group((version) => [version.id, version]))
 	}
 
 	@action
-	async fetchSignedUploadVersionUrl(req: IS3SignUrlRequest) {
-		console.log('tumor');
+	public async fetchSignedUploadVersionUrl(req: IS3SignUrlRequest) {
+		// tslint:disable-next-line:no-console
+		console.log('tumor')
 		return await this.api.emit<IS3SignUrlResponse>(EventType.SignUploadVersionUrl, req)
 	}
 
-	emitCreateVersion(inputFields: ICreateVersionInput) {
+	public emitCreateVersion(inputFields: ICreateVersionInput) {
 		this.api.emit<ICreateVersionResponse>(EventType.CreateVersion, { appId: this.id, ...inputFields })
 	}
-
-
 
 	// emitUpdateVersion(inputFields: ICreateVersionInput) {
 	// 	this.api.emit<ICreateVersionResponse>(EventType.CreateApp, { appId: this.id, ...inputFields })

@@ -1,10 +1,10 @@
-import React, { Component } from 'react'
-import { observer, inject } from 'mobx-react'
-import AppsStore from '../../stores/AppsStore'
 import bind from 'bind-decorator'
-import { IAppModel } from 'shared'
+import { inject, observer } from 'mobx-react'
+import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
-import { injectAppsStore } from '../../stores/RootStore';
+import { IAppModel } from 'shared'
+import AppsStore from '../../stores/AppsStore'
+import { injectAppsStore } from '../../stores/RootStore'
 
 interface IProps {
 	app: IAppModel
@@ -13,18 +13,18 @@ interface IProps {
 
 class App extends Component<IProps> {
 	@bind
-	handleDeleteApp() {
+	public handleDeleteApp() {
 		const { appsStore, app } = this.props
 
 		appsStore.emitDeleteApp({ id: app.id })
 	}
 
-	render() {
+	public render() {
 		const {
 			id,
 			name,
 			bundleId,
-			pictureUrl
+			pictureUrl,
 		} = this.props.app
 
 		return (

@@ -1,10 +1,10 @@
-import { action, observable, computed } from 'mobx'
 import bind from 'bind-decorator'
-import { IUserLoginResponse, IUserAuthenticationResponse, EventType } from 'shared'
+import { inject, injectable } from 'inversify'
 import Cookies from 'js-cookie'
+import { action, computed, observable } from 'mobx'
+import { EventType, IUserAuthenticationResponse, IUserLoginResponse } from 'shared'
 import { IApi } from '../util/Api'
-import { injectable, inject } from 'inversify';
-import { TYPES } from '../util/types';
+import { TYPES } from '../util/types'
 
 export interface IUserStore {
 	isAuthenticated: boolean
@@ -13,15 +13,22 @@ export interface IUserStore {
 }
 
 @injectable()
-class UserStore {	
-	private authToken: string | null = null
+class UserStore {
+	@computed
+	get isLoading(): boolean {
+		return this.authToken
+			? !this.isAuthenticated
+			: false
+	}
 
 	@observable
-	isAuthenticated: boolean = false
+	public isAuthenticated: boolean = false
+
+	private authToken: string | null = null
 
 	constructor(@inject(TYPES.Api) private api: IApi) {
 		const authToken = Cookies.get('authToken')
-		
+
 		if (authToken) {
 			this.authToken = authToken
 			this.api.preEmit(this.getAuthToken)
@@ -30,27 +37,21 @@ class UserStore {
 		}
 	}
 
-	@computed
-	get isLoading(): boolean {
-		return this.authToken 
-			? !this.isAuthenticated
-			: false
-	}
-
 	@action.bound
-	async login(email: string, password: string): Promise<void> {
-		const { 
+	public async login(email: string, password: string): Promise<void> {
+		const {
 			authToken,
-			errorMessage, 
-			isAuthenticated
+			errorMessage,
+			isAuthenticated,
 		} = await this.api.emit<IUserLoginResponse>(EventType.Login, { email, password })
 
+		// tslint:disable-next-line:no-console
 		errorMessage && console.warn(errorMessage)
-		
+
 		if (isAuthenticated) {
 			if (authToken) {
 				this.authToken = authToken
-				Cookies.set(`authToken`, authToken)
+				Cookies.set('authToken', authToken)
 			}
 
 			this.api.preEmit(this.getAuthToken)
@@ -63,15 +64,16 @@ class UserStore {
 		if (!this.authToken) {
 			return
 		}
-		
-		const { 
-			errorMessage, 
-			isAuthenticated 
+
+		const {
+			errorMessage,
+			isAuthenticated,
 		} = await this.api.emit<IUserAuthenticationResponse>(
-			EventType.Authentication, 
-			this.getAuthToken()
+			EventType.Authentication,
+			this.getAuthToken(),
 		)
-			
+
+		// tslint:disable-next-line:no-console
 		errorMessage && console.warn(errorMessage)
 
 		if (isAuthenticated) {

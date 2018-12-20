@@ -1,11 +1,11 @@
-import { Container } from "inversify"
+import { Container } from 'inversify'
 
-import { TYPES } from "./util/types"
+import { TYPES } from './util/types'
 
-import Api, { IApi } from "./util/Api"
-import UserStore, { IUserStore } from "./stores/UserStore"
-import AppsStore, { IAppsStore } from "./stores/AppsStore"
-import RootStore, { IRootStore } from "./stores/RootStore"
+import AppsStore, { IAppsStore } from './stores/AppsStore'
+import RootStore, { IRootStore } from './stores/RootStore'
+import UserStore, { IUserStore } from './stores/UserStore'
+import Api, { IApi } from './util/Api'
 
 const container = new Container()
 

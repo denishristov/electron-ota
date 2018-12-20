@@ -11,14 +11,14 @@ export interface IVersionDocument extends Document {
 
 export const VersionSchema = new Schema({
 	appId: {
+		ref: 'App',
 		type: Schema.Types.ObjectId,
-		ref: 'App'
 	},
-	versionName: String,
 	downloadUrl: String,
-	isCritical: Boolean,
 	isBase: Boolean,
-	isPublished: Boolean
-}, { 
-	timestamps: true 
+	isCritical: Boolean,
+	isPublished: Boolean,
+	versionName: String,
+}, {
+	timestamps: true,
 })
