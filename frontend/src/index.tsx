@@ -9,7 +9,7 @@ import 'reflect-metadata'
 import AppsContainer from './components/Apps/AppsContainer'
 import HomePage from './components/HomePage/HomePage'
 
-import './index.css'
+import './index.scss'
 
 import AppPage from './components/Apps/AppPage'
 import Login from './components/HomePage/Login'

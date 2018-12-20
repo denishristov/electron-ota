@@ -1,9 +1,4 @@
 import bluebird from 'bluebird'
-import bodyParser from 'body-parser'
-import compression from 'compression'
-import errorHandler from 'errorhandler'
-import express from 'express'
-import lusca from 'lusca'
 import mongoose from 'mongoose'
 import socketio from 'socket.io'
 
@@ -16,15 +11,16 @@ import { MONGODB_URI } from './util/env'
 import MediatorBuilder from './util/mediator/MediatorBuilder'
 
 import container from './dependencies/inversify.config'
-import { Handlers } from './dependencies/symbols'
+import { Handlers, Services } from './dependencies/symbols'
 import { IHandler } from './util/mediator/Interfaces'
 
 // import './util/extensions'
 
 import http from 'http'
-import { IUserAuthenticationResponse } from '../../shared/src/interfaces/requests/UserAuthentication'
-// Create Express server
-const app = express()
+import { IAppModel, IUserAuthenticationResponse } from 'shared'
+import { IAppDocument } from './models/App'
+import AppClientService from './services/AppClientService'
+import { IAppService } from './services/AppService'
 
 // Connect to MongoDB
 const mongoUrl = MONGODB_URI
@@ -45,43 +41,19 @@ mongoose.connect(mongoUrl, { useNewUrlParser: true })
 
 // })
 
-// Express configuration
-app.set('port', process.env.PORT || 4000)
-// app.set('views', path.join(__dirname, '../views'))
-// app.use(compression())
-// app.use(bodyParser.json())
-// app.use(bodyParser.urlencoded({ extended: true }))
+const server = http.createServer()
 
-// app.use(lusca.xframe('SAMEORIGIN'))
-// app.use(lusca.xssProtection(true))
+const io = socketio(server)
 
-/**
- * Primary app routes.
- */
-// app.get('/', (_, res) => {
-// 	res.sendStatus(204)
-// })
-
-/**
- * Error Handler. Provides full stack - remove for production
- */
-process.env.NODE_ENV !== 'production' && app.use(errorHandler())
-
-const server = http.createServer(app)
-
-/**
- * Start Express server.
- */
-server.listen(app.get('port'), () => {
+const port = process.env.PORT || 4000
+server.listen(port, () => {
 	// tslint:disable-next-line:no-console
 	console.log(
 		'App is running at http://localhost:%d in %s mode',
-		app.get('port'),
-		app.get('env'),
+		port,
+		process.env.NODE_ENV,
 	)
 })
-
-const io = socketio(server)
 
 const userHandlers: IHandler[] = [
 	...Object.values(Handlers.User),
@@ -119,4 +91,7 @@ const adminsNamespace = io.of('/admins')
 adminsNamespace.on('connection', userMediator.subscribe.bind(userMediator))
 MediatorBuilder.buildNamespaceMediator(adminsNamespace, adminHandlers, [authHook])
 
-export default app
+container.get<IAppService>(Services.App).getApps().then(({apps}) => {
+	const a: IAppModel[] = Object.values(apps)
+	a.forEach((app) => new AppClientService(app, io))
+})

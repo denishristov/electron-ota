@@ -31,7 +31,7 @@ import { AppSchema, IAppDocument } from '../models/App'
 import { IUserDocument, UserSchema } from '../models/User'
 import { IVersionDocument, VersionSchema } from '../models/Version'
 
-import { Model, model } from 'mongoose'
+import { Model, model as createModel } from 'mongoose'
 
 const container = new Container()
 
@@ -52,13 +52,13 @@ container.bind<IS3Service>(Services.S3)
 	.inSingletonScope()
 
 container.bind<Model<IUserDocument>>(Models.User)
-	.toConstantValue(model<IUserDocument>('User', UserSchema))
+	.toConstantValue(createModel<IUserDocument>('User', UserSchema))
 
 container.bind<Model<IAppDocument>>(Models.App)
-	.toConstantValue(model<IAppDocument>('App', AppSchema))
+	.toConstantValue(createModel<IAppDocument>('App', AppSchema))
 
 container.bind<Model<IVersionDocument>>(Models.Version)
-	.toConstantValue(model<IVersionDocument>('Version', VersionSchema))
+	.toConstantValue(createModel<IVersionDocument>('Version', VersionSchema))
 
 const handlers = {
 	[Handlers.User.Login]: UserLoginHandler,

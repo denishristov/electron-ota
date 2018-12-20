@@ -3,7 +3,9 @@
   "workspaces": [
     "backend",
     "frontend",
-    "shared"
+    "shared",
+    "electron-client",
+    "sample-electron-app"
   ],
   "husky": {
     "hooks": {

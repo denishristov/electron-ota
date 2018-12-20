@@ -10,10 +10,15 @@ body {
 
 code {
 	font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-		monospace;
+		monospace
 }
 
 table {
 	width: 100vw;
 	font-size: 0.8rem;
+}
+
+$red: red;
+body {
+	background-color: $red;
 }
