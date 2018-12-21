@@ -30,7 +30,7 @@ configure({
 
 const stores = container.get<IRootStore>(Stores.Root)
 const browserHistory = createBrowserHistory()
-// TODO: chekout react-router conventions
+// TODO: checkout react-router conventions
 const app = (
 	<Provider {...stores}>
 		<Router history={browserHistory}>

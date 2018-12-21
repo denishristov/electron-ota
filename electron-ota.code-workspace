@@ -21,5 +21,6 @@
 			"**/dist": true,
 		},
 		"editor.insertSpaces": false,
+		"sasslint.packageManager": "yarn",
 	},
 }
