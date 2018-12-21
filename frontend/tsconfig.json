@@ -1,33 +1,28 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
+    "outDir": "build/dist",
+    "module": "esnext",
     "target": "es2017",
-    "lib": [
-      "es5",
-      "es6",
-      "dom",
-      "es2017"
-    ],
+    "lib": ["es2017", "dom"],
+    "sourceMap": true,
+    "allowJs": true,
+    "jsx": "react",
+    "moduleResolution": "node",
+    "rootDir": "src",
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitThis": true,
+    "importHelpers": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
     "types": [
       "reflect-metadata"
     ],
     "skipLibCheck": false,
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "strictPropertyInitialization": false,
-    "forceConsistentCasingInFileNames": true,
-    "module": "esnext",
-    "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "experimentalDecorators": true,
-    "jsx": "preserve",
-    "typeRoots": [
-      "node_modules/@types"
-    ],
-    "emitDecoratorMetadata": true,
-    "allowJs": true,
-    "noEmit": true
   },
   "include": [
     "src"

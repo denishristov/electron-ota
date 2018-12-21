@@ -1,6 +1,6 @@
 import bind from 'bind-decorator'
 import { inject, observer } from 'mobx-react'
-import React, { FormEvent } from 'react'
+import React, { Component, FormEvent } from 'react'
 import { IAppModel } from 'shared'
 import AppStore from '../../stores/AppsStore'
 import { injectAppsStore } from '../../stores/RootStore'
@@ -22,7 +22,7 @@ interface IAppsProps {
 	appsStore: AppStore
 }
 
-class AppsContainer extends React.Component<IAppsProps> {
+class AppsContainer extends Component<IAppsProps> {
 	public componentDidMount() {
 		this.props.appsStore.fetchApps()
 	}
@@ -52,7 +52,7 @@ class AppsContainer extends React.Component<IAppsProps> {
 	}
 
 	public render() {
-		const { renderableApps } = this.props.appsStore
+		const { allApps } = this.props.appsStore
 
 		return (
 			<div>
@@ -83,7 +83,7 @@ class AppsContainer extends React.Component<IAppsProps> {
 					</button>
 				</form>
 				<h1>Apps</h1>
-				{renderableApps.map((app: IAppModel) => <App app={app} key={app.id} />)}
+				{allApps.map((app: IAppModel) => <App app={app} key={app.id} />)}
 			</div>
 		)
 	}

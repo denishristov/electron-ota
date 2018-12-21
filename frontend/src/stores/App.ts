@@ -10,9 +10,6 @@ import {
 } from 'shared'
 import { IApi } from '../util/Api'
 
-import { inject } from 'inversify'
-import { TYPES } from '../util/types'
-
 interface ICreateVersionInput {
 	versionName: string
 	isCritical: boolean
@@ -32,11 +29,11 @@ export default class App {
 	@observable
 	public bundleId: string
 
-	public readonly versions: ObservableMap = observable.map({})
+	public readonly versions: ObservableMap<string, IVersionModel> = observable.map({})
 
 	constructor(
 		{ id, name, pictureUrl, bundleId }: IAppModel,
-		private api: IApi,
+		private readonly api: IApi,
 	) {
 		this.id = id
 		this.name = name
@@ -45,8 +42,8 @@ export default class App {
 	}
 
 	@computed
-	get renderableVersions(): IVersionModel[] {
-		return [...this.versions.values()]
+	get allVersions(): IVersionModel[] {
+		return Array.from(this.versions.values())
 	}
 
 	@action

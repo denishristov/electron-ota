@@ -15,7 +15,7 @@ import {
 } from 'shared'
 import { ICreateAppRequest } from 'shared'
 import { IApi } from '../util/Api'
-import { TYPES } from '../util/types'
+import * as DI from '../dependencies/symbols'
 import App from './App'
 
 // tslint:disable-next-line:no-empty-interface
@@ -27,7 +27,7 @@ export interface IAppsStore {
 export default class AppsStore implements IAppsStore {
 	private readonly apps: ObservableMap<string, App> = observable.map({})
 
-	constructor(@inject(TYPES.Api) private api: IApi) {
+	constructor(@inject(DI.Api) private readonly api: IApi) {
 		this.api.on(EventType.CreateApp, this.handleCreateApp)
 		this.api.on(EventType.UpdateApp, this.handleUpdateApp)
 		this.api.on(EventType.DeleteApp, this.handleDeleteApp)
@@ -42,8 +42,8 @@ export default class AppsStore implements IAppsStore {
 	}
 
 	@computed
-	get renderableApps(): App[] {
-		return [...this.apps.values()]
+	get allApps(): App[] {
+		return Array.from(this.apps.values())
 	}
 
 	@action

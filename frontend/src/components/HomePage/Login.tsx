@@ -5,7 +5,6 @@ import { IUserStore } from '../../stores/UserStore'
 
 import bind from 'bind-decorator'
 import { injectUserStore } from '../../stores/RootStore'
-import './Login.css'
 
 interface ILoginFormEvent extends FormEvent<HTMLFormElement> {
 	target: EventTarget & {

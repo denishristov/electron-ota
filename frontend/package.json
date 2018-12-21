@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "license": "UNLICENSED",
   "private": true,
+  "sasslintConfig": "./sass-lint.yml",
   "browserslist": [
     ">0.2%",
     "not dead",
@@ -10,10 +11,9 @@
     "not op_mini all"
   ],
   "scripts": {
-    "start": "BROWSER=none react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "BROWSER=none react-scripts-ts start",
+    "build": "react-scripts-ts build",
+    "eject": "react-scripts-ts eject"
   },
   "dependencies": {
     "aws-sdk": "2.376.0",
@@ -22,10 +22,11 @@
     "js-cookie": "2.2.0",
     "mobx": "5.7.0",
     "mobx-react": "5.4.2",
-    "react": "16.6.3",
-    "react-dom": "16.6.3",
+    "react": "16.7.0",
+    "react-dom": "16.7.0",
     "react-router": "4.3.1",
     "react-router-dom": "4.3.1",
+    "react-scripts-ts": "3.1.0",
     "reflect-metadata": "0.1.12",
     "socket.io-client": "2.2.0"
   },
@@ -33,15 +34,14 @@
     "@types/history": "^4.7.2",
     "@types/jest": "^23.3.10",
     "@types/js-cookie": "^2.2.0",
-    "@types/node": "^10.12.12",
-    "@types/react": "^16.7.12",
+    "@types/node": "^10.12.18",
+    "@types/react": "^16.7.17",
     "@types/react-dom": "^16.0.11",
     "@types/react-router": "^4.4.1",
     "@types/react-router-dom": "4.3.1",
     "@types/socket.io-client": "^1.4.32",
     "node-sass": "^4.11.0",
-    "react-scripts": "2.1.1",
     "typelevel-ts": "^0.3.4",
-    "typescript": "^3.2.1"
+    "typescript": "^3.2.2"
   }
 }

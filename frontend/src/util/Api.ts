@@ -1,10 +1,11 @@
 import bind from 'bind-decorator'
 import { injectable } from 'inversify'
 import { EventType, IResponse } from 'shared'
-import connection from './connection'
+import { inject } from 'inversify'
+import * as DI from '../dependencies/symbols'
 
 export interface IApi {
-	emit<Res extends IResponse = IResponse>(eventType: EventType, request?: object | undefined): Promise<Res>
+	emit<Res extends IResponse = IResponse>(eventType: EventType, request?: object): Promise<Res>
 	on<Res extends IResponse>(eventType: string, ack: (res: Res) => void): void
 	preEmit(ack: Hook): void
 }
@@ -14,6 +15,10 @@ type Hook = (req: object) => object
 export default class Api implements IApi {
 	private readonly preEmitHooks: Hook[] = []
 
+	constructor(
+		@inject(DI.Connection) private readonly connection: SocketIOClient.Socket
+	) {}
+
 	@bind
 	public preEmit(ack: Hook): void {
 		this.preEmitHooks.push(ack)
@@ -22,7 +27,7 @@ export default class Api implements IApi {
 	public emit<Res extends IResponse = IResponse>(eventType: EventType, request?: object): Promise<Res> {
 		return new Promise((resolve, reject) => {
 			const timeout = setTimeout(() => reject('timeout'), 1000 * 30)
-			connection.emit(eventType, this.attachData(request || {}), (data: Res) => {
+			this.connection.emit(eventType, this.attachData(request || {}), (data: Res) => {
 				clearTimeout(timeout)
 				if (data!.errorMessage) {
 					reject(data)
@@ -35,7 +40,7 @@ export default class Api implements IApi {
 
 	@bind
 	public on<Res extends IResponse = IResponse>(eventType: string, ack: (res: Res) => void): void {
-		connection.on(eventType, (res: Res) => {
+		this.connection.on(eventType, (res: Res) => {
 			if (res && res.errorMessage) {
 				throw new Error(res.errorMessage)
 			} else {

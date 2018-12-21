@@ -1,5 +1,5 @@
 import { inject, injectable } from 'inversify'
-import { TYPES } from '../util/types'
+import  { Stores } from '../dependencies/symbols'
 import { IAppsStore } from './AppsStore'
 import { IUserStore } from './UserStore'
 
@@ -19,8 +19,8 @@ export function injectAppsStore({ appsStore }: IRootStore): { appsStore: IAppsSt
 @injectable()
 class RootStore implements IRootStore {
 	constructor(
-		@inject(TYPES.AppsStore) public appsStore: IAppsStore,
-		@inject(TYPES.UserStore) public userStore: IUserStore,
+		@inject(Stores.Apps) public appsStore: IAppsStore,
+		@inject(Stores.User) public userStore: IUserStore,
 	) {}
 }
 

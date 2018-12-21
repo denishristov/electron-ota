@@ -3,7 +3,7 @@ import { computed } from 'mobx'
 import { inject, observer } from 'mobx-react'
 import React, { Component, FormEvent } from 'react'
 import { Redirect, RouteComponentProps } from 'react-router'
-import { IVersionModel } from 'shared'
+
 import App from '../../stores/App'
 import AppsStore from '../../stores/AppsStore'
 import { injectAppsStore } from '../../stores/RootStore'
@@ -38,7 +38,7 @@ class AppPage extends Component<IProps> {
 
 	@computed
 	get app(): App | null {
-		return this.props.appsStore.getApp(this.props.match.params.id)
+		return this.props.appsStore.getApp(this.props.match.params.id) || null
 	}
 
 	@bind
@@ -74,7 +74,7 @@ class AppPage extends Component<IProps> {
 
 		const {
 			name,
-			renderableVersions,
+			allVersions,
 		} = this.app
 
 		return (
@@ -107,17 +107,17 @@ class AppPage extends Component<IProps> {
 				</form>
 				<h1>{name}</h1>
 				<h2>Versions</h2>
-				{renderableVersions.length
+				{allVersions.length
 					? <table>
 						<thead>
 							<tr>
-								{Object.keys(renderableVersions[0]).map((key) =>
+								{Object.keys(allVersions[0]).map((key) =>
 									<th key={key}>{key}</th>,
 								)}
 							</tr>
 						</thead>
 						<tbody>
-							{renderableVersions.map((version) =>
+							{allVersions.map((version) =>
 								<tr key={version.id}>
 									{Object.values(version).map((value) =>
 										<th key={value}>

@@ -10,6 +10,7 @@ interface IHomePageProps extends RouteComponentProps {
 }
 
 const HomePage = ({ userStore, location }: IHomePageProps) => {
+	console.log(userStore.isAuthenticated)
 	return userStore.isAuthenticated
 		? location.pathname === '/login'
 			? <Redirect to='/apps' />

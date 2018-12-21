@@ -4,7 +4,6 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { Route, Router } from 'react-router-dom'
 import 'reflect-metadata'
-// import { RouterStore, syncHistoryWithStore } from 'mobx-react-router' remove this bitch
 
 import AppsContainer from './components/Apps/AppsContainer'
 import HomePage from './components/HomePage/HomePage'
@@ -16,15 +15,12 @@ import Login from './components/HomePage/Login'
 
 import 'shared'
 
-import container from './inversify.config'
+import container from './dependencies/inversify.config'
 import './util/extensions'
 
 import { Provider } from 'mobx-react'
-import AppsStore from './stores/AppsStore'
 import { IRootStore } from './stores/RootStore'
-import UserStore from './stores/UserStore'
-import Api from './util/Api'
-import { TYPES } from './util/types'
+import { Stores } from './dependencies/symbols'
 
 configure({
 	computedRequiresReaction: true,
@@ -32,19 +28,15 @@ configure({
 	isolateGlobalState: true,
 })
 
-const api = new Api()
-
-const rootStore = {
-	appsStore: new AppsStore(api),
-	userStore: new UserStore(api),
-}
+const stores = container.get<IRootStore>(Stores.Root)
 const browserHistory = createBrowserHistory()
-
+// TODO: chekout react-router conventions
 const app = (
-	<Provider {...rootStore}>
+	<Provider {...stores}>
 		<Router history={browserHistory}>
-			<React.Fragment>
+			<>
 				<Route
+					exact
 					path='/'
 					component={HomePage}
 				/>
@@ -62,7 +54,8 @@ const app = (
 					path='/apps/:id'
 					component={AppPage}
 				/>
-			</React.Fragment>
+				<Route component={HomePage} />
+			</>
 		</Router>
 	</Provider>
 )

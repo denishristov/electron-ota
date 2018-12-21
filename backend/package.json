@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "aws-sdk": "2.377.0",
-    "bcrypt-nodejs": "0.0.3",
+    "bcrypt": "3.0.2",
     "bind-decorator": "1.0.11",
     "bluebird": "3.5.3",
     "dotenv": "6.1.0",
@@ -36,7 +36,7 @@
     "winston": "2.4.4"
   },
   "devDependencies": {
-    "@types/bcrypt-nodejs": "^0.0.30",
+    "@types/bcrypt": "^3.0.0",
     "@types/bluebird": "^3.5.24",
     "@types/body-parser": "^1.17.0",
     "@types/dotenv": "^6.1.0",
@@ -55,6 +55,6 @@
     "supertest": "^3.3.0",
     "ts-jest": "^23.10.5",
     "tslint": "^5.11.0",
-    "typescript": "^3.2.1"
+    "typescript": "^3.2.2"
   }
 }

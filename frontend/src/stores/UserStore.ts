@@ -4,7 +4,7 @@ import Cookies from 'js-cookie'
 import { action, computed, observable } from 'mobx'
 import { EventType, IUserAuthenticationResponse, IUserLoginResponse } from 'shared'
 import { IApi } from '../util/Api'
-import { TYPES } from '../util/types'
+import * as DI from '../dependencies/symbols'
 
 export interface IUserStore {
 	isAuthenticated: boolean
@@ -26,7 +26,7 @@ class UserStore {
 
 	private authToken: string | null = null
 
-	constructor(@inject(TYPES.Api) private api: IApi) {
+	constructor(@inject(DI.Api) private readonly api: IApi) {
 		const authToken = Cookies.get('authToken')
 
 		if (authToken) {

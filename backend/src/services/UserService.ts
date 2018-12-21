@@ -1,5 +1,4 @@
-import bcrypt from 'bcrypt-nodejs'
-import bind from 'bind-decorator'
+import bcrypt from 'bcrypt'
 import { inject, injectable } from 'inversify'
 import jwt from 'jsonwebtoken'
 import { Model } from 'mongoose'
@@ -29,7 +28,6 @@ export default class UserService {
 		@inject(Models.User) private readonly userModel: Model<IUserDocument>,
 	) {}
 
-	@bind
 	public async handleLogin({ email, password }: IUserLoginRequest): Promise<IUserLoginResponse> {
 		try {
 			const user = await this.userModel.findOne({ email })
@@ -58,7 +56,6 @@ export default class UserService {
 		}
 	}
 
-	@bind
 	public async handleAuthentication({ authToken }: IUserAuthenticationRequest): Promise<IUserAuthenticationResponse> {
 		try {
 			const { id } = jwt.verify(authToken, AUTH_PUBLIC_KEY, { algorithms: ['RS256'] }) as { id: string }
@@ -84,45 +81,25 @@ export default class UserService {
 		}
 	}
 
-	@bind
 	private generateToken(userId: string, expiresIn: string = '30d'): string {
 		return jwt.sign({ id: userId }, AUTH_PRIVATE_KEY, { expiresIn, algorithm: 'RS256' })
 	}
 
-	@bind
 	private doesPasswordMatch(password: string, hashedPassword: string): Promise<boolean> {
-		return new Promise((resolve, reject) => {
-			bcrypt.compare(password, hashedPassword, (error, isMatch: boolean) => {
-				error && reject(error)
-				resolve(isMatch)
-			})
-		})
+		return bcrypt.compare(password, hashedPassword)
 	}
 
-	@bind
 	private hashAuthToken(authToken: string): Promise<string> {
-		return new Promise((resolve, reject) => {
-			bcrypt.hash(authToken, AUTH_TOKEN_SALT, void 0, (error, result) => {
-				error && reject(error)
-				resolve(result)
-			})
-		})
+		return bcrypt.hash(authToken, AUTH_TOKEN_SALT)
 	}
 
 	private async register(user: { name: string, password: string, email: string }) {
 		this.userModel.create({ ... user, password: await this.hashPassword(user.password) })
 	}
 
-	private hashPassword(password: string): Promise<string> {
-		return new Promise((resolve, reject) => {
-			bcrypt.genSalt(10, (error, salt) => {
-				error && reject(error)
+	private async hashPassword(password: string): Promise<string> {
+		const salt = await bcrypt.genSalt(10)
 
-				bcrypt.hash(password, salt, void 0, (error: Error, hash) => {
-					error && reject(error)
-					resolve(hash)
-				})
-			})
-		})
+		return bcrypt.hash(password, salt)
 	}
 }
