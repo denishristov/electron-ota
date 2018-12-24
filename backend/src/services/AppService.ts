@@ -34,11 +34,13 @@ export default class AppService {
 				id,
 				name,
 				pictureUrl,
+				latestVersion,
 			}) => ({
 				bundleId,
 				id,
 				name,
 				pictureUrl,
+				latestVersion,
 			})),
 		}
 		// .toObject(app => [app.id, app]) as IGetAppsResponse
@@ -50,6 +52,7 @@ export default class AppService {
 			pictureUrl,
 			bundleId,
 			name,
+			latestVersion,
 		} = await this.appModel.create(createRequest)
 
 		return {
@@ -57,6 +60,7 @@ export default class AppService {
 			id,
 			name,
 			pictureUrl,
+			latestVersion,
 		}
 	}
 

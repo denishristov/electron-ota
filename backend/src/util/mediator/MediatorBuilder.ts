@@ -1,5 +1,5 @@
 import { EventType } from 'shared'
-import { IHandler, IHook, IMediator } from './Interfaces'
+import { IHandler, IPreRespondHook, IMediator, IPostRespondHook, IClient } from './Interfaces'
 import Mediator from './Mediator'
 
 export default abstract class MediatorBuilder {
@@ -7,11 +7,12 @@ export default abstract class MediatorBuilder {
 	public static buildNamespaceMediator(
 		clients: SocketIO.Namespace,
 		handlers: IHandler[],
-		preHooks?: IHook[],
-		postHooks?: IHook[],
+		preHooks?: IPreRespondHook[],
+		postHooks?: IPostRespondHook[],
 	): IMediator {
-		const mediator = MediatorBuilder.buildMediator(handlers, preHooks, postHooks)
 		const roomName = clients.name.substring(1, clients.name.length)
+		const room = clients.to(roomName)
+		const mediator = MediatorBuilder.buildMediator(room, handlers, preHooks, postHooks)
 
 		clients.on(EventType.Connection, (client: SocketIO.Socket) => {
 			client.join(roomName, () => {
@@ -26,7 +27,7 @@ export default abstract class MediatorBuilder {
 			handle: async (eventType: EventType, data: object) => {
 				// tslint:disable-next-line:no-console
 				console.log(eventType, data)
-				clients.to(roomName).emit(eventType, data)
+				room.emit(eventType, data)
 			},
 		})
 
@@ -34,11 +35,12 @@ export default abstract class MediatorBuilder {
 	}
 
 	public static buildMediator(
+		clients: IClient,
 		handlers: IHandler[],
-		preHooks?: IHook[],
-		postHooks?: IHook[],
+		preHooks?: IPreRespondHook[],
+		postHooks?: IPostRespondHook[],
 	): IMediator {
-		const mediator = new Mediator()
+		const mediator = new Mediator(clients)
 
 		mediator.addHandlers(...handlers)
 		preHooks && mediator.usePreRespond(...preHooks)

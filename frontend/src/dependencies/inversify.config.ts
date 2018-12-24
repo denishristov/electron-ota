@@ -11,7 +11,7 @@ const container = new Container()
 const url = 'http://localhost:4000/admins'
 
 container.bind(DI.Connection).toConstantValue(io(url))
-container.bind<IApi>(DI.Api).to(Api)
+container.bind<IApi>(DI.Api).to(Api).inSingletonScope()
 
 container.bind<IUserStore>(DI.Stores.User).to(UserStore).inSingletonScope()
 container.bind<IAppsStore>(DI.Stores.Apps).to(AppsStore).inSingletonScope()

@@ -22,5 +22,6 @@
 		},
 		"editor.insertSpaces": false,
 		"sasslint.packageManager": "yarn",
+		"tslint.autoFixOnSave": true,
 	},
 }

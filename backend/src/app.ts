@@ -4,8 +4,6 @@ import socketio from 'socket.io'
 
 import 'reflect-metadata'
 
-import { EventType } from 'shared'
-
 import { MONGODB_URI } from './util/env'
 
 import MediatorBuilder from './util/mediator/MediatorBuilder'
@@ -14,13 +12,13 @@ import container from './dependencies/inversify.config'
 import { Handlers, Services } from './dependencies/symbols'
 import { IHandler } from './util/mediator/Interfaces'
 
-// import './util/extensions'
-
 import http from 'http'
-import { IAppModel, IUserAuthenticationResponse } from 'shared'
-import { IAppDocument } from './models/App'
-import AppClientService from './services/AppClientService'
+import { IAppModel, EventType } from 'shared'
+import AppClientService from './services/AppClientsService'
 import { IAppService } from './services/AppService'
+import { IVersionService } from './services/VersionService'
+import AuthHook from './handlers/hooks/AuthHook'
+import ReleaseUpdateHook from './handlers/hooks/ReleaseUpdateHook'
 
 // Connect to MongoDB
 const mongoUrl = MONGODB_URI
@@ -30,16 +28,8 @@ mongoose.connect(mongoUrl, { useNewUrlParser: true })
 	.catch((err) => {
 	// tslint:disable-next-line:no-console
 	console.log('MongoDB connection error. Please make sure MongoDB is running. ' + err)
-	// process.exit()
+	process.exit(1)
 })
-
-// const db = mongoose.connection
-
-// db.on('error', console.error.bind(console, 'connection error:'))
-// db.once('open', function() {
-// 	console.log(db)
-
-// })
 
 const server = http.createServer()
 
@@ -51,7 +41,7 @@ server.listen(port, () => {
 	console.log(
 		'App is running at http://localhost:%d in %s mode',
 		port,
-		process.env.NODE_ENV,
+		process.env.NODE_ENV || 'dev',
 	)
 })
 
@@ -63,20 +53,11 @@ const userHandlers: IHandler[] = [
 	Handlers.S3.SignUploadPicture,
 ].map((x) => container.get<IHandler>(x))
 
-const authHook = {
-	exceptions: [EventType.Login, EventType.Authentication, EventType.Connection],
-	handle: async (_: EventType, data: object) => {
-		// tslint:disable-next-line:no-console
-		console.log('hook')
-		const { isAuthenticated } = await userHandlers[0].handle(data) as IUserAuthenticationResponse
+const authHook = new AuthHook(container.get(Handlers.User.Authentication))
 
-		if (isAuthenticated) {
-			return data
-		}
-	},
-}
-
-const userMediator = MediatorBuilder.buildMediator(userHandlers, [authHook])
+const adminsNamespace = io.of('/admins')
+const adminRoom = adminsNamespace.in('admins')
+const userMediator = MediatorBuilder.buildMediator(adminRoom, userHandlers, [authHook])
 
 const adminHandlers: IHandler[] = [
 	Handlers.App.Create,
@@ -85,13 +66,38 @@ const adminHandlers: IHandler[] = [
 	Handlers.Version.Create,
 	Handlers.Version.Update,
 	Handlers.Version.Delete,
+	Handlers.Version.Publish,
 ].map((x) => container.get<IHandler>(x))
 
-const adminsNamespace = io.of('/admins')
 adminsNamespace.on('connection', userMediator.subscribe.bind(userMediator))
-MediatorBuilder.buildNamespaceMediator(adminsNamespace, adminHandlers, [authHook])
+const adminMediator = MediatorBuilder.buildNamespaceMediator(adminsNamespace, adminHandlers, [authHook])
 
-container.get<IAppService>(Services.App).getApps().then(({apps}) => {
+const versionService = container.get<IVersionService>(Services.Version)
+const appService = container.get<IAppService>(Services.App)
+
+container.get<IAppService>(Services.App).getApps().then(({ apps }) => {
 	const a: IAppModel[] = Object.values(apps)
-	a.forEach((app) => new AppClientService(app, io))
+	a.forEach((app) => {
+		const namespace = io.of(`/${app.bundleId}`)
+		// this.appUpdateService = new AppUpdateService(app, versionService)
+
+		// const handlers: IHandler[] = [
+		// 	new CheckForUpdateHandler(this.appUpdateService),
+		// 	// new SuccessfulUpdateHandler(),
+		// ]
+
+		// this.clientsMediator = MediatorBuilder.buildNamespaceMediator(this.namespace, handlers, [])
+
+		namespace.on(EventType.Connection, (appClient: SocketIO.Socket) => {
+			const roomName: string = appClient.handshake.query.type
+			const room = namespace.in(roomName)
+
+			appClient.join(roomName, () => {
+				// tslint:disable-next-line:no-console
+				console.log('client joined room' + roomName)
+			})
+
+			adminMediator.usePostRespond(new ReleaseUpdateHook(room, versionService))
+		})
+	})
 })

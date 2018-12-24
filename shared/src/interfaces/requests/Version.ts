@@ -8,6 +8,7 @@ export interface IVersionModel {
 	isBase: boolean
 	isPublished: boolean
 	appId: string
+	description?: string
 }
 
 export interface IVersionEditModel {
@@ -17,6 +18,7 @@ export interface IVersionEditModel {
 	isCritical?: boolean
 	isBase?: boolean
 	isPublished?: boolean
+	description?: string
 }
 
 export interface IVersionRequest extends IRequest {
@@ -26,6 +28,18 @@ export interface IVersionRequest extends IRequest {
 export interface IVersionResponse extends IResponse {
 	appId: string
 }
+
+export interface IGetVersionRequest {
+	versionId: string
+}
+
+export interface IGetVersionResponse extends IResponse, IVersionModel {}
+
+export interface IGetVersionByNameRequest {
+	versionName: string
+}
+
+export interface IGetVersionByNameResponse extends IVersionModel, IResponse {}
 
 export interface IGetVersionsRequest extends IVersionRequest {}
 
@@ -39,6 +53,7 @@ export interface ICreateVersionRequest extends IVersionRequest {
 	isCritical: boolean
 	isBase: boolean
 	isPublished: boolean
+	description?: string
 }
 
 export interface ICreateVersionResponse extends IVersionResponse, IVersionModel {}
@@ -53,4 +68,13 @@ export interface IDeleteVersionRequest extends IVersionRequest {
 
 export interface IDeleteVersionResponse extends IVersionResponse {
 	id: string
+}
+
+export interface IPublishVersionRequest extends IRequest {
+	appId: string
+	id: string
+}
+
+export interface IPublishVersionResponse extends IResponse {
+	isSuccessful: boolean
 }

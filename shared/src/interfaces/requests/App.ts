@@ -5,6 +5,7 @@ export interface IAppModel {
 	name: string
 	pictureUrl: string
 	bundleId: string
+	latestVersion: string
 }
 
 export interface IGetAppsRequest extends IRequest {}
@@ -17,6 +18,7 @@ export interface ICreateAppRequest extends IRequest {
 	name: string
 	pictureUrl: string
 	bundleId: string
+	latestVersion?: string
 }
 
 export interface ICreateAppResponse extends IResponse, IAppModel {}
@@ -26,6 +28,7 @@ export interface IUpdateAppRequest extends IRequest {
 	name?: string
 	pictureUrl?: string
 	bundleId?: string
+	latestVersion?: string
 }
 
 export interface IUpdateAppResponse extends IResponse {
@@ -33,6 +36,7 @@ export interface IUpdateAppResponse extends IResponse {
 	name?: string
 	pictureUrl?: string
 	bundleId?: string
+	latestVersion?: string
 }
 
 export interface IDeleteAppRequest extends IRequest {

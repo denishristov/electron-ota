@@ -6,12 +6,14 @@ export interface IAppDocument extends Document {
 	pictureUrl: string
 	bundleId: string
 	versions: IVersionDocument[]
+	latestVersion: string
 }
 
 export const AppSchema = new Schema({
 	bundleId: String,
 	name: String,
 	pictureUrl: String,
+	latestVersion: String,
 	versions: [{
 		ref: 'Version',
 		type: Schema.Types.ObjectId,

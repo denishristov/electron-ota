@@ -24,7 +24,9 @@
           "no-unused-variable": [true, {"ignore-pattern": "^_"}],
           "no-unused-expression": [true, "allow-fast-null-checks"],
           "no-shadowed-variable": false,
-          "quotemark": [true, "single", "avoid-escape", "avoid-template"]
+          "quotemark": [true, "single", "avoid-escape", "avoid-template"],
+          "ordered-imports": false,
+          "object-literal-sort-keys": false
     },
     "rulesDirectory": []
 }

@@ -32,6 +32,7 @@ import { IUserDocument, UserSchema } from '../models/User'
 import { IVersionDocument, VersionSchema } from '../models/Version'
 
 import { Model, model as createModel } from 'mongoose'
+import PublishVersionHandler from '../handlers/version/PublishVersionHandler'
 
 const container = new Container()
 
@@ -63,14 +64,18 @@ container.bind<Model<IVersionDocument>>(Models.Version)
 const handlers = {
 	[Handlers.User.Login]: UserLoginHandler,
 	[Handlers.User.Authentication]: UserAuthenticationHandler,
+
 	[Handlers.App.Create]: CreateAppHandler,
 	[Handlers.App.Update]: UpdateAppHandler,
 	[Handlers.App.Delete]: DeleteAppHandler,
 	[Handlers.App.Get]: GetAppsHandler,
+
 	[Handlers.Version.Get]: GetVersionsHandler,
 	[Handlers.Version.Update]: UpdateVersionHandler,
 	[Handlers.Version.Delete]: DeleteVersionHandler,
 	[Handlers.Version.Create]: CreateVersionHandler,
+	[Handlers.Version.Publish]: PublishVersionHandler,
+
 	[Handlers.S3.SignUploadVersion]: SignUploadVersionHandler,
 	[Handlers.S3.SignUploadPicture]: SignUploadPictureHandler,
 }

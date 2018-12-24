@@ -7,6 +7,7 @@ import { Redirect, RouteComponentProps } from 'react-router'
 import App from '../../stores/App'
 import AppsStore from '../../stores/AppsStore'
 import { injectAppsStore } from '../../stores/RootStore'
+import { IVersionModel } from 'shared'
 
 interface IParams {
 	id: string
@@ -67,6 +68,10 @@ class AppPage extends Component<IProps> {
 		}
 	}
 
+	public handleReleaseVersion(version: IVersionModel) {
+		this.props.appsStore.emitPublishVersion(version)
+	}
+
 	public render() {
 		if (!this.app) {
 			return <Redirect to='/apps' />
@@ -124,6 +129,11 @@ class AppPage extends Component<IProps> {
 											{String(value)}
 										</th>,
 									)}
+									{!version.isPublished &&
+										<button onClick={() => this.handleReleaseVersion(version)}>
+											Release
+										</button>
+									}
 								</tr>,
 							)}
 						</tbody>

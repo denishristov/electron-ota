@@ -12,6 +12,8 @@ import {
 	IUpdateAppRequest,
 	IUpdateAppResponse,
 	IUpdateVersionResponse,
+	IPublishVersionRequest,
+	IPublishVersionResponse,
 } from 'shared'
 import { ICreateAppRequest } from 'shared'
 import { IApi } from '../util/Api'
@@ -102,5 +104,9 @@ export default class AppsStore implements IAppsStore {
 
 	public emitDeleteApp(deleteAppRequest: IDeleteAppRequest): Promise<IDeleteAppResponse> {
 		return this.api.emit<IDeleteAppResponse>(EventType.DeleteApp, deleteAppRequest)
+	}
+
+	public emitPublishVersion({ id, appId }: IPublishVersionRequest): Promise<IPublishVersionResponse> {
+		return this.api.emit<IPublishVersionResponse>(EventType.PublishVersion, { id, appId })
 	}
 }

@@ -16,7 +16,7 @@ export default class Api implements IApi {
 	private readonly preEmitHooks: Hook[] = []
 
 	constructor(
-		@inject(DI.Connection) private readonly connection: SocketIOClient.Socket
+		@inject(DI.Connection) private readonly connection: SocketIOClient.Socket,
 	) {}
 
 	@bind
@@ -27,6 +27,7 @@ export default class Api implements IApi {
 	public emit<Res extends IResponse = IResponse>(eventType: EventType, request?: object): Promise<Res> {
 		return new Promise((resolve, reject) => {
 			const timeout = setTimeout(() => reject('timeout'), 1000 * 30)
+			console.log(this.preEmitHooks)
 			this.connection.emit(eventType, this.attachData(request || {}), (data: Res) => {
 				clearTimeout(timeout)
 				if (data!.errorMessage) {

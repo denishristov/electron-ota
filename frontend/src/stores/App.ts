@@ -29,16 +29,19 @@ export default class App {
 	@observable
 	public bundleId: string
 
+	public latestVersion: string
+
 	public readonly versions: ObservableMap<string, IVersionModel> = observable.map({})
 
 	constructor(
-		{ id, name, pictureUrl, bundleId }: IAppModel,
+		{ id, name, pictureUrl, bundleId, latestVersion }: IAppModel,
 		private readonly api: IApi,
 	) {
 		this.id = id
 		this.name = name
 		this.pictureUrl = pictureUrl
 		this.bundleId = bundleId
+		this.latestVersion = latestVersion
 	}
 
 	@computed

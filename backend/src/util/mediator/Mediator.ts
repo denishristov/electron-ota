@@ -1,10 +1,12 @@
 import { EventType } from 'shared'
-import { IClient, IHandler, IHook, IMediator } from './Interfaces'
+import { IClient, IHandler, IPreRespondHook, IMediator, IPostRespondHook } from './Interfaces'
 
 export default class Mediator implements IMediator {
 	private readonly handlers: Map<EventType, IHandler[]> = new Map()
-	private readonly preRespondHooks: IHook[] = []
-	private readonly postRespondHooks: IHook[] = []
+	private readonly preRespondHooks: IPreRespondHook[] = []
+	private readonly postRespondHooks: IPostRespondHook[] = []
+
+	constructor(private readonly clients: IClient) {}
 
 	public addHandlers(...handlers: IHandler[]): void {
 		for (const handler of handlers) {
@@ -24,23 +26,32 @@ export default class Mediator implements IMediator {
 		}
 	}
 
-	public usePreRespond(...hooks: IHook[]): void {
+	public usePreRespond(...hooks: IPreRespondHook[]): void {
 		this.preRespondHooks.push(...hooks)
 	}
 
-	public usePostRespond(...hooks: IHook[]): void {
+	public usePostRespond(...hooks: IPostRespondHook[]): void {
 		this.postRespondHooks.push(...hooks)
 	}
 
-	private async applyHooks(hooks: IHook[], eventType: EventType, request: object): Promise<object | null> {
-		if (!hooks.length) {
+	public emit(eventType: EventType, data: object): boolean {
+		return this.clients.emit(eventType, data)
+	}
+
+	private async applyPreHooks(eventType: EventType, request: object): Promise<object | null> {
+		if (!this.preRespondHooks.length) {
 			return request
 		}
 
 		const data = { ...request }
 
-		for (const hook of hooks) {
-			if (hook.exceptions && hook.exceptions.some((excludedType) => excludedType === eventType)) {
+		for (const hook of this.preRespondHooks) {
+			const { eventTypes, exceptions } = hook
+			if (eventTypes && !eventTypes.some((includedType) => includedType === includedType)) {
+				continue
+			}
+
+			if (exceptions && exceptions.some((excludedType) => excludedType === eventType)) {
 				continue
 			}
 
@@ -56,13 +67,21 @@ export default class Mediator implements IMediator {
 		return data
 	}
 
+	private applyPostHooks(eventType: EventType, req: object, res: object): void {
+		for (const postHook of this.postRespondHooks) {
+			postHook.handle(eventType, req, res)
+		}
+	}
+
 	private createEventHandler(handlers: IHandler[]) {
 		const { eventType } = handlers[0]
 
 		return async (request: object, ack: (res: object) => void) => {
-			const data = await this.applyHooks(this.preRespondHooks, eventType, request)
+			const data = await this.applyPreHooks(eventType, request)
 
 			if (!data) {
+				// tslint:disable-next-line:no-console
+				console.log('whops hook returned falsy')
 				return
 			}
 
@@ -81,7 +100,7 @@ export default class Mediator implements IMediator {
 
 				if (response) {
 					ack(response)
-					this.applyHooks(this.postRespondHooks, handler.eventType, response)
+					this.applyPostHooks(handler.eventType, request, response)
 				}
 			}
 		}

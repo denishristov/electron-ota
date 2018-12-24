@@ -18,7 +18,10 @@ export const VersionSchema = new Schema({
 	isBase: Boolean,
 	isCritical: Boolean,
 	isPublished: Boolean,
-	versionName: String,
+	versionName: {
+		type: String,
+		unique: true,
+	},
 }, {
 	timestamps: true,
 })

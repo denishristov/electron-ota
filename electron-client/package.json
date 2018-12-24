@@ -11,5 +11,8 @@
   },
   "devDependencies": {
     "typescript": "^3.2.1"
+  },
+  "dependencies": {
+    "socket.io-client": "^2.2.0"
   }
 }

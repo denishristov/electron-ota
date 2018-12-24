@@ -21,10 +21,15 @@ export const Handlers = {
 		Create: Symbol.for('Version.Create'),
 		Update: Symbol.for('Version.Update'),
 		Delete: Symbol.for('Version.Delete'),
+		Publish: Symbol.for('Version.Publish'),
 	},
 	S3: {
 		SignUploadVersion: Symbol.for('S3.SignUploadVersion'),
 		SignUploadPicture: Symbol.for('S3.SignUploadPicture'),
+	},
+	Update: {
+		Check: Symbol.for('Update.Check'),
+		New: Symbol.for('Update.New'),
 	},
 }
 

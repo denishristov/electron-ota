@@ -1,11 +1,9 @@
 import { app, BrowserWindow } from 'electron'
-import * as client from 'electron-client'
 import * as path from 'path'
 
 let mainWindow: Electron.BrowserWindow
 
 // tslint:disable-next-line:no-console
-console.log(client)
 
 function createWindow() {
 	// Create the browser window.
