@@ -20,7 +20,9 @@ export default class AuthHook implements IPreRespondHook {
 		const { isAuthenticated } = await this.authHandler.handle(data)
 
 		if (isAuthenticated) {
-			return data
+			const result = { ...data }
+			delete result.authToken
+			return result
 		} else {
 			return {
 				errorMessage: 'Auth token is invalid',

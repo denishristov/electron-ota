@@ -25,7 +25,7 @@ export default class AppUpdateService implements IAppUpdateService {
 	) {}
 
 	public async checkForUpdate({ versionName }: ICheckForUpdateRequest): Promise<ICheckForUpdateResponse> {
-		const version = await this.versionService.getVersion({ versionId: this.app.latestVersion })
+		const version = await this.versionService.getVersion({ id: this.app.latestVersion })
 
 		if (version.versionName === versionName) {
 			return {

@@ -1,3 +1,4 @@
+import http from 'http'
 import bluebird from 'bluebird'
 import mongoose from 'mongoose'
 import socketio from 'socket.io'
@@ -12,9 +13,7 @@ import container from './dependencies/inversify.config'
 import { Handlers, Services } from './dependencies/symbols'
 import { IHandler } from './util/mediator/Interfaces'
 
-import http from 'http'
 import { IAppModel, EventType } from 'shared'
-import AppClientService from './services/AppClientsService'
 import { IAppService } from './services/AppService'
 import { IVersionService } from './services/VersionService'
 import AuthHook from './handlers/hooks/AuthHook'
@@ -73,11 +72,9 @@ adminsNamespace.on('connection', userMediator.subscribe.bind(userMediator))
 const adminMediator = MediatorBuilder.buildNamespaceMediator(adminsNamespace, adminHandlers, [authHook])
 
 const versionService = container.get<IVersionService>(Services.Version)
-const appService = container.get<IAppService>(Services.App)
 
 container.get<IAppService>(Services.App).getApps().then(({ apps }) => {
-	const a: IAppModel[] = Object.values(apps)
-	a.forEach((app) => {
+	apps.forEach((app) => {
 		const namespace = io.of(`/${app.bundleId}`)
 		// this.appUpdateService = new AppUpdateService(app, versionService)
 
@@ -90,14 +87,16 @@ container.get<IAppService>(Services.App).getApps().then(({ apps }) => {
 
 		namespace.on(EventType.Connection, (appClient: SocketIO.Socket) => {
 			const roomName: string = appClient.handshake.query.type
-			const room = namespace.in(roomName)
 
 			appClient.join(roomName, () => {
 				// tslint:disable-next-line:no-console
-				console.log('client joined room' + roomName)
+				console.log('client joined room ' + roomName)
 			})
 
-			adminMediator.usePostRespond(new ReleaseUpdateHook(room, versionService))
 		})
+
+		adminMediator.usePostRespond(new ReleaseUpdateHook(namespace.in('darwin'), versionService))
+		// adminMediator.usePostRespond(new ReleaseUpdateHook(room, versionService))
+		// adminMediator.usePostRespond(new ReleaseUpdateHook(room, versionService))
 	})
 })

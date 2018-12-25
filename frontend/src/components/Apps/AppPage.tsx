@@ -50,21 +50,31 @@ class AppPage extends Component<IProps> {
 
 		if (this.app) {
 			const versionFile = version.files[0]
-			const { name, type } = versionFile
-			const { downloadUrl, signedRequest } = await this.app.fetchSignedUploadVersionUrl({ name, type })
 
-			await fetch(signedRequest, {
-				body: versionFile,
-				method: 'PUT',
-			// tslint:disable-next-line:no-console
-			}).then(console.log)
+			if (versionFile) {
+				const { name, type } = versionFile
+				const { downloadUrl, signedRequest } = await this.app.fetchSignedUploadVersionUrl({ name, type })
 
-			this.app.emitCreateVersion({
-				downloadUrl,
-				isBase: isBase.checked,
-				isCritical: isCritical.checked,
-				versionName: versionName.value,
-			})
+				await fetch(signedRequest, {
+					body: versionFile,
+					method: 'PUT',
+					// tslint:disable-next-line:no-console
+				}).then(console.log)
+
+				this.app.emitCreateVersion({
+					downloadUrl,
+					isBase: isBase.checked,
+					isCritical: isCritical.checked,
+					versionName: versionName.value,
+				})
+			} else {
+				this.app.emitCreateVersion({
+					downloadUrl: 'tralalal',
+					isBase: isBase.checked,
+					isCritical: isCritical.checked,
+					versionName: versionName.value,
+				})
+			}
 		}
 	}
 

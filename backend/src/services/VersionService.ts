@@ -19,9 +19,10 @@ import {
 import { Models, Services } from '../dependencies/symbols'
 import { IVersionDocument } from '../models/Version'
 import { IAppService } from './AppService'
+import { ObjectID } from 'mongodb'
 
 export interface IVersionService {
-	getVersion({ versionId }: IGetVersionRequest): Promise<IGetVersionResponse>
+	getVersion({ id }: IGetVersionRequest): Promise<IGetVersionResponse>
 	getVersionByName({ versionName }: IGetVersionByNameRequest): Promise<IGetVersionByNameResponse>
 	getVersions({ appId }: IGetVersionsRequest): Promise<IGetVersionsResponse>
 	createVersion(createRequest: ICreateVersionRequest): Promise<ICreateVersionResponse>
@@ -35,9 +36,25 @@ export default class VersionService implements IVersionService {
 		@inject(Models.Version) private readonly versionModel: Model<IVersionDocument>,
 	) {}
 
-	public async getVersion({ versionId }: IGetVersionRequest): Promise<IGetVersionResponse> {
-		const version = await this.versionModel.findById(versionId)
-		return { id: version.id, ...version }
+	public async getVersion({ id }: IGetVersionRequest): Promise<IGetVersionResponse> {
+		const {
+			appId,
+			downloadUrl,
+			isBase,
+			isCritical,
+			isPublished,
+			versionName,
+		} = await this.versionModel.findById(id)
+
+		return {
+			appId,
+			downloadUrl,
+			id,
+			isBase,
+			isCritical,
+			isPublished,
+			versionName,
+		}
 	}
 
 	public async getVersionByName({ versionName }: IGetVersionByNameRequest): Promise<IGetVersionByNameResponse> {
@@ -77,7 +94,6 @@ export default class VersionService implements IVersionService {
 			id,
 			isBase,
 			isCritical,
-			isPublished,
 			versionName,
 		} = await this.versionModel.create(createRequest)
 
@@ -87,19 +103,19 @@ export default class VersionService implements IVersionService {
 			id,
 			isBase,
 			isCritical,
-			isPublished,
 			versionName,
+			isPublished: false,
 		}
 	}
 
 	public async updateVersion(updateRequest: IUpdateVersionRequest): Promise<IUpdateVersionResponse> {
 		const { id, ...app } = updateRequest
-		await this.versionModel.find(id, { $set: app })
+		await this.versionModel.updateOne({ _id: new ObjectID(id) }, { $set: app })
 		return updateRequest
 	}
 
 	public async deleteVersion({ id, appId }: IDeleteVersionRequest): Promise<IDeleteVersionResponse> {
-		await this.versionModel.deleteOne({ _id: id })
+		await this.versionModel.deleteOne({ _id: new ObjectID(id) })
 		return { id, appId }
 	}
 }

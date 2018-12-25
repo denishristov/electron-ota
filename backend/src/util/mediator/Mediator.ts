@@ -69,6 +69,16 @@ export default class Mediator implements IMediator {
 
 	private applyPostHooks(eventType: EventType, req: object, res: object): void {
 		for (const postHook of this.postRespondHooks) {
+			const { eventTypes, exceptions } = postHook
+
+			if (eventTypes && !eventTypes.some((includedType) => includedType === eventType)) {
+				continue
+			}
+
+			if (exceptions && exceptions.some((excludedType) => excludedType === eventType)) {
+				continue
+			}
+
 			postHook.handle(eventType, req, res)
 		}
 	}

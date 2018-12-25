@@ -9,19 +9,23 @@ export default class ReleaseUpdateHook implements IPostRespondHook {
 	public eventTypes = [EventType.PublishVersion]
 
 	constructor(
-		private readonly clients: IClient,
+		private readonly clients: SocketIO.Namespace,
 		@inject(Services.Version) private readonly versionService: IVersionService,
 	) {}
 
 	@bind
-	public async handle(_: EventType, req: IPublishVersionRequest, res: IPublishVersionResponse) {
-		if (res.isSuccessful) {
+	public async handle(
+		event: EventType,
+		{ id }: IPublishVersionRequest,
+		{ isSuccessful }: IPublishVersionResponse,
+	) {
+		if (isSuccessful) {
 			const {
 				isBase,
 				isCritical,
 				downloadUrl,
 				description,
-			} = await this.versionService.getVersion({ versionId: req.id })
+			} = await this.versionService.getVersion({ id })
 
 			const update = {
 				isBase,
@@ -30,7 +34,7 @@ export default class ReleaseUpdateHook implements IPostRespondHook {
 				description,
 			}
 
-			this.clients.emit(EventType.NewUpdate, update)
+			this.clients.in('darwin').emit(EventType.NewUpdate, update)
 		}
 	}
 }

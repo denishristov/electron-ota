@@ -30,7 +30,7 @@ export interface IVersionResponse extends IResponse {
 }
 
 export interface IGetVersionRequest {
-	versionId: string
+	id: string
 }
 
 export interface IGetVersionResponse extends IResponse, IVersionModel {}

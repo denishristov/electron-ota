@@ -66,8 +66,8 @@ export default class AppService {
 
 	public async updateApp(updateRequest: IUpdateAppRequest): Promise<IUpdateAppResponse> {
 		const { id, ...app } = updateRequest
-		await this.appModel.find(id, { $set: app })
-		return null
+		await this.appModel.updateOne({ _id: id }, { $set: app })
+		return updateRequest
 	}
 
 	public async deleteApp({ id }: IDeleteAppRequest): Promise<IDeleteAppResponse> {

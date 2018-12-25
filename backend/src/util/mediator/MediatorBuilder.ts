@@ -24,10 +24,10 @@ export default abstract class MediatorBuilder {
 		})
 
 		mediator.usePostRespond({
-			handle: async (eventType: EventType, data: object) => {
+			handle: async (eventType: EventType, req: object, res: object) => {
 				// tslint:disable-next-line:no-console
-				console.log(eventType, data)
-				room.emit(eventType, data)
+				console.log(eventType, res)
+				room.emit(eventType, res)
 			},
 		})
 
@@ -48,5 +48,6 @@ export default abstract class MediatorBuilder {
 
 		return mediator
 	}
+
 	private constructor() {}
 }
