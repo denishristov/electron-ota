@@ -1,4 +1,4 @@
-import { inject, injectable } from 'inversify'
+
 import { Model } from 'mongoose'
 import {
 	ICreateAppRequest,
@@ -9,7 +9,6 @@ import {
 	IUpdateAppRequest,
 	IUpdateAppResponse,
 } from 'shared'
-import { Models } from '../dependencies/symbols'
 import { IAppDocument } from '../models/App'
 
 export interface IAppService {
@@ -19,12 +18,13 @@ export interface IAppService {
 	deleteApp(deleteRequest: IDeleteAppRequest): Promise<IDeleteAppResponse>
 }
 
-@injectable()
+@DI.injectable()
 export default class AppService {
 	constructor(
-		@inject(Models.App) private readonly appModel: Model<IAppDocument>,
+		@DI.inject(DI.Models.App) private readonly appModel: Model<IAppDocument>,
 	) {}
 
+	@bind
 	public async getApps(): Promise<IGetAppsResponse> {
 		const apps = await this.appModel.find()
 
@@ -43,9 +43,9 @@ export default class AppService {
 				latestVersion,
 			})),
 		}
-		// .toObject(app => [app.id, app]) as IGetAppsResponse
 	}
 
+	@bind
 	public async createApp(createRequest: ICreateAppRequest): Promise<ICreateAppResponse> {
 		const {
 			id,
@@ -64,12 +64,14 @@ export default class AppService {
 		}
 	}
 
+	@bind
 	public async updateApp(updateRequest: IUpdateAppRequest): Promise<IUpdateAppResponse> {
 		const { id, ...app } = updateRequest
 		await this.appModel.updateOne({ _id: id }, { $set: app })
 		return updateRequest
 	}
 
+	@bind
 	public async deleteApp({ id }: IDeleteAppRequest): Promise<IDeleteAppResponse> {
 		await this.appModel.deleteOne({ _id: id })
 		return { id }

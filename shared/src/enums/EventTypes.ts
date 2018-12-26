@@ -23,4 +23,5 @@ export enum EventType {
 
 	CheckForUpdate = 'update.check',
 	NewUpdate = 'update.new',
+	SuccessfulUpdate = 'update.success',
 }

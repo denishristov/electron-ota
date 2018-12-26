@@ -11,6 +11,7 @@ export interface IApi {
 }
 
 type Hook = (req: object) => object
+
 @injectable()
 export default class Api implements IApi {
 	private readonly preEmitHooks: Hook[] = []

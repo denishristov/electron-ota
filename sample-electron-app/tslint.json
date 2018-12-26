@@ -17,7 +17,6 @@
         "triple-equals": [true, "allow-null-check"],
         "prefer-readonly": true,
         "prefer-const": [true, {"destructuring": "all"}],
-        "align": [true, "parameters", "statements", "members"],
         "semicolon": [true, "never"],
         "whitespace": [true, "check-branch", "check-operator", "check-typecast"],
         "indent": [true, "tabs", 2],

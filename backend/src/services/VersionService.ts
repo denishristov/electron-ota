@@ -1,4 +1,4 @@
-import { inject, injectable } from 'inversify'
+
 import { Model } from 'mongoose'
 import {
 	IGetVersionRequest,
@@ -11,31 +11,24 @@ import {
 	IUpdateVersionRequest,
 	IUpdateVersionResponse,
 	IGetVersionResponse,
-	IGetVersionByNameRequest,
-	IGetVersionByNameResponse,
-	IPublishVersionRequest,
-	IPublishVersionResponse,
 } from 'shared'
-import { Models, Services } from '../dependencies/symbols'
 import { IVersionDocument } from '../models/Version'
-import { IAppService } from './AppService'
-import { ObjectID } from 'mongodb'
 
 export interface IVersionService {
 	getVersion({ id }: IGetVersionRequest): Promise<IGetVersionResponse>
-	getVersionByName({ versionName }: IGetVersionByNameRequest): Promise<IGetVersionByNameResponse>
 	getVersions({ appId }: IGetVersionsRequest): Promise<IGetVersionsResponse>
 	createVersion(createRequest: ICreateVersionRequest): Promise<ICreateVersionResponse>
 	updateVersion(updateRequest: IUpdateVersionRequest): Promise<IUpdateVersionResponse>
 	deleteVersion({ id, appId }: IDeleteVersionRequest): Promise<IDeleteVersionResponse>
 }
 
-@injectable()
+@DI.injectable()
 export default class VersionService implements IVersionService {
 	constructor(
-		@inject(Models.Version) private readonly versionModel: Model<IVersionDocument>,
+		@DI.inject(DI.Models.Version) private readonly versionModel: Model<IVersionDocument>,
 	) {}
 
+	@bind
 	public async getVersion({ id }: IGetVersionRequest): Promise<IGetVersionResponse> {
 		const {
 			appId,
@@ -57,11 +50,7 @@ export default class VersionService implements IVersionService {
 		}
 	}
 
-	public async getVersionByName({ versionName }: IGetVersionByNameRequest): Promise<IGetVersionByNameResponse> {
-		const version = await this.versionModel.findOne({ versionName })
-		return { id: version.id, ...version }
-	}
-
+	@bind
 	public async getVersions({ appId }: IGetVersionsRequest): Promise<IGetVersionsResponse> {
 		const versions = await this.versionModel.find({ appId })
 
@@ -84,9 +73,9 @@ export default class VersionService implements IVersionService {
 				versionName,
 			})),
 		}
-		// .toObject(versions => [versions.id, versions]) as IGetVersionsResponse
 	}
 
+	@bind
 	public async createVersion(createRequest: ICreateVersionRequest): Promise<ICreateVersionResponse> {
 		const {
 			appId,
@@ -108,14 +97,16 @@ export default class VersionService implements IVersionService {
 		}
 	}
 
+	@bind
 	public async updateVersion(updateRequest: IUpdateVersionRequest): Promise<IUpdateVersionResponse> {
 		const { id, ...app } = updateRequest
-		await this.versionModel.updateOne({ _id: new ObjectID(id) }, { $set: app })
+		await this.versionModel.updateOne({ _id: id }, { $set: app })
 		return updateRequest
 	}
 
+	@bind
 	public async deleteVersion({ id, appId }: IDeleteVersionRequest): Promise<IDeleteVersionResponse> {
-		await this.versionModel.deleteOne({ _id: new ObjectID(id) })
+		await this.versionModel.deleteOne({ _id: id })
 		return { id, appId }
 	}
 }

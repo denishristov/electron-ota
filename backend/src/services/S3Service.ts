@@ -1,5 +1,4 @@
 import AWS from 'aws-sdk'
-import { injectable } from 'inversify'
 import { IS3SignUrlRequest, IS3SignUrlResponse } from 'shared'
 
 AWS.config.loadFromPath('./src/util/awsCredentials.json')
@@ -14,20 +13,22 @@ export interface IS3Service {
 	signPictureUploadUrl(req: IS3SignUrlRequest): Promise<IS3SignUrlResponse>
 }
 
-@injectable()
+@DI.injectable()
 export default class S3Service {
-
 	private static readonly defaultParams = {
 		ACL: 'public-read',
 		Bucket: 'electron-ota',
 		Expires: 60 * 20,
 	}
+
 	private readonly s3 = new AWS.S3()
 
+	@bind
 	public async signVersionUploadUrl(req: IS3SignUrlRequest): Promise<IS3SignUrlResponse> {
 		return await this.constructUrls('versions', req)
 	}
 
+	@bind
 	public async signPictureUploadUrl(req: IS3SignUrlRequest): Promise<IS3SignUrlResponse> {
 		return await this.constructUrls('pictures', req)
 	}

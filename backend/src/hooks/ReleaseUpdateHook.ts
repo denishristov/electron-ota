@@ -1,21 +1,17 @@
-import { IPostRespondHook, IClient } from '../../util/mediator/Interfaces'
+import { IPostRespondHook, IMediator } from '../mediator/Interfaces'
 import { EventType, IPublishVersionRequest, IPublishVersionResponse } from 'shared'
-import bind from 'bind-decorator'
-import { inject } from 'inversify'
-import { Services } from '../../dependencies/symbols'
-import { IVersionService } from '../../services/VersionService'
+import { IVersionService } from '../services/VersionService'
 
 export default class ReleaseUpdateHook implements IPostRespondHook {
-	public eventTypes = [EventType.PublishVersion]
+	public eventTypes = new Set([EventType.PublishVersion])
 
 	constructor(
-		private readonly clients: SocketIO.Namespace,
-		@inject(Services.Version) private readonly versionService: IVersionService,
+		private readonly clientsMediator: IMediator,
+		private readonly versionService: IVersionService,
 	) {}
 
 	@bind
 	public async handle(
-		event: EventType,
 		{ id }: IPublishVersionRequest,
 		{ isSuccessful }: IPublishVersionResponse,
 	) {
@@ -34,7 +30,7 @@ export default class ReleaseUpdateHook implements IPostRespondHook {
 				description,
 			}
 
-			this.clients.in('darwin').emit(EventType.NewUpdate, update)
+			this.clientsMediator.broadcast(EventType.NewUpdate, update)
 		}
 	}
 }

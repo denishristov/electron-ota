@@ -1,29 +1,23 @@
-import io from 'socket.io-client'
 import fs from 'fs'
-import download from 'download'
 import os from 'os'
 import path from 'path'
+import crypto from 'crypto'
+import { EventEmitter } from 'events'
 
-interface IUpdateServiceOptions {
-	bundleId: string
-	updateServerUrl: string
-	userDataPath: string
-}
+import io from 'socket.io-client'
 
-interface IUpdateResponse {
-	isUpToDate: boolean
-	downloadUrl?: string
-}
+import * as EventTypes from './EventTypes'
+import { 
+	INewUpdate, 
+	IUpdateResponse, 
+	IUpdateInfo,
+	IUpdateServiceOptions
+} from './Interfaces'
+import {
+	noop,
+	download,
+} from './Functions'
 
-interface INewUpdate {
-	downloadUrl: string
-}
-
-enum EventType {
-	Connect = 'connect',
-	CheckForUpdate = 'update.check',
-	NewUpdate = 'update.new',
-}
 
 declare global {
 	namespace NodeJS {
@@ -33,58 +27,81 @@ declare global {
 	}
 }
 
-export default class UpdateService {
+
+declare interface UpdateService {
+	on(event: 'update', listener: (info: IUpdateInfo, emitSuccessfulUpdate: () => void) => void): this
+	on(event: 'error', listener: (error: Error) => void): this
+}
+
+class UpdateService extends EventEmitter {
 	private readonly connection: SocketIOClient.Socket
+
 	private readonly updateDirPath: string
 
+	private static readonly RETRY_TIMEOUT = 1000 * 60 
+
+	private readonly id = crypto.randomBytes(16).toString('base64')
+
 	constructor(options: IUpdateServiceOptions) {
+		super()
+
 		this.updateDirPath = path.join(options.userDataPath, 'updates')
 
-		fs.exists(this.updateDirPath, exists => {
-			!exists && fs.mkdir(this.updateDirPath, () => {})
-		})
-
 		this.connection = io(`${options.updateServerUrl}/${options.bundleId}`, {
-			query: `type=${os.platform()}`
+			query: `type=${os.platform()}&versionName=${options.versionName}`
 		})
 
-		this.connection.on(EventType.Connect, () => {
-			console.log('conencted')
-			this.connection.emit(EventType.CheckForUpdate)
+		this.connection.on(EventTypes.Server.Connect, () => {
+			this.connection.emit(EventTypes.Server.CheckForUpdate, {
+				versionName: options.versionName
+			}, (res: IUpdateResponse) => {
+				if (!res.isUpToDate) {
+					this.downloadUpdate(res)
+				}
+			})
 		})
 
-		console.log('wow')
+		this.connection.on(EventTypes.Server.NewUpdate, this.downloadUpdate.bind(this))
 
-		this.connection.on(EventType.CheckForUpdate, (res: IUpdateResponse) => {
-			if (!res.isUpToDate && Boolean(res.downloadUrl)) {
-				this.downloadUpdate(res.downloadUrl)
-			}
-		})
-
-		this.connection.on(EventType.NewUpdate, (res: INewUpdate) => {
-			this.downloadUpdate(res.downloadUrl)
+		fs.exists(this.updateDirPath, exists => {
+			!exists && fs.mkdir(this.updateDirPath, noop)
 		})
 	}
 
-	private async downloadUpdate(url: string) {
+	private async downloadUpdate(args: INewUpdate) {
 		const fileName = `${+new Date()}.asar`
 		const filePath = path.join(this.updateDirPath, fileName)
+		const { downloadUrl, ...info } = args
 
-		process.noAsar = true
+		try {
+			process.noAsar = true
+			
+			await download(downloadUrl, filePath)
+		} catch (error) {
+			this.emit(EventTypes.UpdateService.Error, error)
 
-		const file = await download(url)
-		fs.writeFileSync(filePath, file)
+			setTimeout(
+				this.downloadUpdate.bind(this, args), 
+				UpdateService.RETRY_TIMEOUT,
+			)
 
-		process.noAsar = false
+			return
+		} finally {
+			process.noAsar = false
+		}
 
-		return fileName
-	}
+		const updateInfo = { 
+			fileName, 
+			filePath,
+			...info
+		}
 
-	onConnection(ack: (data: object) => void) {
-		this.connection.on(EventType.Connect, ack)
-	}
-
-	onNewUpdate(ack: (data: object) => void) {
-		this.connection.on(EventType.NewUpdate, ack)
+		this.emit(EventTypes.UpdateService.Update, updateInfo, () => {
+			this.connection.emit(EventTypes.Server.SuccessfulUpdate, {
+				id: this.id,
+			})
+		})
 	}
 }
+
+export default UpdateService

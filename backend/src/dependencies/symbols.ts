@@ -2,39 +2,20 @@ export const Services = {
 	User: Symbol.for('User.Service'),
 	App: Symbol.for('App.Service'),
 	Version: Symbol.for('Version.Service'),
+	AppUpdate: Symbol.for('App.Update'),
 	S3: Symbol.for('S3.Service'),
-}
-
-export const Handlers = {
-	User: {
-		Authentication: Symbol.for('User.Authentication'),
-		Login: Symbol.for('User.Login'),
-	},
-	App: {
-		Get: Symbol.for('App.Get'),
-		Create: Symbol.for('App.Create'),
-		Update: Symbol.for('App.Update'),
-		Delete: Symbol.for('App.Delete'),
-	},
-	Version: {
-		Get: Symbol.for('Version.Get'),
-		Create: Symbol.for('Version.Create'),
-		Update: Symbol.for('Version.Update'),
-		Delete: Symbol.for('Version.Delete'),
-		Publish: Symbol.for('Version.Publish'),
-	},
-	S3: {
-		SignUploadVersion: Symbol.for('S3.SignUploadVersion'),
-		SignUploadPicture: Symbol.for('S3.SignUploadPicture'),
-	},
-	Update: {
-		Check: Symbol.for('Update.Check'),
-		New: Symbol.for('Update.New'),
-	},
 }
 
 export const Models = {
 	User: Symbol.for('User.Model'),
 	App: Symbol.for('App.Model'),
 	Version: Symbol.for('Version.Model'),
+}
+
+export const Hooks = {
+	Auth: Symbol.for('Hook.Auth'),
+}
+
+export const Factories = {
+	Mediator: Symbol.for('Factory.Mediator'),
 }

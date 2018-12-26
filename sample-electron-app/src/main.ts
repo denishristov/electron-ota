@@ -1,11 +1,11 @@
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, dialog } from 'electron'
 import UpdateService from 'electron-client'
 import * as path from 'path'
 
 let mainWindow: Electron.BrowserWindow
 
 // tslint:disable-next-line:no-console
-
+console.log(app.getVersion())
 function createWindow() {
 	// Create the browser window.
 	mainWindow = new BrowserWindow({
@@ -50,24 +50,23 @@ app.on('activate', () => {
 	}
 })
 
-// tslint:disable-next-line:no-console
-
 const updateService = new UpdateService({
 	bundleId: 'test-electron',
 	updateServerUrl: 'http://localhost:4000',
-	userDataPath:path.join(app.getPath('userData')),
+	userDataPath: app.getPath('userData'),
+	versionName: app.getVersion(),
+}).on('update', (info, done) => {
+	dialog.showMessageBox({
+		buttons: ['Reload', 'Not now'] ,
+		message: 'A new update is available',
+		type: 'question',
+	},
+		(index) => {
+			if (index === 0) {
+				done()
+				app.relaunch()
+				app.exit()
+			}
+		},
+	)
 })
-
-updateService.onConnection(() => {
-	// document.write('connected')
-})
-
-updateService.onNewUpdate((da: object) => {
-	// document.write(JSON.stringify(da))
-	// tslint:disable-next-line:no-console
-	console.log(da)
-})
-// tslint:disable-next-line:no-console
-
-// In this file you can include the rest of your app"s specific main process
-// code. You can also put them in separate files and require them here.

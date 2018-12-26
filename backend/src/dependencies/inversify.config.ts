@@ -1,89 +1,58 @@
 import { Container } from 'inversify'
 
-import { Handlers, Models, Services } from './symbols'
-
-import { IAppService } from '../services/AppService'
-import { IUserService } from '../services/UserService'
-import { IVersionService } from '../services/VersionService'
-import { IHandler } from '../util/mediator/Interfaces'
-
-import AppService from '../services/AppService'
+import AppService, { IAppService } from '../services/AppService'
+import AppUpdateService, { IAppUpdateService } from '../services/AppUpdateService'
+import UserService, { IUserService } from '../services/UserService'
+import VersionService, { IVersionService } from '../services/VersionService'
 import S3Service, { IS3Service } from '../services/S3Service'
-import UserService from '../services/UserService'
-import VersionService from '../services/VersionService'
 
-import UserAuthenticationHandler from '../handlers/user/UserAuthenticationHandler'
-import UserLoginHandler from '../handlers/user/UserLoginHandler'
-
-import CreateAppHandler from '../handlers/apps/CreateAppHandler'
-import DeleteAppHandler from '../handlers/apps/DeleteAppHandler'
-import GetAppsHandler from '../handlers/apps/GetAppsHandler'
-import UpdateAppHandler from '../handlers/apps/UpdateAppHandler'
-
-import SignUploadPictureHandler from '../handlers/s3/SignUploadPictureHandler'
-import SignUploadVersionHandler from '../handlers/s3/SignUploadVersionHandler'
-import CreateVersionHandler from '../handlers/version/CreateVersionHandler'
-import DeleteVersionHandler from '../handlers/version/DeleteVersionHandler'
-import GetVersionsHandler from '../handlers/version/GetVersionsHandler'
-import UpdateVersionHandler from '../handlers/version/UpdateVersionHandler'
-
-import { AppSchema, IAppDocument } from '../models/App'
+import { Model, model as createModel } from 'mongoose'
+import { IAppDocument, AppSchema } from '../models/App'
 import { IUserDocument, UserSchema } from '../models/User'
 import { IVersionDocument, VersionSchema } from '../models/Version'
 
-import { Model, model as createModel } from 'mongoose'
-import PublishVersionHandler from '../handlers/version/PublishVersionHandler'
+import { IPreRespondHook } from '../mediator/Interfaces'
+import AuthHook from '../hooks/AuthHook'
+
+import MediatorFactory, { IMediatorFactory } from '../mediator/MediatorFactory'
 
 const container = new Container()
 
-container.bind<IUserService>(Services.User)
+container.bind<IUserService>(DI.Services.User)
 	.to(UserService)
 	.inSingletonScope()
 
-container.bind<IAppService>(Services.App)
+container.bind<IAppService>(DI.Services.App)
 	.to(AppService)
 	.inSingletonScope()
 
-container.bind<IVersionService>(Services.Version)
+container.bind<IVersionService>(DI.Services.Version)
 	.to(VersionService)
 	.inSingletonScope()
 
-container.bind<IS3Service>(Services.S3)
+container.bind<IS3Service>(DI.Services.S3)
 	.to(S3Service)
 	.inSingletonScope()
 
-container.bind<Model<IUserDocument>>(Models.User)
+container.bind<IAppUpdateService>(DI.Services.AppUpdate)
+	.to(AppUpdateService)
+	.inSingletonScope()
+
+container.bind<Model<IUserDocument>>(DI.Models.User)
 	.toConstantValue(createModel<IUserDocument>('User', UserSchema))
 
-container.bind<Model<IAppDocument>>(Models.App)
+container.bind<Model<IAppDocument>>(DI.Models.App)
 	.toConstantValue(createModel<IAppDocument>('App', AppSchema))
 
-container.bind<Model<IVersionDocument>>(Models.Version)
+container.bind<Model<IVersionDocument>>(DI.Models.Version)
 	.toConstantValue(createModel<IVersionDocument>('Version', VersionSchema))
 
-const handlers = {
-	[Handlers.User.Login]: UserLoginHandler,
-	[Handlers.User.Authentication]: UserAuthenticationHandler,
+container.bind<IPreRespondHook>(DI.Hooks.Auth)
+	.to(AuthHook)
+	.inSingletonScope()
 
-	[Handlers.App.Create]: CreateAppHandler,
-	[Handlers.App.Update]: UpdateAppHandler,
-	[Handlers.App.Delete]: DeleteAppHandler,
-	[Handlers.App.Get]: GetAppsHandler,
-
-	[Handlers.Version.Get]: GetVersionsHandler,
-	[Handlers.Version.Update]: UpdateVersionHandler,
-	[Handlers.Version.Delete]: DeleteVersionHandler,
-	[Handlers.Version.Create]: CreateVersionHandler,
-	[Handlers.Version.Publish]: PublishVersionHandler,
-
-	[Handlers.S3.SignUploadVersion]: SignUploadVersionHandler,
-	[Handlers.S3.SignUploadPicture]: SignUploadPictureHandler,
-}
-
-Object.getOwnPropertySymbols(handlers).forEach((key: keyof object) => {
-	container.bind<IHandler>(key)
-		.to(handlers[key])
-		.inSingletonScope()
-})
+container.bind<IMediatorFactory>(DI.Factories.Mediator)
+	.to(MediatorFactory)
+	.inSingletonScope()
 
 export default container

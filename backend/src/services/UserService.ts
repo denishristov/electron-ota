@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt'
-import { inject, injectable } from 'inversify'
+
 import jwt from 'jsonwebtoken'
 import { Model } from 'mongoose'
 import {
@@ -8,27 +8,27 @@ import {
 	IUserLoginRequest,
 	IUserLoginResponse,
 } from 'shared'
-import { Models } from '../dependencies/symbols'
 import { IUserDocument } from '../models/User'
 import { AUTH_PRIVATE_KEY, AUTH_PUBLIC_KEY, AUTH_TOKEN_SALT } from '../util/env'
 
 export interface IUserService {
-	handleLogin(
+	login(
 		userLoginRequest: IUserLoginRequest,
 	): Promise<IUserLoginResponse>
 
-	handleAuthentication(
+	authenticate(
 		userAuthenticationRequest: IUserAuthenticationRequest,
 	): Promise<IUserAuthenticationResponse>
 }
 
-@injectable()
+@DI.injectable()
 export default class UserService {
 	constructor(
-		@inject(Models.User) private readonly userModel: Model<IUserDocument>,
+		@DI.inject(DI.Models.User) private readonly userModel: Model<IUserDocument>,
 	) {}
 
-	public async handleLogin({ email, password }: IUserLoginRequest): Promise<IUserLoginResponse> {
+	@bind
+	public async login({ email, password }: IUserLoginRequest): Promise<IUserLoginResponse> {
 		try {
 			const user = await this.userModel.findOne({ email })
 
@@ -56,7 +56,8 @@ export default class UserService {
 		}
 	}
 
-	public async handleAuthentication({ authToken }: IUserAuthenticationRequest): Promise<IUserAuthenticationResponse> {
+	@bind
+	public async authenticate({ authToken }: IUserAuthenticationRequest): Promise<IUserAuthenticationResponse> {
 		try {
 			const { id } = jwt.verify(authToken, AUTH_PUBLIC_KEY, { algorithms: ['RS256'] }) as { id: string }
 
