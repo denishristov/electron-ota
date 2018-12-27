@@ -1,16 +1,15 @@
 import { EventType } from 'shared'
 
 export type IClient = SocketIO.Socket
+type IHandler<Req = object, Res = object> = (request: Req) => Promise<Res> | Res
 
-type Handler<Req, Res> = (request: Req) => Promise<Res> | Res
-
-export interface IHandler<Req = object, Res = object> extends Iterable<EventType | Handler<Req, Res>> {
+export interface IEventHandler<Req = object, Res = object> extends Iterable<EventType | IHandler<Req, Res>> {
 	[0]: EventType
-	[1]: Handler<Req, Res>
+	[1]: IHandler<Req, Res>
 }
 
 export interface IMediator {
-	use(...handlers: IHandler[]): void
+	use(...handlers: IEventHandler[]): void
 	subscribe(client: IClient): void
 	unsubscribe(client: IClient): boolean
 	broadcast(eventType: EventType, data: object): void

@@ -1,17 +1,13 @@
 import { IPreRespondHook } from '../mediator/Interfaces'
-import { EventType, IUserAuthenticationRequest, IUserAuthenticationResponse } from 'shared'
-import { IUserService } from '../services/UserService'
-
-interface IAuthHandler {
-	handle(req: IUserAuthenticationRequest): Promise<IUserAuthenticationResponse>
-}
+import { EventType, IUserAuthenticationRequest } from 'shared'
+import { IAdminsService } from '../services/AdminsService'
 
 @DI.injectable()
 export default class AuthHook implements IPreRespondHook {
 	public exceptions = new Set([EventType.Login, EventType.Authentication, EventType.Connection])
 
 	constructor(
-		@DI.inject(DI.Services.User) private readonly userService: IUserService,
+		@DI.inject(DI.Services.User) private readonly userService: IAdminsService,
 	) {}
 
 	@bind

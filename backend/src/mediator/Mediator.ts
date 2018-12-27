@@ -1,21 +1,34 @@
 import { EventType } from 'shared'
-import { IClient, IHandler, IPreRespondHook, IMediator, IPostRespondHook } from './Interfaces'
+import {
+	IClient,
+	IEventHandler,
+	IPreRespondHook,
+	IMediator,
+	IPostRespondHook,
+} from './Interfaces'
+
+type MediatorEventHandler = (request: object, ack: (res: object) => void) => void
 
 export default class Mediator implements IMediator {
 	private readonly clients: Map<string, IClient> = new Map()
-	private readonly handlers: Map<EventType, IHandler> = new Map()
+	private readonly handlers: Map<EventType, MediatorEventHandler> = new Map()
 	private readonly preRespondHooks: Map<IPreRespondHook, IPreRespondHook> = new Map()
 	private readonly postRespondHooks: Map<IPostRespondHook, IPostRespondHook> = new Map()
 	private readonly broadcastableEvents: Set<EventType> = new Set()
 
-	public use(...handlers: IHandler[]): void {
-		for (const handler of handlers) {
-			const [eventType] = handler
+	public use(...eventHandlers: IEventHandler[]): void {
+		for (const eventHandler of eventHandlers) {
+			const [eventType] = eventHandler
 
+			if (this.handlers.has(eventType)) {
+				throw new Error(`Handler has been added for ${eventType}`)
+			}
+
+			const handler = this.createEventHandler(eventHandler)
 			this.handlers.set(eventType, handler)
 
 			for (const [_, client] of this.clients) {
-				client.on(eventType, this.createEventHandler(handler))
+				client.on(eventType, handler)
 			}
 		}
 	}
@@ -24,7 +37,7 @@ export default class Mediator implements IMediator {
 		this.clients.set(client.id, client)
 
 		for (const [eventType, handler] of this.handlers) {
-			client.on(eventType, this.createEventHandler(handler))
+			client.on(eventType, handler)
 		}
 	}
 
@@ -54,6 +67,13 @@ export default class Mediator implements IMediator {
 		for (const [_, client] of this.clients) {
 			client.emit(eventType, data)
 		}
+		// tslint:disable-next-line:no-console
+		console.log(
+			'----------------------------------\n',
+			`${eventType}\n`,
+			// '----------------------------------\n',
+			' broadcast: ', data,
+		)
 	}
 
 	public removePostRespond(hook: IPostRespondHook) {
@@ -109,7 +129,7 @@ export default class Mediator implements IMediator {
 		}
 	}
 
-	private createEventHandler([eventType, handle]: IHandler) {
+	private createEventHandler([eventType, handle]: IEventHandler) {
 		return async (request: object, ack: (res: object) => void) => {
 			const data = await this.applyPreHooks(eventType, request)
 

@@ -30,6 +30,25 @@ interface ICreateVersionEvent extends FormEvent<HTMLFormElement> {
 	}
 }
 
+function hashBlob(blob: Blob): Promise<string> {
+	return new Promise((resolve, reject) => {
+		const reader = new FileReader()
+
+		reader.readAsArrayBuffer(blob)
+		reader.addEventListener('load', handleLoad)
+		reader.addEventListener('error', reject)
+
+		async function handleLoad() {
+			const buffer = await crypto.subtle.digest('SHA-256', reader.result as ArrayBuffer)
+			const hash = btoa(String.fromCharCode(...new Uint8Array(buffer)))
+
+			reader.removeEventListener('load', handleLoad)
+
+			resolve(hash)
+		}
+	})
+}
+
 class AppPage extends Component<IProps> {
 	public componentDidMount() {
 		if (this.app) {
@@ -55,21 +74,16 @@ class AppPage extends Component<IProps> {
 				const { name, type } = versionFile
 				const { downloadUrl, signedRequest } = await this.app.fetchSignedUploadVersionUrl({ name, type })
 
-				await fetch(signedRequest, {
+				const [hash] = await Promise.all([hashBlob(versionFile), fetch(signedRequest, {
 					body: versionFile,
 					method: 'PUT',
-					// tslint:disable-next-line:no-console
-				}).then(console.log)
+				})])
+
+				console.log(hash)
 
 				this.app.emitCreateVersion({
 					downloadUrl,
-					isBase: isBase.checked,
-					isCritical: isCritical.checked,
-					versionName: versionName.value,
-				})
-			} else {
-				this.app.emitCreateVersion({
-					downloadUrl: 'tralalal',
+					hash,
 					isBase: isBase.checked,
 					isCritical: isCritical.checked,
 					versionName: versionName.value,

@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt'
-
+import crypto from 'crypto'
 import jwt from 'jsonwebtoken'
 import { Model } from 'mongoose'
 import {
@@ -9,9 +9,9 @@ import {
 	IUserLoginResponse,
 } from 'shared'
 import { IUserDocument } from '../models/User'
-import { AUTH_PRIVATE_KEY, AUTH_PUBLIC_KEY, AUTH_TOKEN_SALT } from '../util/env'
+import { PASS_SECRET_KEY } from '../config/config'
 
-export interface IUserService {
+export interface IAdminsService {
 	login(
 		userLoginRequest: IUserLoginRequest,
 	): Promise<IUserLoginResponse>
@@ -22,7 +22,7 @@ export interface IUserService {
 }
 
 @DI.injectable()
-export default class UserService {
+export default class AdminsService {
 	constructor(
 		@DI.inject(DI.Models.User) private readonly userModel: Model<IUserDocument>,
 	) {}
@@ -36,7 +36,7 @@ export default class UserService {
 				throw new Error('Invalid password')
 			}
 
-			const authToken = this.generateToken(user._id)
+			const authToken = this.generateToken(user.id)
 			this.hashAuthToken(authToken).then((hashedToken) => {
 				user.authTokens.push(hashedToken)
 				user.save()
@@ -59,7 +59,7 @@ export default class UserService {
 	@bind
 	public async authenticate({ authToken }: IUserAuthenticationRequest): Promise<IUserAuthenticationResponse> {
 		try {
-			const { id } = jwt.verify(authToken, AUTH_PUBLIC_KEY, { algorithms: ['RS256'] }) as { id: string }
+			const { id } = jwt.verify(authToken, PASS_SECRET_KEY, { algorithms: ['HS256'] }) as { id: string }
 
 			const user = await this.userModel.findById(id)
 
@@ -82,25 +82,23 @@ export default class UserService {
 		}
 	}
 
-	private generateToken(userId: string, expiresIn: string = '30d'): string {
-		return jwt.sign({ id: userId }, AUTH_PRIVATE_KEY, { expiresIn, algorithm: 'RS256' })
-	}
-
-	private doesPasswordMatch(password: string, hashedPassword: string): Promise<boolean> {
-		return bcrypt.compare(password, hashedPassword)
-	}
-
-	private hashAuthToken(authToken: string): Promise<string> {
-		return bcrypt.hash(authToken, AUTH_TOKEN_SALT)
-	}
-
 	private async register(user: { name: string, password: string, email: string }) {
 		this.userModel.create({ ... user, password: await this.hashPassword(user.password) })
 	}
 
-	private async hashPassword(password: string): Promise<string> {
-		const salt = await bcrypt.genSalt(10)
+	private generateToken(userId: string, expiresIn: string = '30d'): string {
+		return jwt.sign({ id: userId }, PASS_SECRET_KEY, { expiresIn, algorithm: 'HS256' })
+	}
 
-		return bcrypt.hash(password, salt)
+	private hashAuthToken(authToken: string): Promise<string> {
+		return Promise.resolve().then(() => crypto.createHash('sha256').update(authToken).digest('base64'))
+	}
+
+	private async hashPassword(password: string): Promise<string> {
+		return bcrypt.hash(password, await bcrypt.genSalt(10))
+	}
+
+	private doesPasswordMatch(password: string, hashedPassword: string): Promise<boolean> {
+		return bcrypt.compare(password, hashedPassword)
 	}
 }

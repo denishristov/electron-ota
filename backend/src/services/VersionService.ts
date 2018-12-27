@@ -11,8 +11,11 @@ import {
 	IUpdateVersionRequest,
 	IUpdateVersionResponse,
 	IGetVersionResponse,
+	IPublishVersionRequest,
+	IPublishVersionResponse,
 } from 'shared'
 import { IVersionDocument } from '../models/Version'
+import { IAppService } from './AppService'
 
 export interface IVersionService {
 	getVersion({ id }: IGetVersionRequest): Promise<IGetVersionResponse>
@@ -20,12 +23,14 @@ export interface IVersionService {
 	createVersion(createRequest: ICreateVersionRequest): Promise<ICreateVersionResponse>
 	updateVersion(updateRequest: IUpdateVersionRequest): Promise<IUpdateVersionResponse>
 	deleteVersion({ id, appId }: IDeleteVersionRequest): Promise<IDeleteVersionResponse>
+	publishVersion(req: IPublishVersionRequest): Promise<IPublishVersionResponse>
 }
 
 @DI.injectable()
 export default class VersionService implements IVersionService {
 	constructor(
 		@DI.inject(DI.Models.Version) private readonly versionModel: Model<IVersionDocument>,
+		@DI.inject(DI.Services.App) private readonly appService: IAppService,
 	) {}
 
 	@bind
@@ -37,6 +42,7 @@ export default class VersionService implements IVersionService {
 			isCritical,
 			isPublished,
 			versionName,
+			hash,
 		} = await this.versionModel.findById(id)
 
 		return {
@@ -47,6 +53,7 @@ export default class VersionService implements IVersionService {
 			isCritical,
 			isPublished,
 			versionName,
+			hash,
 		}
 	}
 
@@ -63,6 +70,7 @@ export default class VersionService implements IVersionService {
 				isCritical,
 				isPublished,
 				versionName,
+				hash,
 			}) => ({
 				appId,
 				downloadUrl,
@@ -71,6 +79,7 @@ export default class VersionService implements IVersionService {
 				isCritical,
 				isPublished,
 				versionName,
+				hash,
 			})),
 		}
 	}
@@ -84,6 +93,7 @@ export default class VersionService implements IVersionService {
 			isBase,
 			isCritical,
 			versionName,
+			hash,
 		} = await this.versionModel.create(createRequest)
 
 		return {
@@ -94,6 +104,7 @@ export default class VersionService implements IVersionService {
 			isCritical,
 			versionName,
 			isPublished: false,
+			hash,
 		}
 	}
 
@@ -108,5 +119,22 @@ export default class VersionService implements IVersionService {
 	public async deleteVersion({ id, appId }: IDeleteVersionRequest): Promise<IDeleteVersionResponse> {
 		await this.versionModel.deleteOne({ _id: id })
 		return { id, appId }
+	}
+
+	@bind
+	public async publishVersion(req: IPublishVersionRequest): Promise<IPublishVersionResponse> {
+		try {
+			await this.updateVersion({ ...req, isPublished: true })
+			await this.appService.updateApp({ id: req.appId, latestVersion: req.id })
+
+			return {
+				isSuccessful: true,
+			}
+		} catch (error) {
+			return {
+				isSuccessful: false,
+				errorMessage: error.message,
+			}
+		}
 	}
 }

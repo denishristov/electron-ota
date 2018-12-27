@@ -41,8 +41,7 @@ class AppsContainer extends Component<IAppsProps> {
 		await fetch(signedRequest, {
 			body: pictureFile,
 			method: 'PUT',
-		// tslint:disable-next-line:no-console
-		}).then(console.log)
+		})
 
 		this.props.appsStore.emitCreateApp({
 			bundleId: bundleId.value,

@@ -56,6 +56,8 @@ const updateService = new UpdateService({
 	userDataPath: app.getPath('userData'),
 	versionName: app.getVersion(),
 }).on('update', (info, done) => {
+	// tslint:disable-next-line:no-console
+	console.log(info)
 	dialog.showMessageBox({
 		buttons: ['Reload', 'Not now'] ,
 		message: 'A new update is available',

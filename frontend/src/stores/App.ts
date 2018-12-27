@@ -15,6 +15,7 @@ interface ICreateVersionInput {
 	isCritical: boolean
 	isBase: boolean
 	downloadUrl: string
+	hash: string
 }
 
 export default class App {
@@ -58,8 +59,6 @@ export default class App {
 
 	@action
 	public async fetchSignedUploadVersionUrl(req: IS3SignUrlRequest) {
-		// tslint:disable-next-line:no-console
-		console.log('tumor')
 		return await this.api.emit<IS3SignUrlResponse>(EventType.SignUploadVersionUrl, req)
 	}
 

@@ -9,16 +9,16 @@ export interface IVersionModel {
 	isPublished: boolean
 	appId: string
 	description?: string
+	hash: string
 }
 
 export interface IVersionEditModel {
 	id: string
 	versionName?: string
-	downloadUrl?: string
+	description?: string
 	isCritical?: boolean
 	isBase?: boolean
 	isPublished?: boolean
-	description?: string
 }
 
 export interface IVersionRequest extends IRequest {
@@ -53,6 +53,7 @@ export interface ICreateVersionRequest extends IVersionRequest {
 	isCritical: boolean
 	isBase: boolean
 	isPublished: boolean
+	hash: string
 	description?: string
 }
 

@@ -13,6 +13,7 @@ export interface INewUpdate {
 	downloadUrl: string
 	isCritical: boolean
 	isBase: boolean
+	hash: string
 	description?: string
 }
 
@@ -22,4 +23,5 @@ export interface IUpdateInfo {
 	isCritical: boolean
 	isBase: boolean
 	description?: string
+	hash: string
 }

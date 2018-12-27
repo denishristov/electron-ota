@@ -1,7 +1,7 @@
 import AWS from 'aws-sdk'
 import { IS3SignUrlRequest, IS3SignUrlResponse } from 'shared'
 
-AWS.config.loadFromPath('./src/util/awsCredentials.json')
+AWS.config.loadFromPath('./src/config/awsCredentials.json')
 
 enum S3Action {
 	Get = 'getObject',
@@ -13,15 +13,15 @@ export interface IS3Service {
 	signPictureUploadUrl(req: IS3SignUrlRequest): Promise<IS3SignUrlResponse>
 }
 
+interface IS3ConfigOptions {
+	Bucket: string
+}
+
 @DI.injectable()
 export default class S3Service {
-	private static readonly defaultParams = {
-		ACL: 'public-read',
-		Bucket: 'electron-ota',
-		Expires: 60 * 20,
-	}
-
 	private readonly s3 = new AWS.S3()
+
+	constructor(private readonly s3Config: IS3ConfigOptions) {}
 
 	@bind
 	public async signVersionUploadUrl(req: IS3SignUrlRequest): Promise<IS3SignUrlResponse> {
@@ -44,7 +44,7 @@ export default class S3Service {
 
 	private async constructUrls(folderName: string, { name, type }: IS3SignUrlRequest): Promise<IS3SignUrlResponse> {
 		const params = {
-			...S3Service.defaultParams,
+			...this.s3Config,
 			ContentType: type,
 			Key: `${folderName}/${name}`,
 		}

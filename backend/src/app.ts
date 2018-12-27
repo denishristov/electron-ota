@@ -11,7 +11,7 @@ import {
 	MONGODB_URI,
 	ENVIRONMENT,
 	PORT,
-} from './util/env'
+} from './config/config'
 
 import { IMediatorFactory } from './mediator/MediatorFactory'
 import { IAppService } from './services/AppService'

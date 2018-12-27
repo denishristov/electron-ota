@@ -10,6 +10,7 @@ export interface ICheckForUpdateResponse extends IResponse {
 	isCritical?: boolean
 	isBase?: boolean
 	description?: string
+	hash?: string
 }
 
 export interface INewUpdateMessage {
@@ -17,6 +18,7 @@ export interface INewUpdateMessage {
 	isCritical: boolean
 	isBase: boolean
 	description?: string
+	hash: string
 }
 
 export interface INewUpdateResponse {

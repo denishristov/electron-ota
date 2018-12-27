@@ -6,6 +6,7 @@ export interface IVersionDocument extends Document {
 	isCritical: boolean
 	isBase: boolean
 	isPublished: boolean
+	hash: string
 	appId: string
 }
 
@@ -18,9 +19,12 @@ export const VersionSchema = new Schema({
 	isBase: Boolean,
 	isCritical: Boolean,
 	isPublished: Boolean,
-	versionName: {
+	hash: {
 		type: String,
 		unique: true,
+	},
+	versionName: {
+		type: String,
 	},
 }, {
 	timestamps: true,

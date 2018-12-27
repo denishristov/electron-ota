@@ -1,4 +1,3 @@
-import fs from 'fs'
 import os from 'os'
 import path from 'path'
 import crypto from 'crypto'
@@ -14,8 +13,10 @@ import {
 	IUpdateServiceOptions
 } from './Interfaces'
 import {
-	noop,
 	download,
+	exists,
+	mkdir,
+	readFile
 } from './Functions'
 
 
@@ -40,43 +41,52 @@ class UpdateService extends EventEmitter {
 
 	private static readonly RETRY_TIMEOUT = 1000 * 60 
 
-	private readonly id = crypto.randomBytes(16).toString('base64')
-
-	constructor(options: IUpdateServiceOptions) {
+	constructor({ versionName, userDataPath, bundleId, updateServerUrl }: IUpdateServiceOptions) {
 		super()
 
-		this.updateDirPath = path.join(options.userDataPath, 'updates')
+		this.updateDirPath = path.join(userDataPath, 'updates')
 
-		this.connection = io(`${options.updateServerUrl}/${options.bundleId}`, {
-			query: `type=${os.platform()}&versionName=${options.versionName}`
+		this.connection = io(`${updateServerUrl}/${bundleId}`, {
+			query: `type=${os.platform()}&versionName=${versionName}`
 		})
 
 		this.connection.on(EventTypes.Server.Connect, () => {
-			this.connection.emit(EventTypes.Server.CheckForUpdate, {
-				versionName: options.versionName
-			}, (res: IUpdateResponse) => {
-				if (!res.isUpToDate) {
-					this.downloadUpdate(res)
+			this.connection.emit(
+				EventTypes.Server.CheckForUpdate, 
+				{ versionName }, 
+				({ isUpToDate, ...update }: IUpdateResponse) => {
+					!isUpToDate && this.downloadUpdate(update)
 				}
-			})
+			)
 		})
 
 		this.connection.on(EventTypes.Server.NewUpdate, this.downloadUpdate.bind(this))
-
-		fs.exists(this.updateDirPath, exists => {
-			!exists && fs.mkdir(this.updateDirPath, noop)
-		})
 	}
 
 	private async downloadUpdate(args: INewUpdate) {
 		const fileName = `${+new Date()}.asar`
 		const filePath = path.join(this.updateDirPath, fileName)
 		const { downloadUrl, ...info } = args
-
+		
 		try {
 			process.noAsar = true
-			
+
+			await this.checkIfUpdateDirExists()
 			await download(downloadUrl, filePath)
+
+			if (info.hash !== await this.hashFile(filePath)) {
+				throw new Error('Invalid hash')
+			}
+
+			const updateInfo = {
+				fileName, 
+				filePath,
+				...info
+			}
+			
+			this.emit(EventTypes.UpdateService.Update, updateInfo, () => {
+				this.connection.emit(EventTypes.Server.SuccessfulUpdate)
+			})
 		} catch (error) {
 			this.emit(EventTypes.UpdateService.Error, error)
 
@@ -84,23 +94,23 @@ class UpdateService extends EventEmitter {
 				this.downloadUpdate.bind(this, args), 
 				UpdateService.RETRY_TIMEOUT,
 			)
-
-			return
 		} finally {
 			process.noAsar = false
 		}
+	}
 
-		const updateInfo = { 
-			fileName, 
-			filePath,
-			...info
+	private async hashFile(path: string): Promise<string> {
+		const file = await readFile(path)
+		const hash = crypto.createHash('sha256').update(file)
+				
+		await Promise.resolve()
+		return hash.digest('base64')
+	}
+
+	private async checkIfUpdateDirExists(): Promise<void> {
+		if (!await exists(this.updateDirPath)) {
+			await mkdir(this.updateDirPath)
 		}
-
-		this.emit(EventTypes.UpdateService.Update, updateInfo, () => {
-			this.connection.emit(EventTypes.Server.SuccessfulUpdate, {
-				id: this.id,
-			})
-		})
 	}
 }
 
