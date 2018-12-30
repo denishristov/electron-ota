@@ -6,7 +6,6 @@ import {
 	ICreateVersionResponse,
 	IDeleteVersionRequest,
 	IDeleteVersionResponse,
-	IGetVersionsRequest,
 	IGetVersionsResponse,
 	IUpdateVersionRequest,
 	IUpdateVersionResponse,
@@ -16,13 +15,14 @@ import {
 } from 'shared'
 import { IVersionDocument } from '../models/Version'
 import { IAppService } from './AppService'
+import { toPlain } from '../util/util'
 
 export interface IVersionService {
-	getVersion({ id }: IGetVersionRequest): Promise<IGetVersionResponse>
-	getVersions({ appId }: IGetVersionsRequest): Promise<IGetVersionsResponse>
+	getVersion({ id, appId }: IGetVersionRequest): Promise<IGetVersionResponse>
+	getVersions({ appId }: IGetVersionRequest): Promise<IGetVersionsResponse>
 	createVersion(createRequest: ICreateVersionRequest): Promise<ICreateVersionResponse>
 	updateVersion(updateRequest: IUpdateVersionRequest): Promise<IUpdateVersionResponse>
-	deleteVersion({ id, appId }: IDeleteVersionRequest): Promise<IDeleteVersionResponse>
+	deleteVersion({ id }: IDeleteVersionRequest): Promise<IDeleteVersionResponse>
 	publishVersion(req: IPublishVersionRequest): Promise<IPublishVersionResponse>
 }
 
@@ -34,85 +34,37 @@ export default class VersionService implements IVersionService {
 	) {}
 
 	@bind
-	public async getVersion({ id }: IGetVersionRequest): Promise<IGetVersionResponse> {
-		const {
-			appId,
-			downloadUrl,
-			isBase,
-			isCritical,
-			isPublished,
-			versionName,
-			hash,
-		} = await this.versionModel.findById(id)
+	public async getVersion({ id, appId }: IGetVersionRequest): Promise<IGetVersionResponse> {
+		const { versions } = await this.appService.getApp(appId, { versions: true })
+		const version = versions.find((version) => version.id === id)
+
+		return toPlain(version)
+	}
+
+	@bind
+	public async getVersions({ appId }: IGetVersionRequest): Promise<IGetVersionsResponse> {
+		const da = await this.appService.getApp(appId, { versions: true })
 
 		return {
-			appId,
-			downloadUrl,
-			id,
-			isBase,
-			isCritical,
-			isPublished,
-			versionName,
-			hash,
+			versions: da.versions.map(toPlain),
 		}
 	}
 
 	@bind
-	public async getVersions({ appId }: IGetVersionsRequest): Promise<IGetVersionsResponse> {
-		const versions = await this.versionModel.find({ appId })
+	public async createVersion(create: ICreateVersionRequest): Promise<ICreateVersionResponse> {
+		const version = await this.versionModel.create({ ...create, isPublished: false })
+		const app = await this.appService.getApp(create.appId)
+		app.versions.push(version)
+		app.save()
 
-		return {
-			versions: versions.map(({
-				appId,
-				downloadUrl,
-				id,
-				isBase,
-				isCritical,
-				isPublished,
-				versionName,
-				hash,
-			}) => ({
-				appId,
-				downloadUrl,
-				id,
-				isBase,
-				isCritical,
-				isPublished,
-				versionName,
-				hash,
-			})),
-		}
+		return toPlain(version)
 	}
 
 	@bind
-	public async createVersion(createRequest: ICreateVersionRequest): Promise<ICreateVersionResponse> {
-		const {
-			appId,
-			downloadUrl,
-			id,
-			isBase,
-			isCritical,
-			versionName,
-			hash,
-		} = await this.versionModel.create(createRequest)
-
-		return {
-			appId,
-			downloadUrl,
-			id,
-			isBase,
-			isCritical,
-			versionName,
-			isPublished: false,
-			hash,
-		}
-	}
-
-	@bind
-	public async updateVersion(updateRequest: IUpdateVersionRequest): Promise<IUpdateVersionResponse> {
-		const { id, ...app } = updateRequest
+	public async updateVersion(update: IUpdateVersionRequest): Promise<IUpdateVersionResponse> {
+		const { id, ...app } = update
 		await this.versionModel.updateOne({ _id: id }, { $set: app })
-		return updateRequest
+		return update
 	}
 
 	@bind
@@ -122,10 +74,10 @@ export default class VersionService implements IVersionService {
 	}
 
 	@bind
-	public async publishVersion(req: IPublishVersionRequest): Promise<IPublishVersionResponse> {
+	public async publishVersion({ appId, id }: IPublishVersionRequest): Promise<IPublishVersionResponse> {
 		try {
-			await this.updateVersion({ ...req, isPublished: true })
-			await this.appService.updateApp({ id: req.appId, latestVersion: req.id })
+			await this.updateVersion({ appId, id, isPublished: true })
+			await this.appService.updateApp({ id: appId, latestVersion: id })
 
 			return {
 				isSuccessful: true,

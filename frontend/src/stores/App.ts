@@ -30,7 +30,7 @@ export default class App {
 	@observable
 	public bundleId: string
 
-	public latestVersion: string
+	public latestVersion?: IVersionModel
 
 	public readonly versions: ObservableMap<string, IVersionModel> = observable.map({})
 

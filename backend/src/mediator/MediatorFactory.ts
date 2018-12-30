@@ -1,41 +1,45 @@
-import { EventType, IAppModel } from 'shared'
-import { IPreRespondHook, IMediator } from './Interfaces'
+import { EventType, IAppModel, ICheckForUpdateRequest } from 'shared'
+import { IPreRespondHook, ISocketMediator, IClients, IPostRespondHook } from './Interfaces'
 
 import { IAdminsService } from '../services/AdminsService'
 import { IAppService } from '../services/AppService'
 import { IVersionService } from '../services/VersionService'
-import { IS3Service } from '../services/S3Service'
+import { IFileUploadService } from '../services/S3Service'
 
 import { ReleaseUpdateHookFactory as IReleaseUpdateHookFactory } from '../hooks/ReleaseUpdateHook'
-import { UpdateServiceFactory as IUpdateServiceFactory } from '../services/UpdateService'
+import { IUpdateService } from '../services/UpdateService'
 
-import Mediator from './Mediator'
+import SocketMediator from './Mediator'
 
 export interface IMediatorFactory {
-	createAdminMediator(namespace: SocketIO.Namespace): IMediator
-	createAppClientsMediator(namespace: SocketIO.Namespace, adminMediator: IMediator, app: IAppModel): IMediator
+	createAdminMediator(): ISocketMediator
+	createUpdateClientsMediator(adminMediator: ISocketMediator, app: IAppModel): ISocketMediator
 }
+
+export type UpdateClientsMediatorFactory = (app: IAppModel) => ISocketMediator
 
 @DI.injectable()
 export default class MediatorFactory implements IMediatorFactory {
 	constructor(
+		@DI.inject(DI.SocketServer) private readonly server: SocketIO.Server,
 		@DI.inject(DI.Services.User) private readonly userService: IAdminsService,
 		@DI.inject(DI.Services.App) private readonly appService: IAppService,
 		@DI.inject(DI.Services.Version) private readonly versionService: IVersionService,
-		@DI.inject(DI.Services.S3) private readonly s3Service: IS3Service,
+		@DI.inject(DI.Services.FileUpload) private readonly fileUploadService: IFileUploadService,
+		@DI.inject(DI.Services.Update) private readonly updateService: IUpdateService,
 		@DI.inject(DI.Hooks.Auth) private readonly authHook: IPreRespondHook,
-		@DI.inject(DI.Factories.UpdateService) private readonly updateServiceFactory: IUpdateServiceFactory,
+		@DI.inject(DI.Hooks.UpdateClientsMediator) private readonly createClientsMediatorHook: IPostRespondHook,
 		@DI.inject(DI.Factories.ReleaseUpdateHook) private readonly releaseUpdateHookFactory: IReleaseUpdateHookFactory,
 	) {}
 
-	public createAdminMediator(namespace: SocketIO.Namespace) {
-		const mediator = new Mediator()
+	public createAdminMediator() {
+		const mediator = new SocketMediator(this.server.of('/admins'))
 
 		mediator.use(
 			[EventType.CreateApp, this.appService.createApp],
 			[EventType.UpdateApp, this.appService.updateApp],
 			[EventType.DeleteApp, this.appService.deleteApp],
-			[EventType.GetApps, this.appService.getApps],
+			[EventType.GetApps, this.appService.getAllApps],
 			[EventType.CreateVersion, this.versionService.createVersion],
 			[EventType.UpdateVersion, this.versionService.updateVersion],
 			[EventType.DeleteVersion, this.versionService.deleteVersion],
@@ -43,11 +47,13 @@ export default class MediatorFactory implements IMediatorFactory {
 			[EventType.GetVersions, this.versionService.getVersions],
 			[EventType.Login, this.userService.login],
 			[EventType.Authentication, this.userService.authenticate],
-			[EventType.SignUploadVersionUrl, this.s3Service.signVersionUploadUrl],
-			[EventType.SignUploadPictureUrl, this.s3Service.signPictureUploadUrl],
+			[EventType.SignUploadVersionUrl, this.fileUploadService.signVersionUploadUrl],
+			[EventType.SignUploadPictureUrl, this.fileUploadService.signPictureUploadUrl],
 		)
 
 		mediator.usePreRespond(this.authHook)
+
+		mediator.usePostRespond(this.createClientsMediatorHook)
 
 		mediator.broadcastEvents(
 			EventType.CreateApp,
@@ -59,36 +65,21 @@ export default class MediatorFactory implements IMediatorFactory {
 			EventType.PublishVersion,
 		)
 
-		namespace.on(EventType.Connection, (client) => {
-			mediator.subscribe(client)
-
-			client.on(EventType.Disconnect, () => {
-				mediator.unsubscribe(client)
-			})
-		})
-
 		return mediator
 	}
 
-	public createAppClientsMediator(namespace: SocketIO.Namespace, adminMediator: IMediator, app: IAppModel) {
-		const mediator = new Mediator()
-
-		const appUpdateService = this.updateServiceFactory(app)
+	public createUpdateClientsMediator(adminMediator: ISocketMediator, app: IAppModel) {
+		const mediator = new SocketMediator(this.server.of(`/${app.bundleId}`))
 
 		const releaseUpdateHook = this.releaseUpdateHookFactory(mediator)
 		adminMediator.usePostRespond(releaseUpdateHook)
 
 		mediator.use(
-			[EventType.CheckForUpdate, appUpdateService.checkForUpdate],
+			[
+				EventType.CheckForUpdate,
+				(req: ICheckForUpdateRequest) => this.updateService.checkForUpdate(app, req),
+			],
 		)
-
-		namespace.on(EventType.Connection, (client) => {
-			mediator.subscribe(client)
-
-			client.on(EventType.Disconnect, () => {
-				mediator.unsubscribe(client)
-			})
-		})
 
 		return mediator
 	}

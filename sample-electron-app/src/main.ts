@@ -1,5 +1,5 @@
 import { app, BrowserWindow, dialog } from 'electron'
-import UpdateService from 'electron-client'
+import ElectronUpdateServiceClient from 'electron-client'
 import * as path from 'path'
 
 let mainWindow: Electron.BrowserWindow
@@ -50,12 +50,12 @@ app.on('activate', () => {
 	}
 })
 
-const updateService = new UpdateService({
+const updateService = new ElectronUpdateServiceClient({
 	bundleId: 'test-electron',
 	updateServerUrl: 'http://localhost:4000',
 	userDataPath: app.getPath('userData'),
 	versionName: app.getVersion(),
-}).on('update', (info, done) => {
+}).on('update', (info) => {
 	// tslint:disable-next-line:no-console
 	console.log(info)
 	dialog.showMessageBox({
@@ -65,10 +65,11 @@ const updateService = new UpdateService({
 	},
 		(index) => {
 			if (index === 0) {
-				done()
 				app.relaunch()
 				app.exit()
 			}
 		},
 	)
 })
+
+updateService.loadLatestUpdate()

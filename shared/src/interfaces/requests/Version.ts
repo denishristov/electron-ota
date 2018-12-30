@@ -29,7 +29,7 @@ export interface IVersionResponse extends IResponse {
 	appId: string
 }
 
-export interface IGetVersionRequest {
+export interface IGetVersionRequest extends IVersionRequest {
 	id: string
 }
 

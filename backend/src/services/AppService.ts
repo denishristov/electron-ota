@@ -10,70 +10,63 @@ import {
 	IUpdateAppResponse,
 } from 'shared'
 import { IAppDocument } from '../models/App'
+import { toPlain } from '../util/util'
 
 export interface IAppService {
-	getApps(): Promise<IGetAppsResponse>
+	getApp(id: string, options?: IGetAppOptions): Promise<IAppDocument>
+	getAllApps(): Promise<IGetAppsResponse>
 	createApp(createRequest: ICreateAppRequest): Promise<ICreateAppResponse>
 	updateApp(updateRequest: IUpdateAppRequest): Promise<IUpdateAppResponse>
 	deleteApp(deleteRequest: IDeleteAppRequest): Promise<IDeleteAppResponse>
 }
 
+interface IGetAppOptions {
+	versions?: boolean
+	latestVersion?: boolean
+}
+
 @DI.injectable()
-export default class AppService {
+export default class AppService implements IAppService {
 	constructor(
-		@DI.inject(DI.Models.App) private readonly appModel: Model<IAppDocument>,
+		@DI.inject(DI.Models.App) private readonly apps: Model<IAppDocument>,
 	) {}
 
+	public async getApp(
+		id: string,
+		{ versions, latestVersion }: IGetAppOptions = { versions: false, latestVersion: false },
+	): Promise<IAppDocument> {
+		return await this.apps
+			.findById(id)
+			.populate(`${versions ? 'versions' : ''}`)
+			.populate(`${latestVersion ? 'latestVersion' : ''}`)
+	}
+
 	@bind
-	public async getApps(): Promise<IGetAppsResponse> {
-		const apps = await this.appModel.find()
+	public async getAllApps(): Promise<IGetAppsResponse> {
+		const apps = await this.apps.find().populate('latestVersion')
 
 		return {
-			apps: apps.map(({
-				bundleId,
-				id,
-				name,
-				pictureUrl,
-				latestVersion,
-			}) => ({
-				bundleId,
-				id,
-				name,
-				pictureUrl,
-				latestVersion,
-			})),
+			apps: apps.map(toPlain),
 		}
 	}
 
 	@bind
 	public async createApp(createRequest: ICreateAppRequest): Promise<ICreateAppResponse> {
-		const {
-			id,
-			pictureUrl,
-			bundleId,
-			name,
-			latestVersion,
-		} = await this.appModel.create(createRequest)
+		const app = await this.apps.create(createRequest)
 
-		return {
-			bundleId,
-			id,
-			name,
-			pictureUrl,
-			latestVersion,
-		}
+		return toPlain(app)
 	}
 
 	@bind
 	public async updateApp(updateRequest: IUpdateAppRequest): Promise<IUpdateAppResponse> {
 		const { id, ...app } = updateRequest
-		await this.appModel.updateOne({ _id: id }, { $set: app })
+		await this.apps.updateOne({ _id: id }, { $set: app })
 		return updateRequest
 	}
 
 	@bind
 	public async deleteApp({ id }: IDeleteAppRequest): Promise<IDeleteAppResponse> {
-		await this.appModel.deleteOne({ _id: id })
+		await this.apps.deleteOne({ _id: id })
 		return { id }
 	}
 }

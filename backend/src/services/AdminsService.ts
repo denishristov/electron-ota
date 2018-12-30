@@ -22,7 +22,7 @@ export interface IAdminsService {
 }
 
 @DI.injectable()
-export default class AdminsService {
+export default class AdminsService implements IAdminsService {
 	constructor(
 		@DI.inject(DI.Models.User) private readonly userModel: Model<IUserDocument>,
 	) {}

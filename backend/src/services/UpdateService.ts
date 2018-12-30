@@ -9,19 +9,27 @@ import { IVersionService } from './VersionService'
 export type UpdateServiceFactory = (app: IAppModel) => IUpdateService
 
 export interface IUpdateService {
-	checkForUpdate(req: ICheckForUpdateRequest): Promise<ICheckForUpdateResponse>
+	checkForUpdate(
+		app: IAppModel,
+		{ versionName }: ICheckForUpdateRequest,
+	): Promise<ICheckForUpdateResponse>
 }
 
 @DI.injectable()
 export default class UpdateService implements IUpdateService {
 	constructor(
-		private readonly versionService: IVersionService,
-		private readonly app: IAppModel,
+		@DI.inject(DI.Services.Version) private readonly versionService: IVersionService,
 	) {}
 
 	@bind
-	public async checkForUpdate({ versionName }: ICheckForUpdateRequest): Promise<ICheckForUpdateResponse> {
-		const version = await this.versionService.getVersion({ id: this.app.latestVersion })
+	public async checkForUpdate(
+		app: IAppModel,
+		{ versionName }: ICheckForUpdateRequest,
+	): Promise<ICheckForUpdateResponse> {
+		const version = await this.versionService.getVersion({
+			id: app.latestVersion.id,
+			appId: app.id,
+		})
 
 		if (version.versionName === versionName) {
 			return {

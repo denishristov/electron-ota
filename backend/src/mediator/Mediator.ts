@@ -1,20 +1,30 @@
 import { EventType } from 'shared'
 import {
 	IClient,
+	IClients,
 	IEventHandler,
 	IPreRespondHook,
-	IMediator,
+	ISocketMediator,
 	IPostRespondHook,
 } from './Interfaces'
+import crypto from 'crypto'
 
-type MediatorEventHandler = (request: object, ack: (res: object) => void) => void
-
-export default class Mediator implements IMediator {
-	private readonly clients: Map<string, IClient> = new Map()
-	private readonly handlers: Map<EventType, MediatorEventHandler> = new Map()
+export default class SocketMediator implements ISocketMediator {
+	private readonly handlers: Map<EventType, IEventHandler> = new Map()
 	private readonly preRespondHooks: Map<IPreRespondHook, IPreRespondHook> = new Map()
 	private readonly postRespondHooks: Map<IPostRespondHook, IPostRespondHook> = new Map()
 	private readonly broadcastableEvents: Set<EventType> = new Set()
+	private readonly roomId = crypto.randomBytes(16).toString('base64')
+
+	constructor(private readonly clients: IClients) {
+		clients.on(EventType.Connection, (client) => {
+			this.subscribe(client)
+
+			client.on(EventType.Disconnect, () => {
+				this.unsubscribe(client)
+			})
+		})
+	}
 
 	public use(...eventHandlers: IEventHandler[]): void {
 		for (const eventHandler of eventHandlers) {
@@ -24,25 +34,24 @@ export default class Mediator implements IMediator {
 				throw new Error(`Handler has been added for ${eventType}`)
 			}
 
-			const handler = this.createEventHandler(eventHandler)
-			this.handlers.set(eventType, handler)
+			this.handlers.set(eventType, eventHandler)
 
-			for (const [_, client] of this.clients) {
-				client.on(eventType, handler)
+			for (const client of this.sockets) {
+				client.on(eventType, this.createEventHandler(client, eventHandler))
 			}
 		}
 	}
 
 	public subscribe(client: IClient): void {
-		this.clients.set(client.id, client)
-
-		for (const [eventType, handler] of this.handlers) {
-			client.on(eventType, handler)
-		}
+		client.join(this.roomId, () => {
+			for (const [eventType, eventHandler] of this.handlers) {
+				client.on(eventType, this.createEventHandler(client, eventHandler))
+			}
+		})
 	}
 
-	public unsubscribe(client: IClient): boolean {
-		return this.clients.delete(client.id)
+	public unsubscribe(client: IClient) {
+		return client.leave(this.roomId)
 	}
 
 	public usePreRespond(...hooks: IPreRespondHook[]): void {
@@ -64,9 +73,7 @@ export default class Mediator implements IMediator {
 	}
 
 	public broadcast(eventType: EventType, data: object): void {
-		for (const [_, client] of this.clients) {
-			client.emit(eventType, data)
-		}
+		this.room.emit(eventType, data)
 		// tslint:disable-next-line:no-console
 		console.log(
 			'----------------------------------\n',
@@ -84,12 +91,20 @@ export default class Mediator implements IMediator {
 		return this.preRespondHooks.delete(hook)
 	}
 
-	private async applyPreHooks(eventType: EventType, request: object): Promise<object | null> {
+	private get room() {
+		return this.clients.in(this.roomId)
+	}
+
+	private get sockets(): IClient[] {
+		return Object.values(this.clients.sockets)
+	}
+
+	private async applyPreHooks(eventType: EventType, request: object): Promise<object> {
 		if (!this.preRespondHooks.size) {
 			return request
 		}
 
-		const data = { ...request }
+		let data = { ...request }
 
 		for (const [hook] of this.preRespondHooks) {
 			const { eventTypes, exceptions } = hook
@@ -101,13 +116,11 @@ export default class Mediator implements IMediator {
 				continue
 			}
 
-			const hookedData = await hook.handle(request)
+			data = await hook.handle(request)
 
-			if (!hookedData) {
+			if (!data) {
 				return null
 			}
-
-			Object.assign(data, hookedData)
 		}
 
 		return data
@@ -129,8 +142,8 @@ export default class Mediator implements IMediator {
 		}
 	}
 
-	private createEventHandler([eventType, handle]: IEventHandler) {
-		return async (request: object, ack: (res: object) => void) => {
+	private createEventHandler(client: IClient, [eventType, handle]: IEventHandler) {
+		return async (request: object, respond: (res: object) => void) => {
 			const data = await this.applyPreHooks(eventType, request)
 
 			if (!data) {
@@ -152,12 +165,13 @@ export default class Mediator implements IMediator {
 			)
 
 			if (response) {
-				ack(response)
+				respond(response)
 
 				this.applyPostHooks(eventType, request, response)
 
 				if (this.broadcastableEvents.has(eventType)) {
-					this.broadcast(eventType, response)
+					// this.broadcast(eventType, response, )
+					client.in(this.roomId).emit(eventType, response)
 				}
 			}
 		}

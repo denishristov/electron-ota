@@ -1,11 +1,12 @@
 import { IRequest, IResponse } from "./Generic";
+import { IVersionModel } from "./Version";
 
 export interface IAppModel {
 	id: string
 	name: string
 	pictureUrl: string
 	bundleId: string
-	latestVersion: string
+	latestVersion?: IVersionModel
 }
 
 export interface IGetAppsRequest extends IRequest {}
@@ -18,7 +19,6 @@ export interface ICreateAppRequest extends IRequest {
 	name: string
 	pictureUrl: string
 	bundleId: string
-	latestVersion?: string
 }
 
 export interface ICreateAppResponse extends IResponse, IAppModel {}
@@ -36,7 +36,6 @@ export interface IUpdateAppResponse extends IResponse {
 	name?: string
 	pictureUrl?: string
 	bundleId?: string
-	latestVersion?: string
 }
 
 export interface IDeleteAppRequest extends IRequest {

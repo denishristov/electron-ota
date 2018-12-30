@@ -6,8 +6,8 @@ import * as DI from '../dependencies/symbols'
 
 export interface IApi {
 	emit<Res extends IResponse = IResponse>(eventType: EventType, request?: object): Promise<Res>
-	on<Res extends IResponse>(eventType: string, ack: (res: Res) => void): void
-	preEmit(ack: Hook): void
+	on<Res extends IResponse>(eventType: string, cb: (res: Res) => void): void
+	preEmit(cb: Hook): void
 }
 
 type Hook = (req: object) => object
@@ -21,8 +21,8 @@ export default class Api implements IApi {
 	) {}
 
 	@bind
-	public preEmit(ack: Hook): void {
-		this.preEmitHooks.push(ack)
+	public preEmit(cb: Hook): void {
+		this.preEmitHooks.push(cb)
 	}
 
 	public emit<Res extends IResponse = IResponse>(eventType: EventType, request?: object): Promise<Res> {
@@ -41,17 +41,17 @@ export default class Api implements IApi {
 	}
 
 	@bind
-	public on<Res extends IResponse = IResponse>(eventType: string, ack: (res: Res) => void): void {
+	public on<Res extends IResponse = IResponse>(eventType: string, cb: (res: Res) => void): void {
 		this.connection.on(eventType, (res: Res) => {
 			if (res && res.errorMessage) {
 				throw new Error(res.errorMessage)
 			} else {
-				ack(res)
+				cb(res)
 			}
 		})
 	}
 
 	private attachData<Req extends object>(request: Req): Req & { authToken: string | null; } {
-		return Object.assign(request, ...this.preEmitHooks.map((ack) => ack(request)))
+		return Object.assign(request, ...this.preEmitHooks.map((cb) => cb(request)))
 	}
 }

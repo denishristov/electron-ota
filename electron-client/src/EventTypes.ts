@@ -8,5 +8,4 @@ export enum Server {
 export enum UpdateService {
 	Error = 'error',
 	Update = 'update',
-	
 }

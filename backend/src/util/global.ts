@@ -1,6 +1,6 @@
 import bindDecorator from 'bind-decorator'
 import { inject, injectable } from 'inversify'
-import { Models, Services, Hooks, Factories } from '../dependencies/symbols'
+import { Models, Services, Hooks, Factories, SocketServer, HTTPServer, Mediators } from '../dependencies/symbols'
 
 interface IDI {
 	inject: typeof inject
@@ -9,6 +9,9 @@ interface IDI {
 	Services: typeof Services
 	Hooks: typeof Hooks
 	Factories: typeof Factories
+	SocketServer: typeof SocketServer
+	HTTPServer: typeof HTTPServer
+	Mediators: typeof Mediators
 }
 
 declare global {
@@ -23,6 +26,9 @@ const DI = {
 	Services,
 	Hooks,
 	Factories,
+	Mediators,
+	HTTPServer,
+	SocketServer,
 }
 
 Object.defineProperties(global, {

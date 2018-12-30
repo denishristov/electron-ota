@@ -1,6 +1,8 @@
 import { EventType } from 'shared'
 
 export type IClient = SocketIO.Socket
+export type IClients = SocketIO.Namespace
+
 type IHandler<Req = object, Res = object> = (request: Req) => Promise<Res> | Res
 
 export interface IEventHandler<Req = object, Res = object> extends Iterable<EventType | IHandler<Req, Res>> {
@@ -8,16 +10,16 @@ export interface IEventHandler<Req = object, Res = object> extends Iterable<Even
 	[1]: IHandler<Req, Res>
 }
 
-export interface IMediator {
+export interface ISocketMediator {
 	use(...handlers: IEventHandler[]): void
 	subscribe(client: IClient): void
-	unsubscribe(client: IClient): boolean
+	unsubscribe(client: IClient): void
 	broadcast(eventType: EventType, data: object): void
 	broadcastEvents(...eventTypes: EventType[]): void
 	usePreRespond(...hooks: IPreRespondHook[]): void
 	usePostRespond(...hooks: IPostRespondHook[]): void
-	removePostRespond(hook: IPostRespondHook): boolean
-	removePreRespond(hook: IPreRespondHook): boolean
+	removePostRespond(hook: IPostRespondHook): void
+	removePreRespond(hook: IPreRespondHook): void
 }
 
 interface IHook {
@@ -26,7 +28,7 @@ interface IHook {
 }
 
 export interface IPreRespondHook extends IHook {
-	handle(req: object): Promise<object | void>
+	handle(req: object): Promise<object | null>
 }
 
 export interface IPostRespondHook extends IHook {

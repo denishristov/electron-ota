@@ -1,5 +1,5 @@
+// tslint:disable:no-console
 import http from 'http'
-import socketio from 'socket.io'
 import bluebird from 'bluebird'
 import mongoose from 'mongoose'
 import './util/global'
@@ -13,10 +13,8 @@ import {
 	PORT,
 } from './config/config'
 
-import { IMediatorFactory } from './mediator/MediatorFactory'
+import { UpdateClientsMediatorFactory } from './mediator/MediatorFactory'
 import { IAppService } from './services/AppService'
-
-// tslint:disable:no-console
 
 mongoose.Promise = bluebird
 mongoose.set('useCreateIndex', true)
@@ -26,10 +24,7 @@ mongoose.connect(MONGODB_URI, { useNewUrlParser: true })
 	process.exit(1)
 })
 
-const server = http.createServer()
-const io = socketio(server)
-
-server.listen(PORT, () => {
+container.get<http.Server>(DI.HTTPServer).listen(PORT, () => {
 	console.log(
 		'App is running at http://localhost:%d in %s mode',
 		PORT,
@@ -37,12 +32,12 @@ server.listen(PORT, () => {
 	)
 })
 
-const mediatorFactory = container.get<IMediatorFactory>(DI.Factories.Mediator)
+container.get(DI.Mediators.Admins)
 
-const adminMediator = mediatorFactory.createAdminMediator(io.of('/admins'))
+container.get<IAppService>(DI.Services.App).getAllApps().then(({ apps }) => {
+	const updateClientsMediatorFactory = container.get<UpdateClientsMediatorFactory>(DI.Factories.ClientsMediator)
 
-container.get<IAppService>(DI.Services.App).getApps().then(({ apps }) => {
 	for (const app of apps) {
-		mediatorFactory.createAppClientsMediator(io.of(`/${app.bundleId}`), adminMediator, app)
+		updateClientsMediatorFactory(app)
 	}
 })

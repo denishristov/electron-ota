@@ -52,6 +52,7 @@ class UserStore {
 			if (authToken) {
 				this.authToken = authToken
 				Cookies.set('authToken', authToken)
+				this.api.preEmit(this.getAuthToken)
 			}
 
 			this.isAuthenticated = true
@@ -85,8 +86,6 @@ class UserStore {
 		if (!this.authToken) {
 			throw new Error('No auth token')
 		}
-
-		console.log('tumor ->', this.authToken)
 
 		return { authToken: this.authToken }
 	}

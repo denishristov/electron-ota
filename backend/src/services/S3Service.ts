@@ -8,7 +8,7 @@ enum S3Action {
 	Upload = 'putObject',
 }
 
-export interface IS3Service {
+export interface IFileUploadService {
 	signVersionUploadUrl(req: IS3SignUrlRequest): Promise<IS3SignUrlResponse>
 	signPictureUploadUrl(req: IS3SignUrlRequest): Promise<IS3SignUrlResponse>
 }
@@ -18,7 +18,7 @@ interface IS3ConfigOptions {
 }
 
 @DI.injectable()
-export default class S3Service {
+export default class S3Service implements IFileUploadService {
 	private readonly s3 = new AWS.S3()
 
 	constructor(private readonly s3Config: IS3ConfigOptions) {}

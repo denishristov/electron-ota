@@ -8,6 +8,7 @@ export interface IVersionDocument extends Document {
 	isPublished: boolean
 	hash: string
 	appId: string
+	description?: string
 }
 
 export const VersionSchema = new Schema({
@@ -26,6 +27,7 @@ export const VersionSchema = new Schema({
 	versionName: {
 		type: String,
 	},
+	description: String,
 }, {
 	timestamps: true,
 })
