@@ -11,9 +11,11 @@ import {
 } from 'shared'
 import { IAppDocument } from '../models/App'
 import { toPlain } from '../util/util'
+import { IVersionDocument } from '../models/Version'
 
 export interface IAppService {
 	getApp(id: string, options?: IGetAppOptions): Promise<IAppDocument>
+	getAppVersions(id: string): Promise<{ versions: IVersionDocument[] }>
 	getAllApps(): Promise<IGetAppsResponse>
 	createApp(createRequest: ICreateAppRequest): Promise<ICreateAppResponse>
 	updateApp(updateRequest: IUpdateAppRequest): Promise<IUpdateAppResponse>
@@ -28,7 +30,8 @@ interface IGetAppOptions {
 @DI.injectable()
 export default class AppService implements IAppService {
 	constructor(
-		@DI.inject(DI.Models.App) private readonly apps: Model<IAppDocument>,
+		@DI.inject(DI.Models.App)
+		private readonly apps: Model<IAppDocument>,
 	) {}
 
 	public async getApp(
@@ -39,6 +42,10 @@ export default class AppService implements IAppService {
 			.findById(id)
 			.populate(`${versions ? 'versions' : ''}`)
 			.populate(`${latestVersion ? 'latestVersion' : ''}`)
+	}
+
+	public async getAppVersions(id: string): Promise<{ versions: IVersionDocument[] }> {
+		return await this.apps.findById(id).populate('versions').select('versions')
 	}
 
 	@bind

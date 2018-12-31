@@ -36,12 +36,14 @@ declare interface ElectronUpdateServiceClient {
 }
 
 class ElectronUpdateServiceClient extends EventEmitter {
-	private readonly connect: Promise<SocketIOClient.Socket>
+	private readonly uri: string
 	private readonly updateDirPath: string
 	private readonly versionName: string
 	private readonly checkHashAfterDownload: boolean
 	private readonly checkHashBeforeLoad: boolean
 	private readonly store = new Store({ name: 'updater' })
+	private readonly connect: Promise<SocketIOClient.Socket> = this.connectPromise
+
 	private static readonly RETRY_TIMEOUT = 1000 * 60
 	private static readonly EMIT_TIMEOUT = 1000 * 60
 
@@ -55,26 +57,13 @@ class ElectronUpdateServiceClient extends EventEmitter {
 	}: IUpdateServiceOptions) {
 		super()
 
-		userDataPath = userDataPath || app.getPath('userData')
-
-		this.updateDirPath = path.join(userDataPath, 'updates')
+		this.uri = `${updateServerUrl}/${bundleId}`
+		this.updateDirPath = path.join(userDataPath || app.getPath('userData'), 'updates')
 		this.versionName = versionName
 		this.checkHashBeforeLoad = Boolean(checkHashBeforeLoad)
 		this.checkHashAfterDownload = checkHashAfterDownload === void 0 
 			? true 
 			: checkHashAfterDownload
-
-		this.connect = Promise.resolve().then(() => {
-			const url = `${updateServerUrl}/${bundleId}`
-			const query = `type=${os.platform()}&versionName=${versionName}`
-
-			const connection = io(url, { query })
-
-			connection.on(EventTypes.Server.Connect, this.checkForUpdate.bind(this))
-			connection.on(EventTypes.Server.NewUpdate, this.downloadUpdate.bind(this))
-
-			return connection
-		})
 	}
 
 	public async loadLatestUpdate(): Promise<any> {
@@ -127,10 +116,23 @@ class ElectronUpdateServiceClient extends EventEmitter {
 		return isUpToDate
 	}
 
-	private async downloadUpdate(args: INewUpdate) {
-		const { downloadUrl, ...info } = args
+	private get connectPromise() {
+		return Promise.resolve().then(() => {
+			const query = `type=${os.platform()}&versionName=${this.versionName}`
+	
+			const connection = io(this.uri, { query })
+	
+			connection.on(EventTypes.Server.Connect, this.checkForUpdate.bind(this))
+			connection.on(EventTypes.Server.NewUpdate, this.downloadUpdate.bind(this))
+	
+			return connection
+		})
+	}
 
-		if (semver.gt(this.versionName, info.versionName)) {
+	private async downloadUpdate(args: INewUpdate) {
+		const { downloadUrl, ...update } = args
+
+		if (semver.gt(this.versionName, update.versionName)) {
 			return
 		}
 
@@ -145,7 +147,7 @@ class ElectronUpdateServiceClient extends EventEmitter {
 			if (this.checkHashAfterDownload) {	
 				const hash = await hashFile(filePath)
 				
-				if (info.hash !== hash) {
+				if (update.hash !== hash) {
 					throw new Error('Invalid hash')
 				}
 			}
@@ -153,7 +155,7 @@ class ElectronUpdateServiceClient extends EventEmitter {
 			const updateInfo = {
 				fileName: filename,
 				filePath,
-				...info
+				...update
 			}
 
 			this.store.set(filename, updateInfo)

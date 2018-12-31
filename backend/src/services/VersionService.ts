@@ -29,13 +29,15 @@ export interface IVersionService {
 @DI.injectable()
 export default class VersionService implements IVersionService {
 	constructor(
-		@DI.inject(DI.Models.Version) private readonly versionModel: Model<IVersionDocument>,
-		@DI.inject(DI.Services.App) private readonly appService: IAppService,
+		@DI.inject(DI.Models.Version)
+		private readonly versionModel: Model<IVersionDocument>,
+		@DI.inject(DI.Services.App)
+		private readonly appService: IAppService,
 	) {}
 
 	@bind
 	public async getVersion({ id, appId }: IGetVersionRequest): Promise<IGetVersionResponse> {
-		const { versions } = await this.appService.getApp(appId, { versions: true })
+		const { versions } = await this.appService.getAppVersions(appId)
 		const version = versions.find((version) => version.id === id)
 
 		return toPlain(version)
@@ -43,10 +45,10 @@ export default class VersionService implements IVersionService {
 
 	@bind
 	public async getVersions({ appId }: IGetVersionRequest): Promise<IGetVersionsResponse> {
-		const da = await this.appService.getApp(appId, { versions: true })
+		const { versions } = await this.appService.getAppVersions(appId)
 
 		return {
-			versions: da.versions.map(toPlain),
+			versions: versions.map(toPlain),
 		}
 	}
 

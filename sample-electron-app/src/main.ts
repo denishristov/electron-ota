@@ -53,7 +53,6 @@ app.on('activate', () => {
 const updateService = new ElectronUpdateServiceClient({
 	bundleId: 'test-electron',
 	updateServerUrl: 'http://localhost:4000',
-	userDataPath: app.getPath('userData'),
 	versionName: app.getVersion(),
 }).on('update', (info) => {
 	// tslint:disable-next-line:no-console

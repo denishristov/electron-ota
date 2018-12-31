@@ -35,6 +35,7 @@ function hashBlob(blob: Blob): Promise<string> {
 		const reader = new FileReader()
 
 		reader.readAsArrayBuffer(blob)
+
 		reader.addEventListener('load', handleLoad)
 		reader.addEventListener('error', reject)
 
@@ -78,8 +79,6 @@ class AppPage extends Component<IProps> {
 					body: versionFile,
 					method: 'PUT',
 				})])
-
-				console.log(hash)
 
 				this.app.emitCreateVersion({
 					downloadUrl,
@@ -128,7 +127,6 @@ class AppPage extends Component<IProps> {
 						type='file'
 						name='version'
 						placeholder='wow'
-						// onChange={x => console.log(x.nativeEvent)}
 					/>
 					<button type='submit'>
 						Create version

@@ -10,8 +10,12 @@ export interface IEventHandler<Req = object, Res = object> extends Iterable<Even
 	[1]: IHandler<Req, Res>
 }
 
+export type IEventHandlers = {
+	[key in EventType]?: IHandler
+}
+
 export interface ISocketMediator {
-	use(...handlers: IEventHandler[]): void
+	use(eventHandlers: IEventHandlers): void
 	subscribe(client: IClient): void
 	unsubscribe(client: IClient): void
 	broadcast(eventType: EventType, data: object): void

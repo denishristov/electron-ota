@@ -12,6 +12,7 @@ import './index.sass'
 
 import AppPage from './components/Apps/AppPage'
 import Login from './components/HomePage/Login'
+import Register from './components/HomePage/Register'
 
 import 'shared'
 
@@ -39,6 +40,11 @@ const app = (
 					exact
 					path='/'
 					component={HomePage}
+				/>
+				<Route
+					exact
+					path='/register'
+					component={Register}
 				/>
 				<Route
 					exact

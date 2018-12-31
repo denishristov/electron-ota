@@ -6,11 +6,12 @@ import {
 	IPreRespondHook,
 	ISocketMediator,
 	IPostRespondHook,
+	IEventHandlers,
 } from './Interfaces'
 import crypto from 'crypto'
 
 export default class SocketMediator implements ISocketMediator {
-	private readonly handlers: Map<EventType, IEventHandler> = new Map()
+	private readonly handlers: Map<string, IEventHandler> = new Map()
 	private readonly preRespondHooks: Map<IPreRespondHook, IPreRespondHook> = new Map()
 	private readonly postRespondHooks: Map<IPostRespondHook, IPostRespondHook> = new Map()
 	private readonly broadcastableEvents: Set<EventType> = new Set()
@@ -26,19 +27,21 @@ export default class SocketMediator implements ISocketMediator {
 		})
 	}
 
-	public use(...eventHandlers: IEventHandler[]): void {
-		for (const eventHandler of eventHandlers) {
+	public use(eventHandlers: IEventHandlers): void {
+		const entries = Object.entries(eventHandlers) as IEventHandler[]
+
+		for (const eventHandler of entries) {
 			const [eventType] = eventHandler
 
 			if (this.handlers.has(eventType)) {
-				throw new Error(`Handler has been added for ${eventType}`)
+				throw new Error(`Handler has already been added for ${eventType}`)
 			}
 
 			this.handlers.set(eventType, eventHandler)
 
-			for (const client of this.sockets) {
-				client.on(eventType, this.createEventHandler(client, eventHandler))
-			}
+			// for (const client of this.sockets) {
+			// 	client.on(eventType, this.createEventHandler(client, eventHandler))
+			// }
 		}
 	}
 

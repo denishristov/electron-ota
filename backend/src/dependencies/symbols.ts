@@ -2,8 +2,9 @@ export const Services = {
 	User: Symbol.for('User.Service'),
 	App: Symbol.for('App.Service'),
 	Version: Symbol.for('Version.Service'),
-	Update: Symbol.for('Service.Update'),
+	// Update: Symbol.for('Service.Update'),
 	FileUpload: Symbol.for('S3.Service'),
+	RegisterAdmin: Symbol.for('RegisterAdmin.Service'),
 }
 
 export const Models = {
@@ -21,6 +22,7 @@ export const Factories = {
 	Mediator: Symbol.for('Factory.Mediator'),
 	ReleaseUpdateHook: Symbol.for('Factory.Hook.Update'),
 	ClientsMediator: Symbol.for('Factory.ClientsMediator'),
+	UpdateService: Symbol.for('factories.UpdateService'),
 }
 
 export const Mediators = {

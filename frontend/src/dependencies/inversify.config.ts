@@ -8,9 +8,9 @@ import UserStore, { IUserStore } from '../stores/UserStore'
 import Api, { IApi } from '../util/Api'
 
 const container = new Container()
-const url = 'http://localhost:4000/admins'
+const uri = 'http://localhost:4000/admins'
 
-container.bind(DI.Connection).toConstantValue(io(url))
+container.bind(DI.Connection).toConstantValue(io(uri))
 container.bind<IApi>(DI.Api).to(Api).inSingletonScope()
 
 container.bind<IUserStore>(DI.Stores.User).to(UserStore).inSingletonScope()

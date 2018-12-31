@@ -7,7 +7,8 @@ export default class AuthHook implements IPreRespondHook {
 	public exceptions = new Set([EventType.Login, EventType.Authentication, EventType.Connection])
 
 	constructor(
-		@DI.inject(DI.Services.User) private readonly userService: IAdminsService,
+		@DI.inject(DI.Services.User)
+		private readonly userService: IAdminsService,
 	) {}
 
 	@bind
