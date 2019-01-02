@@ -1,11 +1,11 @@
-import { inject, injectable } from 'inversify'
-import  { Stores } from '../dependencies/symbols'
 import { IAppsStore } from './AppsStore'
 import { IUserStore } from './UserStore'
+import { IRegisterStore } from './RegisterStore'
 
 export interface IRootStore {
 	userStore: IUserStore
 	appsStore: IAppsStore
+	registerStore: IRegisterStore
 }
 
 export function injectUserStore({ userStore }: IRootStore): { userStore: IUserStore } {
@@ -16,11 +16,19 @@ export function injectAppsStore({ appsStore }: IRootStore): { appsStore: IAppsSt
 	return { appsStore }
 }
 
-@injectable()
+export function injectRegisterStore({ registerStore }: IRootStore): { registerStore: IRegisterStore } {
+	return { registerStore }
+}
+
+@DI.injectable()
 class RootStore implements IRootStore {
 	constructor(
-		@inject(Stores.Apps) public appsStore: IAppsStore,
-		@inject(Stores.User) public userStore: IUserStore,
+		@DI.inject(DI.Stores.Apps)
+		public appsStore: IAppsStore,
+		@DI.inject(DI.Stores.User)
+		public userStore: IUserStore,
+		@DI.inject(DI.Stores.Register)
+		public registerStore: IRegisterStore,
 	) {}
 }
 

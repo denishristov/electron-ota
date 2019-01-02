@@ -1,28 +1,33 @@
 {
-    "defaultSeverity": "warn",
+    "defaultSeverity": "error",
     "extends": [
         "tslint:recommended"
     ],
-    "linterOptions": {
-        "exclude": [
-          "config/**/*.js",
-          "node_modules/**/*.ts",
-          "coverage/lcov-report/*.js"
-        ]
-    },
+    "jsRules": {},
     "rules": {
         "no-any": true,
-        "triple-equals": [true, "allow-null-check"],
-        "prefer-readonly": true,
-        "prefer-const": [true, {"destructuring": "all"}],
-        "semicolon": [true, "never"],
-        "whitespace": [true, "check-branch", "check-operator", "check-typecast"],
-        "indent": [true, "tabs", 2],
-        "no-unused-variable": [true, {"ignore-pattern": "^_"}],
-        "no-unused-expression": [true, "allow-fast-null-checks"],
-        "no-shadowed-variable": false,
-        "quotemark": [true, "single", "avoid-escape", "avoid-template"],
-        "ordered-imports": false,
-        "jsx-boolean-value": false
-    }
+        "strict-boolean-expressions": [
+            true,
+            "allow-null-union",
+            "allow-undefined-union",
+            "allow-string",
+            "allow-enum",
+            "allow-number"
+          ],
+          "triple-equals": [true, "allow-null-check"],
+          "prefer-readonly": true,
+          "prefer-const": [true, {"destructuring": "all"}],
+          "align": [true, "parameters"],
+          "semicolon": [true, "never"],
+          "whitespace": [true, "check-branch", "check-operator", "check-typecast"],
+          "indent": [true, "tabs", 2],
+          "no-unused-variable": [true, {"ignore-pattern": "^_"}],
+          "no-unused-expression": [true, "allow-fast-null-checks"],
+          "no-shadowed-variable": false,
+          "quotemark": [true, "single", "avoid-escape", "avoid-template"],
+          "ordered-imports": false,
+          "object-literal-sort-keys": false,
+          "variable-name": [true, "ban-keywords", "check-format", "allow-leading-underscore"],
+    },
+    "rulesDirectory": []
 }

@@ -4,7 +4,13 @@ import { IAdminsService } from '../services/AdminsService'
 
 @DI.injectable()
 export default class AuthHook implements IPreRespondHook {
-	public exceptions = new Set([EventType.Login, EventType.Authentication, EventType.Connection])
+	public exceptions = new Set([
+		EventType.Login,
+		EventType.Authentication,
+		EventType.RegisterKeyPath,
+		EventType.RegisterKeyAuth,
+		EventType.Register,
+	])
 
 	constructor(
 		@DI.inject(DI.Services.User)

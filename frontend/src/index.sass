@@ -1,9 +1,11 @@
 body
 	margin: 0
 	padding: 0
-	font-family: "SF Display Pro", -apple-system, "Roboto", "Helvetica Neue", "Arial", sans-serif
+	font-family: "Rubic", -apple-system, "Roboto","Arial", sans-serif
+	background-image: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%)
 	-webkit-font-smoothing: antialiased
-	-moz-osx-font-smoothing: grayscale
+	color: #334562
+	// -moz-osx-font-smoothing: grayscale
 
 code
 	font-family: "SF Mono", source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace
@@ -12,41 +14,82 @@ table
 	width: 100vw
 	font-size: 0.8rem
 
-input
-	padding: 16px
-	border: 0
-	font-size: 1.2rem
-	border-radius: 40px
-	overflow: hidden
-	box-shadow: 0 0 3px 3px rgba(62, 103, 184, 0.01), 0 4px 15px rgba(67, 107, 185, 0.03)
-	border-bottom: 1px solid #dcdcdc6e
-	margin: 16px
-	border-top: 1px solid white
-	background: #fdfdfd
-	position: relative
+label
+	margin: 0px 32px
+	text-transform: uppercase
+	font-size: 0.84rem
+	font-weight: 500
 	
-// input[type="text"]
-// 	&:after
-// 		content: ''
-// 		width: 100%
-// 		height: 1px
-// 		background-color: black
-// 		position: absolute
-// 		bottom: 8px
+@mixin defaultShadow($color)
+	box-shadow: 0 10px 34px $color, 0 2px 16px $color
+
+#root
+	min-height: 100vh
+	display: flex
+	align-items: center
+	justify-content: center
+
+input
+	border: none
+	padding: 16px
+	font-size: 1.14rem
+	border-radius: 40px
+	margin: 16px
+	transition: all .33s ease-out
+	background: transparent
+	flex-grow: 1
+
+input:focus
+	outline: none
+
+// input:hover
+// 	background: #ffffff47
 
 button
 	padding: 16px
 	border: 0
-	font-size: 1.2rem
+	font-size: 1.14rem
 	border-radius: 40px
 	overflow: hidden
-	box-shadow: 0 0 3px 3px rgba(62, 103, 184, 0.01), 0 4px 15px rgba(67, 107, 185, 0.03)
-	border-bottom: 1px solid #dcdcdc6e
 	margin: 16px
-	border-top: 1px solid white
 	background: #fdfdfd
+	text-transform: uppercase
+
+button.green
+	background-color: #54f18e
+	@include defaultShadow(lighten(#54f18e, 15%))
+	color: white
+	font-weight: 600
+
+button:focus
+	outline: none
 
 form
 	display: flex
 	flex-flow: column
+	min-width: 40%
 
+h1
+	margin: 32px
+	font-weight: 700
+	font-size: 3em
+
+.input-container
+	display: flex
+	position: relative
+
+	.input-bar
+		margin: 0 32px
+		width: calc(100% - (2 * 32px))
+		flex-grow: 1
+		position: absolute
+		height: 1px
+		background-color: #dedede
+		bottom: 28px
+		box-shadow: none
+		transition: all .33s ease-out
+
+	input:focus + .input-bar
+		@include defaultShadow(#86919a61)
+		background-color: #334562
+	

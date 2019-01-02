@@ -1,33 +1,29 @@
-import bind from 'bind-decorator'
-import { injectable } from 'inversify'
 import { EventType, IResponse } from 'shared'
-import { inject } from 'inversify'
-import * as DI from '../dependencies/symbols'
 
 export interface IApi {
 	emit<Res extends IResponse = IResponse>(eventType: EventType, request?: object): Promise<Res>
 	on<Res extends IResponse>(eventType: string, cb: (res: Res) => void): void
-	preEmit(cb: Hook): void
+	usePreEmit(cb: Hook): void
 }
 
 type Hook = (req: object) => object
 
-@injectable()
+@DI.injectable()
 export default class Api implements IApi {
 	private readonly preEmitHooks: Hook[] = []
 
 	constructor(
-		@inject(DI.Connection) private readonly connection: SocketIOClient.Socket,
+		@DI.inject(DI.Connection) private readonly connection: SocketIOClient.Socket,
 	) {}
 
 	@bind
-	public preEmit(cb: Hook): void {
+	public usePreEmit(cb: Hook): void {
 		this.preEmitHooks.push(cb)
 	}
 
 	public emit<Res extends IResponse = IResponse>(eventType: EventType, request?: object): Promise<Res> {
 		return new Promise((resolve, reject) => {
-			const timeout = setTimeout(() => reject({ eventType, request }), 1000 * 5)
+			const timeout = setTimeout(() => reject({ eventType, request, message: 'timeout' }), 1000 * 10)
 			// console.log(this.preEmitHooks)
 			this.connection.emit(eventType, this.attachData(request || {}), (data: Res) => {
 				clearTimeout(timeout)

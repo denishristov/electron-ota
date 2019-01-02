@@ -1,4 +1,3 @@
-import { inject, injectable } from 'inversify'
 import { action, computed, observable, ObservableMap } from 'mobx'
 import {
 	EventType,
@@ -17,7 +16,6 @@ import {
 } from 'shared'
 import { ICreateAppRequest } from 'shared'
 import { IApi } from '../util/Api'
-import * as DI from '../dependencies/symbols'
 import App from './App'
 
 // tslint:disable-next-line:no-empty-interface
@@ -25,11 +23,11 @@ export interface IAppsStore {
 
 }
 
-@injectable()
+@DI.injectable()
 export default class AppsStore implements IAppsStore {
 	private readonly apps: ObservableMap<string, App> = observable.map({})
 
-	constructor(@inject(DI.Api) private readonly api: IApi) {
+	constructor(@DI.inject(DI.Api) private readonly api: IApi) {
 		this.api.on(EventType.CreateApp, this.handleCreateApp)
 		this.api.on(EventType.UpdateApp, this.handleUpdateApp)
 		this.api.on(EventType.DeleteApp, this.handleDeleteApp)

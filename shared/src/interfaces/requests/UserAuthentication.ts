@@ -28,4 +28,5 @@ export interface IRegisterAdminRequest extends IRequest {
 
 export interface IRegisterAdminResponse extends IResponse {
 	isSuccessful: boolean
+	authToken?: string
 }

@@ -1,9 +1,10 @@
 import createBrowserHistory from 'history/createBrowserHistory'
 import { configure } from 'mobx'
 import React from 'react'
-import ReactDOM from 'react-dom'
+import { render } from 'react-dom'
 import { Route, Router } from 'react-router-dom'
 import 'reflect-metadata'
+import './util/global'
 
 import AppsContainer from './components/Apps/AppsContainer'
 import HomePage from './components/HomePage/HomePage'
@@ -43,7 +44,7 @@ const app = (
 				/>
 				<Route
 					exact
-					path='/register'
+					path='/setup'
 					component={Register}
 				/>
 				<Route
@@ -60,10 +61,10 @@ const app = (
 					path='/apps/:id'
 					component={AppPage}
 				/>
-				<Route component={HomePage} />
+				{/* <Route component={HomePage} /> */}
 			</>
 		</Router>
 	</Provider>
 )
 
-ReactDOM.render(app, document.getElementById('root'))
+render(app, document.getElementById('root'))

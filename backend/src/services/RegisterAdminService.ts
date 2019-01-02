@@ -45,7 +45,7 @@ export default class RegisterAdminService implements IRegisterAdminService {
 	}
 
 	private async genRegisterKey() {
-		const bytes = await randomBytes(2048)
+		const bytes = await randomBytes(1024)
 		return bytes.toString('base64')
 	}
 }

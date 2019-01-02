@@ -1,4 +1,4 @@
-import { EventType } from 'shared'
+import { EventType, IResponse } from 'shared'
 import {
 	IClient,
 	IClients,
@@ -102,7 +102,7 @@ export default class SocketMediator implements ISocketMediator {
 		return Object.values(this.clients.sockets)
 	}
 
-	private async applyPreHooks(eventType: EventType, request: object): Promise<object> {
+	private async applyPreHooks(eventType: EventType, request: object): Promise<IResponse> {
 		if (!this.preRespondHooks.size) {
 			return request
 		}
@@ -149,9 +149,18 @@ export default class SocketMediator implements ISocketMediator {
 		return async (request: object, respond: (res: object) => void) => {
 			const data = await this.applyPreHooks(eventType, request)
 
-			if (!data) {
+			if (!data || data.errorMessage) {
 				// tslint:disable-next-line:no-console
-				console.log('whops hook returned falsy')
+				console.log(
+					'----------------------------------\n',
+					`${eventType}\n`,
+					// '----------------------------------\n',
+					'request: ', request,
+					// '----------------------------------\n',
+					'hook: ', data,
+				)
+
+				respond({ errorMessage: data.errorMessage })
 				return
 			}
 
@@ -175,6 +184,13 @@ export default class SocketMediator implements ISocketMediator {
 				if (this.broadcastableEvents.has(eventType)) {
 					// this.broadcast(eventType, response, )
 					client.in(this.roomId).emit(eventType, response)
+					// tslint:disable-next-line:no-console
+					console.log(
+						'----------------------------------\n',
+						`${eventType}\n`,
+						// '----------------------------------\n',
+						' broadcast: ', response,
+					)
 				}
 			}
 		}

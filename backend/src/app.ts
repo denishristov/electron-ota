@@ -21,6 +21,8 @@ async function setup() {
 		)
 	})
 
+	container.get(DI.Mediators.Admins)
+
 	const appService = container.get<IAppService>(DI.Services.App)
 	const createClientsMediator = container.get<UpdateClientsMediatorFactory>(DI.Factories.ClientsMediator)
 

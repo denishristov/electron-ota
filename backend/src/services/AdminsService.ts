@@ -27,7 +27,7 @@ export interface IAdminsService {
 
 @DI.injectable()
 export default class AdminsService implements IAdminsService {
-	private static readonly REGISTER_TIMEOUT = 1000 * 60 * 10
+	private static readonly REGISTER_TIMEOUT = 1000 * 60 * 15
 
 	private readonly registerCredentials: Promise<IRegisterCredentials>
 	private isRegisterAuthenticated = false
@@ -44,22 +44,16 @@ export default class AdminsService implements IAdminsService {
 	}
 
 	@bind
-	public async login({ email, password }: IUserLoginRequest): Promise<IUserLoginResponse> {
+	public async login({ email, name, password }: IUserLoginRequest): Promise<IUserLoginResponse> {
 		try {
-			const user = await this.admins.findOne({ email })
+			const user = await this.admins.findOne({ email, name }).select('password')
 
 			if (!await this.doesPasswordMatch(password, user.password)) {
 				throw new Error('Invalid password')
 			}
 
-			const authToken = this.generateToken(user.id)
-			this.hashAuthToken(authToken).then((hashedToken) => {
-				user.authTokens.push(hashedToken)
-				user.save()
-			})
-
 			return {
-				authToken,
+				authToken: await this.generateTokenAndAddToUser(user),
 				isAuthenticated: true,
 			}
 		} catch (error) {
@@ -77,16 +71,16 @@ export default class AdminsService implements IAdminsService {
 		try {
 			const { id } = jwt.verify(authToken, PASS_SECRET_KEY, { algorithms: ['HS256'] }) as { id: string }
 
-			const user = await this.admins.findById(id)
+			const { authTokens } = await this.admins.findById(id).select('authTokens')
 
-			if (!user) {
+			if (!authTokens) {
 				throw new Error('Invalid token')
 			}
 
 			const hashedToken = await this.hashAuthToken(authToken)
 
 			return {
-				isAuthenticated: Boolean(user.authTokens.find((token) => token === hashedToken)),
+				isAuthenticated: Boolean(authTokens.find((token) => token === hashedToken)),
 			}
 		} catch (error) {
 			// tslint:disable-next-line:no-console
@@ -131,15 +125,22 @@ export default class AdminsService implements IAdminsService {
 	}
 
 	@bind
-	public async register(user: IRegisterAdminRequest): Promise<IRegisterAdminResponse> {
+	public async register({ name, email, password }: IRegisterAdminRequest): Promise<IRegisterAdminResponse> {
 		if (this.isRegisterAuthenticated) {
-			await this.admins.create({ ...user, password: await this.hashPassword(user.password) })
+			const user = await this.admins.create({
+				name,
+				email,
+				password: await this.hashPassword(password),
+			})
 
 			const { clean } = await this.registerCredentials
 			clean()
 
+			this.isRegisterAuthenticated = false
+
 			return {
 				isSuccessful: true,
+				authToken: await this.generateTokenAndAddToUser(user),
 			}
 		}
 
@@ -148,8 +149,24 @@ export default class AdminsService implements IAdminsService {
 		}
 	}
 
-	private generateToken(userId: string, expiresIn: string = '30d'): string {
-		return jwt.sign({ id: userId }, PASS_SECRET_KEY, { expiresIn, algorithm: 'HS256' })
+	private async generateTokenAndAddToUser(user: IUserDocument): Promise<string> {
+		const token = await this.generateToken(user.id)
+
+		this.hashAuthToken(token).then((hashed) => {
+			user.authTokens.push(hashed)
+			user.save()
+		})
+
+		return token
+	}
+
+	private generateToken(userId: string, expiresIn: string = '30d'): Promise<string> {
+		return new Promise((resolve, reject) => {
+			jwt.sign({ id: userId }, PASS_SECRET_KEY, { expiresIn, algorithm: 'HS256' }, (error, token) => {
+				error && reject(error)
+				resolve(token)
+			})
+		})
 	}
 
 	private async hashAuthToken(authToken: string): Promise<string> {

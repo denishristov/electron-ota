@@ -6,10 +6,16 @@ import {
 
 import { IVersionService } from './VersionService'
 
+import semver from 'semver'
+
 export type UpdateServiceFactory = (app: IAppModel) => IUpdateService
 
 export interface IUpdateService {
 	checkForUpdate({ versionName }: ICheckForUpdateRequest): Promise<ICheckForUpdateResponse>
+}
+
+const defaultResponse = {
+	isUpToDate: true,
 }
 
 export default class UpdateService implements IUpdateService {
@@ -22,22 +28,23 @@ export default class UpdateService implements IUpdateService {
 	public async checkForUpdate(
 		{ versionName }: ICheckForUpdateRequest,
 	): Promise<ICheckForUpdateResponse> {
+		if (!this.app.latestVersion) {
+			return defaultResponse
+		}
+
 		const version = await this.versionService.getVersion({
 			id: this.app.latestVersion.id,
 			appId: this.app.id,
 		})
 
-		if (version.versionName === versionName) {
-			return {
-				isUpToDate: true,
-			}
-		} else {
+		if (semver.lt(versionName, version.versionName)) {
 			const {
 				isBase,
 				isCritical,
 				description,
 				downloadUrl,
 				hash,
+				versionName,
 			} = version
 
 			return {
@@ -47,7 +54,10 @@ export default class UpdateService implements IUpdateService {
 				description,
 				downloadUrl,
 				hash,
+				versionName,
 			}
 		}
+
+		return defaultResponse
 	}
 }

@@ -1,93 +1,92 @@
-import bind from 'bind-decorator'
-import { inject, injectable } from 'inversify'
 import Cookies from 'js-cookie'
 import { action, computed, observable } from 'mobx'
 import { EventType, IUserAuthenticationResponse, IUserLoginResponse } from 'shared'
 import { IApi } from '../util/Api'
-import * as DI from '../dependencies/symbols'
+import { IUserLoginRequest } from '../../../shared/dist/interfaces/requests/UserLogin';
 
 export interface IUserStore {
 	isAuthenticated: boolean
 	isLoading: boolean
-	login(email: string, password: string): Promise<void>
+	authToken: string
+	login(req: IUserLoginRequest): Promise<void>
 }
 
-@injectable()
-class UserStore {
+@DI.injectable()
+class UserStore implements IUserStore {
 	@computed
 	get isLoading(): boolean {
-		return this.authToken
-			? !this.isAuthenticated
-			: false
+		return this.isAuthenticated ? false : Boolean(this._authToken)
 	}
 
 	@observable
-	public isAuthenticated: boolean = false
+	private _isAuthenticated = false
 
-	private authToken: string | null = null
+	private _authToken?: string
 
-	constructor(@inject(DI.Api) private readonly api: IApi) {
-		const authToken = Cookies.get('authToken')
+	constructor(@DI.inject(DI.Api) private readonly api: IApi) {
+		this.api.on(EventType.Authentication, this.authenticate)
+	}
 
-		if (authToken) {
-			this.authToken = authToken
-			this.api.preEmit(this.getAuthToken)
+	@computed
+	public get isAuthenticated() {
+		return this._isAuthenticated
+	}
 
-			this.api.on(EventType.Connect, this.authenticate)
+	public set isAuthenticated(value: boolean) {
+		this._isAuthenticated = value
+
+		if (value) {
+			this.api.usePreEmit(this.getAuthToken)
 		}
 	}
 
+	public set authToken(authToken: string) {
+		this._authToken = authToken
+		this.isAuthenticated = true
+		Cookies.set('authToken', authToken)
+	}
+
 	@action.bound
-	public async login(email: string, password: string): Promise<void> {
+	public async login(req: IUserLoginRequest): Promise<void> {
 		const {
 			authToken,
 			errorMessage,
 			isAuthenticated,
-		} = await this.api.emit<IUserLoginResponse>(EventType.Login, { email, password })
+		} = await this.api.emit<IUserLoginResponse>(EventType.Login, req)
 
 		// tslint:disable-next-line:no-console
 		errorMessage && console.warn(errorMessage)
 
-		if (isAuthenticated) {
-			if (authToken) {
-				this.authToken = authToken
-				Cookies.set('authToken', authToken)
-				this.api.preEmit(this.getAuthToken)
-			}
-
-			this.isAuthenticated = true
+		if (isAuthenticated && authToken) {
+			this.authToken = authToken
 		}
 	}
 
 	@action.bound
 	private async authenticate(): Promise<void> {
-		if (!this.authToken) {
-			return
-		}
+		this._authToken = Cookies.get('authToken')
 
-		const {
-			errorMessage,
-			isAuthenticated,
-		} = await this.api.emit<IUserAuthenticationResponse>(
-			EventType.Authentication,
-			this.getAuthToken(),
-		)
+		if (this._authToken) {
+			const {
+				errorMessage,
+				isAuthenticated,
+			} = await this.api.emit<IUserAuthenticationResponse>(
+				EventType.Authentication,
+				{ authToken: this._authToken },
+			)
 
-		// tslint:disable-next-line:no-console
-		errorMessage && console.warn(errorMessage)
+			// tslint:disable-next-line:no-console
+			errorMessage && console.warn(errorMessage)
 
-		if (isAuthenticated) {
-			this.isAuthenticated = true
+			if (isAuthenticated) {
+				this.isAuthenticated = true
+			}
 		}
 	}
 
 	@bind
 	private getAuthToken(): { authToken: string } {
-		if (!this.authToken) {
-			throw new Error('No auth token')
-		}
-
-		return { authToken: this.authToken }
+		return { authToken: this._authToken! }
 	}
 }
 

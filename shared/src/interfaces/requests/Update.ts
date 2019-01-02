@@ -11,6 +11,7 @@ export interface ICheckForUpdateResponse extends IResponse {
 	isBase?: boolean
 	description?: string
 	hash?: string
+	versionName?: string
 }
 
 export interface INewUpdateMessage {
@@ -19,6 +20,7 @@ export interface INewUpdateMessage {
 	isBase: boolean
 	description?: string
 	hash: string
+	versionName: string
 }
 
 export interface INewUpdateResponse {

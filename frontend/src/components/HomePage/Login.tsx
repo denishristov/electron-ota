@@ -9,7 +9,7 @@ import { injectUserStore } from '../../stores/RootStore'
 interface ILoginFormEvent extends FormEvent<HTMLFormElement> {
 	target: EventTarget & {
 		elements: {
-			email: HTMLInputElement
+			nameOrEmail: HTMLInputElement
 			password: HTMLInputElement,
 		},
 	}
@@ -19,13 +19,27 @@ interface ILoginProps {
 	userStore: IUserStore
 }
 
+const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+
+function isEmail(candidate: string): boolean {
+	return emailRegex.test(candidate)
+}
+
 class Login extends React.Component<ILoginProps> {
 	@bind
 	public handleSubmit(event: ILoginFormEvent): void {
 		event.preventDefault()
 
-		const { email, password } = event.target.elements
-		this.props.userStore.login(email.value, password.value)
+		const { nameOrEmail, password } = event.target.elements
+
+		const { value: input } = nameOrEmail
+		const inputIsEmail = isEmail(input)
+
+		this.props.userStore.login({
+			name: inputIsEmail ? void 0 : input,
+			email: inputIsEmail ? input : void 0,
+			password: password.value
+		})
 	}
 
 	public render() {
@@ -33,17 +47,24 @@ class Login extends React.Component<ILoginProps> {
 			? <div>Loading...</div>
 			: (
 				<form onSubmit={this.handleSubmit}>
-					<input
-						type='email'
-						name='email'
-						placeholder='Email'
-					/>
-					<input
-						type='password'
-						name='password'
-						placeholder='Password'
-					/>
-					<button type='submit'>
+				<h1>Sign in</h1>
+					<label>Username</label>
+					<div className='input-container'>
+						<input
+							type='text'
+							name='nameOrEmail'
+						/>
+						<div className='input-bar' />
+					</div>
+					<label>Password</label>
+					<div className='input-container'>
+						<input
+							type='password'
+							name='password'
+						/>
+						<div className='input-bar' />
+					</div>
+					<button className='green' type='submit'>
 						Submit
 					</button>
 				</form>
