@@ -12,15 +12,8 @@ export interface IRegisterKeyPathResponse extends IResponse {
 	path: string
 }
 
-export interface IRegisterKeyAuthRequest extends IRequest {
-	key: string
-}
-
-export interface IRegisterKeyAuthResponse extends IResponse {
-	isAuthenticated: boolean
-}
-
 export interface IRegisterAdminRequest extends IRequest {
+	key: string
 	name: string
 	password: string
 	email: string 

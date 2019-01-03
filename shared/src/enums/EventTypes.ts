@@ -25,7 +25,6 @@ export enum EventType {
 	NewUpdate = 'update.new',
 	SuccessfulUpdate = 'update.success',
 
-	RegisterKeyPath = 'register.path',
-	RegisterKeyAuth = 'register.auth',
+	GetRegisterKeyPath = 'register.path',
 	Register = 'register'
 }

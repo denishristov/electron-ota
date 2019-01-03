@@ -3,6 +3,9 @@ import { inject, observer } from 'mobx-react'
 import { injectRegisterStore } from '../../stores/RootStore'
 import { IRegisterStore } from '../../stores/RegisterStore'
 import { Redirect } from 'react-router';
+import { copyToClipboard } from '../../util/functions'
+import Input from '../Generic/Input'
+import Button from '../Generic/Button'
 
 interface IProps {
 	registerStore: IRegisterStore
@@ -12,32 +15,16 @@ interface IState {
 	isRegistered: boolean
 }
 
-interface IAuthenticateFormEvent extends FormEvent<HTMLFormElement> {
-	target: EventTarget & {
-		elements: {
-			key: HTMLInputElement,
-		},
-	}
-}
-
 interface IRegisterFormEvent extends FormEvent<HTMLFormElement> {
 	target: EventTarget & {
 		elements: {
+			key: HTMLInputElement,
 			name: HTMLInputElement,
 			email: HTMLInputElement,
 			password1: HTMLInputElement,
 			password2: HTMLInputElement,
 		},
 	}
-}
-
-function copyToClipboard(text: string) {
-	const el = document.createElement('textarea')
-	el.value = text
-	document.body.appendChild(el)
-	el.select()
-	document.execCommand('copy')
-	document.body.removeChild(el)
 }
 
 class Register extends React.Component<IProps, IState> {
@@ -54,23 +41,17 @@ class Register extends React.Component<IProps, IState> {
 	}
 
 	@bind
-	private handleAuthenticate(event: IAuthenticateFormEvent) {
-		event.preventDefault()
-
-		this.props.registerStore.authenticateRegisterAdmin(event.target.elements.key.value)
-	}
-
-	@bind
 	private async handleRegister(event: IRegisterFormEvent) {
 		event.preventDefault()
 
-		const { name, password1, password2, email } = event.target.elements
+		const { name, password1, password2, email, key } = event.target.elements
 
 		if (password1.value === password2.value) {
 			const isRegistered = await this.props.registerStore.registerAdmin({
 				name: name.value,
 				email: email.value,
 				password: password1.value,
+				key: key.value,
 			})
 
 			if (isRegistered) {
@@ -94,49 +75,43 @@ class Register extends React.Component<IProps, IState> {
 			return <div>Loading...</div>
 		}
 
-		return this.props.registerStore.isAuthenticated
-		? <form onSubmit={this.handleRegister}>
-			<input
-				type='email'
-				name='email'
-				placeholder='Email'
-			/>
-			<input
-				type='text'
-				name='name'
-				placeholder='Username'
-			/>
-			<input
-				type='password'
-				name='password1'
-				placeholder='Password'
-			/>
-			{/* <input
-				type='password'
-				name='password2'
-				placeholder='Confirm password'
-			/> */}
-			<button type='submit'>
-				Submit
-			</button>
-		</form>
-		: <form onSubmit={this.handleAuthenticate}>
-			<h1>Key path</h1>
-			<code>
-				{this.command}
-			</code>
-			<div onClick={this.handleCopyCommand}>
-				Copy
-			</div>
-			<input
-				type='text'
-				name='key'
-				placeholder='Key'
-			/>
-			<button type='submit'>
-				Submit
-			</button>
-		</form>
+		return (
+			<form onSubmit={this.handleRegister}>
+				<h1>Sign up</h1>
+				<label>Key path</label>
+				<code className='key-path' onClick={this.handleCopyCommand}>
+					{this.command}
+				</code>
+				<Input
+					label='key'
+					type='password'
+					name='key'
+				/>
+				<Input
+					type='email'
+					name='email'
+					label='Email'
+				/>
+				<Input
+					type='text'
+					name='name'
+					label='Username'
+				/>
+				<Input
+					type='password'
+					name='password1'
+					label='Password'
+				/>
+				<Input
+					type='password'
+					name='password2'
+					label='Confirm password'
+				/>
+				<Button color='green' type='submit'>
+					Submit
+				</Button>
+			</form>
+		)
 	}
 }
 

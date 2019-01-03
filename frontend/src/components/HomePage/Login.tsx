@@ -5,6 +5,9 @@ import { IUserStore } from '../../stores/UserStore'
 
 import bind from 'bind-decorator'
 import { injectUserStore } from '../../stores/RootStore'
+import Input from '../Generic/Input'
+import { isEmail } from '../../util/functions'
+import Button from '../Generic/Button';
 
 interface ILoginFormEvent extends FormEvent<HTMLFormElement> {
 	target: EventTarget & {
@@ -17,12 +20,6 @@ interface ILoginFormEvent extends FormEvent<HTMLFormElement> {
 
 interface ILoginProps {
 	userStore: IUserStore
-}
-
-const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-
-function isEmail(candidate: string): boolean {
-	return emailRegex.test(candidate)
 }
 
 class Login extends React.Component<ILoginProps> {
@@ -48,25 +45,21 @@ class Login extends React.Component<ILoginProps> {
 			: (
 				<form onSubmit={this.handleSubmit}>
 				<h1>Sign in</h1>
-					<label>Username</label>
-					<div className='input-container'>
-						<input
-							type='text'
-							name='nameOrEmail'
-						/>
-						<div className='input-bar' />
-					</div>
-					<label>Password</label>
-					<div className='input-container'>
-						<input
-							type='password'
-							name='password'
-						/>
-						<div className='input-bar' />
-					</div>
-					<button className='green' type='submit'>
+					<Input 
+						label="Username"
+						type='text'
+						name='nameOrEmail'
+						required
+					/>
+					<Input 
+						label="Password"
+						type='password'
+						name='password'
+						required
+					/>
+					<Button color='green' type='submit'>
 						Submit
-					</button>
+					</Button>
 				</form>
 			)
 	}

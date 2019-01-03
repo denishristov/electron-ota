@@ -5,6 +5,7 @@ import { IAdminsService } from '../services/AdminsService'
 import { IAppService } from '../services/AppService'
 import { IVersionService } from '../services/VersionService'
 import { IFileUploadService } from '../services/S3Service'
+import { IRegisterAdminService } from '../services/RegisterAdminService'
 
 import { ReleaseUpdateHookFactory } from '../hooks/ReleaseUpdateHook'
 import { UpdateServiceFactory } from '../services/UpdateService'
@@ -23,6 +24,8 @@ export default class MediatorFactory implements IMediatorFactory {
 		private readonly server: SocketIO.Server,
 		@DI.inject(DI.Services.User)
 		private readonly adminService: IAdminsService,
+		@DI.inject(DI.Services.RegisterAdmin)
+		private readonly registerService: IRegisterAdminService,
 		@DI.inject(DI.Services.App)
 		private readonly appService: IAppService,
 		@DI.inject(DI.Services.Version)
@@ -47,9 +50,8 @@ export default class MediatorFactory implements IMediatorFactory {
 			[EventType.Login]: this.adminService.login,
 			[EventType.Authentication]: this.adminService.authenticate,
 
-			[EventType.Register]: this.adminService.register,
-			[EventType.RegisterKeyAuth]: this.adminService.verifyCredentialKey,
-			[EventType.RegisterKeyPath]: this.adminService.getCredentialsKeyPath,
+			[EventType.Register]: this.registerService.register,
+			[EventType.GetRegisterKeyPath]: this.registerService.getCredentialsKeyPath,
 
 			[EventType.GetApps]: this.appService.getAllApps,
 			[EventType.CreateApp]: this.appService.createApp,

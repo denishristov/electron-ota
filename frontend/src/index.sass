@@ -1,21 +1,56 @@
+$default-text-color: #334562
+
 body
 	margin: 0
 	padding: 0
 	font-family: "Rubic", -apple-system, "Roboto","Arial", sans-serif
 	background-image: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%)
 	-webkit-font-smoothing: antialiased
-	color: #334562
-	// -moz-osx-font-smoothing: grayscale
+	color: $default-text-color
 
 code
+	background-image: linear-gradient(60deg, #29323c 0%, #485563 100%)
+	color: white
+	padding: 16px
+	margin: 16px 0
+	border-radius: 6px
+	text-overflow: clip
+    overflow: hidden
+	box-shadow: 0 5px 12px rgba(67, 106, 185, .12), 0 1px 4px rgba(67, 106, 185, .03), 0 -5px 15px -1px rgba(67, 106, 185, .01), inset 0 0 20px -3px rgba(67, 106, 185, .45)
 	font-family: "SF Mono", source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace
+
+.key-path
+	position: relative
+	overflow: hidden
+
+	&:after
+		content: 'COPY'
+		position: absolute
+		top: 0
+		left: 0
+		width: 100%
+		height: 100%
+		background-color: #fdfbfbdb
+		color: $default-text-color
+		transition: all .33s ease-out
+		opacity: 0
+		cursor: pointer
+		font-weight: 700
+		font-size: 1.8rem
+		display: flex
+		justify-content: center
+		align-items: center
+
+	&:hover
+		&:after
+			opacity: 1
 
 table
 	width: 100vw
 	font-size: 0.8rem
 
 label
-	margin: 0px 32px
+	margin: 0px 16px
 	text-transform: uppercase
 	font-size: 0.84rem
 	font-weight: 500
@@ -28,22 +63,24 @@ label
 	display: flex
 	align-items: center
 	justify-content: center
+	overflow-x: scroll
 
 input
 	border: none
 	padding: 16px
 	font-size: 1.14rem
-	border-radius: 40px
-	margin: 16px
+	border-radius: 6px
 	transition: all .33s ease-out
 	background: transparent
 	flex-grow: 1
+	margin: 16px 0
 
-input:focus
-	outline: none
+	&:focus
+		box-shadow: 0 0 3px 3px rgba(62, 103, 184, 0.01), 0 4px 15px rgba(67, 107, 185, 0.03)
+		outline: none
 
-// input:hover
-// 	background: #ffffff47
+	&:hover
+		background: #ffffff47
 
 button
 	padding: 16px
@@ -54,33 +91,44 @@ button
 	margin: 16px
 	background: #fdfdfd
 	text-transform: uppercase
+	font-weight: 700
+	transition: all .33s ease-out
+
+	&:focus
+		outline: none
 
 button.green
 	background-color: #54f18e
 	@include defaultShadow(lighten(#54f18e, 15%))
 	color: white
-	font-weight: 600
 
-button:focus
-	outline: none
+	&:hover 
+		background-color: desaturate(#54f18e, 15%)
+		@include defaultShadow(desaturate(lighten(#54f18e, 15%), 15%))
+
+.shrink
+	transform: scale(0.94)
 
 form
 	display: flex
 	flex-flow: column
-	min-width: 40%
+	min-width: 400px
+	max-width: 700px
+	padding: 16px
 
 h1
-	margin: 32px
-	font-weight: 700
+	margin: 32px 16px
+	font-weight: 800
 	font-size: 3em
+	text-shadow: 0px 3px 3px rgba(33, 81, 175, 0.02), 0px 4px 15px rgba(21, 56, 125, 0.03)
 
 .input-container
 	display: flex
 	position: relative
 
 	.input-bar
-		margin: 0 32px
-		width: calc(100% - (2 * 32px))
+		margin: 0 16px
+		width: calc(100% - (2 * 16px))
 		flex-grow: 1
 		position: absolute
 		height: 1px
@@ -91,5 +139,5 @@ h1
 
 	input:focus + .input-bar
 		@include defaultShadow(#86919a61)
-		background-color: #334562
+		background-color: $default-text-color
 	

@@ -7,41 +7,30 @@ import {
 	IUserAuthenticationResponse,
 	IUserLoginRequest,
 	IUserLoginResponse,
-	IRegisterKeyAuthRequest,
-	IRegisterKeyPathResponse,
-	IRegisterKeyAuthResponse,
 	IRegisterAdminRequest,
 	IRegisterAdminResponse,
 } from 'shared'
 import { IUserDocument } from '../models/User'
 import { PASS_SECRET_KEY } from '../config/config'
-import { IRegisterAdminService, IRegisterCredentials } from './RegisterAdminService'
 
 export interface IAdminsService {
 	login(req: IUserLoginRequest): Promise<IUserLoginResponse>
-	authenticate(res: IUserAuthenticationRequest): Promise<IUserAuthenticationResponse>
-	getCredentialsKeyPath(): Promise<IRegisterKeyPathResponse>
-	verifyCredentialKey(req: IRegisterKeyAuthRequest): Promise<IRegisterKeyAuthResponse>
-	register(user: IRegisterAdminRequest): Promise<IRegisterAdminResponse>
+	authenticate(req: IUserAuthenticationRequest): Promise<IUserAuthenticationResponse>
+	addAdmin(req: IAdminModel): Promise<IRegisterAdminResponse>
+}
+
+interface IAdminModel {
+	email: string
+	name: string
+	password: string
 }
 
 @DI.injectable()
 export default class AdminsService implements IAdminsService {
-	private static readonly REGISTER_TIMEOUT = 1000 * 60 * 15
-
-	private readonly registerCredentials: Promise<IRegisterCredentials>
-	private isRegisterAuthenticated = false
-
 	constructor(
 		@DI.inject(DI.Models.User)
 		private readonly admins: Model<IUserDocument>,
-		@DI.inject(DI.Services.RegisterAdmin)
-		private readonly registerAdminService: IRegisterAdminService,
-	) {
-		this.registerCredentials = this.admins.find().then(async (admins) => {
-			return await this.registerAdminService.genRegisterCredentials()
-		})
-	}
+	) {}
 
 	@bind
 	public async login({ email, name, password }: IUserLoginRequest): Promise<IUserLoginResponse> {
@@ -92,60 +81,16 @@ export default class AdminsService implements IAdminsService {
 		}
 	}
 
-	@bind
-	public async getCredentialsKeyPath(): Promise<IRegisterKeyPathResponse> {
-		const { path } = await this.registerCredentials
-
-		if (!path) {
-			return { errorMessage: 'Register form has been closed', path }
-		}
-
-		return { path }
-	}
-
-	@bind
-	public async verifyCredentialKey({ key }: IRegisterKeyAuthRequest): Promise<IRegisterKeyAuthResponse> {
-		const credentials = await this.registerCredentials
-
-		if (key === credentials.key) {
-			this.isRegisterAuthenticated = true
-
-			setTimeout(() => {
-				this.isRegisterAuthenticated = false
-			}, AdminsService.REGISTER_TIMEOUT)
-
-			return {
-				isAuthenticated: true,
-			}
-		}
+	public async addAdmin({ name, email, password }: IAdminModel): Promise<IRegisterAdminResponse> {
+		const admin = await this.admins.create({
+			name,
+			email,
+			password: await this.hashPassword(password),
+		})
 
 		return {
-			isAuthenticated: false,
-		}
-	}
-
-	@bind
-	public async register({ name, email, password }: IRegisterAdminRequest): Promise<IRegisterAdminResponse> {
-		if (this.isRegisterAuthenticated) {
-			const user = await this.admins.create({
-				name,
-				email,
-				password: await this.hashPassword(password),
-			})
-
-			const { clean } = await this.registerCredentials
-			clean()
-
-			this.isRegisterAuthenticated = false
-
-			return {
-				isSuccessful: true,
-				authToken: await this.generateTokenAndAddToUser(user),
-			}
-		}
-
-		return {
-			isSuccessful: false,
+			isSuccessful: true,
+			authToken: await this.generateTokenAndAddToUser(admin),
 		}
 	}
 
