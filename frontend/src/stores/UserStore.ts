@@ -5,49 +5,37 @@ import { IApi } from '../util/Api'
 import { IUserLoginRequest } from '../../../shared/dist/interfaces/requests/UserLogin';
 
 export interface IUserStore {
-	isAuthenticated: boolean
 	isLoading: boolean
-	authToken: string
-	login(req: IUserLoginRequest): Promise<void>
+	isAuthenticated: boolean
+	login(req: IUserLoginRequest): Promise<boolean>
+	setAuthToken(authToken: string): void
 }
 
 @DI.injectable()
 class UserStore implements IUserStore {
-	@computed
-	get isLoading(): boolean {
-		return this.isAuthenticated ? false : Boolean(this._authToken)
-	}
-
 	@observable
-	private _isAuthenticated = false
+	public isAuthenticated = false
 
-	private _authToken?: string
+	private authToken?: string = Cookies.get('authToken')
 
 	constructor(@DI.inject(DI.Api) private readonly api: IApi) {
-		this.api.on(EventType.Authentication, this.authenticate)
+		this.api.on(EventType.Connect, this.authenticate)
+		this.api.usePreEmit(this.getAuthToken)
 	}
 
 	@computed
-	public get isAuthenticated() {
-		return this._isAuthenticated
+	get isLoading(): boolean {
+		return this.isAuthenticated ? false : Boolean(this.authToken)
 	}
 
-	public set isAuthenticated(value: boolean) {
-		this._isAuthenticated = value
-
-		if (value) {
-			this.api.usePreEmit(this.getAuthToken)
-		}
-	}
-
-	public set authToken(authToken: string) {
-		this._authToken = authToken
+	public setAuthToken(authToken: string) {
+		this.authToken = authToken
 		this.isAuthenticated = true
 		Cookies.set('authToken', authToken)
 	}
 
 	@action.bound
-	public async login(req: IUserLoginRequest): Promise<void> {
+	public async login(req: IUserLoginRequest): Promise<boolean> {
 		const {
 			authToken,
 			errorMessage,
@@ -58,21 +46,22 @@ class UserStore implements IUserStore {
 		errorMessage && console.warn(errorMessage)
 
 		if (isAuthenticated && authToken) {
-			this.authToken = authToken
+			this.setAuthToken(authToken)
+			return true
 		}
+
+		return false
 	}
 
 	@action.bound
 	private async authenticate(): Promise<void> {
-		this._authToken = Cookies.get('authToken')
-
-		if (this._authToken) {
+		if (this.authToken) {
 			const {
 				errorMessage,
 				isAuthenticated,
 			} = await this.api.emit<IUserAuthenticationResponse>(
 				EventType.Authentication,
-				{ authToken: this._authToken },
+				{ authToken: this.authToken },
 			)
 
 			// tslint:disable-next-line:no-console
@@ -85,8 +74,10 @@ class UserStore implements IUserStore {
 	}
 
 	@bind
-	private getAuthToken(): { authToken: string } {
-		return { authToken: this._authToken! }
+	private getAuthToken(): { authToken: string } | void {
+		if (this.authToken) {
+			return { authToken: this.authToken }
+		}
 	}
 }
 

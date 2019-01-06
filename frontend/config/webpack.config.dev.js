@@ -326,6 +326,10 @@ module.exports = {
               'sass-loader'
             ),
           },
+          {
+            test: /\.svg$/,
+            loader: 'svg-inline-loader'
+          },
           // "file" loader makes sure those assets get served by WebpackDevServer.
           // When you `import` an asset, you get its (virtual) filename.
           // In production, they would get copied to the `build` folder.
@@ -336,12 +340,12 @@ module.exports = {
             // its runtime that would otherwise be processed through "file" loader.
             // Also exclude `html` and `json` extensions so they get processed
             // by webpacks internal loaders.
-            exclude: [/\.(js|mjs|jsx|ts|tsx)$/, /\.html$/, /\.json$/],
+            exclude: [/\.(js|mjs|jsx|ts|tsx|html|json)$/],
             loader: require.resolve('file-loader'),
             options: {
               name: 'static/media/[name].[hash:8].[ext]',
             },
-          },
+          }
         ],
       },
       // ** STOP ** Are you adding a new loader?

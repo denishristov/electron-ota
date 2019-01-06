@@ -1,17 +1,17 @@
-import createBrowserHistory from 'history/createBrowserHistory'
-import { configure } from 'mobx'
 import React from 'react'
 import { render } from 'react-dom'
+import createBrowserHistory from 'history/createBrowserHistory'
+import { configure } from 'mobx'
 import { Route, Router } from 'react-router-dom'
 import 'reflect-metadata'
-import './util/global'
+import './config/global'
 
-import AppsContainer from './components/Apps/AppsContainer'
 import HomePage from './components/HomePage/HomePage'
 
 import './index.sass'
 
 import AppPage from './components/Apps/AppPage'
+import AppsPage from './components/Apps/AppsPage'
 import Login from './components/HomePage/Login'
 import Register from './components/HomePage/Register'
 
@@ -55,7 +55,7 @@ const app = (
 				<Route
 					exact
 					path='/apps'
-					component={AppsContainer}
+					component={AppsPage}
 				/>
 				<Route
 					path='/apps/:id'

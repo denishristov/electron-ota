@@ -6,7 +6,7 @@ export interface IApi {
 	usePreEmit(cb: Hook): void
 }
 
-type Hook = (req: object) => object
+type Hook = (req: object) => object | void
 
 @DI.injectable()
 export default class Api implements IApi {
@@ -48,6 +48,6 @@ export default class Api implements IApi {
 	}
 
 	private attachData<Req extends object>(request: Req): Req & { authToken: string | null; } {
-		return Object.assign(request, ...this.preEmitHooks.map((cb) => cb(request)))
+		return Object.assign(request, ...this.preEmitHooks.map((cb) => cb(request)).filter(Boolean))
 	}
 }

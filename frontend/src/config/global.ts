@@ -1,6 +1,7 @@
 import bindDecorator from 'bind-decorator'
 import { inject, injectable } from 'inversify'
 import { Api, Connection, Stores } from '../dependencies/symbols'
+import SVGComponent from '../components/Generic/SVG'
 
 interface IDI {
 	inject: typeof inject
@@ -13,6 +14,7 @@ interface IDI {
 declare global {
 	const bind: typeof bindDecorator
 	const DI: IDI
+	const SVG: typeof SVGComponent
 }
 
 const DI = {
@@ -30,6 +32,9 @@ Object.defineProperties(global, {
 	DI: {
 		value: DI,
 	},
+	SVG: {
+		value: SVGComponent,
+	}
 })
 
 export {}

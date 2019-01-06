@@ -12,12 +12,28 @@ import RegisterStore, { IRegisterStore } from '../stores/RegisterStore'
 
 const container = new Container()
 
-container.bind(DI.Connection).toConstantValue(io(SERVER_URI))
-container.bind<IApi>(DI.Api).to(Api).inSingletonScope()
+container.bind(DI.Connection)
+	.toConstantValue(io(SERVER_URI))
 
-container.bind<IUserStore>(DI.Stores.User).to(UserStore).inSingletonScope()
-container.bind<IAppsStore>(DI.Stores.Apps).to(AppsStore).inSingletonScope()
-container.bind<IRootStore>(DI.Stores.Root).to(RootStore).inSingletonScope()
-container.bind<IRegisterStore>(DI.Stores.Register).to(RegisterStore).inSingletonScope()
+container.bind<IApi>(DI.Api)
+	.to(Api)
+	.inSingletonScope()
+
+container.bind<IUserStore>(DI.Stores.User)
+	.to(UserStore)
+	.inSingletonScope()
+
+container.bind<IAppsStore>(DI.Stores.Apps)
+	.to(AppsStore)
+	.inSingletonScope()
+
+container.bind<IRootStore>(DI.Stores.Root)
+	.to(RootStore)
+	.inSingletonScope()
+
+container.bind<IRegisterStore>(DI.Stores.Register)
+	.to(RegisterStore)
+	.inSingletonScope()
+
 
 export default container

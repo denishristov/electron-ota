@@ -1,5 +1,5 @@
 import 'reflect-metadata'
-import './util/global'
+import './config/global'
 import './config/mongoose'
 
 import container from './dependencies/inversify.config'

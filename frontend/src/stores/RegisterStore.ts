@@ -37,7 +37,7 @@ export default class RegisterStore implements IRegisterStore {
 		const { isSuccessful, authToken } = await this.api.emit<IRegisterAdminResponse>(EventType.Register, req)
 
 		if (authToken) {
-			this.userStore.authToken = authToken
+			this.userStore.setAuthToken(authToken)
 		}
 
 		return isSuccessful

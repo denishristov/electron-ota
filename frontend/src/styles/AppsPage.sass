@@ -1,0 +1,41 @@
+@import './Variables.sass'
+
+.upload-container
+    display: flex
+    justify-content: center
+    flex-flow: column
+    align-items: center
+
+    .upload-icon
+        border-radius: 50%
+        background-color: #dedede
+        width: 96px
+        height: 96px
+        display: flex
+        justify-content: center
+        align-items: center
+        box-shadow: 0 5px 12px rgba(67, 106, 185, .12), 0 1px 4px rgba(67, 106, 185, .03), 0 -5px 15px -1px rgba(67, 106, 185, .01), inset 0 0 20px -3px rgba(67, 106, 185, .45)
+        cursor: pointer
+        transition: all .33s ease-out
+        margin-bottom: 16px
+
+        svg
+            width: 56px
+            height: 56px    
+            transition: all .33s ease-out
+            color: #7287ab
+
+        &:hover
+            background-color: darken(#dedede, 7%)
+            
+            svg 
+                fill: darken($default-text-color, 15%)
+
+.apps-page-container
+    flex-grow: 1
+    min-height: 100vh
+
+    header
+        display: flex
+        justify-content: space-between
+        border-bottom: 1px solid $accent

@@ -9,6 +9,10 @@ import AppsStore from '../../stores/AppsStore'
 import { injectAppsStore } from '../../stores/RootStore'
 import { IVersionModel } from 'shared'
 
+import Modal from '../Generic/Modal'
+import Input from '../Generic/Input'
+import Button from '../Generic/Button'
+
 interface IParams {
 	id: string
 }
@@ -107,33 +111,34 @@ class AppPage extends Component<IProps> {
 
 		return (
 			<div>
-				<form onSubmit={this.handleCreateVersion}>
-					<input
-						type='text'
-						name='versionName'
-						placeholder='Version'
-					/>
-					<input
-						type='checkbox'
-						name='isCritical'
-						placeholder='Is critical?'
-					/>
-					<input
-						type='checkbox'
-						name='isBase'
-						placeholder='Is base?'
-					/>
-					<input
-						type='file'
-						name='version'
-						placeholder='wow'
-					/>
-					<button type='submit'>
-						Create version
-					</button>
-				</form>
+				<Modal title="Add a new version">
+					<form onSubmit={this.handleCreateVersion}>
+						<Input
+							type='text'
+							name='versionName'
+							label='Name'
+						/>
+						<Input
+							type='checkbox'
+							name='isCritical'
+							label='Is critical?'
+						/>
+						<Input
+							type='checkbox'
+							name='isBase'
+							label='Is base?'
+						/>
+						<Input
+							type='file'
+							name='version'
+							label='ASAR'
+						/>
+						<Button color='green' type='submit'>
+							Create version
+						</Button>
+					</form>
+				</Modal>
 				<h1>{name}</h1>
-				<h2>Versions</h2>
 				{allVersions.length
 					? <table>
 						<thead>

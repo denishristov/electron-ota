@@ -35,7 +35,13 @@ export default class AdminsService implements IAdminsService {
 	@bind
 	public async login({ email, name, password }: IUserLoginRequest): Promise<IUserLoginResponse> {
 		try {
-			const user = await this.admins.findOne({ email, name }).select('password')
+			const params = email ? { email } : name ? { name } : null
+
+			if (!params) {
+				throw new Error('No email or name')
+			}
+
+			const user = await this.admins.findOne(params).select('password authTokens')
 
 			if (!await this.doesPasswordMatch(password, user.password)) {
 				throw new Error('Invalid password')
