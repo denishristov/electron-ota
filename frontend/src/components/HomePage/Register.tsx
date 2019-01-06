@@ -2,7 +2,7 @@ import React, { FormEvent } from 'react'
 import { inject, observer } from 'mobx-react'
 import { injectRegisterStore } from '../../stores/RootStore'
 import { IRegisterStore } from '../../stores/RegisterStore'
-import { Redirect } from 'react-router';
+import { Redirect } from 'react-router'
 import { copyToClipboard } from '../../util/functions'
 import Input from '../Generic/Input'
 import Button from '../Generic/Button'
@@ -28,7 +28,7 @@ interface IRegisterFormEvent extends FormEvent<HTMLFormElement> {
 }
 
 class Register extends React.Component<IProps, IState> {
-	state = {
+	public readonly state = {
 		isRegistered: false,
 	}
 

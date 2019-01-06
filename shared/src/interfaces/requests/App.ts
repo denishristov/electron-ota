@@ -7,6 +7,7 @@ export interface IAppModel {
 	pictureUrl: string
 	bundleId: string
 	latestVersion?: IVersionModel
+	versions: number
 }
 
 export interface IGetAppsRequest extends IRequest {}

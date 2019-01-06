@@ -35,5 +35,4 @@ container.bind<IRegisterStore>(DI.Stores.Register)
 	.to(RegisterStore)
 	.inSingletonScope()
 
-
 export default container

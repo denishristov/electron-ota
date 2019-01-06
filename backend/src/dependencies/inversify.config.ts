@@ -24,7 +24,7 @@ import { IAppModel } from 'shared'
 import http from 'http'
 import socketio from 'socket.io'
 
-import s3Config from '../config/s3Config.json'
+import { S3_CONFIG } from '../config/config'
 
 const container = new Container()
 
@@ -34,7 +34,7 @@ container.bind<http.Server>(DI.HTTPServer)
 container.bind<SocketIO.Server>(DI.SocketServer)
 	.toDynamicValue((context) =>
 		socketio(context.container.get<http.Server>(DI.HTTPServer)),
-	)
+	).inSingletonScope()
 
 container.bind<IAdminsService>(DI.Services.User)
 	.to(AdminsService)
@@ -49,7 +49,7 @@ container.bind<IVersionService>(DI.Services.Version)
 	.inSingletonScope()
 
 container.bind<IFileUploadService>(DI.Services.FileUpload)
-	.toConstantValue(new S3Service(s3Config))
+	.toConstantValue(new S3Service(S3_CONFIG))
 
 container.bind<IRegisterAdminService>(DI.Services.RegisterAdmin)
 	.to(RegisterAdminService)
@@ -102,8 +102,8 @@ container.bind<UpdateClientsMediatorFactory>(DI.Factories.ClientsMediator)
 	})
 
 container.bind<ISocketMediator>(DI.Mediators.Admins)
-	.toDynamicValue(({ container }) =>
-		container.get<IMediatorFactory>(DI.Factories.Mediator).createAdminMediator(),
-	)
+	.toDynamicValue(({ container }) => 
+		container.get<IMediatorFactory>(DI.Factories.Mediator).createAdminMediator()
+	).inSingletonScope()
 
 export default container

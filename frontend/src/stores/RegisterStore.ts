@@ -1,7 +1,7 @@
 import { observable, computed } from 'mobx'
 import { IApi } from '../util/Api'
-import UserStore from './UserStore';
-import { IUserStore } from './UserStore';
+
+import { IUserStore } from './UserStore'
 import {
 	EventType,
 	IRegisterAdminRequest,
@@ -22,10 +22,10 @@ export default class RegisterStore implements IRegisterStore {
 	public path?: string
 
 	constructor(
-		@DI.inject(DI.Api) 
+		@DI.inject(DI.Api)
 		private readonly api: IApi,
 		@DI.inject(DI.Stores.User)
-		private readonly userStore: IUserStore
+		private readonly userStore: IUserStore,
 	) {}
 
 	@computed

@@ -1,10 +1,11 @@
 import React from 'react'
 import { list } from '../../util/functions'
 
-import  '../../styles/Button.sass'
+import '../../styles/Button.sass'
 
 interface IProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 	color: 'green' | 'grey'
+	size?: 'big' | 'small'
 }
 
 interface IState {
@@ -12,12 +13,25 @@ interface IState {
 }
 
 export default class Button extends React.Component<IProps, IState> {
-	state = {
+	public state = {
 		isPushed: false,
 	}
 
-	componentWillUnmount() {
+	public componentWillUnmount() {
 		removeEventListener('mouseup', this.handleMouseUp)
+	}
+
+	public render() {
+		const { className, color, size, ...props } = this.props
+
+		return (
+			<button
+				onMouseDown={this.handleMouseDown}
+				onMouseUp={this.handleMouseUp}
+				className={list(className, color, size, this.state.isPushed && 'shrink')}
+				{...props}
+			/>
+		)
 	}
 
 	@bind
@@ -31,18 +45,4 @@ export default class Button extends React.Component<IProps, IState> {
 		removeEventListener('mouseup', this.handleMouseUp)
 		this.setState({ isPushed: false })
 	}
-
-	render() {
-		const { className, color, ...props } = this.props
-
-		return (
-			<button
-				onMouseDown={this.handleMouseDown}
-				onMouseUp={this.handleMouseUp}
-				className={list(className, color, this.state.isPushed && 'shrink')} 
-				{...props} 
-			/>
-		)
-	}
 }
-

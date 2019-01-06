@@ -4,7 +4,7 @@ import { Spring, animated, config } from 'react-spring'
 import '../../styles/Modal.sass'
 
 import Close from '../../img/Close.svg'
-import stopPropagation from '../../util/functions'
+import { stopPropagation } from '../../util/functions'
 
 interface IProps {
 	title: string
@@ -16,13 +16,13 @@ interface IState {
 }
 
 const contentFrom = {
-	transform: 'scale(0.96) translateY(-30%)',
+	transform: 'scale(0.92) translateY(-32%)',
 	opacity: 0,
 }
 
 const contentTo = {
 	transform: 'scale(1) translateY(0)',
-	opacity: 1
+	opacity: 1,
 }
 
 const backgroundFrom = {
@@ -34,9 +34,7 @@ const backgroundTo = {
 }
 
 export default class Modal extends React.Component<IProps, IState> {
-	private timeout?: NodeJS.Timeout
-
-	readonly state = {
+	public readonly state = {
 		isOpened: false,
 		isClosing: false,
 	}
@@ -51,13 +49,6 @@ export default class Modal extends React.Component<IProps, IState> {
 	}
 
 	@bind
-	private _close() {
-		if (this.state.isClosing) {
-			this.setState({ isOpened: false, isClosing: false })
-		}
-	}
-
-	@bind
 	public open() {
 		this.setState({ isOpened: true })
 	}
@@ -66,51 +57,57 @@ export default class Modal extends React.Component<IProps, IState> {
 		const { children, title } = this.props
 		const { isOpened, isClosing } = this.state
 
-		return isOpened 
-			? (
-				<Spring
-					from={backgroundFrom}
-					to={backgroundTo}
-					native 
-					reverse={isClosing} 
-					force={isClosing}
-				>
-					{style =>
-						<animated.div 
-							className='modal-container' 
-							onClick={this.close}
-							style={style}
+		return isOpened && (
+			<Spring
+				from={backgroundFrom}
+				to={backgroundTo}
+				native
+				reverse={isClosing}
+				force={isClosing}
+				onRest={this._close}
+			>
+				{(style) =>
+					<animated.div
+						className='modal-container'
+						onClick={this.close}
+						style={style}
+						onScroll={stopPropagation}
+					>
+						<Spring
+							from={contentFrom}
+							to={contentTo}
+							native
+							reverse={isClosing}
+							force={isClosing}
+							config={config.wobbly}
 						>
-							<Spring 
-								from={contentFrom}
-								to={contentTo}
-								native 
-								reverse={isClosing} 
-								force={isClosing}
-								config={config.wobbly}
-								onRest={this._close}
-							>
-								{style =>
-									<animated.div 
-										className='content' 
-										style={style} 
-										onClick={stopPropagation}
-									>
-										<header className='spread'>
-											<h2>{title}</h2>
-											<SVG 
-												src={Close} 
-												onClick={this.close} 
-											/>
-										</header>
-										{children}
-									</animated.div>
-								}
-							</Spring>
-						</animated.div>
-					}
-				</Spring>
-			)
-			: null
+							{(style) =>
+								<animated.div
+									className='content'
+									style={style}
+									onClick={stopPropagation}
+								>
+									<header className='spread'>
+										<h2>{title}</h2>
+										<SVG
+											src={Close}
+											onClick={this.close}
+										/>
+									</header>
+									{children}
+								</animated.div>
+							}
+						</Spring>
+					</animated.div>
+				}
+			</Spring>
+		)
+	}
+
+	@bind
+	private _close() {
+		if (this.state.isClosing) {
+			this.setState({ isOpened: false, isClosing: false })
+		}
 	}
 }

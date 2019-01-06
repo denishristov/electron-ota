@@ -30,12 +30,23 @@ export default class App {
 	@observable
 	public bundleId: string
 
+	@observable
 	public latestVersion?: IVersionModel
+
+	@observable
+	public versionsCount: number
 
 	public readonly versions: ObservableMap<string, IVersionModel> = observable.map({})
 
 	constructor(
-		{ id, name, pictureUrl, bundleId, latestVersion }: IAppModel,
+		{
+			id,
+			name,
+			pictureUrl,
+			bundleId,
+			latestVersion,
+			versions,
+		}: IAppModel,
 		private readonly api: IApi,
 	) {
 		this.id = id
@@ -43,6 +54,7 @@ export default class App {
 		this.pictureUrl = pictureUrl
 		this.bundleId = bundleId
 		this.latestVersion = latestVersion
+		this.versionsCount = versions
 	}
 
 	@computed
@@ -62,8 +74,24 @@ export default class App {
 		return await this.api.emit<IS3SignUrlResponse>(EventType.SignUploadVersionUrl, req)
 	}
 
-	public emitCreateVersion(inputFields: ICreateVersionInput) {
-		this.api.emit<ICreateVersionResponse>(EventType.CreateVersion, { appId: this.id, ...inputFields })
+	public async emitCreateVersion(inputFields: ICreateVersionInput) {
+		const res = await this.api.emit<ICreateVersionResponse>(
+			EventType.CreateVersion,
+			{ appId: this.id, ...inputFields },
+		)
+
+		this.versions.set(res.id, res)
+	}
+
+	public toModel(): IAppModel {
+		return {
+			id: this.id,
+			pictureUrl: this.pictureUrl,
+			name: this.name,
+			bundleId: this.bundleId,
+			versions: this.versions.size || this.versionsCount,
+			latestVersion: this.latestVersion,
+		}
 	}
 
 	// emitUpdateVersion(inputFields: ICreateVersionInput) {

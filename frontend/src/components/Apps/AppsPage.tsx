@@ -12,9 +12,12 @@ import Modal from '../Generic/Modal'
 import Row from '../Generic/Row'
 
 import Camera from '../../img/Camera.svg'
+import Plus from '../../img/Plus.svg'
 
+import { RouterProps } from 'react-router'
 import axios from 'axios'
 import '../../styles/AppsPage.sass'
+import { getSourceFromFile } from '../../util/functions'
 
 interface ICreateAppEvent extends FormEvent<HTMLFormElement> {
 	target: EventTarget & {
@@ -30,11 +33,11 @@ interface ICreateAppEvent extends FormEvent<HTMLFormElement> {
 
 interface ISelectPictureEvent extends React.ChangeEvent<HTMLInputElement> {
 	target: EventTarget & HTMLInputElement & {
-		files: FileList
+		files: FileList,
 	}
 }
 
-interface IProps {
+interface IProps extends RouterProps {
 	appsStore: AppStore
 }
 
@@ -44,29 +47,9 @@ interface IState {
 
 const displayNone = { display: 'none' }
 
-function getSourceFromFile(file: File): Promise<string | null> {
-	return new Promise((resolve, reject) => {
-		const reader = new FileReader()
-		reader.readAsDataURL(file)
-		
-		function handleLoad() {
-			reader.removeEventListener('load', handleLoad)
-
-			if (reader.result) {
-				resolve(reader.result as string)
-			}
-
-			resolve(null)	
-		}
-
-		reader.addEventListener('load', handleLoad)
-		reader.addEventListener('error', reject)
-	})
-}
-
 class AppsContainer extends Component<IProps, IState> {
-	readonly state = {
-		pictureSrc: ''
+	public readonly state = {
+		pictureSrc: '',
 	}
 
 	private readonly fileInputRef = React.createRef<HTMLInputElement>()
@@ -78,15 +61,6 @@ class AppsContainer extends Component<IProps, IState> {
 	}
 
 	@bind
-	private handleOpenFileMenu() {
-		const { current } = this.fileInputRef
-
-		if (current) {
-			current.click()
-		}
-	}
-
-	@bind
 	public async handleCreateApp(event: ICreateAppEvent) {
 		event.preventDefault()
 
@@ -95,16 +69,15 @@ class AppsContainer extends Component<IProps, IState> {
 		const pictureFile = picture.files[0]
 		const { name: pictureName, type } = pictureFile
 
-		const { 
-			downloadUrl, 
-			signedRequest 
+		const {
+			downloadUrl,
+			signedRequest,
 		} = await this.props.appsStore.fetchUploadPictureUrl({ name: pictureName, type })
 
 		await axios.put(signedRequest, pictureFile, {
-			onUploadProgress({ loaded, total }) {
-				const percentCompleted = Math.round((loaded * 100) / total)
-     			console.log(percentCompleted)
-			}
+			headers: {
+				'Content-Type': pictureFile.type,
+			},
 		})
 
 		this.props.appsStore.emitCreateApp({
@@ -112,20 +85,9 @@ class AppsContainer extends Component<IProps, IState> {
 			name: name.value,
 			pictureUrl: downloadUrl,
 		})
-	}
 
-	@bind
-	private async handleSelectPicture(event: ISelectPictureEvent) {
-		const pictureFile = event.target.files[0]
-		const pictureSrc = await getSourceFromFile(pictureFile)
-
-		this.setState({ pictureSrc })
-	}
-
-	@bind
-	private openModal() {
 		const { current } = this.modalRef
-		current && current.open()
+		current && current.close()
 	}
 
 	public render() {
@@ -136,25 +98,30 @@ class AppsContainer extends Component<IProps, IState> {
 				<div className='apps-page-container'>
 					<header>
 						<h1>Apps</h1>
-						<Button color="green" onClick={this.openModal}>
+						<Button color='green' size='small' onClick={this.openModal}>
+							<SVG src={Plus} />
 							Add new app
 						</Button>
 					</header>
-					{allApps.map((app: IAppModel) => <App app={app} key={app.id} />)}
+					<div className='apps-container'>
+						{allApps.map((app) =>
+							<App app={app.toModel()} key={app.id} history={this.props.history} />,
+						)}
+					</div>
 				</div>
 				<Modal title='Add a new app' ref={this.modalRef}>
 					<form onSubmit={this.handleCreateApp}>
 						<Row>
 							<div className='upload-container'>
 								{this.state.pictureSrc
-								 	? <img 
+								 	? <img
 										src={this.state.pictureSrc}
-										className='upload-icon' 
+										className='upload-icon'
 										onClick={this.handleOpenFileMenu}
 									/>
-									: <SVG 
-										src={Camera} 
-										className='upload-icon' 
+									: <SVG
+										src={Camera}
+										className='upload-icon'
 										onClick={this.handleOpenFileMenu}
 									/>
 								}
@@ -188,6 +155,29 @@ class AppsContainer extends Component<IProps, IState> {
 				</Modal>
 			</>
 		)
+	}
+
+	@bind
+	private handleOpenFileMenu() {
+		const { current } = this.fileInputRef
+
+		if (current) {
+			current.click()
+		}
+	}
+
+	@bind
+	private async handleSelectPicture(event: ISelectPictureEvent) {
+		const pictureFile = event.target.files[0]
+		const pictureSrc = await getSourceFromFile(pictureFile)
+
+		this.setState({ pictureSrc })
+	}
+
+	@bind
+	private openModal() {
+		const { current } = this.modalRef
+		current && current.open()
 	}
 }
 

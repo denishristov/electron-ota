@@ -13,6 +13,11 @@ import Modal from '../Generic/Modal'
 import Input from '../Generic/Input'
 import Button from '../Generic/Button'
 
+import Plus from '../../img/Plus.svg'
+
+import '../../styles/AppsPage.sass'
+import { hashBlob } from '../../util/functions'
+
 interface IParams {
 	id: string
 }
@@ -34,69 +39,18 @@ interface ICreateVersionEvent extends FormEvent<HTMLFormElement> {
 	}
 }
 
-function hashBlob(blob: Blob): Promise<string> {
-	return new Promise((resolve, reject) => {
-		const reader = new FileReader()
-
-		reader.readAsArrayBuffer(blob)
-
-		reader.addEventListener('load', handleLoad)
-		reader.addEventListener('error', reject)
-
-		async function handleLoad() {
-			const buffer = await crypto.subtle.digest('SHA-256', reader.result as ArrayBuffer)
-			const hash = btoa(String.fromCharCode(...new Uint8Array(buffer)))
-
-			reader.removeEventListener('load', handleLoad)
-
-			resolve(hash)
-		}
-	})
-}
-
 class AppPage extends Component<IProps> {
+	private readonly modalRef = React.createRef<Modal>()
+
+	@computed
+	private get app(): App | null {
+		return this.props.appsStore.getApp(this.props.match.params.id) || null
+	}
+
 	public componentDidMount() {
 		if (this.app) {
 			this.app.fetchVersions()
 		}
-	}
-
-	@computed
-	get app(): App | null {
-		return this.props.appsStore.getApp(this.props.match.params.id) || null
-	}
-
-	@bind
-	public async handleCreateVersion(event: ICreateVersionEvent) {
-		event.preventDefault()
-
-		const { versionName, isCritical, isBase, version } = event.target.elements
-
-		if (this.app) {
-			const versionFile = version.files[0]
-
-			if (versionFile) {
-				const { name, type } = versionFile
-				const { downloadUrl, signedRequest } = await this.app.fetchSignedUploadVersionUrl({ name, type })
-
-				const [hash] = await Promise.all([hashBlob(versionFile), fetch(signedRequest, {
-					body: versionFile,
-					method: 'PUT',
-				})])
-
-				this.app.emitCreateVersion({
-					downloadUrl,
-					hash,
-					isBase: isBase.checked,
-					isCritical: isCritical.checked,
-					versionName: versionName.value,
-				})
-			}
-		}
-	}
-
-	public handleReleaseVersion(version: IVersionModel) {
-		this.props.appsStore.emitPublishVersion(version)
 	}
 
 	public render() {
@@ -110,8 +64,45 @@ class AppPage extends Component<IProps> {
 		} = this.app
 
 		return (
-			<div>
-				<Modal title="Add a new version">
+			<>
+				<div className='apps-page-container'>
+					<header>
+						<h1>{name}</h1>
+						<Button color='green' size='small' onClick={this.openModal}>
+							<SVG src={Plus} />
+							Add new version
+						</Button>
+					</header>
+					{allVersions.length
+						? <table>
+							<thead>
+								<tr>
+									{Object.keys(allVersions[0]).map((key) =>
+										<th key={key}>{key}</th>,
+									)}
+								</tr>
+							</thead>
+							<tbody>
+								{allVersions.map((version) =>
+									<tr key={version.id}>
+										{Object.values(version).map((value) =>
+											<th key={value}>
+												{String(value)}
+											</th>,
+										)}
+										{!version.isPublished &&
+											<button onClick={() => this.handleReleaseVersion(version)}>
+												Release
+											</button>
+										}
+									</tr>,
+								)}
+							</tbody>
+						</table>
+						: null
+					}
+				</div>
+				<Modal title='Add a new version' ref={this.modalRef}>
 					<form onSubmit={this.handleCreateVersion}>
 						<Input
 							type='text'
@@ -138,37 +129,67 @@ class AppPage extends Component<IProps> {
 						</Button>
 					</form>
 				</Modal>
-				<h1>{name}</h1>
-				{allVersions.length
-					? <table>
-						<thead>
-							<tr>
-								{Object.keys(allVersions[0]).map((key) =>
-									<th key={key}>{key}</th>,
-								)}
-							</tr>
-						</thead>
-						<tbody>
-							{allVersions.map((version) =>
-								<tr key={version.id}>
-									{Object.values(version).map((value) =>
-										<th key={value}>
-											{String(value)}
-										</th>,
-									)}
-									{!version.isPublished &&
-										<button onClick={() => this.handleReleaseVersion(version)}>
-											Release
-										</button>
-									}
-								</tr>,
-							)}
-						</tbody>
-					</table>
-					: null
-				}
-			</div>
+			</>
 		)
+	}
+
+	@bind
+	private async handleCreateVersion(event: ICreateVersionEvent) {
+		event.preventDefault()
+
+		const {
+			versionName,
+			isCritical,
+			isBase,
+			version,
+		} = event.target.elements
+
+		if (this.app) {
+			const versionFile = version.files[0]
+
+			if (versionFile) {
+				const { name, type } = versionFile
+				const {
+					downloadUrl,
+					signedRequest,
+				} = await this.app.fetchSignedUploadVersionUrl({ name, type })
+
+				const upload = fetch(signedRequest, {
+					body: versionFile,
+					method: 'PUT',
+				})
+
+				const [hash] = await Promise.all([
+					hashBlob(versionFile),
+					upload,
+				])
+
+				this.app.emitCreateVersion({
+					downloadUrl,
+					hash,
+					isBase: isBase.checked,
+					isCritical: isCritical.checked,
+					versionName: versionName.value,
+				})
+
+				this.closeModal()
+			}
+		}
+	}
+
+	@bind
+	private openModal() {
+		const { current } = this.modalRef
+		current && current.open()
+	}
+
+	private closeModal() {
+		const { current } = this.modalRef
+		current && current.close()
+	}
+
+	private handleReleaseVersion(version: IVersionModel) {
+		this.props.appsStore.emitPublishVersion(version)
 	}
 }
 

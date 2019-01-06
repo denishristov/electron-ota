@@ -1,3 +1,4 @@
+// tslint:disable:variable-name
 export const Api = Symbol.for('Api')
 
 export const Connection = Symbol.for('Connection')

@@ -31,7 +31,7 @@ interface IState {
 }
 
 class Login extends React.Component<IProps, IState> {
-	state = {
+	public readonly state = {
 		isSuccessful: false,
 	}
 
@@ -47,15 +47,10 @@ class Login extends React.Component<IProps, IState> {
 		const isSuccessful = await this.props.userStore.login({
 			name: inputIsEmail ? void 0 : input,
 			email: inputIsEmail ? input : void 0,
-			password: password.value
+			password: password.value,
 		})
 
 		this.setState({ isSuccessful })
-	}
-
-	@bind
-	private goToSetup() {
-		this.props.history.push('/setup')
 	}
 
 	public render() {
@@ -68,15 +63,15 @@ class Login extends React.Component<IProps, IState> {
 			: (
 				<form onSubmit={this.handleSubmit}>
 				<h1>Sign in</h1>
-					<Input 
-						label="Username"
+					<Input
+						label='Username'
 						type='text'
 						name='nameOrEmail'
 						required
 						icon={User}
 					/>
-					<Input 
-						label="Password"
+					<Input
+						label='Password'
 						type='password'
 						name='password'
 						icon={Key}
@@ -92,6 +87,11 @@ class Login extends React.Component<IProps, IState> {
 					</Row>
 				</form>
 			)
+	}
+
+	@bind
+	private goToSetup() {
+		this.props.history.push('/setup')
 	}
 }
 

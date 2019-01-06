@@ -9,7 +9,7 @@ interface IHomePageProps extends RouteComponentProps {
 	userStore: IUserStore
 }
 
-const HomePage = ({ userStore, location }: IHomePageProps) => {
+function HomePage({ userStore, location }: IHomePageProps) {
 	return userStore.isAuthenticated
 		? location.pathname === '/login'
 			? <Redirect to='/apps' />

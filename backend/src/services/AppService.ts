@@ -53,7 +53,8 @@ export default class AppService implements IAppService {
 		const apps = await this.apps.find().populate('latestVersion')
 
 		return {
-			apps: apps.map(toPlain),
+			apps: apps.map(toPlain)
+				.map(app => ({ ...app, versions: app.versions.length })),
 		}
 	}
 

@@ -3,6 +3,7 @@ import { render } from 'react-dom'
 import createBrowserHistory from 'history/createBrowserHistory'
 import { configure } from 'mobx'
 import { Route, Router } from 'react-router-dom'
+
 import 'reflect-metadata'
 import './config/global'
 

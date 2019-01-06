@@ -1,12 +1,12 @@
-import bind from 'bind-decorator'
 import { inject, observer } from 'mobx-react'
 import React, { Component } from 'react'
-import { Link } from 'react-router-dom'
 import { IAppModel } from 'shared'
 import AppsStore from '../../stores/AppsStore'
 import { injectAppsStore } from '../../stores/RootStore'
+import { RouterProps } from 'react-router'
+import Row from '../Generic/Row'
 
-interface IProps {
+interface IProps extends RouterProps {
 	app: IAppModel
 	appsStore: AppsStore
 }
@@ -21,27 +21,29 @@ class App extends Component<IProps> {
 
 	public render() {
 		const {
-			id,
 			name,
 			bundleId,
 			pictureUrl,
+			latestVersion,
+			versions,
 		} = this.props.app
 
 		return (
-			<div>
-				<img src={pictureUrl} />
-				<h1>{name}</h1>
-				<h2>{`Bundle id: ${bundleId}`}</h2>
-				<Link to={`/apps/${id}`}>
-					<button>
-						Open
-					</button>
-				</Link>
-				<button onClick={this.handleDeleteApp}>
-					Delete
-				</button>
+			<div className='app-tile' onClick={this.goToApp}>
+				<Row className='top-row'>
+					<h1>{name}</h1>
+					<img src={pictureUrl} />
+				</Row>
+				<label>{`Bundle ID ${bundleId}`}</label>
+				<label>{`Versions ${versions}`}</label>
+				<label>{`Latest version ${latestVersion}`}</label>
 			</div>
 		)
+	}
+
+	@bind
+	private goToApp() {
+		this.props.history.push(`/apps/${this.props.app.id}`)
 	}
 }
 

@@ -92,19 +92,26 @@ export default class AppsStore implements IAppsStore {
 		this.apps.get(response.appId)!.versions.delete(response.id)
 	}
 
-	public emitCreateApp(createAppRequest: ICreateAppRequest): Promise<ICreateAppResponse> {
-		return this.api.emit<ICreateAppResponse>(EventType.CreateApp, createAppRequest)
+	public async emitCreateApp(createAppRequest: ICreateAppRequest): Promise<ICreateAppResponse> {
+		const res = await this.api.emit<ICreateAppResponse>(EventType.CreateApp, createAppRequest)
+		this.handleCreateApp(res)
+		return res
 	}
 
-	public emitUpdateApp(updateAppRequest: IUpdateAppRequest): Promise<IUpdateAppResponse> {
-		return this.api.emit<IUpdateAppResponse>(EventType.UpdateApp, updateAppRequest)
+	public async emitUpdateApp(updateAppRequest: IUpdateAppRequest): Promise<IUpdateAppResponse> {
+		const res = await this.api.emit<IUpdateAppResponse>(EventType.UpdateApp, updateAppRequest)
+		this.handleUpdateApp(res)
+		return res
 	}
 
-	public emitDeleteApp(deleteAppRequest: IDeleteAppRequest): Promise<IDeleteAppResponse> {
-		return this.api.emit<IDeleteAppResponse>(EventType.DeleteApp, deleteAppRequest)
+	public async emitDeleteApp(deleteAppRequest: IDeleteAppRequest): Promise<IDeleteAppResponse> {
+		const res = await this.api.emit<IDeleteAppResponse>(EventType.DeleteApp, deleteAppRequest)
+		this.handleDeleteApp(res)
+		return res
 	}
 
-	public emitPublishVersion({ id, appId }: IPublishVersionRequest): Promise<IPublishVersionResponse> {
-		return this.api.emit<IPublishVersionResponse>(EventType.PublishVersion, { id, appId })
+	public async emitPublishVersion({ id, appId }: IPublishVersionRequest): Promise<IPublishVersionResponse> {
+		const res = await this.api.emit<IPublishVersionResponse>(EventType.PublishVersion, { id, appId })
+		return res
 	}
 }

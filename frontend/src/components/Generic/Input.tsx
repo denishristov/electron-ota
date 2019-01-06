@@ -1,8 +1,6 @@
 import React from 'react'
 
-import  '../../styles/Input.sass'
-
-import User from '../../img/User.svg'
+import '../../styles/Input.sass'
 
 interface IProps extends React.InputHTMLAttributes<HTMLInputElement> {
 	label: string

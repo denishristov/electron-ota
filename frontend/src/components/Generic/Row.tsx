@@ -1,5 +1,5 @@
 import React from 'react'
-import { list } from '../../util/functions';
+import { list } from '../../util/functions'
 
 function Row({ className, ...props }: React.InputHTMLAttributes<HTMLDivElement>) {
 	return (
