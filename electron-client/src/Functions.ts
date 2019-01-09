@@ -19,6 +19,15 @@ export function hashFile(path: string): Promise<string> {
 	})
 }
 
+export function hashFileSync(path: string): string {
+	const file = fs.readFileSync('path')
+	const hash = crypto.createHash('sha256')
+		.update(file)
+		.digest('base64')
+
+	return hash
+}
+
 export async function checkDir(path: string): Promise<void> {
 	if (!await exists(path)) {
 		await mkdir(path)

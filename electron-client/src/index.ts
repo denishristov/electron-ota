@@ -1,5 +1,6 @@
 import os from 'os'
 import path from 'path'
+import fs from 'fs'
 import { EventEmitter } from 'events'
 
 import io from 'socket.io-client'
@@ -20,6 +21,7 @@ import {
 	hashFile,
 	readdir,
 	unlink,
+	hashFileSync,
 } from './Functions'
 
 declare global {
@@ -82,6 +84,41 @@ class ElectronUpdateServiceClient extends EventEmitter {
 
 			if (hash) {
 				const fileHash = await hashFile(latestUpdatePath)
+				
+				if (hash !== fileHash) {
+					this.emit(EventTypes.UpdateService.Error, 'Hashes do not match')
+					return null
+				}
+			}
+		}
+
+		this.store.clear()
+
+		for (const filename of updates) {
+			unlink(path.join(this.updateDirPath, filename))	
+		}
+		
+		this.emitToServer(EventTypes.Server.SuccessfulUpdate)
+
+		return require(latestUpdatePath)
+	}
+
+	public loadLatestUpdateSync(): any {
+		const files = fs.readdirSync(this.updateDirPath)
+		const updates = files.filter(filename => filename.endsWith('.asar')).sort()
+
+		if (!updates.length) {
+			return null
+		}
+
+		const [latestUpdateFilename] = updates.splice(updates.length - 1, 1)
+		const latestUpdatePath = path.join(this.updateDirPath, latestUpdateFilename)
+
+		if (this.checkHashBeforeLoad) {
+			const { hash } = this.store.get(latestUpdateFilename)
+
+			if (hash) {
+				const fileHash = hashFileSync(latestUpdatePath)
 				
 				if (hash !== fileHash) {
 					this.emit(EventTypes.UpdateService.Error, 'Hashes do not match')

@@ -12,14 +12,14 @@ $grey: #f5f5f5
 	color: $color
 
 	&:focus
+		@include defaultShadow(desaturate($accent, 15%))
 		border-color: desaturate($background, 15%)
 		background-color: desaturate($background, 15%)
-		@include defaultShadow(desaturate($accent, 15%))
 
 	&:hover
+		@include defaultShadow(desaturate($accent, 15%))
 		border-color: desaturate($background, 15%)
 		background-color: desaturate($background, 15%)
-		@include defaultShadow(desaturate($accent, 15%))
 
 @mixin light-button($background, $color) 
 	@include color-button($background, $color, lighten($background, 15%))

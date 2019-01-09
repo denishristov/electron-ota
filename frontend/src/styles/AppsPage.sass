@@ -55,17 +55,17 @@
 				margin-right: 8px
 	
 	.apps-container
-		display: flex
-		flex-flow: row wrap
+		display: grid
+		grid-template-columns: repeat(auto-fill, 32px * 7)
+		grid-auto-rows: 32px * 8
 		margin: 16px
-		justify-content: space-around
+		justify-content: center
+		align-content: center
 
 		.app-tile
 			@include defaultShadow($accent)
 			margin: 16px
 			padding: 12px
-			width: 160px
-			height: 192px
 			border-radius: 6px
 			background: white
 			border: 1px solid $accent
