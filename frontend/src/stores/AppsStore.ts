@@ -89,7 +89,8 @@ export default class AppsStore implements IAppsStore {
 
 	@action.bound
 	public handleDeleteVersion(response: ICreateVersionResponse) {
-		this.apps.get(response.appId)!.versions.delete(response.id)
+		const app = this.apps.get(response.appId)
+		app && app.versions.delete(response.id)
 	}
 
 	public async emitCreateApp(createAppRequest: ICreateAppRequest): Promise<ICreateAppResponse> {
@@ -110,8 +111,8 @@ export default class AppsStore implements IAppsStore {
 		return res
 	}
 
-	public async emitPublishVersion({ id, appId }: IPublishVersionRequest): Promise<IPublishVersionResponse> {
-		const res = await this.api.emit<IPublishVersionResponse>(EventType.PublishVersion, { id, appId })
+	public async emitPublishVersion(req: IPublishVersionRequest): Promise<IPublishVersionResponse> {
+		const res = await this.api.emit<IPublishVersionResponse>(EventType.ReleaseUpdate, req)
 		return res
 	}
 }

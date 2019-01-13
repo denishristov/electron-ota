@@ -16,15 +16,20 @@ export enum EventType {
 	CreateVersion = 'version.create',
 	UpdateVersion = 'version.update',
 	DeleteVersion = 'version.delete',
-	PublishVersion = 'version.publish',
-
+	
 	SignUploadVersionUrl = 's3.sign.upload.versions',
 	SignUploadPictureUrl = 's3.sign.upload.pictures',
-
+	
+	ReleaseUpdate = 'update.release',
 	CheckForUpdate = 'update.check',
 	NewUpdate = 'update.new',
-	SuccessfulUpdate = 'update.success',
 
 	GetRegisterKeyPath = 'register.path',
-	Register = 'register'
+	RegisterAdmin = 'register',
+
+	RegisterClient = 'client.register',
+	UpdateDownloading = 'client.downloading',
+	UpdateDownloaded = 'client.downloaded',
+	UpdateUsing = 'client.using',
+	UpdateError = 'client.error',
 }

@@ -16,7 +16,7 @@ import AppsPage from './components/Apps/AppsPage'
 import Login from './components/HomePage/Login'
 import Register from './components/HomePage/Register'
 
-import 'shared'
+import 'shared/dist/extensions'
 
 import container from './dependencies/inversify.config'
 import './util/extensions'

@@ -1,42 +1,80 @@
-import { IPostRespondHook, ISocketMediator } from '../mediator/Interfaces'
-import { EventType, IPublishVersionRequest, IPublishVersionResponse } from 'shared'
-import { IVersionService } from '../services/VersionService'
 
-export type ReleaseUpdateHookFactory = (clientsMediator: ISocketMediator) => ReleaseUpdateHook
+import { EventType, IPublishVersionRequest, IPublishVersionResponse, SystemType } from 'shared'
+import { IPostRespondHook, ISocketMediator } from '../util/mediator/Interfaces'
+import { IClientDocument } from '../models/Client'
+import { Model } from 'mongoose'
+import { toPlain } from '../util/util'
+import { IVersionDocument } from '../models/Version'
 
 export default class ReleaseUpdateHook implements IPostRespondHook {
-	public eventTypes = new Set([EventType.PublishVersion])
+	public eventTypes = new Set([EventType.ReleaseUpdate])
 
 	constructor(
 		private readonly clientsMediator: ISocketMediator,
-		private readonly versionService: IVersionService,
+		private readonly versions: Model<IVersionDocument>,
+		private readonly clients: Model<IClientDocument>,
 	) {}
 
 	@bind
 	public async handle(
-		{ id, appId }: IPublishVersionRequest,
+		{ clients, clientCount, systems, versionId }: IPublishVersionRequest,
 		{ isSuccessful }: IPublishVersionResponse,
 	) {
 		if (isSuccessful) {
-			const {
-				versionName,
-				isBase,
-				isCritical,
-				downloadUrl,
-				description,
-				hash,
-			} = await this.versionService.getVersion({ id, appId })
+			const update = await this.versions
+				.findById(versionId)
+				.select(`
+					versionName
+					isBase
+					isCritical
+					downloadUrl
+					description
+					hash
+				`)
+				.then(toPlain)
 
-			const update = {
-				versionName,
-				isBase,
-				isCritical,
-				downloadUrl,
-				description,
-				hash,
+			const sessionIds: string[] = []
+
+			if (clients) {
+				const clientsSet = new Set(clients)
+
+				this.clientsMediator.broadcast(EventType.NewUpdate, update, (client) => {
+					const { type, sessionId } = client.handshake.query
+
+					const doesMatch = Boolean(systems[type as SystemType]) && clientsSet.has(sessionId)
+
+					if (doesMatch) {
+						sessionIds.push(sessionId)
+					}
+
+					return doesMatch
+				}, clientCount && clientCount - clients.length)
+			} else {
+				this.clientsMediator.broadcast(EventType.NewUpdate, update, (client) => {
+					const { type, sessionId } = client.handshake.query
+
+					const doesMatch = Boolean(systems[type as SystemType])
+
+					if (doesMatch) {
+						sessionIds.push(sessionId)
+					}
+
+					return doesMatch
+				}, clientCount)
 			}
 
-			this.clientsMediator.broadcast(EventType.NewUpdate, update)
+			await this.clients.updateMany(
+				{
+					sessionId: {
+						$in: sessionIds,
+					},
+				},
+				{
+					$set: {
+						updatingVersion: versionId,
+					},
+				},
+			)
 		}
 	}
 }

@@ -8,14 +8,17 @@ import {
 	IGetAppsResponse,
 	IUpdateAppRequest,
 	IUpdateAppResponse,
+	SystemType,
 } from 'shared'
 import { IAppDocument } from '../models/App'
 import { toPlain } from '../util/util'
 import { IVersionDocument } from '../models/Version'
+import { IReleaseDocument } from '../models/Release'
 
 export interface IAppService {
 	getApp(id: string, options?: IGetAppOptions): Promise<IAppDocument>
 	getAppVersions(id: string): Promise<{ versions: IVersionDocument[] }>
+	getAppLatestVersion(id: string, systemType: SystemType): Promise<IVersionDocument>
 	getAllApps(): Promise<IGetAppsResponse>
 	createApp(createRequest: ICreateAppRequest): Promise<ICreateAppResponse>
 	updateApp(updateRequest: IUpdateAppRequest): Promise<IUpdateAppResponse>
@@ -24,7 +27,7 @@ export interface IAppService {
 
 interface IGetAppOptions {
 	versions?: boolean
-	latestVersion?: boolean
+	latestVersions?: boolean
 }
 
 @DI.injectable()
@@ -36,31 +39,43 @@ export default class AppService implements IAppService {
 
 	public async getApp(
 		id: string,
-		{ versions, latestVersion }: IGetAppOptions = { versions: false, latestVersion: false },
+		{ versions, latestVersions }: IGetAppOptions = { versions: false, latestVersions: false },
 	): Promise<IAppDocument> {
+		const populate = [
+			versions && 'versions',
+			latestVersions && 'latestVersions',
+		].filter(Boolean).join(' ')
+
 		return await this.apps
 			.findById(id)
-			.populate(`${versions ? 'versions' : ''}`)
-			.populate(`${latestVersion ? 'latestVersion' : ''}`)
+			.populate(populate)
 	}
 
 	public async getAppVersions(id: string): Promise<{ versions: IVersionDocument[] }> {
-		return await this.apps.findById(id).populate('versions').select('versions')
+		return await this.apps
+			.findById(id)
+			.populate('versions')
+			.select('versions')
+			.sort({ 'versions.updatedAt': 1 })
 	}
 
 	@bind
 	public async getAllApps(): Promise<IGetAppsResponse> {
-		const apps = await this.apps.find().populate('latestVersion')
+		const apps = await this.apps.find().populate('latestVersions')
 
 		return {
 			apps: apps.map(toPlain)
-				.map(app => ({ ...app, versions: app.versions.length })),
+				.map((app) => ({ ...app, versions: app.versions.length })),
 		}
 	}
 
 	@bind
 	public async createApp(createRequest: ICreateAppRequest): Promise<ICreateAppResponse> {
-		const app = await this.apps.create(createRequest)
+		const app = await this.apps.create({ ...createRequest, latestVersions: {
+			Windows_RT: null,
+			Darwin: null,
+			Linux: null,
+		}})
 
 		return toPlain(app)
 	}
@@ -76,5 +91,23 @@ export default class AppService implements IAppService {
 	public async deleteApp({ id }: IDeleteAppRequest): Promise<IDeleteAppResponse> {
 		await this.apps.deleteOne({ _id: id })
 		return { id }
+	}
+
+	public async getAppLatestVersion(id: string, systemType: SystemType) {
+		if (!Object.values(SystemType).includes(systemType)) {
+			throw new Error('wrong type')
+		}
+
+		const { latestVersions } = await this.apps
+			.findById(id)
+			.populate({
+				path: 'latestVersions',
+				populate: {
+					path: 'version',
+				},
+			})
+			.select('latestVersions')
+
+		return latestVersions[systemType]
 	}
 }

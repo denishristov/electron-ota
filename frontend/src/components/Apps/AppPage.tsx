@@ -90,11 +90,10 @@ class AppPage extends Component<IProps> {
 												{String(value)}
 											</th>,
 										)}
-										{!version.isPublished &&
 											<button onClick={() => this.handleReleaseVersion(version)}>
 												Release
 											</button>
-										}
+
 									</tr>,
 								)}
 							</tbody>
@@ -189,7 +188,14 @@ class AppPage extends Component<IProps> {
 	}
 
 	private handleReleaseVersion(version: IVersionModel) {
-		this.props.appsStore.emitPublishVersion(version)
+		this.props.appsStore.emitPublishVersion({
+			versionId: version.id,
+			systems: {
+				Windows_RT: true,
+				Darwin: true,
+				Linux: true,
+			},
+		})
 	}
 }
 

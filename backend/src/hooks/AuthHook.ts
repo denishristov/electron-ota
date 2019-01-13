@@ -1,6 +1,6 @@
-import { IPreRespondHook } from '../mediator/Interfaces'
 import { EventType, IUserAuthenticationRequest } from 'shared'
 import { IAdminsService } from '../services/AdminsService'
+import { IPreRespondHook } from '../util/mediator/Interfaces'
 
 @DI.injectable()
 export default class AuthHook implements IPreRespondHook {
@@ -8,11 +8,11 @@ export default class AuthHook implements IPreRespondHook {
 		EventType.Login,
 		EventType.Authentication,
 		EventType.GetRegisterKeyPath,
-		EventType.Register,
+		EventType.RegisterAdmin,
 	])
 
 	constructor(
-		@DI.inject(DI.Services.User)
+		@DI.inject(DI.Services.Admin)
 		private readonly userService: IAdminsService,
 	) {}
 

@@ -1,13 +1,13 @@
 import { Document, Schema } from 'mongoose'
 
-export interface IUserDocument extends Document {
+export interface IAdminDocument extends Document {
 	email: string
 	name: string
 	password: string
 	authTokens: string[]
 }
 
-export const UserSchema = new Schema({
+export const IAdminSchema = new Schema({
 	authTokens: [{
 		type: String,
 		unique: true,

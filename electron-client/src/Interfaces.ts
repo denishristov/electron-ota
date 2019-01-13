@@ -9,6 +9,7 @@ export interface IUpdateServiceOptions {
 
 export interface IUpdateResponse extends INewUpdate {
 	isUpToDate: boolean
+	update?: INewUpdate
 }
 
 interface IUpdate {

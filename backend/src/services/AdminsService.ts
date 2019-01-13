@@ -10,7 +10,7 @@ import {
 	IRegisterAdminRequest,
 	IRegisterAdminResponse,
 } from 'shared'
-import { IUserDocument } from '../models/User'
+import { IAdminDocument } from '../models/User'
 import { PASS_SECRET_KEY } from '../config/config'
 
 export interface IAdminsService {
@@ -29,7 +29,7 @@ interface IAdminModel {
 export default class AdminsService implements IAdminsService {
 	constructor(
 		@DI.inject(DI.Models.User)
-		private readonly admins: Model<IUserDocument>,
+		private readonly admins: Model<IAdminDocument>,
 	) {}
 
 	@bind
@@ -100,7 +100,7 @@ export default class AdminsService implements IAdminsService {
 		}
 	}
 
-	private async generateTokenAndAddToUser(user: IUserDocument): Promise<string> {
+	private async generateTokenAndAddToUser(user: IAdminDocument): Promise<string> {
 		const token = await this.generateToken(user.id)
 
 		this.hashAuthToken(token).then((hashed) => {

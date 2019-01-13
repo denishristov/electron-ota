@@ -1,6 +1,6 @@
-import { IPostRespondHook } from '../mediator/Interfaces'
 import { EventType, ICreateAppRequest, ICreateAppResponse } from 'shared'
-import { UpdateClientsMediatorFactory } from '../mediator/MediatorFactory'
+import { IPostRespondHook } from '../util/mediator/Interfaces'
+import { UpdateClientsMediatorFactory } from '../dependencies/factories/UpdateClientsMediatorFactory'
 
 @DI.injectable()
 export default class CreateUpdateClientsMediator implements IPostRespondHook {

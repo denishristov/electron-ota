@@ -7,7 +7,7 @@ import {
 	ISocketMediator,
 	IPostRespondHook,
 	IEventHandlers,
-} from './Interfaces'
+} from './interfaces'
 import crypto from 'crypto'
 
 export default class SocketMediator implements ISocketMediator {
@@ -18,13 +18,7 @@ export default class SocketMediator implements ISocketMediator {
 	private readonly roomId = crypto.randomBytes(16).toString('base64')
 
 	constructor(private readonly clients: IClients) {
-		clients.on(EventType.Connection, (client) => {
-			this.subscribe(client)
-
-			client.on(EventType.Disconnect, () => {
-				this.unsubscribe(client)
-			})
-		})
+		clients.on(EventType.Connection, this.subscribe)
 	}
 
 	public use(eventHandlers: IEventHandlers): void {
@@ -45,14 +39,21 @@ export default class SocketMediator implements ISocketMediator {
 		}
 	}
 
+	@bind
 	public subscribe(client: IClient): void {
+		// tslint:disable-next-line:no-console
+		console.log(client.handshake.query)
+
 		client.join(this.roomId, () => {
 			for (const [eventType, eventHandler] of this.handlers) {
 				client.on(eventType, this.createEventHandler(client, eventHandler))
 			}
 		})
+
+		client.on(EventType.Disconnect, () => this.unsubscribe(client))
 	}
 
+	@bind
 	public unsubscribe(client: IClient) {
 		return client.leave(this.roomId)
 	}
@@ -75,8 +76,23 @@ export default class SocketMediator implements ISocketMediator {
 		}
 	}
 
-	public broadcast(eventType: EventType, data: object): void {
-		this.room.emit(eventType, data)
+	public broadcast(
+		eventType: EventType,
+		data: object,
+		predicate?: (client: IClient) => boolean,
+		count?: number,
+	): void {
+		const iterations = count
+			? Math.min(this.sockets.length, count)
+			: this.sockets.length
+
+		for (let i = 0; i < iterations; ++i) {
+			const socket = this.sockets[i]
+
+			if (predicate ? predicate(socket) : true) {
+				socket.emit(eventType, data)
+			}
+		}
 		// tslint:disable-next-line:no-console
 		console.log(
 			'----------------------------------\n',
@@ -160,7 +176,7 @@ export default class SocketMediator implements ISocketMediator {
 					'hook: ', data,
 				)
 
-				respond({ errorMessage: data.errorMessage })
+				respond({ errorMessage: data && data.errorMessage })
 				return
 			}
 

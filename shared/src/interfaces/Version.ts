@@ -1,4 +1,5 @@
 import { IRequest, IResponse } from "./Generic"
+import { SystemType } from "../enums/SystemType"
 
 export interface IVersionModel {
 	id: string
@@ -6,7 +7,6 @@ export interface IVersionModel {
 	downloadUrl: string
 	isCritical: boolean
 	isBase: boolean
-	isPublished: boolean
 	appId: string
 	description?: string
 	hash: string
@@ -18,7 +18,6 @@ export interface IVersionEditModel {
 	description?: string
 	isCritical?: boolean
 	isBase?: boolean
-	isPublished?: boolean
 }
 
 export interface IVersionRequest extends IRequest {
@@ -29,7 +28,7 @@ export interface IVersionResponse extends IResponse {
 	appId: string
 }
 
-export interface IGetVersionRequest extends IVersionRequest {
+export interface IGetVersionRequest extends IRequest {
 	id: string
 }
 
@@ -52,7 +51,6 @@ export interface ICreateVersionRequest extends IVersionRequest {
 	downloadUrl: string
 	isCritical: boolean
 	isBase: boolean
-	isPublished: boolean
 	hash: string
 	description?: string
 }
@@ -69,13 +67,4 @@ export interface IDeleteVersionRequest extends IVersionRequest {
 
 export interface IDeleteVersionResponse extends IVersionResponse {
 	id: string
-}
-
-export interface IPublishVersionRequest extends IRequest {
-	appId: string
-	id: string
-}
-
-export interface IPublishVersionResponse extends IResponse {
-	isSuccessful: boolean
 }

@@ -2,7 +2,7 @@ import Cookies from 'js-cookie'
 import { action, computed, observable } from 'mobx'
 import { EventType, IUserAuthenticationResponse, IUserLoginResponse } from 'shared'
 import { IApi } from '../util/Api'
-import { IUserLoginRequest } from '../../../shared/dist/interfaces/requests/UserLogin';
+import { IUserLoginRequest } from 'shared'
 
 export interface IUserStore {
 	isLoading: boolean

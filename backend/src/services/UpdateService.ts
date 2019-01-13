@@ -1,43 +1,99 @@
 import {
-	IAppModel,
 	ICheckForUpdateRequest,
 	ICheckForUpdateResponse,
+	IPublishVersionRequest,
+	IPublishVersionResponse,
+	SystemType,
 } from 'shared'
 
-import { IVersionService } from './VersionService'
-
 import semver from 'semver'
+import { Model } from 'mongoose'
+import { IReleaseDocument } from '../models/Release'
+import { IVersionDocument } from '../models/Version'
+import { IAppDocument } from '../models/App'
 
-export type UpdateServiceFactory = (app: IAppModel) => IUpdateService
-
-export interface IUpdateService {
-	checkForUpdate({ versionName }: ICheckForUpdateRequest): Promise<ICheckForUpdateResponse>
+export interface IReleaseService {
+	checkForUpdate(req: ICheckForUpdateRequest): Promise<ICheckForUpdateResponse>
+	releaseVersion(req: IPublishVersionRequest): Promise<IPublishVersionResponse>
 }
 
 const defaultResponse = {
 	isUpToDate: true,
 }
 
-export default class UpdateService implements IUpdateService {
+@DI.injectable()
+export default class ReleaseService implements IReleaseService {
 	constructor(
-		private readonly versionService: IVersionService,
-		private readonly app: IAppModel,
+		@DI.inject(DI.Models.Update)
+		private readonly releases: Model<IReleaseDocument>,
+		@DI.inject(DI.Models.App)
+		private readonly apps: Model<IAppDocument>,
+		@DI.inject(DI.Models.Version)
+		private readonly versions: Model<IVersionDocument>,
 	) {}
 
 	@bind
-	public async checkForUpdate(
-		{ versionName }: ICheckForUpdateRequest,
-	): Promise<ICheckForUpdateResponse> {
-		if (!this.app.latestVersion) {
-			return defaultResponse
+	public async releaseVersion({
+		versionId,
+		systems,
+		clientCount,
+		clients,
+	}: IPublishVersionRequest): Promise<IPublishVersionResponse> {
+		try {
+			const totalClientCount = clientCount
+				? clients
+					? clientCount + clients.length
+					: clientCount
+				: clients && clients.length
+
+			const release = this.releases.create({
+				systems,
+				clientCount: totalClientCount,
+			})
+
+			const version = await this.versions.findById(versionId)
+
+			release.then((release) => {
+				version.releases.push(release)
+				version.save()
+			})
+
+			if (!totalClientCount) {
+				const a = await this.apps.findByIdAndUpdate(version.appId, {
+					latestVersions: Object.keys(systems)
+						.filter((systemType) => systems[systemType as SystemType])
+						.group((systemType) => [systemType, version]),
+				}, { upsert: true })
+			}
+
+			return {
+				isSuccessful: true,
+				release: {
+					versionId,
+					clientCount,
+					clients,
+					systems,
+				},
+			}
+		 } catch (error) {
+			return {
+				isSuccessful: false,
+				errorMessage: error.message,
+			}
 		}
+	}
 
-		const version = await this.versionService.getVersion({
-			id: this.app.latestVersion.id,
-			appId: this.app.id,
-		})
+	@bind
+	public async checkForUpdate(
+		{ versionName, bundleId, systemType }: ICheckForUpdateRequest,
+	): Promise < ICheckForUpdateResponse > {
+		const { latestVersions } = await this.apps
+			.findOne({ bundleId })
+			.populate(`latestVersions.${systemType}`)
 
-		if (semver.lt(versionName, version.versionName)) {
+		const latestVersion = latestVersions && latestVersions[systemType]
+
+		if (latestVersion && semver.lt(versionName, latestVersion.versionName)) {
 			const {
 				isBase,
 				isCritical,
@@ -45,16 +101,18 @@ export default class UpdateService implements IUpdateService {
 				downloadUrl,
 				hash,
 				versionName,
-			} = version
+			} = latestVersion
 
 			return {
 				isUpToDate: false,
-				isBase,
-				isCritical,
-				description,
-				downloadUrl,
-				hash,
-				versionName,
+				update: {
+					isBase,
+					isCritical,
+					description,
+					downloadUrl,
+					hash,
+					versionName,
+				},
 			}
 		}
 

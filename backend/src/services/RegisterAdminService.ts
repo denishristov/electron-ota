@@ -15,28 +15,25 @@ const write = util.promisify(fs.write)
 export interface IRegisterCredentials {
 	path: string
 	key: string
+	timeout: NodeJS.Timeout
 	clean(): void
 }
 
-export interface IRegisterAdminService {
+export interface IRegisterCredentialsService {
 	getCredentialsKeyPath(): Promise<IRegisterKeyPathResponse>
 	register(user: IRegisterAdminRequest): Promise<IRegisterAdminResponse>
 }
 
 @DI.injectable()
-export default class RegisterAdminService implements IRegisterAdminService {
+export default class RegisterCredentialsService implements IRegisterCredentialsService {
 	private static readonly REGISTER_TIMEOUT = 1000 * 60 * 15
 	private readonly registerCredentials = new Map<string, IRegisterCredentials>()
-	private readonly timeouts = new Map<string, NodeJS.Timeout>()
 
-	constructor(@DI.inject(DI.Services.User) private readonly adminsService: IAdminsService) {}
+	constructor(@DI.inject(DI.Services.Admin) private readonly adminsService: IAdminsService) {}
 
 	@bind
 	public async getCredentialsKeyPath(): Promise<IRegisterKeyPathResponse> {
-		const credentials = await this.genRegisterCredentials()
-		const { key, path } = credentials
-
-		this.registerCredentials.set(key, credentials)
+		const { path } = await this.genRegisterCredentials()
 
 		return { path }
 	}
@@ -44,8 +41,10 @@ export default class RegisterAdminService implements IRegisterAdminService {
 	@bind
 	public async register({ key, ...admin }: IRegisterAdminRequest): Promise<IRegisterAdminResponse> {
 		if (this.registerCredentials.has(key)) {
-			this.registerCredentials.get(key).clean()
-			clearTimeout(this.timeouts.get(key))
+			const { clean, timeout } = this.registerCredentials.get(key)
+
+			clearTimeout(timeout)
+			clean()
 
 			return await this.adminsService.addAdmin(admin)
 		}
@@ -68,19 +67,24 @@ export default class RegisterAdminService implements IRegisterAdminService {
 					const key = await this.genRegisterKey()
 					await write(fd, key)
 
+					const clean = () => {
+						if (this.registerCredentials.has(key)) {
+							this.registerCredentials.delete(key)
+							cleanFile()
+							cleanDir()
+						}
+					}
+
+					const timeout = setTimeout(clean, RegisterCredentialsService.REGISTER_TIMEOUT)
+
 					const credentials = {
 						path,
 						key,
-						clean: () => {
-							if (this.registerCredentials.has(key)) {
-								this.registerCredentials.delete(key)
-								cleanFile()
-								cleanDir()
-							}
-						},
+						clean,
+						timeout,
 					}
 
-					this.timeouts.set(key, setTimeout(credentials.clean, RegisterAdminService.REGISTER_TIMEOUT))
+					this.registerCredentials.set(key, credentials)
 					resolve(credentials)
 				})
 			})

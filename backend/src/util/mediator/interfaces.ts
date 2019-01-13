@@ -18,7 +18,7 @@ export interface ISocketMediator {
 	use(eventHandlers: IEventHandlers): void
 	subscribe(client: IClient): void
 	unsubscribe(client: IClient): void
-	broadcast(eventType: EventType, data: object): void
+	broadcast(eventType: EventType, data: object, predicate?: (client: IClient) => boolean, count?: number): void
 	broadcastEvents(...eventTypes: EventType[]): void
 	usePreRespond(...hooks: IPreRespondHook[]): void
 	usePostRespond(...hooks: IPostRespondHook[]): void

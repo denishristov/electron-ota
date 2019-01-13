@@ -2,7 +2,11 @@ export enum Server {
 	Connect = 'connect',
 	CheckForUpdate = 'update.check',
 	NewUpdate = 'update.new',
-	SuccessfulUpdate = 'update.success'
+	Register = 'client.register',
+	Downloading = 'client.downloading',
+	Downloaded = 'client.downloaded',
+	Error = 'client.error',
+	Using = 'client.using',
 }
 
 export enum UpdateService {

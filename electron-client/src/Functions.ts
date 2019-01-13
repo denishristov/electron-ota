@@ -33,3 +33,7 @@ export async function checkDir(path: string): Promise<void> {
 		await mkdir(path)
 	}
 }
+
+export function uuid(): string {
+	return crypto.randomBytes(32).toString('base64')
+}

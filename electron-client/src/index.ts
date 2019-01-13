@@ -22,6 +22,7 @@ import {
 	readdir,
 	unlink,
 	hashFileSync,
+	uuid,
 } from './Functions'
 
 declare global {
@@ -41,9 +42,11 @@ class ElectronUpdateServiceClient extends EventEmitter {
 	private readonly uri: string
 	private readonly updateDirPath: string
 	private readonly versionName: string
+	private readonly bundleId: string
 	private readonly checkHashAfterDownload: boolean
 	private readonly checkHashBeforeLoad: boolean
-	private readonly store = new Store({ name: 'updater' })
+	private readonly downloadsStore = new Store({ name: 'updater' })
+	private readonly sessionStore = new Store({ name: 'session '})
 	private readonly connect: Promise<SocketIOClient.Socket> = this.connectPromise
 
 	private static readonly RETRY_TIMEOUT = 1000 * 60
@@ -62,6 +65,8 @@ class ElectronUpdateServiceClient extends EventEmitter {
 		this.uri = `${updateServerUrl}/${bundleId}`
 		this.updateDirPath = path.join(userDataPath || app.getPath('userData'), 'updates')
 		this.versionName = versionName
+		this.bundleId = bundleId
+
 		this.checkHashBeforeLoad = Boolean(checkHashBeforeLoad)
 		this.checkHashAfterDownload = checkHashAfterDownload === void 0 
 			? true 
@@ -69,55 +74,68 @@ class ElectronUpdateServiceClient extends EventEmitter {
 	}
 
 	public async loadLatestUpdate(): Promise<any> {
-		const files = await readdir(this.updateDirPath)
-		const updates = files.filter(filename => filename.endsWith('.asar')).sort()
-
-		if (!updates.length) {
-			return null
-		}
-
-		const [latestUpdateFilename] = updates.splice(updates.length - 1, 1)
-		const latestUpdatePath = path.join(this.updateDirPath, latestUpdateFilename)
-
-		if (this.checkHashBeforeLoad) {
-			const { hash } = this.store.get(latestUpdateFilename)
-
-			if (hash) {
-				const fileHash = await hashFile(latestUpdatePath)
+		try {
+			const files = await readdir(this.updateDirPath)
+			
+			const updates = files.filter(filename => filename.endsWith('.asar')).sort()
+			
+			if (!updates.length) {
+				return null
+			}
+			
+			const [latestUpdateFilename] = updates.splice(updates.length - 1, 1)
+			const latestUpdatePath = path.join(this.updateDirPath, latestUpdateFilename)
+			
+			if (this.checkHashBeforeLoad) {
+				const { hash } = this.downloadsStore.get(latestUpdateFilename)
 				
-				if (hash !== fileHash) {
-					this.emit(EventTypes.UpdateService.Error, 'Hashes do not match')
-					return null
+				if (hash) {
+					const fileHash = await hashFile(latestUpdatePath)
+					
+					if (hash !== fileHash) {
+						this.emit(EventTypes.UpdateService.Error, 'Hashes do not match')
+						return null
+					}
 				}
 			}
+			
+			this.downloadsStore.clear()
+			
+			for (const filename of updates) {
+				unlink(path.join(this.updateDirPath, filename))	
+			}
+			
+			this.emitToServer(EventTypes.Server.Using)
+			
+			return require(latestUpdatePath)
+		} catch(error) {
+			// this.emit(EventTypes.UpdateService.Error, error)
+
+			return null
 		}
-
-		this.store.clear()
-
-		for (const filename of updates) {
-			unlink(path.join(this.updateDirPath, filename))	
-		}
-		
-		this.emitToServer(EventTypes.Server.SuccessfulUpdate)
-
-		return require(latestUpdatePath)
 	}
 
 	public loadLatestUpdateSync(): any {
-		const files = fs.readdirSync(this.updateDirPath)
-		const updates = files.filter(filename => filename.endsWith('.asar')).sort()
-
-		if (!updates.length) {
-			return null
-		}
-
-		const [latestUpdateFilename] = updates.splice(updates.length - 1, 1)
-		const latestUpdatePath = path.join(this.updateDirPath, latestUpdateFilename)
-
-		if (this.checkHashBeforeLoad) {
-			const { hash } = this.store.get(latestUpdateFilename)
-
-			if (hash) {
+		try {
+			const files = fs.readdirSync(this.updateDirPath)
+			
+			const updates = files.filter(filename => filename.endsWith('.asar')).sort()
+			
+			if (!updates.length) {
+				return null
+			}
+			
+			const [latestUpdateFilename] = updates.splice(updates.length - 1, 1)
+			const latestUpdatePath = path.join(this.updateDirPath, latestUpdateFilename)
+			
+			if (this.checkHashBeforeLoad) {
+				const { hash } = this.downloadsStore.get(latestUpdateFilename)
+				
+				if (!hash) {
+					this.emit(EventTypes.UpdateService.Error, 'Hashes do not match')
+					return null
+				}
+				
 				const fileHash = hashFileSync(latestUpdatePath)
 				
 				if (hash !== fileHash) {
@@ -125,25 +143,33 @@ class ElectronUpdateServiceClient extends EventEmitter {
 					return null
 				}
 			}
+			
+			this.downloadsStore.clear()
+			
+			for (const filename of updates) {
+				unlink(path.join(this.updateDirPath, filename))	
+			}
+			
+			this.emitToServer(EventTypes.Server.Using)
+			
+			return require(latestUpdatePath)
+		} catch(error) {
+			this.emit(EventTypes.UpdateService.Error, error)
+
+			return null
 		}
-
-		this.store.clear()
-
-		for (const filename of updates) {
-			unlink(path.join(this.updateDirPath, filename))	
-		}
-		
-		this.emitToServer(EventTypes.Server.SuccessfulUpdate)
-
-		return require(latestUpdatePath)
 	}
-
-	public async checkForUpdate(): Promise<boolean> {
-		const { versionName } = this
-
-		const { isUpToDate, ...update } = await this.emitToServer(
+		
+		public async checkForUpdate(): Promise<boolean> {
+			const { versionName, bundleId } = this
+			
+		const { isUpToDate, update } = await this.emitToServer(
 			EventTypes.Server.CheckForUpdate,
-			{ versionName },
+			{ 
+				versionName, 
+				bundleId,  
+				systemType: os.type(),
+			},
 		) as IUpdateResponse
 
 		if (!isUpToDate) {
@@ -155,13 +181,29 @@ class ElectronUpdateServiceClient extends EventEmitter {
 
 	private get connectPromise() {
 		return Promise.resolve().then(() => {
-			const query = `type=${os.platform()}&versionName=${this.versionName}`
-	
+			const sessionId = this.sessionId || uuid()
+			const query = `type=${os.type()}&sessionId=${sessionId}`
+			
 			const connection = io(this.uri, { query })
+			
+			connection.on(EventTypes.Server.Connect, () => {
+				this.checkForUpdate()
+
+				if (!this.sessionId) {
+					const session = {
+						sessionId,
+						systemType: os.type(),
+						username: os.userInfo().username,
+						osRelease: os.release(),
+					}
 	
-			connection.on(EventTypes.Server.Connect, this.checkForUpdate.bind(this))
-			connection.on(EventTypes.Server.NewUpdate, this.downloadUpdate.bind(this))
-	
+					this.sessionId = sessionId
+					this.emitToServer(EventTypes.Server.Register, session)
+				}
+			})
+
+			// connection.on(EventTypes.Server.NewUpdate, this.downloadUpdate.bind(this))
+		
 			return connection
 		})
 	}
@@ -173,11 +215,14 @@ class ElectronUpdateServiceClient extends EventEmitter {
 			return
 		}
 
+		this.emitToServer(EventTypes.Server.Downloading, this.session)
+
 		const filename = `${Date.now()}.asar`
 		const filePath = path.join(this.updateDirPath, filename)
 
 		try {
 			process.noAsar = true
+			
 			// await checkDir(this.updateDirPath)
 			await download(downloadUrl, this.updateDirPath, { filename })
 
@@ -195,9 +240,10 @@ class ElectronUpdateServiceClient extends EventEmitter {
 				...update
 			}
 
-			this.store.set(filename, updateInfo)
+			this.downloadsStore.set(filename, updateInfo)
 
 			this.emit(EventTypes.UpdateService.Update, updateInfo)
+			this.emitToServer(EventTypes.Server.Downloading, this.session)
 		} catch (error) {
 			this.emit(EventTypes.UpdateService.Error, error)
 
@@ -217,12 +263,27 @@ class ElectronUpdateServiceClient extends EventEmitter {
 				ElectronUpdateServiceClient.EMIT_TIMEOUT
 			)
 
-			this.connect.then(connection => connection.emit(eventType, data, (response: object) => {
+			this.connect.then(connection => 
+				connection.emit(eventType, data, (response: object) => {
 					clearTimeout(timeout)
 					resolve(response)
 				})
 			)
 		})
+	}
+
+	private get session(){
+		return {
+			sessionId: this.sessionId
+		}
+	}
+
+	private get sessionId() {
+		return this.sessionStore.get('sessionId')
+	}
+
+	private set sessionId(sessionId: string) {
+		this.sessionStore.set('sessionId', sessionId)
 	}
 }
 
