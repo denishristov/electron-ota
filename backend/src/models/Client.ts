@@ -13,7 +13,10 @@ export interface IClientDocument extends Document {
 }
 
 export const ClientSchema = new Schema({
-	sessionId: String,
+	sessionId: {
+		type: String,
+		unique: true,
+	},
 	username: String,
 	osRelease: String,
 	systemType: String,

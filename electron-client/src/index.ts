@@ -3,7 +3,6 @@ import path from 'path'
 import fs from 'fs'
 import { EventEmitter } from 'events'
 
-import io from 'socket.io-client'
 import download from 'download'
 import semver from 'semver'
 import Store from 'electron-store'
@@ -23,6 +22,7 @@ import {
 	unlink,
 	hashFileSync,
 	uuid,
+	connect,
 } from './Functions'
 
 declare global {
@@ -39,7 +39,6 @@ declare interface ElectronUpdateServiceClient {
 }
 
 class ElectronUpdateServiceClient extends EventEmitter {
-	private readonly uri: string
 	private readonly updateDirPath: string
 	private readonly versionName: string
 	private readonly bundleId: string
@@ -47,7 +46,7 @@ class ElectronUpdateServiceClient extends EventEmitter {
 	private readonly checkHashBeforeLoad: boolean
 	private readonly downloadsStore = new Store({ name: 'updater' })
 	private readonly sessionStore = new Store({ name: 'session '})
-	private readonly connect: Promise<SocketIOClient.Socket> = this.connectPromise
+	private readonly connect: Promise<SocketIOClient.Socket>
 
 	private static readonly RETRY_TIMEOUT = 1000 * 60
 	private static readonly EMIT_TIMEOUT = 1000 * 60
@@ -62,15 +61,28 @@ class ElectronUpdateServiceClient extends EventEmitter {
 	}: IUpdateServiceOptions) {
 		super()
 
-		this.uri = `${updateServerUrl}/${bundleId}`
 		this.updateDirPath = path.join(userDataPath || app.getPath('userData'), 'updates')
 		this.versionName = versionName
 		this.bundleId = bundleId
-
+		
 		this.checkHashBeforeLoad = Boolean(checkHashBeforeLoad)
 		this.checkHashAfterDownload = checkHashAfterDownload === void 0 
 			? true 
 			: checkHashAfterDownload
+
+		const sessionId = this.sessionId || uuid()
+		const query = `type=${os.type()}&sessionId=${sessionId}`
+		const uri = `${updateServerUrl}/${bundleId}`
+
+		this.connect = connect(uri, query)
+
+		this.connect.then((connection) => {
+			if (!sessionId) {
+				this.register(sessionId)
+			}
+			
+			connection.on(EventTypes.Server.NewUpdate, this.downloadUpdate.bind(this))
+		})
 	}
 
 	public async loadLatestUpdate(): Promise<any> {
@@ -105,11 +117,11 @@ class ElectronUpdateServiceClient extends EventEmitter {
 				unlink(path.join(this.updateDirPath, filename))	
 			}
 			
-			this.emitToServer(EventTypes.Server.Using)
+			this.emitToServer(EventTypes.Server.Using, this.session)
 			
 			return require(latestUpdatePath)
 		} catch(error) {
-			// this.emit(EventTypes.UpdateService.Error, error)
+			this.emit(EventTypes.UpdateService.Error, error)
 
 			return null
 		}
@@ -159,9 +171,23 @@ class ElectronUpdateServiceClient extends EventEmitter {
 			return null
 		}
 	}
+
+	private get session() {
+		return {
+			sessionId: this.sessionId
+		}
+	}
+
+	private get sessionId() {
+		return this.sessionStore.get('sessionId')
+	}
+
+	private set sessionId(sessionId: string) {
+		this.sessionStore.set('sessionId', sessionId)
+	}
 		
-		public async checkForUpdate(): Promise<boolean> {
-			const { versionName, bundleId } = this
+	public async checkForUpdate(): Promise<boolean> {
+		const { versionName, bundleId } = this
 			
 		const { isUpToDate, update } = await this.emitToServer(
 			EventTypes.Server.CheckForUpdate,
@@ -179,33 +205,16 @@ class ElectronUpdateServiceClient extends EventEmitter {
 		return isUpToDate
 	}
 
-	private get connectPromise() {
-		return Promise.resolve().then(() => {
-			const sessionId = this.sessionId || uuid()
-			const query = `type=${os.type()}&sessionId=${sessionId}`
-			
-			const connection = io(this.uri, { query })
-			
-			connection.on(EventTypes.Server.Connect, () => {
-				this.checkForUpdate()
+	private async register(sessionId: string) {
+		const session = {
+			sessionId,
+			systemType: os.type(),
+			username: os.userInfo().username,
+			osRelease: os.release(),
+		}
 
-				if (!this.sessionId) {
-					const session = {
-						sessionId,
-						systemType: os.type(),
-						username: os.userInfo().username,
-						osRelease: os.release(),
-					}
-	
-					this.sessionId = sessionId
-					this.emitToServer(EventTypes.Server.Register, session)
-				}
-			})
-
-			// connection.on(EventTypes.Server.NewUpdate, this.downloadUpdate.bind(this))
-		
-			return connection
-		})
+		this.sessionId = sessionId
+		this.emitToServer(EventTypes.Server.Register, session)
 	}
 
 	private async downloadUpdate(args: INewUpdate) {
@@ -214,6 +223,8 @@ class ElectronUpdateServiceClient extends EventEmitter {
 		if (semver.gt(this.versionName, update.versionName)) {
 			return
 		}
+
+		console.log('downloading')
 
 		this.emitToServer(EventTypes.Server.Downloading, this.session)
 
@@ -224,7 +235,10 @@ class ElectronUpdateServiceClient extends EventEmitter {
 			process.noAsar = true
 			
 			// await checkDir(this.updateDirPath)
+			console.log('downloaded')
 			await download(downloadUrl, this.updateDirPath, { filename })
+
+			this.emitToServer(EventTypes.Server.Downloaded, this.session)
 
 			if (this.checkHashAfterDownload) {	
 				const hash = await hashFile(filePath)
@@ -243,7 +257,6 @@ class ElectronUpdateServiceClient extends EventEmitter {
 			this.downloadsStore.set(filename, updateInfo)
 
 			this.emit(EventTypes.UpdateService.Update, updateInfo)
-			this.emitToServer(EventTypes.Server.Downloading, this.session)
 		} catch (error) {
 			this.emit(EventTypes.UpdateService.Error, error)
 
@@ -262,6 +275,7 @@ class ElectronUpdateServiceClient extends EventEmitter {
 				() => reject(eventType + ' timeout'),
 				ElectronUpdateServiceClient.EMIT_TIMEOUT
 			)
+			console.log('connected')
 
 			this.connect.then(connection => 
 				connection.emit(eventType, data, (response: object) => {
@@ -270,20 +284,6 @@ class ElectronUpdateServiceClient extends EventEmitter {
 				})
 			)
 		})
-	}
-
-	private get session(){
-		return {
-			sessionId: this.sessionId
-		}
-	}
-
-	private get sessionId() {
-		return this.sessionStore.get('sessionId')
-	}
-
-	private set sessionId(sessionId: string) {
-		this.sessionStore.set('sessionId', sessionId)
 	}
 }
 

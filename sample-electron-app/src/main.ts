@@ -1,11 +1,9 @@
 import { app, BrowserWindow, dialog } from 'electron'
-import ElectronUpdateServiceClient from 'electron-client'
 import * as path from 'path'
+import './update.config'
 
 let mainWindow: Electron.BrowserWindow
 
-// tslint:disable-next-line:no-console
-console.log(app.getVersion())
 function createWindow() {
 	// Create the browser window.
 	mainWindow = new BrowserWindow({
@@ -49,26 +47,3 @@ app.on('activate', () => {
 		createWindow()
 	}
 })
-
-const updateService = new ElectronUpdateServiceClient({
-	bundleId: 'test-electron',
-	updateServerUrl: 'http://localhost:4000',
-	versionName: app.getVersion(),
-}).on('update', (info) => {
-	// tslint:disable-next-line:no-console
-	console.log(info)
-	dialog.showMessageBox({
-		buttons: ['Reload', 'Not now'] ,
-		message: 'A new update is available',
-		type: 'question',
-	},
-		(index) => {
-			if (index === 0) {
-				app.relaunch()
-				app.exit()
-			}
-		},
-	)
-})
-
-updateService.loadLatestUpdate()

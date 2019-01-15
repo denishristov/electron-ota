@@ -1,6 +1,7 @@
 import { Schema, Document } from 'mongoose'
 import { IClientDocument } from './Client'
-import { CLIENT_REF } from './constants'
+import { CLIENT_REF, VERSION_REF } from './constants'
+import { IVersionDocument } from './Version'
 
 interface IUpdateError {
 	client: IClientDocument
@@ -12,9 +13,11 @@ export interface IVersionStatisticsDocument extends Document {
 	downloaded: IClientDocument[]
 	using: IClientDocument[]
 	errorMessages: IUpdateError[]
+	version: IVersionDocument
 }
 
 export const VersionStatisticSchema = new Schema({
+	version: VERSION_REF,
 	downloading: [CLIENT_REF],
 	downloaded: [CLIENT_REF],
 	using: [CLIENT_REF],
