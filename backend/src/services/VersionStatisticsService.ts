@@ -1,14 +1,16 @@
 import { Model } from 'mongoose'
-import { IClientReport, IErrorReport } from 'shared'
+import { IClientReport, IErrorReport, IGetVersionSimpleReports } from 'shared'
 import { IVersionDocument } from '../models/Version'
 import { IClientDocument } from '../models/Client'
 import { IVersionStatisticsDocument } from '../models/VersionStatistics'
+import { ObjectID } from 'bson'
 
 export interface IVersionStatisticsService {
 	downloadingUpdate({ clientId }: IClientReport): Promise<void>
 	downloadedUpdate({ clientId }: IClientReport): Promise<void>
 	usingUpdate({ clientId }: IClientReport): Promise<void>
 	error({ clientId, errorMessage }: IErrorReport): Promise<void>
+	getVersionSimpleReports(req: IGetVersionSimpleReports): Promise<object>
 }
 
 @DI.injectable()
@@ -20,7 +22,9 @@ export default class VersionStatisticsService implements IVersionStatisticsServi
 		private readonly clients: Model<IClientDocument>,
 		@DI.inject(DI.Models.VersionStatistics)
 		private readonly statistics: Model<IVersionStatisticsDocument>,
-	) {}
+	) {
+		// this.getVersionSimpleReports()
+	}
 
 	@bind
 	public async downloadingUpdate({ clientId, versionId }: IClientReport) {
@@ -77,16 +81,18 @@ export default class VersionStatisticsService implements IVersionStatisticsServi
 	}
 
 	@bind
-	public async getVersionSimpleReports(version: string) {
-		const a = await this.statistics.aggregate([
-			{ $match: { version } },
-			{ $size: '$downloading' },
-			{ $size: '$downloaded' },
-			{ $size: '$using' },
-			{ $size: '$errors' },
+	public async getVersionSimpleReports({ versionId }: IGetVersionSimpleReports) {
+		const [statistics] = await this.statistics.aggregate([
+			{ $match: { version: new ObjectID(versionId) } },
+			{ $project: {
+				downloading: { $size: '$downloading' },
+				downloaded: { $size: '$downloaded' },
+				using: { $size: '$using' },
+				errorMessages: { $size: '$errorMessages' },
+			}},
 		])
 
 		// tslint:disable-next-line:no-console
-		console.log(a)
+		return statistics
 	}
 }

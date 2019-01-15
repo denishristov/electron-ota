@@ -85,19 +85,4 @@ export default class VersionService implements IVersionService {
 		await this.versions.findByIdAndRemove(id)
 		return { id, appId }
 	}
-
-	@bind
-	public async getVersionStatistics(id: string) {
-		// const { releases } = await this.versions.findById(id).populate({
-		// 	path: 'statistics',
-		// 	populate: {
-		// 		path: 'statistics',
-		// 		populate: {
-		// 			path: 'downloading downloaded',
-		// 		},
-		// 	},
-		// }).select('releases')
-
-		// return { releases }
-	}
 }
