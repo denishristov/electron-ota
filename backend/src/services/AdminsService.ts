@@ -10,7 +10,7 @@ import {
 	IRegisterAdminRequest,
 	IRegisterAdminResponse,
 } from 'shared'
-import { IAdminDocument } from '../models/User'
+import { IAdminDocument } from '../models/Admin'
 import { PASS_SECRET_KEY } from '../config/config'
 
 export interface IAdminsService {

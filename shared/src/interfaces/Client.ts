@@ -2,12 +2,17 @@ export interface IRegisterClientRequest {
 	systemType: string
 	username: string
 	osRelease: string
-	sessionId: string
+	clientId: string
 	versionName: string
 }
 
+export interface IRegisterClientResponse {
+	clientId: string
+}
+
 export interface IClientReport {
-	sessionId: string
+	clientId: string
+	versionId: string
 }
 
 export interface IErrorReport extends IClientReport {

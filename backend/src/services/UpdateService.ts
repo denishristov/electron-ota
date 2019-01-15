@@ -46,24 +46,28 @@ export default class ReleaseService implements IReleaseService {
 					: clientCount
 				: clients && clients.length
 
-			const release = this.releases.create({
-				systems,
-				clientCount: totalClientCount,
-			})
+			// const release = this.releases.create({
+			// 	systems,
+			// 	clientCount: totalClientCount,
+			// })
 
 			const version = await this.versions.findById(versionId)
 
-			release.then((release) => {
-				version.releases.push(release)
-				version.save()
-			})
+			// release.then((release) => {
+			// 	version.releases.push(release)
+			// 	version.save()
+			// })
 
 			if (!totalClientCount) {
-				const a = await this.apps.findByIdAndUpdate(version.appId, {
-					latestVersions: Object.keys(systems)
-						.filter((systemType) => systems[systemType as SystemType])
-						.group((systemType) => [systemType, version]),
-				}, { upsert: true })
+				const latestVersions = Object.keys(systems)
+					.filter((systemType) => systems[systemType as SystemType])
+					.group((systemType) => [systemType, version])
+
+				await this.apps.findByIdAndUpdate(
+					version.appId,
+					{ latestVersions },
+					{ upsert: true },
+				)
 			}
 
 			return {

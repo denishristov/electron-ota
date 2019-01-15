@@ -3,9 +3,7 @@ import util from 'util'
 import crypto from 'crypto'
 import io from 'socket.io-client'
 
-const exists = util.promisify(fs.exists)
-const mkdir = util.promisify(fs.mkdir)
-
+export const exists = util.promisify(fs.exists)
 export const readdir = util.promisify(fs.readdir)
 export const unlink = util.promisify(fs.unlink)
 
@@ -27,12 +25,6 @@ export function hashFileSync(path: string): string {
 		.digest('base64')
 
 	return hash
-}
-
-export async function checkDir(path: string): Promise<void> {
-	if (!await exists(path)) {
-		await mkdir(path)
-	}
 }
 
 export function uuid(): string {

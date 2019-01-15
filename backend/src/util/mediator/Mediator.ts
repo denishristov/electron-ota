@@ -9,6 +9,15 @@ import {
 	IEventHandlers,
 } from './interfaces'
 import crypto from 'crypto'
+import chalk from 'chalk'
+
+const colors = {
+	request: chalk.bold.green,
+	response: chalk.bold.blue,
+	error: chalk.bold.red,
+	eventType: chalk.bold.yellow,
+	broadcast: chalk.bold.magenta,
+}
 
 export default class SocketMediator implements ISocketMediator {
 	private readonly handlers: Map<string, IEventHandler> = new Map()
@@ -41,9 +50,6 @@ export default class SocketMediator implements ISocketMediator {
 
 	@bind
 	public subscribe(client: IClient): void {
-		// tslint:disable-next-line:no-console
-		console.log(client.handshake.query)
-
 		client.join(this.roomId, () => {
 			for (const [eventType, eventHandler] of this.handlers) {
 				client.on(eventType, this.createEventHandler(client, eventHandler))
@@ -93,13 +99,7 @@ export default class SocketMediator implements ISocketMediator {
 				socket.emit(eventType, data)
 			}
 		}
-		// tslint:disable-next-line:no-console
-		console.log(
-			'----------------------------------\n',
-			`${eventType}\n`,
-			// '----------------------------------\n',
-			' broadcast: ', data,
-		)
+
 	}
 
 	public removePostRespond(hook: IPostRespondHook) {
@@ -163,52 +163,54 @@ export default class SocketMediator implements ISocketMediator {
 
 	private createEventHandler(client: IClient, [eventType, handle]: IEventHandler) {
 		return async (request: object, respond: (res: object) => void) => {
-			const data = await this.applyPreHooks(eventType, request)
+			let response = null
 
-			if (!data || data.errorMessage) {
-				// tslint:disable-next-line:no-console
-				console.log(
-					'----------------------------------\n',
-					`${eventType}\n`,
-					// '----------------------------------\n',
-					'request: ', request,
-					// '----------------------------------\n',
-					'hook: ', data,
-				)
+			try {
+				const data = await this.applyPreHooks(eventType, request)
 
-				respond({ errorMessage: data && data.errorMessage })
-				return
+				if (!data || data.errorMessage) {
+					throw new Error(data.errorMessage)
+				}
+
+				response = await handle(data)
+
+				respond(response || {})
+
+				this.logRequest(eventType, request, response)
+			} catch (error) {
+				this.logError(eventType, request, error)
+				respond({ errorMessage: error.errorMessage })
 			}
 
-			const response = await handle(data)
-
-			// tslint:disable-next-line:no-console
-			console.log(
-				'----------------------------------\n',
-				`${eventType}\n`,
-				// '----------------------------------\n',
-				'request: ', request,
-				// '----------------------------------\n',
-				'response: ', response,
-			)
-
 			if (response) {
-				respond(response)
-
 				this.applyPostHooks(eventType, request, response)
 
 				if (this.broadcastableEvents.has(eventType)) {
-					// this.broadcast(eventType, response, )
+					this.logBroadcast(eventType, response)
 					client.in(this.roomId).emit(eventType, response)
-					// tslint:disable-next-line:no-console
-					console.log(
-						'----------------------------------\n',
-						`${eventType}\n`,
-						// '----------------------------------\n',
-						' broadcast: ', response,
-					)
 				}
 			}
 		}
+	}
+
+	// tslint:disable:no-console
+	private logBroadcast(eventType: string, data: object) {
+		console.log(colors.eventType(eventType))
+		console.log(colors.broadcast('Broadcast: '), data)
+		console.log('----------------------------------')
+	}
+
+	private logRequest(eventType: string, request: object, response: object) {
+		console.log(colors.eventType(eventType))
+		console.log(colors.request('Request: '), request)
+		console.log(colors.response('Response: '), response)
+		console.log('----------------------------------')
+	}
+
+	private logError(eventType: string, request: object, error: Error) {
+		console.log(colors.eventType(eventType))
+		console.log(colors.request('Request: '), request)
+		console.log(colors.error('Error: '), error)
+		console.log('----------------------------------')
 	}
 }

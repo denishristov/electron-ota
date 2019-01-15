@@ -2,6 +2,7 @@ import { Document, Schema } from 'mongoose'
 import {  VERSION_STATISTICS_REF, RELEASE_REF } from './constants'
 import { IVersionStatisticsDocument } from './VersionStatistics'
 import { IReleaseDocument } from './Release'
+import { SystemType } from 'shared'
 
 export interface IVersionDocument extends Document {
 	versionName: string
@@ -11,8 +12,9 @@ export interface IVersionDocument extends Document {
 	hash: string
 	appId: string
 	description?: string
-	statistics: IVersionStatisticsDocument
-	releases: IReleaseDocument[]
+	systems: {
+		[key in SystemType]: boolean
+	}
 }
 
 export const VersionSchema = new Schema({
@@ -29,8 +31,11 @@ export const VersionSchema = new Schema({
 		type: String,
 	},
 	description: String,
-	statistics: VERSION_STATISTICS_REF,
-	releases: [RELEASE_REF],
+	systems: {
+		Windows_RT: Boolean,
+		Darwin: Boolean,
+		Linux: Boolean,
+	},
 }, {
 	timestamps: true,
 })

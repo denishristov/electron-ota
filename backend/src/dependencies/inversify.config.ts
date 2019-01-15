@@ -12,7 +12,7 @@ import VersionStatisticsService, { IVersionStatisticsService } from '../services
 import { Model, model as createModel } from 'mongoose'
 
 import { IAppDocument, AppSchema } from '../models/App'
-import { IAdminDocument, IAdminSchema } from '../models/User'
+import { IAdminDocument, IAdminSchema } from '../models/Admin'
 import { IVersionDocument, VersionSchema } from '../models/Version'
 import { IReleaseDocument, ReleaseSchema } from '../models/Release'
 import { IVersionStatisticsDocument, VersionStatisticSchema } from '../models/VersionStatistics'

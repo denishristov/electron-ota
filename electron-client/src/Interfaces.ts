@@ -22,9 +22,14 @@ interface IUpdate {
 
 export interface INewUpdate extends IUpdate {
 	downloadUrl: string
+	versionId: string
 }
 
 export interface IUpdateInfo extends IUpdate {
 	fileName: string
 	filePath: string
+}
+
+export interface IRegistrationResponse {
+	clientId: string
 }

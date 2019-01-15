@@ -1,10 +1,10 @@
-import { IRegisterClientRequest } from 'shared'
+import { IRegisterClientRequest, IRegisterClientResponse } from 'shared'
 import { Model } from 'mongoose'
 import { IClientDocument } from '../models/Client'
 
 export interface IClientService {
-	registerClient(client: IRegisterClientRequest): Promise<void>
-	getClient(sessionId: string, withVersion?: boolean): Promise<IClientDocument>
+	registerClient(client: IRegisterClientRequest): Promise<IRegisterClientResponse>
+	getClient(clientId: string, withVersion?: boolean): Promise<IClientDocument>
 }
 
 @DI.injectable()
@@ -16,11 +16,13 @@ export default class ClientService implements IClientService {
 
 	@bind
 	public async registerClient(client: IRegisterClientRequest) {
-		await this.clients.create(client)
+		const { id } = await this.clients.create(client)
+
+		return { clientId: id }
 	}
 
-	public async getClient(sessionId: string, withVersion = false) {
-		const query = this.clients.findById(sessionId)
+	public async getClient(clientId: string, withVersion = false) {
+		const query = this.clients.findById(clientId)
 
 		return withVersion
 			? await query.populate('version')

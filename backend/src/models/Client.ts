@@ -6,22 +6,15 @@ import { VERSION_REF } from './constants'
 export interface IClientDocument extends Document {
 	username: string
 	osRelease: string
-	systemType: SystemType
 	version: IVersionDocument
-	updatingVersion: IVersionDocument
-	sessionId: string
+	systemType: SystemType
 }
 
 export const ClientSchema = new Schema({
-	sessionId: {
-		type: String,
-		unique: true,
-	},
 	username: String,
 	osRelease: String,
 	systemType: String,
 	version: VERSION_REF,
-	updatingVersion: VERSION_REF,
 }, {
 	timestamps: true,
 })

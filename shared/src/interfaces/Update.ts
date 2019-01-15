@@ -4,7 +4,7 @@ import { SystemType } from "../enums/SystemType"
 export interface ICheckForUpdateRequest extends IRequest {
 	versionName: string
 	bundleId: string
-	sessionId: string
+	clientId: string
 	systemType: SystemType
 }
 

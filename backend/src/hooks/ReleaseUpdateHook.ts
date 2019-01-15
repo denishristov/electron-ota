@@ -33,48 +33,43 @@ export default class ReleaseUpdateHook implements IPostRespondHook {
 				`)
 				.then(toPlain)
 
-			const sessionIds: string[] = []
+			update.versionId = versionId
+
+			// const clientIds: string[] = []
 
 			if (clients) {
 				const clientsSet = new Set(clients)
 
 				this.clientsMediator.broadcast(EventType.NewUpdate, update, (client) => {
-					const { type, sessionId } = client.handshake.query
+					const { type, clientId } = client.handshake.query
 
-					const doesMatch = Boolean(systems[type as SystemType]) && clientsSet.has(sessionId)
+					const doesMatch = Boolean(systems[type as SystemType]) && clientsSet.has(clientId)
 
 					if (doesMatch) {
-						sessionIds.push(sessionId)
+						// clientIds.push(clientId)
 					}
 
 					return doesMatch
 				}, clientCount && clientCount - clients.length)
 			} else {
 				this.clientsMediator.broadcast(EventType.NewUpdate, update, (client) => {
-					const { type, sessionId } = client.handshake.query
+					const { type, clientId } = client.handshake.query
 
 					const doesMatch = Boolean(systems[type as SystemType])
 
 					if (doesMatch) {
-						sessionIds.push(sessionId)
+						// clientIds.push(clientId)
 					}
 
 					return doesMatch
 				}, clientCount)
 			}
 
-			await this.clients.updateMany(
-				{
-					sessionId: {
-						$in: sessionIds,
-					},
-				},
-				{
-					$set: {
-						updatingVersion: versionId,
-					},
-				},
-			)
+			// await this.clients.updateMany(
+			// 	{ clientId: { $in: clientIds } },
+			// 	{ $set: { updatingVersion: versionId } },
+			// 	{ upsert: true },
+			// )
 		}
 	}
 }

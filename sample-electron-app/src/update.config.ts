@@ -9,6 +9,9 @@ const config = {
 
 const updateService = new ElectronUpdateServiceClient(config)
 
+// tslint:disable-next-line:no-console
+console.log(app.getVersion())
+
 updateService.on('update', (info) => {
 	// tslint:disable-next-line:no-console
 	console.log(info)
@@ -28,6 +31,6 @@ updateService.on('update', (info) => {
 
 // tslint:disable:no-console
 console.log(updateService.loadLatestUpdateSync())
-updateService.checkForUpdate()
+// updateService.checkForUpdate()
 
 export {}

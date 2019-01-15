@@ -5,10 +5,10 @@ import { IClientDocument } from '../models/Client'
 import { IVersionStatisticsDocument } from '../models/VersionStatistics'
 
 export interface IVersionStatisticsService {
-	downloadingUpdate({ sessionId }: IClientReport): Promise<object>
-	downloadedUpdate({ sessionId }: IClientReport): Promise<object>
-	usingUpdate({ sessionId }: IClientReport): Promise<void>
-	error({ sessionId, errorMessage }: IErrorReport): Promise<void>
+	downloadingUpdate({ clientId }: IClientReport): Promise<void>
+	downloadedUpdate({ clientId }: IClientReport): Promise<void>
+	usingUpdate({ clientId }: IClientReport): Promise<void>
+	error({ clientId, errorMessage }: IErrorReport): Promise<void>
 }
 
 @DI.injectable()
@@ -23,66 +23,57 @@ export default class VersionStatisticsService implements IVersionStatisticsServi
 	) {}
 
 	@bind
-	public async downloadingUpdate({ sessionId, versionId }: IClientReport) {
+	public async downloadingUpdate({ clientId, versionId }: IClientReport) {
 		await this.statistics.findOneAndUpdate(
 			{ version: versionId },
-			{ $addToSet: { downloading: sessionId } },
+			{ $addToSet: { downloading: clientId } },
 		)
-
-		return {}
 	}
 
 	@bind
-	public async downloadedUpdate({ sessionId, versionId }: IClientReport) {
+	public async downloadedUpdate({ clientId, versionId }: IClientReport) {
 		await this.statistics.findOneAndUpdate(
 			{ version: versionId },
-			{ $pull: { downloading: sessionId } },
-			{ $addToSet: { statistics: { downloaded: versionId } } },
+			{
+				$pull: { downloading: clientId } ,
+				$addToSet: { downloaded: versionId },
+			},
 		)
-
-		return {}
 	}
 
 	@bind
-	public async usingUpdate({ sessionId }: IClientReport) {
-		const client = await this.clients.findOne({ sessionId })
+	public async usingUpdate({ clientId, versionId }: IClientReport) {
+		const client = await this.clients.findById(clientId).select('version')
 
-		await this.versions.findByIdAndUpdate(client.version, {
-			$pull: {
-				statistics: {
-					using: client,
-				},
-			},
-		})
+		if (client.version && client.version.toString() === versionId) {
+			return
+		}
 
-		await this.versions.findByIdAndUpdate(client.updatingVersion, {
-			$push: {
-				statistics: {
-					using: client,
-				},
-			},
-		})
+		if (client.version) {
+			await this.versions.findOneAndUpdate(
+				{ version: versionId },
+				{ $pull: { using: clientId } },
+				)
+		}
 
-		client.version = client.updatingVersion
-		client.updatingVersion = null
+		await this.statistics.findOneAndUpdate(
+			{ version: versionId },
+			{ $addToSet: { using: clientId } },
+		)
+
+		client.set({ version: versionId })
 
 		await client.save()
 	}
 
 	@bind
-	public async error({ sessionId, errorMessage }: IErrorReport) {
-		const client = await this.clients.findOne({ sessionId })
+	public async error({ clientId, versionId, errorMessage }: IErrorReport) {
+		const client = await this.clients.findOne({ clientId })
 
-		await this.versions.findByIdAndUpdate(client.updatingVersion, {
-			$push: {
-				statistics: {
-					errorMessages: {
-						client,
-						errorMessage,
-					},
-				},
-			},
-		})
+		await this.statistics.findOneAndUpdate(
+			{ version: versionId },
+			{ $push: { errorMessages: { client, errorMessage } } },
+		)
 	}
 
 	@bind
