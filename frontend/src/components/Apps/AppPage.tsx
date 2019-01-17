@@ -6,7 +6,7 @@ import { Redirect, RouteComponentProps } from 'react-router'
 
 import App from '../../stores/App'
 import AppsStore from '../../stores/AppsStore'
-import { injectAppsStore } from '../../stores/RootStore'
+import { injectAppsStore, injectUserStore, IRootStore } from '../../stores/RootStore'
 import { IVersionModel } from 'shared'
 
 import Modal from '../Generic/Modal'
@@ -16,7 +16,12 @@ import Button from '../Generic/Button'
 import Plus from '../../img/Plus.svg'
 
 import '../../styles/AppsPage.sass'
+import '../../styles/AppPage.sass'
+
 import { hashBlob } from '../../util/functions'
+import Version from './Version'
+import { IUserStore } from '../../stores/UserStore'
+import Container from '../Generic/Container';
 
 interface IParams {
 	id: string
@@ -24,6 +29,12 @@ interface IParams {
 
 interface IProps extends RouteComponentProps<IParams> {
 	appsStore: AppsStore
+	style: object
+	// userStore: IUserStore
+}
+
+interface IState {
+	isLoaded: boolean
 }
 
 interface ICreateVersionEvent extends FormEvent<HTMLFormElement> {
@@ -39,7 +50,11 @@ interface ICreateVersionEvent extends FormEvent<HTMLFormElement> {
 	}
 }
 
-class AppPage extends Component<IProps> {
+class AppPage extends Component<IProps, IState> {
+	public readonly state = {
+		isLoaded: false,
+	}
+
 	private readonly modalRef = React.createRef<Modal>()
 
 	@computed
@@ -47,13 +62,23 @@ class AppPage extends Component<IProps> {
 		return this.props.appsStore.getApp(this.props.match.params.id) || null
 	}
 
-	public componentDidMount() {
+	public async componentDidMount() {
+		if (!this.props.appsStore.allApps.length) {
+			await this.props.appsStore.fetchApps()
+		}
+
 		if (this.app) {
 			this.app.fetchVersions()
 		}
+
+		this.setState({ isLoaded: true })
 	}
 
 	public render() {
+		if (!this.state.isLoaded) {
+			return <div>Loading</div>
+		}
+
 		if (!this.app) {
 			return <Redirect to='/apps' />
 		}
@@ -64,71 +89,49 @@ class AppPage extends Component<IProps> {
 		} = this.app
 
 		return (
-			<>
-				<div className='apps-page-container'>
-					<header>
-						<h1>{name}</h1>
-						<Button color='green' size='small' onClick={this.openModal}>
-							<SVG src={Plus} />
-							Add new version
-						</Button>
-					</header>
-					{allVersions.length
-						? <table>
-							<thead>
-								<tr>
-									{Object.keys(allVersions[0]).map((key) =>
-										<th key={key}>{key}</th>,
-									)}
-								</tr>
-							</thead>
-							<tbody>
-								{allVersions.map((version) =>
-									<tr key={version.id}>
-										{Object.values(version).map((value) =>
-											<th key={value}>
-												{String(value)}
-											</th>,
-										)}
-											<button onClick={() => this.handleReleaseVersion(version)}>
-												Release
-											</button>
-
-									</tr>,
-								)}
-							</tbody>
-						</table>
-						: null
-					}
-				</div>
+				<Container style={this.props.style}>
+					<div className='apps-page-container'>
+						<header>
+							<h1>{name}</h1>
+							<Button color='blue' noShadow size='small' onClick={this.openModal}>
+								<SVG src={Plus} />
+								Add new version
+							</Button>
+						</header>
+						<div className='version-container'>
+							{allVersions.map((version) => (
+								<Version version={version} key={version.id} />
+							))}
+						</div>
+					</div>
 				<Modal title='Add a new version' ref={this.modalRef}>
 					<form onSubmit={this.handleCreateVersion}>
 						<Input
 							type='text'
 							name='versionName'
 							label='Name'
-						/>
+							/>
 						<Input
 							type='checkbox'
 							name='isCritical'
 							label='Is critical?'
-						/>
+							/>
 						<Input
 							type='checkbox'
 							name='isBase'
 							label='Is base?'
-						/>
+							/>
 						<Input
 							type='file'
 							name='version'
 							label='ASAR'
-						/>
-						<Button color='green' type='submit'>
+							/>
+						<Button color='blue' noShadow type='submit'>
 							Create version
 						</Button>
 					</form>
 				</Modal>
-			</>
+			</Container>
 		)
 	}
 
@@ -198,5 +201,9 @@ class AppPage extends Component<IProps> {
 		})
 	}
 }
+// const injects = (x: IRootStore) => ({
+// 	...injectAppsStore(x),
+// 	 ...injectUserStore(x),
+// })
 
 export default inject(injectAppsStore)(observer(AppPage))

@@ -18,6 +18,7 @@ import { RouterProps } from 'react-router'
 import axios from 'axios'
 import '../../styles/AppsPage.sass'
 import { getSourceFromFile } from '../../util/functions'
+import Container from '../Generic/Container'
 
 interface ICreateAppEvent extends FormEvent<HTMLFormElement> {
 	target: EventTarget & {
@@ -39,6 +40,7 @@ interface ISelectPictureEvent extends React.ChangeEvent<HTMLInputElement> {
 
 interface IProps extends RouterProps {
 	appsStore: AppStore
+	style: object
 }
 
 interface IState {
@@ -94,11 +96,11 @@ class AppsContainer extends Component<IProps, IState> {
 		const { allApps } = this.props.appsStore
 
 		return (
-			<>
+				<Container style={this.props.style}>
 				<div className='apps-page-container'>
 					<header>
 						<h1>Apps</h1>
-						<Button color='green' size='small' onClick={this.openModal}>
+						<Button color='blue' noShadow size='small' onClick={this.openModal}>
 							<SVG src={Plus} />
 							Add new app
 						</Button>
@@ -106,7 +108,7 @@ class AppsContainer extends Component<IProps, IState> {
 					<div className='apps-container'>
 						{allApps.map((app) =>
 							<App app={app.toModel()} key={app.id} history={this.props.history} />,
-						)}
+							)}
 					</div>
 				</div>
 				<Modal title='Add a new app' ref={this.modalRef}>
@@ -148,12 +150,12 @@ class AppsContainer extends Component<IProps, IState> {
 								/>
 							</div>
 						</Row>
-						<Button color='green' type='submit'>
+						<Button color='blue' noShadow type='submit'>
 							Add
 						</Button>
 					</form>
 				</Modal>
-			</>
+				</Container>
 		)
 	}
 

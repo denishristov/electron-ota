@@ -4,8 +4,9 @@ import { list } from '../../util/functions'
 import '../../styles/Button.sass'
 
 interface IProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-	color: 'green' | 'grey'
+	color: 'green' | 'white' | 'blue'
 	size?: 'big' | 'small'
+	noShadow?: boolean
 }
 
 interface IState {
@@ -22,13 +23,19 @@ export default class Button extends React.Component<IProps, IState> {
 	}
 
 	public render() {
-		const { className, color, size, ...props } = this.props
+		const { className, color, size, noShadow, ...props } = this.props
 
 		return (
 			<button
 				onMouseDown={this.handleMouseDown}
 				onMouseUp={this.handleMouseUp}
-				className={list(className, color, size, this.state.isPushed && 'shrink')}
+				className={list(
+					className,
+					color,
+					size,
+					this.state.isPushed && 'shrink',
+					Boolean(noShadow) && 'no-shadow',
+				)}
 				{...props}
 			/>
 		)

@@ -27,7 +27,7 @@ export default class Api implements IApi {
 			// console.log(this.preEmitHooks)
 			this.connection.emit(eventType, this.attachData(request || {}), (data: Res) => {
 				clearTimeout(timeout)
-				if (data!.errorMessage) {
+				if (data.errorMessage) {
 					reject(data)
 				} else {
 					resolve(data)

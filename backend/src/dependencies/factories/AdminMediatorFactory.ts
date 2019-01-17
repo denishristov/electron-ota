@@ -8,8 +8,8 @@ import { IAdminsService } from '../../services/AdminsService'
 import { IFileUploadService } from '../../services/S3Service'
 import { IReleaseService } from '../../services/UpdateService'
 import { IPreRespondHook, IPostRespondHook } from '../../util/mediator/Interfaces'
-import SocketMediator from '../../util/mediator/Mediator'
 import { IVersionStatisticsService } from '../../services/VersionStatisticsService'
+import SocketMediator from '../../util/mediator/Mediator'
 
 const namespaceName = '/admins'
 
@@ -32,8 +32,8 @@ export default function adminMediatorFactory({ container }: interfaces.Context) 
 	mediator.use({
 		[EventType.Login]: adminService.login,
 		[EventType.Authentication]: adminService.authenticate,
+		[EventType.RegisterAdmin]: adminService.register,
 
-		[EventType.RegisterAdmin]: registerCredentialsService.register,
 		[EventType.GetRegisterKeyPath]: registerCredentialsService.getCredentialsKeyPath,
 
 		[EventType.GetApps]: appService.getAllApps,

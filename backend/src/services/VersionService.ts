@@ -13,7 +13,7 @@ import {
 	IGetVersionsRequest,
 } from 'shared'
 import { IVersionDocument } from '../models/Version'
-import { toPlain } from '../util/util'
+import { toPlain, byDateDesc } from '../util/util'
 import { IAppDocument } from '../models/App'
 import { IVersionStatisticsDocument } from '../models/VersionStatistics'
 
@@ -46,10 +46,14 @@ export default class VersionService implements IVersionService {
 
 	@bind
 	public async getVersions({ appId }: IGetVersionsRequest): Promise<IGetVersionsResponse> {
-		const { versions } = await this.apps.findById(appId).populate('versions')
+		const { versions } = await this.apps
+			.findById(appId)
+			.populate('versions')
+			.sort('-versions._id')
+			.select('versions')
 
 		return {
-			versions: versions.map(toPlain),
+			versions: versions.map(toPlain).sort(byDateDesc),
 		}
 	}
 

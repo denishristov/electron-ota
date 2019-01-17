@@ -12,6 +12,7 @@ import Row from '../Generic/Row'
 
 import User from '../../img/User.svg'
 import Key from '../../img/Key.svg'
+import Container from '../Generic/Container'
 
 interface ILoginFormEvent extends FormEvent<HTMLFormElement> {
 	target: EventTarget & {
@@ -24,6 +25,10 @@ interface ILoginFormEvent extends FormEvent<HTMLFormElement> {
 
 interface IProps extends RouterProps {
 	userStore: IUserStore
+	style: {
+		opacity: number;
+		transform: string;
+	}
 }
 
 interface IState {
@@ -51,6 +56,7 @@ class Login extends React.Component<IProps, IState> {
 		})
 
 		this.setState({ isSuccessful })
+
 	}
 
 	public render() {
@@ -58,35 +64,40 @@ class Login extends React.Component<IProps, IState> {
 			return <Redirect to='/apps' />
 		}
 
-		return this.props.userStore.isLoading
-			? <div>Loading...</div>
-			: (
-				<form onSubmit={this.handleSubmit}>
-				<h1>Sign in</h1>
-					<Input
-						label='Username'
-						type='text'
-						name='nameOrEmail'
-						required
-						icon={User}
-					/>
-					<Input
-						label='Password'
-						type='password'
-						name='password'
-						icon={Key}
-						required
-					/>
-					<Row>
-						<Button color='grey' onClick={this.goToSetup}>
-							Sign up
-						</Button>
-						<Button color='green' type='submit'>
-							Submit
-						</Button>
-					</Row>
-				</form>
-			)
+		return (
+			<Container style={this.props.style}>
+				{this.props.userStore.isLoading
+					? <div>Loading...</div>
+					: (
+						<form onSubmit={this.handleSubmit}>
+						<h1>Sign in</h1>
+							<Input
+								label='Username'
+								type='text'
+								name='nameOrEmail'
+								required
+								icon={User}
+							/>
+							<Input
+								label='Password'
+								type='password'
+								name='password'
+								icon={Key}
+								required
+							/>
+							<Row>
+								<Button color='white' onClick={this.goToSetup}>
+									Sign up
+								</Button>
+								<Button color='blue' type='submit'>
+									Submit
+								</Button>
+							</Row>
+						</form>
+					)
+				}
+			</Container>
+		)
 	}
 
 	@bind

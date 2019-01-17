@@ -6,9 +6,14 @@ import { Redirect } from 'react-router'
 import { copyToClipboard } from '../../util/functions'
 import Input from '../Generic/Input'
 import Button from '../Generic/Button'
+import Container from '../Generic/Container';
 
 interface IProps {
 	registerStore: IRegisterStore
+	style: {
+		opacity: number;
+		transform: string;
+	}
 }
 
 interface IState {
@@ -76,6 +81,7 @@ class Register extends React.Component<IProps, IState> {
 		}
 
 		return (
+			<Container style={this.props.style}>
 			<form onSubmit={this.handleRegister}>
 				<h1>Sign up</h1>
 				<label>Key path</label>
@@ -86,31 +92,32 @@ class Register extends React.Component<IProps, IState> {
 					label='key'
 					type='password'
 					name='key'
-				/>
+					/>
 				<Input
 					type='email'
 					name='email'
 					label='Email'
-				/>
+					/>
 				<Input
 					type='text'
 					name='name'
 					label='Username'
-				/>
+					/>
 				<Input
 					type='password'
 					name='password1'
 					label='Password'
-				/>
+					/>
 				<Input
 					type='password'
 					name='password2'
 					label='Confirm password'
-				/>
-				<Button color='green' type='submit'>
+					/>
+				<Button color='blue' type='submit'>
 					Submit
 				</Button>
 			</form>
+			</Container>
 		)
 	}
 }

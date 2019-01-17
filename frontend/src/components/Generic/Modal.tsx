@@ -4,7 +4,7 @@ import { Spring, animated, config } from 'react-spring'
 import '../../styles/Modal.sass'
 
 import Close from '../../img/Close.svg'
-import { stopPropagation } from '../../util/functions'
+import { stopPropagation, getConfig } from '../../util/functions'
 
 interface IProps {
 	title: string
@@ -79,7 +79,8 @@ export default class Modal extends React.Component<IProps, IState> {
 							native
 							reverse={isClosing}
 							force={isClosing}
-							config={config.wobbly}
+							config={getConfig}
+							immediate={(key) => key === 'opacity'}
 						>
 							{(style) =>
 								<animated.div

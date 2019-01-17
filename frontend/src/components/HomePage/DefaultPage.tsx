@@ -5,18 +5,17 @@ import { RouteComponentProps } from 'react-router'
 import { injectUserStore } from '../../stores/RootStore'
 import { IUserStore } from '../../stores/UserStore'
 
-interface IHomePageProps extends RouteComponentProps {
+interface IDefaultPageProps extends RouteComponentProps {
 	userStore: IUserStore
 }
 
-function HomePage({ userStore, location }: IHomePageProps) {
-	return userStore.isAuthenticated
-		? location.pathname === '/login'
+function DefaultPage({ userStore }: IDefaultPageProps) {
+	console.log('def')
+	return userStore.isLoading
+		? <div>Loading</div>
+		: userStore.isAuthenticated
 			? <Redirect to='/apps' />
-			: null
-		: location.pathname !== '/login'
-			? <Redirect to='/login' />
-			: null
+			: <Redirect to='/login' />
 }
 
-export default inject(injectUserStore)(observer(HomePage))
+export default inject(injectUserStore)(observer(DefaultPage))

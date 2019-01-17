@@ -8,8 +8,8 @@ import {
 	IPostRespondHook,
 	IEventHandlers,
 } from './interfaces'
-import crypto from 'crypto'
 import chalk from 'chalk'
+import { uuid } from '../util'
 
 const colors = {
 	request: chalk.bold.green,
@@ -20,11 +20,11 @@ const colors = {
 }
 
 export default class SocketMediator implements ISocketMediator {
-	private readonly handlers: Map<string, IEventHandler> = new Map()
-	private readonly preRespondHooks: Map<IPreRespondHook, IPreRespondHook> = new Map()
-	private readonly postRespondHooks: Map<IPostRespondHook, IPostRespondHook> = new Map()
-	private readonly broadcastableEvents: Set<EventType> = new Set()
-	private readonly roomId = crypto.randomBytes(16).toString('base64')
+	private readonly handlers = new Map<string, IEventHandler>()
+	private readonly preRespondHooks = new Map<IPreRespondHook, IPreRespondHook>()
+	private readonly postRespondHooks = new Map<IPostRespondHook, IPostRespondHook>()
+	private readonly broadcastableEvents = new Set<EventType>()
+	private readonly roomId = uuid()
 
 	constructor(private readonly clients: IClients) {
 		clients.on(EventType.Connection, this.subscribe)

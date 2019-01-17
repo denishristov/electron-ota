@@ -15,10 +15,11 @@
 		display: flex
 		justify-content: center
 		align-items: center
-		box-shadow: 0 5px 12px rgba(67, 106, 185, .12), 0 1px 4px rgba(67, 106, 185, .03), 0 -5px 15px -1px rgba(67, 106, 185, .01), inset 0 0 20px -3px rgba(67, 106, 185, .45)
+		box-shadow: $rest-shadow
 		cursor: pointer
 		transition: all .33s ease-out
 		margin-bottom: 16px
+		// object-fit: 
 
 		svg
 			width: 56px
@@ -28,6 +29,7 @@
 
 		&:hover
 			background-color: darken(#dedede, 7%)
+			box-shadow: $hover-shadow
 			
 			svg 
 				fill: darken($default-text-color, 15%)
@@ -56,26 +58,32 @@
 	
 	.apps-container
 		display: grid
-		grid-template-columns: repeat(auto-fill, 32px * 7)
-		grid-auto-rows: 32px * 8
+		grid-template-columns: repeat(auto-fill, 32px * 8)
+		grid-auto-rows: 32px * 9
 		margin: 16px
 		justify-content: center
 		align-content: center
 
 		.app-tile
-			@include defaultShadow($accent)
+			box-shadow: $rest-shadow
 			margin: 16px
 			padding: 12px
 			border-radius: 6px
 			background: white
 			border: 1px solid $accent
 			cursor: pointer
+			transition: all .33s ease-out
+
+			&:hover
+				box-shadow: $hover-shadow
 
 			img
-				height: 32px
+				width: 48px
+				height: 48px
 				border-radius: 8px
 				flex-grow: 0
-				border: 1px solid $accent
+				object-fit: cover
+				border-radius: 50%
 
 			h1
 				font-size: 1.3rem
@@ -84,9 +92,12 @@
 				font-weight: 450
 
 			.top-row
-				justify-content: space-between
-				height: 34px
 				align-items: center
+				margin-bottom: 8px
+
+				h1
+					flex-grow: 0
+					margin-left: 8px
 
 			label
 				color: $dark-accent

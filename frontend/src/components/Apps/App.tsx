@@ -31,8 +31,8 @@ class App extends Component<IProps> {
 		return (
 			<div className='app-tile' onClick={this.goToApp}>
 				<Row className='top-row'>
-					<h1>{name}</h1>
 					<img src={pictureUrl} />
+					<h1>{name}</h1>
 				</Row>
 				<label>{`Bundle ID ${bundleId}`}</label>
 				<label>{`Versions ${versions}`}</label>

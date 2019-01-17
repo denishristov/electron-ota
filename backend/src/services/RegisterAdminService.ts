@@ -21,15 +21,13 @@ export interface IRegisterCredentials {
 
 export interface IRegisterCredentialsService {
 	getCredentialsKeyPath(): Promise<IRegisterKeyPathResponse>
-	register(user: IRegisterAdminRequest): Promise<IRegisterAdminResponse>
+	verify(key: string): Promise<boolean>
 }
 
 @DI.injectable()
 export default class RegisterCredentialsService implements IRegisterCredentialsService {
 	private static readonly REGISTER_TIMEOUT = 1000 * 60 * 15
 	private readonly registerCredentials = new Map<string, IRegisterCredentials>()
-
-	constructor(@DI.inject(DI.Services.Admin) private readonly adminsService: IAdminsService) {}
 
 	@bind
 	public async getCredentialsKeyPath(): Promise<IRegisterKeyPathResponse> {
@@ -39,19 +37,17 @@ export default class RegisterCredentialsService implements IRegisterCredentialsS
 	}
 
 	@bind
-	public async register({ key, ...admin }: IRegisterAdminRequest): Promise<IRegisterAdminResponse> {
+	public async verify(key: string): Promise<boolean> {
 		if (this.registerCredentials.has(key)) {
 			const { clean, timeout } = this.registerCredentials.get(key)
 
 			clearTimeout(timeout)
 			clean()
 
-			return await this.adminsService.addAdmin(admin)
+			return true
 		}
 
-		return {
-			isSuccessful: false,
-		}
+		return false
 	}
 
 	private genRegisterCredentials(): Promise<IRegisterCredentials> {

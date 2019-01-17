@@ -1,13 +1,14 @@
 @import './Mixins.sass'
 @import './Variables.sass'
 
+// $grey: #f2f2f2
 $green: #54f18e
-$grey: #f5f5f5
+$blue: #34a7fc
 
 @mixin color-button($background, $color, $accent)
 	@include defaultShadow($accent)
-	border-top: 2px solid $accent
-	border-bottom: 2px solid $background
+	// border-top: 2px solid $accent
+	// border-bottom: 2px solid $background
 	background-color: $background
 	color: $color
 
@@ -46,9 +47,12 @@ button
 	&:focus
 		outline: none
 
+button.no-shadow
+	box-shadow: none !important
+
 button.small	
-	padding: 0 16px
-	min-height: 48px
+	padding: 0 12px
+	min-height: 40px
 
 button.green
 	@include light-button($green, white)
@@ -56,9 +60,15 @@ button.green
 button.green.shrink
 	@include defaultShadow(desaturate(lighten($green, 15%), 30%))
 
-button.grey
-	@include dark-button($grey, $default-text-color)
+button.white
+	@include dark-button(white, $default-text-color)
 	
-button.grey.shrink
-	@include defaultShadow(desaturate(lighten($grey, 15%), 30%))
+button.white.shrink
+	@include defaultShadow(desaturate(lighten(white, 15%), 30%))
+
+button.blue
+	@include light-button($blue, white)
+	
+button.blue.shrink
+	@include defaultShadow(desaturate(lighten($blue, 15%), 30%))
 

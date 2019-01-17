@@ -1,8 +1,8 @@
 import 'shared/dist/extensions'
-import 'reflect-metadata'
 import './config/global'
 import './config/mongoose'
 
+import 'reflect-metadata'
 import container from './dependencies/inversify.config'
 
 import { Server } from 'http'
@@ -25,12 +25,12 @@ async function setup() {
 	container.get(DI.Mediators.Admins)
 
 	const appService = container.get<IAppService>(DI.Services.App)
-	const createClientsMediator = container.get<UpdateClientsMediatorFactory>(DI.Factories.ClientsMediator)
+	const clientsMediatorFactory = container.get<UpdateClientsMediatorFactory>(DI.Factories.ClientsMediator)
 
 	const { apps } = await appService.getAllApps()
 
 	for (const app of apps) {
-		createClientsMediator(app)
+		clientsMediatorFactory(app)
 	}
 }
 

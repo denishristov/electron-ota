@@ -57,7 +57,7 @@ export default class VersionStatisticsService implements IVersionStatisticsServi
 			await this.versions.findOneAndUpdate(
 				{ version: versionId },
 				{ $pull: { using: clientId } },
-				)
+			)
 		}
 
 		await this.statistics.findOneAndUpdate(
@@ -72,11 +72,9 @@ export default class VersionStatisticsService implements IVersionStatisticsServi
 
 	@bind
 	public async error({ clientId, versionId, errorMessage }: IErrorReport) {
-		const client = await this.clients.findOne({ clientId })
-
 		await this.statistics.findOneAndUpdate(
 			{ version: versionId },
-			{ $push: { errorMessages: { client, errorMessage } } },
+			{ $push: { errorMessages: { client: clientId, errorMessage } } },
 		)
 	}
 

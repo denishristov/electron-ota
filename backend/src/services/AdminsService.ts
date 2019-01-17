@@ -12,11 +12,12 @@ import {
 } from 'shared'
 import { IAdminDocument } from '../models/Admin'
 import { PASS_SECRET_KEY } from '../config/config'
+import { IRegisterCredentialsService } from './RegisterAdminService'
 
 export interface IAdminsService {
 	login(req: IUserLoginRequest): Promise<IUserLoginResponse>
 	authenticate(req: IUserAuthenticationRequest): Promise<IUserAuthenticationResponse>
-	addAdmin(req: IAdminModel): Promise<IRegisterAdminResponse>
+	register(req: IRegisterAdminRequest): Promise<IRegisterAdminResponse>
 }
 
 interface IAdminModel {
@@ -30,6 +31,8 @@ export default class AdminsService implements IAdminsService {
 	constructor(
 		@DI.inject(DI.Models.User)
 		private readonly admins: Model<IAdminDocument>,
+		@DI.inject(DI.Services.RegisterCredentials)
+		private readonly credentialsService: IRegisterCredentialsService,
 	) {}
 
 	@bind
@@ -87,7 +90,13 @@ export default class AdminsService implements IAdminsService {
 		}
 	}
 
-	public async addAdmin({ name, email, password }: IAdminModel): Promise<IRegisterAdminResponse> {
+	public async register({ name, email, password, key }: IRegisterAdminRequest): Promise<IRegisterAdminResponse> {
+		if (!this.credentialsService.verify(key)) {
+			return {
+				isSuccessful: false,
+			}
+		}
+
 		const admin = await this.admins.create({
 			name,
 			email,

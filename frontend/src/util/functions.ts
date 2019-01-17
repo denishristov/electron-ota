@@ -1,3 +1,5 @@
+import { config } from 'react-spring'
+
 // tslint:disable-next-line:max-line-length
 const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
@@ -6,12 +8,22 @@ export function isEmail(candidate: string): boolean {
 }
 
 export function copyToClipboard(text: string) {
-	const el = document.createElement('textarea')
-	el.value = text
-	document.body.appendChild(el)
-	el.select()
+	const node = document.createElement('textarea')
+	node.value = text
+
+	document.body.appendChild(node)
+	node.select()
+
 	document.execCommand('copy')
-	document.body.removeChild(el)
+	document.body.removeChild(node)
+}
+
+export function downloadFile(uri: string) {
+	const link = document.createElement('a')
+
+	link.download = name
+	link.href = uri
+	link.click()
 }
 
 type ClassName = string | boolean | void
@@ -66,4 +78,8 @@ export function hashBlob(blob: Blob): Promise<string> {
 			resolve(hash)
 		}
 	})
+}
+
+export function getConfig(name: string) {
+	return name === 'opacity' ? config.default : config.wobbly
 }
