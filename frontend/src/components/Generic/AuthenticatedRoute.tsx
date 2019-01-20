@@ -18,7 +18,7 @@ const AuthRenderer = inject(injectUserStore)(observer(({ component, render, user
 	const Component = component as React.ComponentClass
 
 	return userStore.isLoading
-		? <div>Loading</div>
+		? <div></div>
 		: userStore.isAuthenticated
 			? Component
 				? <Component {...props} />

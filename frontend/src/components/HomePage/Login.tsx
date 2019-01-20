@@ -14,6 +14,8 @@ import User from '../../img/User.svg'
 import Key from '../../img/Key.svg'
 import Container from '../Generic/Container'
 
+import '../../styles/LoginPage.sass'
+
 interface ILoginFormEvent extends FormEvent<HTMLFormElement> {
 	target: EventTarget & {
 		elements: {
@@ -67,7 +69,7 @@ class Login extends React.Component<IProps, IState> {
 		return (
 			<Container style={this.props.style}>
 				{this.props.userStore.isLoading
-					? <div>Loading...</div>
+					? <div></div>
 					: (
 						<form onSubmit={this.handleSubmit}>
 						<h1>Sign in</h1>
@@ -75,7 +77,7 @@ class Login extends React.Component<IProps, IState> {
 								label='Username'
 								type='text'
 								name='nameOrEmail'
-								required
+								// required
 								icon={User}
 							/>
 							<Input
@@ -83,10 +85,10 @@ class Login extends React.Component<IProps, IState> {
 								type='password'
 								name='password'
 								icon={Key}
-								required
+								// required
 							/>
 							<Row>
-								<Button color='white' onClick={this.goToSetup}>
+								<Button color='white' type='button' onClick={this.goToSetup}>
 									Sign up
 								</Button>
 								<Button color='blue' type='submit'>

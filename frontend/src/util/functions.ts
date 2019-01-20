@@ -26,7 +26,7 @@ export function downloadFile(uri: string) {
 	link.click()
 }
 
-type ClassName = string | boolean | void
+type ClassName = string | boolean | void | null | number
 
 export function list(...classNames: ClassName[]) {
 	return classNames.filter(Boolean).join(' ')
@@ -81,5 +81,22 @@ export function hashBlob(blob: Blob): Promise<string> {
 }
 
 export function getConfig(name: string) {
-	return name === 'opacity' ? config.default : config.wobbly
+	return config.gentle
+}
+
+export function formatFileSize(bytes: number) {
+	const thresh = 1024
+
+	if (Math.abs(bytes) < thresh) {
+			return bytes + ' B'
+	}
+
+	const units = ['kB','MB','GB','TB','PB','EB','ZB','YB']
+
+	let i = -1
+	for ( ; Math.abs(bytes) >= thresh && i < units.length - 1; ++i) {
+		bytes /= thresh
+	}
+
+	return bytes.toFixed(1) + ' ' + units[i]
 }

@@ -6,8 +6,9 @@ import { Redirect } from 'react-router'
 import { copyToClipboard } from '../../util/functions'
 import Input from '../Generic/Input'
 import Button from '../Generic/Button'
-import Container from '../Generic/Container';
+import Container from '../Generic/Container'
 
+import '../../styles/LoginPage.sass'
 interface IProps {
 	registerStore: IRegisterStore
 	style: {
@@ -77,7 +78,7 @@ class Register extends React.Component<IProps, IState> {
 		}
 
 		if (this.props.registerStore.isLoading) {
-			return <div>Loading...</div>
+			return <div></div>
 		}
 
 		return (
@@ -92,27 +93,27 @@ class Register extends React.Component<IProps, IState> {
 					label='key'
 					type='password'
 					name='key'
-					/>
+				/>
 				<Input
 					type='email'
 					name='email'
 					label='Email'
-					/>
+				/>
 				<Input
 					type='text'
 					name='name'
 					label='Username'
-					/>
+				/>
 				<Input
 					type='password'
 					name='password1'
 					label='Password'
-					/>
+				/>
 				<Input
 					type='password'
 					name='password2'
 					label='Confirm password'
-					/>
+				/>
 				<Button color='blue' type='submit'>
 					Submit
 				</Button>

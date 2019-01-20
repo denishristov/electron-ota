@@ -112,10 +112,10 @@ export default class AdminsService implements IAdminsService {
 	private async generateTokenAndAddToUser(user: IAdminDocument): Promise<string> {
 		const token = await this.generateToken(user.id)
 
-		this.hashAuthToken(token).then((hashed) => {
-			user.authTokens.push(hashed)
-			user.save()
-		})
+		const hashed = await this.hashAuthToken(token)
+
+		user.authTokens.push(hashed)
+		await user.save()
 
 		return token
 	}

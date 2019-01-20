@@ -16,7 +16,7 @@ $icon-size: 22px
 		background-color: $accent
 		bottom: 28px
 		box-shadow: none
-		transition: all .33s ease-out
+		transition: all .23s ease-out
 
 	input
 		border: none
@@ -24,25 +24,28 @@ $icon-size: 22px
 		padding-right: 16px + $icon-size
 		font-size: 1.14rem
 		border-radius: 6px
-		transition: all .33s ease-out
-		background: transparent
+		transition: all .23s ease-out
+		background: $bright-accent
 		flex-grow: 1
 		margin: 16px 0
 
-		&:focus
-			box-shadow: $subtle-shadow
+		&:focus, &:hover
 			outline: none
-
-		&:hover
-			background: #ffffff47
+			box-shadow: $rest-shadow
 
 		span
 			display: absolute
 			right: 16px
 
 	input:focus + .input-bar
-		@include defaultShadow(#86919a61)
+		box-shadow: $rest-shadow
 		background-color: $default-text-color
+
+	input:focus + .input-bar + .icon
+		color: $default-text-color
+
+		svg
+			fill: $default-text-color
 
 	.icon
 		position: absolute
@@ -50,3 +53,8 @@ $icon-size: 22px
 		right: 16px
 		width: $icon-size
 		height: $icon-size
+		color: $dark-accent
+
+		svg
+			transition: all .23s ease-out
+			fill: $dark-accent

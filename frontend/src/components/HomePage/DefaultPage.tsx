@@ -10,9 +10,8 @@ interface IDefaultPageProps extends RouteComponentProps {
 }
 
 function DefaultPage({ userStore }: IDefaultPageProps) {
-	console.log('def')
 	return userStore.isLoading
-		? <div>Loading</div>
+		? <div></div>
 		: userStore.isAuthenticated
 			? <Redirect to='/apps' />
 			: <Redirect to='/login' />

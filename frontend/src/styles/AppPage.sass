@@ -8,9 +8,8 @@
 	margin: 16px
 
 	.version
-		// max-width: 400px
 		min-width: 600px
-		border-radius: 6px
+		border-radius: 10px
 		background: white
 		display: flex
 		flex-flow: row
@@ -24,7 +23,62 @@
 
 		&:hover
 			box-shadow: $hover-shadow
+			background-color: $bright-accent
+
 		span
 			svg
 				width: 32px
 				height: 32px
+
+.version-modal
+	.content
+		max-width: 720px
+
+		form
+			max-width: none
+			justify-content: space-between
+
+			> .row
+				margin: 16px
+
+				.column
+					&:first-child
+						flex-grow: 1
+					
+					+ .column
+						max-width: 300px
+						min-width: 300px
+						margin-left: 16px
+
+						> .spread.center-y
+							padding-bottom: 16px
+	button
+		min-width: 280px
+
+	.dropzone
+		margin: 0 0 0 16px
+		height: 32px
+		
+	textarea
+		flex-grow: 1
+
+	.os-row
+		align-items: center
+		padding: 16px 0 0 16px
+
+		> * 
+			flex-grow: 0
+
+		span
+			width: 24px
+			height: 24px
+
+		.switch
+			flex-grow: 0
+
+		&:last-of-type
+			margin-bottom: 16px
+
+		+ label
+			margin: 16px
+	

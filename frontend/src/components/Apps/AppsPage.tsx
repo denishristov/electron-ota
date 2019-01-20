@@ -96,24 +96,24 @@ class AppsContainer extends Component<IProps, IState> {
 		const { allApps } = this.props.appsStore
 
 		return (
-				<Container style={this.props.style}>
+			<Container style={this.props.style}>
 				<div className='apps-page-container'>
 					<header>
 						<h1>Apps</h1>
 						<Button color='blue' noShadow size='small' onClick={this.openModal}>
 							<SVG src={Plus} />
-							Add new app
+								Add new app
 						</Button>
 					</header>
 					<div className='apps-container'>
-						{allApps.map((app) =>
-							<App app={app.toModel()} key={app.id} history={this.props.history} />,
-							)}
+						{allApps.map((app) => (
+							<App app={app.toModel()} key={app.id} history={this.props.history} />
+						))}
 					</div>
 				</div>
 				<Modal title='Add a new app' ref={this.modalRef}>
-					<form onSubmit={this.handleCreateApp}>
-						<Row>
+					<form onSubmit={this.handleCreateApp} className='new-app'>
+						<Row className='expand'>
 							<div className='upload-container'>
 								{this.state.pictureSrc
 								 	? <img
@@ -150,12 +150,14 @@ class AppsContainer extends Component<IProps, IState> {
 								/>
 							</div>
 						</Row>
-						<Button color='blue' noShadow type='submit'>
-							Add
-						</Button>
+						<footer>
+							<Button size='small' color='blue' noShadow type='submit'>
+								Add
+							</Button>
+						</footer>
 					</form>
 				</Modal>
-				</Container>
+			</Container>
 		)
 	}
 

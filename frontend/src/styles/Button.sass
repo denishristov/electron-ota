@@ -1,14 +1,22 @@
 @import './Mixins.sass'
 @import './Variables.sass'
 
-// $grey: #f2f2f2
-$green: #54f18e
-$blue: #34a7fc
+@mixin outline-button($color)
+	$darker: darken($color, 15%)
+	background-color: transparent
+	border: 2px solid $color
+	color: $color
+	transition: all .23s ease-out
+	box-shadow: $rest-shadow
+
+	&:focus, &:hover
+		box-shadow: $hover-shadow
+		background-color: $color
+		color: white
+
 
 @mixin color-button($background, $color, $accent)
 	@include defaultShadow($accent)
-	// border-top: 2px solid $accent
-	// border-bottom: 2px solid $background
 	background-color: $background
 	color: $color
 
@@ -43,12 +51,13 @@ button
 	text-transform: uppercase
 	font-weight: 700
 	transition: all .13s ease-out
+	min-width: 180px
 
 	&:focus
 		outline: none
 
 button.no-shadow
-	box-shadow: none !important
+	// box-shadow: none !important
 
 button.small	
 	padding: 0 12px
@@ -61,14 +70,18 @@ button.green.shrink
 	@include defaultShadow(desaturate(lighten($green, 15%), 30%))
 
 button.white
-	@include dark-button(white, $default-text-color)
-	
+	// @include dark-button($transparent, $default-text-color)
+	// @include outline-button($dark-accent)
+	@include color-button(transparent, $default-text-color, $accent)
+
 button.white.shrink
-	@include defaultShadow(desaturate(lighten(white, 15%), 30%))
+	@include defaultShadow(desaturate($accent, 15%))	
 
 button.blue
-	@include light-button($blue, white)
-	
+	@include light-button($light-blue, white)
+	background-image: linear-gradient(left top, $dark-blue 0%, $light-blue 100%)
+	// @include outline-button($light-blue)
+
 button.blue.shrink
-	@include defaultShadow(desaturate(lighten($blue, 15%), 30%))
+	@include defaultShadow(desaturate(lighten($light-blue, 15%), 30%))
 

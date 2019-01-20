@@ -10,15 +10,33 @@
 	display: flex
 	justify-content: center
 	align-items: center
-	background-color: #65656578
+	background-color: #e6e6e6cc
 
 	.content
-		@include defaultShadow(#b5b5b57d)
+		@include defaultShadow($accent)
 		min-width: 428px
 		max-width: 580px
 		flex-grow: 1
-		border-radius: 6px
+		border-radius: 10px
 		background-color: white
+		position: relative
+		overflow: hidden
+		
+	.progress-bar
+		position: absolute
+		width: 100%
+		height: 4px
+		top: 0 
+		left: 0
+
+		.completed
+			border-radius: 2px
+			transition: width .23s ease-out
+			background-image: linear-gradient(to right, $green 0%, lighten($green, 30%) 100%)
+			height: 4px
+			box-shadow: $hover-shadow
+			animation: moving-gradient infinite 3s ease
+			background-size: 200% 200%
 
 	svg
 		width: 24px
@@ -28,3 +46,24 @@
 		align-items: center
 		margin: 16px 32px
 		border-bottom: 1px solid $accent
+
+		h2
+			margin: 8px 0
+
+	footer
+		display: flex
+		justify-content: flex-end
+		margin: 16px 16px 8px
+		border-top: 1px solid $accent
+		
+		button
+			margin: 16px 0 0 16px
+
+@keyframes moving-gradient
+	0% 
+		background-position: 0% 50%
+	50%
+		background-position: 100% 50%
+	100%
+		background-position: 0% 50% 
+

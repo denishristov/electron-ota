@@ -1,11 +1,13 @@
 import React from 'react'
 import { list } from '../../util/functions'
-import { animated } from 'react-spring'
+import { Animated } from '../Context/AnimationContext'
 
 export default function Container({ children, className, ...props }: any) {
 	return (
-		<animated.div className={list('container-page', className)} {...props}>
-			{children}
-		</animated.div>
+		<Animated className={list('container-page', className)} {...props}>
+			{/* <div className='scroll-container'> */}
+				{children}
+			{/* </div> */}
+		</Animated>
 	)
 }

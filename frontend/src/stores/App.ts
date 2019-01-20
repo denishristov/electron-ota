@@ -7,6 +7,7 @@ import {
 	IS3SignUrlRequest,
 	IS3SignUrlResponse,
 	IVersionModel,
+	SystemType,
 } from 'shared'
 import { IApi } from '../util/Api'
 
@@ -16,6 +17,9 @@ interface ICreateVersionInput {
 	isBase: boolean
 	downloadUrl: string
 	hash: string
+	systems: {
+		[key in SystemType]: boolean
+	}
 }
 
 export default class App {

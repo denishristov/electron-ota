@@ -32,7 +32,7 @@ class App extends Component<IProps> {
 			<div className='app-tile' onClick={this.goToApp}>
 				<Row className='top-row'>
 					<img src={pictureUrl} />
-					<h1>{name}</h1>
+					<h3 className='text-overflow'>{name}</h3>
 				</Row>
 				<label>{`Bundle ID ${bundleId}`}</label>
 				<label>{`Versions ${versions}`}</label>

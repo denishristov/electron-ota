@@ -35,48 +35,43 @@ export default class ReleaseService implements IReleaseService {
 	@bind
 	public async releaseVersion({
 		versionId,
-		systems,
-		clientCount,
-		clients,
 	}: IPublishVersionRequest): Promise<IPublishVersionResponse> {
 		try {
-			const totalClientCount = clientCount
-				? clients
-					? clientCount + clients.length
-					: clientCount
-				: clients && clients.length
+			// const totalClientCount = clientCount
+			// 	? clients
+			// 		? clientCount + clients.length
+			// 		: clientCount
+			// 	: clients && clients.length
 
 			// const release = this.releases.create({
 			// 	systems,
 			// 	clientCount: totalClientCount,
 			// })
 
-			const version = await this.versions.findById(versionId)
+			const { appId, systems } = await this.versions.findById(versionId).select(`
+				systems
+				addId
+			`)
 
 			// release.then((release) => {
 			// 	version.releases.push(release)
 			// 	version.save()
 			// })
 
-			if (!totalClientCount) {
-				const latestVersions = Object.keys(systems)
+			const latestVersions = Object.keys(systems)
 					.filter((systemType) => systems[systemType as SystemType])
-					.group((systemType) => [systemType, version])
+					.group((systemType) => [systemType, versionId])
 
-				await this.apps.findByIdAndUpdate(
-					version.appId,
+			await this.apps.findByIdAndUpdate(
+					appId,
 					{ latestVersions },
 					{ upsert: true },
 				)
-			}
 
 			return {
 				isSuccessful: true,
 				release: {
 					versionId,
-					clientCount,
-					clients,
-					systems,
 				},
 			}
 		 } catch (error) {

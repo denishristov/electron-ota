@@ -1,13 +1,15 @@
 import React from 'react'
-import { Spring, animated, config } from 'react-spring'
+import { Spring, animated } from 'react-spring'
 
 import '../../styles/Modal.sass'
 
 import Close from '../../img/Close.svg'
-import { stopPropagation, getConfig } from '../../util/functions'
+import { stopPropagation, getConfig, list } from '../../util/functions'
 
 interface IProps {
 	title: string
+	className?: string
+	progress?: number
 }
 
 interface IState {
@@ -17,12 +19,12 @@ interface IState {
 
 const contentFrom = {
 	transform: 'scale(0.92) translateY(-32%)',
-	opacity: 0,
+	// opacity: 0,
 }
 
 const contentTo = {
 	transform: 'scale(1) translateY(0)',
-	opacity: 1,
+	// opacity: 1,
 }
 
 const backgroundFrom = {
@@ -54,7 +56,7 @@ export default class Modal extends React.Component<IProps, IState> {
 	}
 
 	public render() {
-		const { children, title } = this.props
+		const { children, title, className ,progress } = this.props
 		const { isOpened, isClosing } = this.state
 
 		return isOpened && (
@@ -65,10 +67,11 @@ export default class Modal extends React.Component<IProps, IState> {
 				reverse={isClosing}
 				force={isClosing}
 				onRest={this._close}
+				config={getConfig}
 			>
 				{(style) =>
 					<animated.div
-						className='modal-container'
+						className={list('modal-container', className)}
 						onClick={this.close}
 						style={style}
 						onScroll={stopPropagation}
@@ -80,7 +83,6 @@ export default class Modal extends React.Component<IProps, IState> {
 							reverse={isClosing}
 							force={isClosing}
 							config={getConfig}
-							immediate={(key) => key === 'opacity'}
 						>
 							{(style) =>
 								<animated.div
@@ -88,6 +90,11 @@ export default class Modal extends React.Component<IProps, IState> {
 									style={style}
 									onClick={stopPropagation}
 								>
+									{progress && (
+										<div className='progress-bar'>
+											<div className='completed' style={{ width: `${progress}%` }} />
+										</div>
+									)}
 									<header className='spread'>
 										<h2>{title}</h2>
 										<SVG

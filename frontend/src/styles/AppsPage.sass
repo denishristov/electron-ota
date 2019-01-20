@@ -1,38 +1,46 @@
 @import './Variables.sass'
 @import './Mixins.sass'
 
-.upload-container
-	display: flex
-	justify-content: center
-	flex-flow: column
-	align-items: center
+.new-app
+	.row
+		margin: 16px 0
 
-	.upload-icon
-		border-radius: 50%
-		background-color: #dedede
-		width: 96px
-		height: 96px
+		> * 
+			flex-grow: 1
+
+	.upload-container
 		display: flex
-		justify-content: center
+		flex-flow: column
 		align-items: center
-		box-shadow: $rest-shadow
-		cursor: pointer
-		transition: all .33s ease-out
-		margin-bottom: 16px
-		// object-fit: 
 
-		svg
-			width: 56px
-			height: 56px    
+		.upload-icon
+			border-radius: 50%
+			background-color: $accent
+			width: 96px
+			height: 96px
+			display: flex
+			justify-content: center
+			align-items: center
+			box-shadow: $rest-shadow
+			cursor: pointer
 			transition: all .33s ease-out
-			color: #7287ab
+			margin-bottom: 16px
 
-		&:hover
-			background-color: darken(#dedede, 7%)
-			box-shadow: $hover-shadow
-			
-			svg 
-				fill: darken($default-text-color, 15%)
+			svg
+				width: 56px
+				height: 56px    
+				transition: all .33s ease-out
+				color: $dark-accent
+
+			&:hover
+				background-color: darken($accent, 7%)
+				box-shadow: $hover-shadow
+
+				svg 
+					fill: darken($default-text-color, 15%)
+
+	.upload-container + div
+		margin: 2px 0
 
 .apps-page-container
 	flex-grow: 1
@@ -68,13 +76,14 @@
 			box-shadow: $rest-shadow
 			margin: 16px
 			padding: 12px
-			border-radius: 6px
+			border-radius: 10px
 			background: white
-			border: 1px solid $accent
+			border: 1px solid #f1f2f2
 			cursor: pointer
-			transition: all .33s ease-out
+			transition: all .23s ease-out
 
 			&:hover
+				background-color: #fcfcfc
 				box-shadow: $hover-shadow
 
 			img
@@ -84,20 +93,19 @@
 				flex-grow: 0
 				object-fit: cover
 				border-radius: 50%
-
-			h1
-				font-size: 1.3rem
-				text-shadow: none
-				margin: 0
-				font-weight: 450
+				box-shadow: $rest-shadow
 
 			.top-row
 				align-items: center
 				margin-bottom: 8px
 
-				h1
+				h3
+					margin: 0
 					flex-grow: 0
 					margin-left: 8px
+					font-size: 1.34rem
+					text-shadow: none
+					font-weight: 500
 
 			label
 				color: $dark-accent

@@ -28,12 +28,9 @@ interface IUpdate {
 
 export interface IRelease {
 	versionId: string
-	clientCount?: number
-	clients?: string[]
-	timeout?: number
-	systems: {
-		[key in SystemType]: boolean
-	}
+	// clientCount?: number
+	// clients?: string[]
+	// timeout?: number
 }
 
 export interface IPublishVersionRequest extends IRequest, IRelease {}

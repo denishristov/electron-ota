@@ -53,6 +53,9 @@ export interface ICreateVersionRequest extends IVersionRequest {
 	isBase: boolean
 	hash: string
 	description?: string
+	systems: {
+		[key in SystemType]: boolean
+	}
 }
 
 export interface ICreateVersionResponse extends IVersionResponse, IVersionModel {}

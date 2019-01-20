@@ -11,14 +11,13 @@ export interface IProps {
 
 function Version({ version }: IProps) {
 	return (
-		<div className='version' key={version.id}>
+		<div className='version'>
 			<h3>{version.versionName}</h3>
 			{version.isBase && <div>base</div>}
 			{version.isCritical && <div>base</div>}
 			<label>Hash</label>
 			<div>{version.hash}</div>
 			<SVG src={Download} onClick={downloadFile.bind(null, version.downloadUrl)} />
-			{/* {<p>{new Date(versioncreatedAt as string)}</p>} */}
 		</div>
 	)
 }
