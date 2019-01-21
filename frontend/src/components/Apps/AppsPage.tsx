@@ -19,6 +19,7 @@ import axios from 'axios'
 import '../../styles/AppsPage.sass'
 import { getSourceFromFile } from '../../util/functions'
 import Container from '../Generic/Container'
+import Dropzone from '../Generic/Dropzone'
 
 interface ICreateAppEvent extends FormEvent<HTMLFormElement> {
 	target: EventTarget & {
@@ -47,14 +48,10 @@ interface IState {
 	pictureSrc: string | null
 }
 
-const displayNone = { display: 'none' }
-
 class AppsContainer extends Component<IProps, IState> {
 	public readonly state = {
 		pictureSrc: '',
 	}
-
-	private readonly fileInputRef = React.createRef<HTMLInputElement>()
 
 	private readonly modalRef = React.createRef<Modal>()
 
@@ -115,26 +112,22 @@ class AppsContainer extends Component<IProps, IState> {
 					<form onSubmit={this.handleCreateApp} className='new-app'>
 						<Row className='expand'>
 							<div className='upload-container'>
-								{this.state.pictureSrc
-								 	? <img
-										src={this.state.pictureSrc}
-										className='upload-icon'
-										onClick={this.handleOpenFileMenu}
-									/>
-									: <SVG
-										src={Camera}
-										className='upload-icon'
-										onClick={this.handleOpenFileMenu}
-									/>
-								}
-								<input
-									type='file'
+								<Dropzone
+									onDrop={this.handleSelectPicture}
 									name='picture'
 									accept='image/*'
-									style={displayNone}
-									ref={this.fileInputRef}
-									onChange={this.handleSelectPicture}
-								/>
+								>
+									{this.state.pictureSrc
+									 	? <img
+											src={this.state.pictureSrc}
+											className='upload-icon'
+										/>
+										: <SVG
+											src={Camera}
+											className='upload-icon'
+										/>
+									}
+								</Dropzone>
 								<label>Upload Icon</label>
 							</div>
 							<div>
@@ -162,19 +155,8 @@ class AppsContainer extends Component<IProps, IState> {
 	}
 
 	@bind
-	private handleOpenFileMenu() {
-		const { current } = this.fileInputRef
-
-		if (current) {
-			current.click()
-		}
-	}
-
-	@bind
-	private async handleSelectPicture(event: ISelectPictureEvent) {
-		const pictureFile = event.target.files[0]
+	private async handleSelectPicture([pictureFile]: File[]) {
 		const pictureSrc = await getSourceFromFile(pictureFile)
-
 		this.setState({ pictureSrc })
 	}
 

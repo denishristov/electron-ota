@@ -15,13 +15,12 @@
 
 		.upload-icon
 			border-radius: 50%
-			background-color: $accent
+			margin: 8px 0 !important
 			width: 96px
 			height: 96px
 			display: flex
 			justify-content: center
 			align-items: center
-			box-shadow: $rest-shadow
 			cursor: pointer
 			transition: all .33s ease-out
 			margin-bottom: 16px
@@ -33,9 +32,6 @@
 				color: $dark-accent
 
 			&:hover
-				background-color: darken($accent, 7%)
-				box-shadow: $hover-shadow
-
 				svg 
 					fill: darken($default-text-color, 15%)
 

@@ -1,7 +1,6 @@
 import { config } from 'react-spring'
-
-// tslint:disable-next-line:max-line-length
-const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+import { ClassName, IEvent } from './types'
+import { emailRegex } from '../constants/regex'
 
 export function isEmail(candidate: string): boolean {
 	return emailRegex.test(candidate)
@@ -26,18 +25,17 @@ export function downloadFile(uri: string) {
 	link.click()
 }
 
-type ClassName = string | boolean | void | null | number
-
 export function list(...classNames: ClassName[]) {
 	return classNames.filter(Boolean).join(' ')
 }
 
-interface IEvent {
-	stopPropagation: () => void
-}
-
 export function stopPropagation(event: IEvent) {
 	event.stopPropagation()
+}
+
+export function stopEvent(event: IEvent) {
+	event.stopPropagation()
+	event.preventDefault()
 }
 
 export function getSourceFromFile(file: File): Promise<string | null> {
@@ -85,13 +83,12 @@ export function getConfig(name: string) {
 }
 
 export function formatFileSize(bytes: number) {
+	const units = ['KB','MB','GB','TB','PB','EB','ZB','YB']
 	const thresh = 1024
 
 	if (Math.abs(bytes) < thresh) {
-			return bytes + ' B'
+		return bytes + ' B'
 	}
-
-	const units = ['kB','MB','GB','TB','PB','EB','ZB','YB']
 
 	let i = -1
 	for ( ; Math.abs(bytes) >= thresh && i < units.length - 1; ++i) {

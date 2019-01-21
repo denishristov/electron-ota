@@ -74,6 +74,7 @@ textarea
 	&:focus, &:hover
 		outline: none
 		box-shadow: $rest-shadow
+		background-color: $accent-hover
 
 	&::placeholder
 		color: $dark-accent
@@ -135,10 +136,11 @@ textarea
 	background-color: $bright-accent
 	color: $dark-accent
 	transition: all .23s ease-out
-	font-weight: 500
+	font-weight: 400
 	font-family: "Rubic", -apple-system
 	overflow: hidden
 	align-items: center
+	cursor: pointer
 
 	label
 		color: $default-text-color
@@ -147,6 +149,7 @@ textarea
 	&:focus, &:hover
 		outline: none
 		box-shadow: $rest-shadow
+		background-color: $accent-hover
 
 	&-active
 		background-color: transparentize($green, 0.9)
@@ -160,3 +163,15 @@ textarea
 	width: 100vw
 	height: 100vh
 	overflow: hidden
+
+$break-phone: 440px
+@media screen and (max-width: $break-phone)
+	button
+		margin: 16px auto !important
+		min-width: 160px !important
+
+	form
+		flex-grow: 1
+
+	h1
+		font-size: 4rem

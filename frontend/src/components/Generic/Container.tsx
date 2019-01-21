@@ -5,9 +5,7 @@ import { Animated } from '../Context/AnimationContext'
 export default function Container({ children, className, ...props }: any) {
 	return (
 		<Animated className={list('container-page', className)} {...props}>
-			{/* <div className='scroll-container'> */}
-				{children}
-			{/* </div> */}
+			{children}
 		</Animated>
 	)
 }

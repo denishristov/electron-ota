@@ -70,17 +70,19 @@ const uploadMessages = {
 	notActive: 'Drop a package or click to upload',
 }
 
+const defaultState: IState = {
+	hasLoaded: false,
+	isCritical: false,
+	isBase: false,
+	isReleasing: false,
+	isWindows: true,
+	isDarwin: true,
+	isLinux: true,
+	file: void 0,
+}
+
 class AppPage extends Component<IProps, IState> {
-	public readonly state = {
-		hasLoaded: false,
-		isCritical: false,
-		isBase: false,
-		isReleasing: false,
-		isWindows: true,
-		isDarwin: true,
-		isLinux: true,
-		file: void 0,
-	} as IState
+	public readonly state = { ... defaultState }
 
 	private readonly modalRef = React.createRef<Modal>()
 
@@ -289,7 +291,6 @@ class AppPage extends Component<IProps, IState> {
 					downloadUrl,
 					signedRequest,
 				} = await this.app.fetchSignedUploadVersionUrl({ name, type })
-				console.log(versionFile)
 
 				const upload = axios.put(signedRequest, versionFile, {
 					headers: {
@@ -297,7 +298,6 @@ class AppPage extends Component<IProps, IState> {
 					},
 					onUploadProgress: ({ loaded, total }) => {
 						const progress = Math.round((loaded * 100) / total)
-						console.log(progress)
 						this.setState({ progress })
 					},
 				})
@@ -329,6 +329,7 @@ class AppPage extends Component<IProps, IState> {
 				})
 
 				this.closeModal()
+				this.setState(defaultState)
 			}
 		}
 	}

@@ -4,7 +4,7 @@ import { Spring, animated } from 'react-spring'
 import '../../styles/Modal.sass'
 
 import Close from '../../img/Close.svg'
-import { stopPropagation, getConfig, list } from '../../util/functions'
+import { stopPropagation, getConfig, list, stopEvent } from '../../util/functions'
 
 interface IProps {
 	title: string
@@ -61,9 +61,9 @@ export default class Modal extends React.Component<IProps, IState> {
 
 		return isOpened && (
 			<Spring
+				native
 				from={backgroundFrom}
 				to={backgroundTo}
-				native
 				reverse={isClosing}
 				force={isClosing}
 				onRest={this._close}
@@ -74,8 +74,16 @@ export default class Modal extends React.Component<IProps, IState> {
 						className={list('modal-container', className)}
 						onClick={this.close}
 						style={style}
-						onScroll={stopPropagation}
+						onScroll={stopEvent}
 					>
+						{Boolean(progress) && (
+							<div className='progress-bar'>
+								<div
+									className='completed'
+									style={{ width: `${progress}%` }}
+								/>
+							</div>
+						)}
 						<Spring
 							from={contentFrom}
 							to={contentTo}
@@ -90,11 +98,6 @@ export default class Modal extends React.Component<IProps, IState> {
 									style={style}
 									onClick={stopPropagation}
 								>
-									{progress && (
-										<div className='progress-bar'>
-											<div className='completed' style={{ width: `${progress}%` }} />
-										</div>
-									)}
 									<header className='spread'>
 										<h2>{title}</h2>
 										<SVG
