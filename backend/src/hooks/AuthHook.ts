@@ -19,8 +19,7 @@ export default class AuthHook implements IPreRespondHook {
 	@bind
 	public async handle(data: IUserAuthenticationRequest) {
 		const { isAuthenticated } = await this.userService.authenticate(data)
-		// tslint:disable-next-line:no-console
-		console.log(isAuthenticated)
+
 		if (isAuthenticated) {
 			const result = { ...data }
 			delete result.authToken

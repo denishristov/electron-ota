@@ -20,6 +20,7 @@ import '../../styles/AppsPage.sass'
 import { getSourceFromFile } from '../../util/functions'
 import Container from '../Generic/Container'
 import Dropzone from '../Generic/Dropzone'
+import AppearAnimation from '../Generic/AppearAnimation'
 
 interface ICreateAppEvent extends FormEvent<HTMLFormElement> {
 	target: EventTarget & {
@@ -103,9 +104,11 @@ class AppsContainer extends Component<IProps, IState> {
 						</Button>
 					</header>
 					<div className='apps-container'>
-						{allApps.map((app) => (
-							<App app={app.toModel()} key={app.id} history={this.props.history} />
-						))}
+					<AppearAnimation items={allApps}>
+						{(app) => (animation) => (
+							<App app={app.toModel()} key={app.id} history={this.props.history} animation={animation} />
+						)}
+					</AppearAnimation>
 					</div>
 				</div>
 				<Modal title='Add a new app' ref={this.modalRef}>

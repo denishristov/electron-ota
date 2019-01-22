@@ -51,7 +51,7 @@ export default function adminMediatorFactory({ container }: interfaces.Context) 
 		[EventType.SignUploadVersionUrl]: fileUploadService.signVersionUploadUrl,
 		[EventType.SignUploadPictureUrl]: fileUploadService.signPictureUploadUrl,
 
-		// [EventType.VersionSimpleReports]: versionStatisticsService.getVersionSimpleReports,
+		[EventType.VersionSimpleReports]: versionStatisticsService.getVersionSimpleReports,
 	})
 
 	mediator.usePreRespond(authHook)

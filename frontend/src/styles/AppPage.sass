@@ -1,5 +1,14 @@
 @import './Variables.sass'
 
+@mixin dot($color)
+	$size: 8px
+	width: $size
+	height: $size
+	background-color: $color
+	border-radius: 4px
+	box-shadow: $hover-shadow
+	margin-right: 4px
+
 .version-container
 	flex-grow: 1
 	flex-flow: column
@@ -18,7 +27,8 @@
 		display: flex
 		justify-content: space-around
 		align-items: center
-		transition: all .33s ease-out
+		transition: box-shadow .23s ease-out, background-color .23s ease-out
+		// will-change: transform, opacity
 		box-shadow: $rest-shadow
 
 		&:hover
@@ -29,6 +39,13 @@
 			svg
 				width: 32px
 				height: 32px
+
+		.base
+			@include dot($orange)
+
+		.critical
+			@include dot($red)
+
 
 .version-modal
 	.content

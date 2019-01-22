@@ -10,6 +10,10 @@ export interface IVersionModel {
 	appId: string
 	description?: string
 	hash: string
+	createdAt: string
+	systems: {
+		[key in SystemType]: boolean
+	}
 }
 
 export interface IVersionEditModel {

@@ -1,13 +1,11 @@
 import { Document, Schema } from 'mongoose'
-import {  VERSION_STATISTICS_REF, RELEASE_REF } from './constants'
-import { IVersionStatisticsDocument } from './VersionStatistics'
-import { IReleaseDocument } from './Release'
 import { SystemType } from 'shared'
 
 export interface IVersionDocument extends Document {
 	versionName: string
 	downloadUrl: string
 	isCritical: boolean
+	isReleased: boolean
 	isBase: boolean
 	hash: string
 	appId: string
@@ -23,6 +21,7 @@ export const VersionSchema = new Schema({
 	isBase: Boolean,
 	isCritical: Boolean,
 	isPublished: Boolean,
+	isReleased: Boolean,
 	hash: {
 		type: String,
 		unique: true,

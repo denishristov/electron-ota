@@ -5,8 +5,10 @@ import AppsStore from '../../stores/AppsStore'
 import { injectAppsStore } from '../../stores/RootStore'
 import { RouterProps } from 'react-router'
 import Row from '../Generic/Row'
+import { IAnimatable } from '../../util/types'
+import { animated } from 'react-spring'
 
-interface IProps extends RouterProps {
+interface IProps extends RouterProps, IAnimatable {
 	app: IAppModel
 	appsStore: AppsStore
 }
@@ -29,7 +31,7 @@ class App extends Component<IProps> {
 		} = this.props.app
 
 		return (
-			<div className='app-tile' onClick={this.goToApp}>
+			<animated.div className='app-tile' onClick={this.goToApp} style={this.props.animation}>
 				<Row className='top-row'>
 					<img src={pictureUrl} />
 					<h3 className='text-overflow'>{name}</h3>
@@ -37,7 +39,7 @@ class App extends Component<IProps> {
 				<label>{`Bundle ID ${bundleId}`}</label>
 				<label>{`Versions ${versions}`}</label>
 				<label>{`Latest version ${latestVersion}`}</label>
-			</div>
+			</animated.div>
 		)
 	}
 

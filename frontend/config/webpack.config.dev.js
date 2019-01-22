@@ -44,7 +44,7 @@ const getStyleLoaders = (cssOptions, preProcessor) => {
     require.resolve('style-loader'),
     {
       loader: require.resolve('css-loader'),
-      options: cssOptions,
+      options: {...cssOptions, camelCase: true},
     },
     {
       // Options for PostCSS as we reference these options twice
@@ -291,6 +291,7 @@ module.exports = {
             exclude: cssModuleRegex,
             use: getStyleLoaders({
               importLoaders: 1,
+              camelCase: true,
             }),
           },
           // Adds support for CSS Modules (https://github.com/css-modules/css-modules)
@@ -301,6 +302,7 @@ module.exports = {
               importLoaders: 1,
               modules: true,
               getLocalIdent: getCSSModuleLocalIdent,
+              camelCase: true,
             }),
           },
           // Opt-in support for SASS (using .scss or .sass extensions).
@@ -311,7 +313,7 @@ module.exports = {
           {
             test: sassRegex,
             exclude: sassModuleRegex,
-            use: getStyleLoaders({ importLoaders: 2 }, 'sass-loader'),
+            use: getStyleLoaders({ importLoaders: 2, camelCase: true }, 'sass-loader'),
           },
           // Adds support for CSS Modules, but using SASS
           // using the extension .module.scss or .module.sass
@@ -322,6 +324,7 @@ module.exports = {
                 importLoaders: 2,
                 modules: true,
                 getLocalIdent: getCSSModuleLocalIdent,
+                camelCase: true,
               },
               'sass-loader'
             ),

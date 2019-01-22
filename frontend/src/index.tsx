@@ -20,7 +20,7 @@ import { Transition } from 'react-spring'
 import { getConfig } from './util/functions'
 import { AnimationProvider } from './components/Context/AnimationContext'
 import Routes from './components/Routes'
-import PageTransitions from './constants/PageTransitions'
+import { pageAnimations } from './util/constants/animations'
 
 configure({
 	computedRequiresReaction: true,
@@ -43,8 +43,8 @@ const app = (
 						keys={(location) => location.pathname}
 						config={getConfig}
 						{...browserHistory.action === 'POP'
-							? PageTransitions.POP
-							: PageTransitions.PUSH
+							? pageAnimations.POP
+							: pageAnimations.PUSH
 						}
 					>
 						{(location) => (animation) => (

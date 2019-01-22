@@ -8,6 +8,8 @@ import {
 	IS3SignUrlResponse,
 	IVersionModel,
 	SystemType,
+	IVersionReportModel,
+	IGetVersionSimpleReportsResponse,
 } from 'shared'
 import { IApi } from '../util/Api'
 
@@ -15,8 +17,8 @@ interface ICreateVersionInput {
 	versionName: string
 	isCritical: boolean
 	isBase: boolean
-	downloadUrl: string
-	hash: string
+	downloadUrl?: string
+	hash?: string
 	systems: {
 		[key in SystemType]: boolean
 	}
@@ -41,6 +43,8 @@ export default class App {
 	public versionsCount: number
 
 	public readonly versions: ObservableMap<string, IVersionModel> = observable.map({})
+
+	public readonly simpleReports: ObservableMap<string, IVersionReportModel> = observable.map({})
 
 	constructor(
 		{
@@ -78,6 +82,7 @@ export default class App {
 		return await this.api.emit<IS3SignUrlResponse>(EventType.SignUploadVersionUrl, req)
 	}
 
+	@action
 	public async emitCreateVersion(inputFields: ICreateVersionInput) {
 		const res = await this.api.emit<ICreateVersionResponse>(
 			EventType.CreateVersion,
@@ -96,6 +101,19 @@ export default class App {
 			versions: this.versions.size || this.versionsCount,
 			latestVersion: this.latestVersion,
 		}
+	}
+
+	@action
+	public async fetchSimpleReports() {
+		const { reports } = await this.api.emit<IGetVersionSimpleReportsResponse>(
+			EventType.VersionSimpleReports,
+			{ appId: this.id },
+		)
+		const grouped = reports.group((report) => [report.version, report])
+
+		console.log(grouped)
+
+		this.simpleReports.merge(grouped)
 	}
 
 	// emitUpdateVersion(inputFields: ICreateVersionInput) {

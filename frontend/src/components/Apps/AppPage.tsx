@@ -6,7 +6,7 @@ import axios from 'axios'
 
 import App from '../../stores/App'
 import AppsStore from '../../stores/AppsStore'
-import { hashBlob, formatFileSize } from '../../util/functions'
+import { hashBlob, formatFileSize, downloadFile } from '../../util/functions'
 import { injectAppsStore } from '../../stores/RootStore'
 import { IVersionModel } from 'shared'
 import Version from './Version'
@@ -19,6 +19,7 @@ import Switch from '../Generic/Switch'
 import Row from '../Generic/Row'
 import Column from '../Generic/Column'
 import Dropzone from '../Generic/Dropzone'
+import AppearAnimation from '../Generic/AppearAnimation'
 
 import Plus from '../../img/Plus.svg'
 import Windows from '../../img/Windows.svg'
@@ -98,6 +99,7 @@ class AppPage extends Component<IProps, IState> {
 
 		if (this.app) {
 			this.app.fetchVersions()
+			this.app.fetchSimpleReports()
 		}
 
 		this.setState({ hasLoaded: true })
@@ -105,7 +107,7 @@ class AppPage extends Component<IProps, IState> {
 
 	public render() {
 		if (!this.state.hasLoaded) {
-			return <div></div>
+			return <div />
 		}
 
 		if (!this.app) {
@@ -126,6 +128,7 @@ class AppPage extends Component<IProps, IState> {
 		const {
 			name,
 			allVersions,
+			simpleReports,
 		} = this.app
 
 		return (
@@ -139,9 +142,15 @@ class AppPage extends Component<IProps, IState> {
 						</Button>
 					</header>
 					<div className='version-container'>
-						{allVersions.map((version) => (
-							<Version version={version} key={version.id} />
-						))}
+						<AppearAnimation items={allVersions}>
+							{(version) => (animation) => (
+								<Version
+									simpleReports={simpleReports}
+									version={version}
+									animation={animation}
+								/>
+							)}
+						</AppearAnimation>
 					</div>
 				</div>
 				<Modal
@@ -283,37 +292,40 @@ class AppPage extends Component<IProps, IState> {
 		} = event.target.elements
 
 		if (this.app) {
-			const versionFile = version.files[0]
+			const {
+				isCritical,
+				isBase,
+				isWindows,
+				isDarwin,
+				isLinux,
+			} = this.state
 
-			if (versionFile) {
-				const { name, type } = versionFile
+			if (this.state.isBase) {
+				this.app.emitCreateVersion({
+					versionName: versionName.value,
+					isBase,
+					isCritical,
+					systems: {
+						Windows_RT: isWindows,
+						Darwin: isDarwin,
+						Linux: isLinux,
+					},
+				})
+			} else if (version.files) {
+				const versionFile = version.files[0]
+				const { type } = versionFile
+
 				const {
 					downloadUrl,
 					signedRequest,
 				} = await this.app.fetchSignedUploadVersionUrl({ name, type })
 
-				const upload = axios.put(signedRequest, versionFile, {
-					headers: {
-						'Content-Type': type,
-					},
-					onUploadProgress: ({ loaded, total }) => {
-						const progress = Math.round((loaded * 100) / total)
-						this.setState({ progress })
-					},
-				})
+				const upload = this.uploadVersion(versionFile, signedRequest)
 
 				const [hash] = await Promise.all([
 					hashBlob(versionFile),
 					upload,
 				])
-
-				const {
-					isCritical,
-					isBase,
-					isWindows,
-					isDarwin,
-					isLinux,
-				} = this.state
 
 				this.app.emitCreateVersion({
 					versionName: versionName.value,
@@ -327,10 +339,10 @@ class AppPage extends Component<IProps, IState> {
 						Linux: isLinux,
 					},
 				})
-
-				this.closeModal()
-				this.setState(defaultState)
 			}
+
+			this.closeModal()
+			this.setState({ ...defaultState, hasLoaded: true })
 		}
 	}
 
@@ -360,6 +372,22 @@ class AppPage extends Component<IProps, IState> {
 			size,
 			date: new Date(lastModified),
 		}})
+	}
+
+	private async uploadVersion(versionFile: File, signedRequest: string) {
+		if (this.app) {
+			const { type } = versionFile
+
+			return axios.put(signedRequest, versionFile, {
+				headers: {
+					'Content-Type': type,
+				},
+				onUploadProgress: ({ loaded, total }) => {
+					const progress = Math.round((loaded * 100) / total)
+					this.setState({ progress })
+				},
+			})
+		}
 	}
 }
 // const injects = (x: IRootStore) => ({

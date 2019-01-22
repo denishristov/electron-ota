@@ -112,7 +112,7 @@ export default class AdminsService implements IAdminsService {
 	private async generateTokenAndAddToUser(user: IAdminDocument): Promise<string> {
 		const token = await this.generateToken(user.id)
 
-		const hashed = await this.hashAuthToken(token)
+		const hashed = this.hashAuthToken(token)
 
 		user.authTokens.push(hashed)
 		await user.save()
@@ -129,8 +129,7 @@ export default class AdminsService implements IAdminsService {
 		})
 	}
 
-	private async hashAuthToken(authToken: string): Promise<string> {
-		await Promise.resolve()
+	private hashAuthToken(authToken: string): string {
 		return crypto.createHash('sha256').update(authToken).digest('base64')
 	}
 

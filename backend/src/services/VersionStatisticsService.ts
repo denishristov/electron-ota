@@ -1,16 +1,23 @@
 import { Model } from 'mongoose'
-import { IClientReport, IErrorReport, IGetVersionSimpleReports } from 'shared'
+import {
+	IClientReport,
+	IErrorReport,
+	IGetVersionSimpleReportsRequest,
+	IGetVersionSimpleReportsResponse,
+} from 'shared'
 import { IVersionDocument } from '../models/Version'
 import { IClientDocument } from '../models/Client'
 import { IVersionStatisticsDocument } from '../models/VersionStatistics'
 import { ObjectID } from 'bson'
+import { IAppDocument } from '../models/App'
+import { toPlain } from '../util/util'
 
 export interface IVersionStatisticsService {
 	downloadingUpdate({ clientId }: IClientReport): Promise<void>
 	downloadedUpdate({ clientId }: IClientReport): Promise<void>
 	usingUpdate({ clientId }: IClientReport): Promise<void>
 	error({ clientId, errorMessage }: IErrorReport): Promise<void>
-	getVersionSimpleReports(req: IGetVersionSimpleReports): Promise<object>
+	getVersionSimpleReports(req: IGetVersionSimpleReportsRequest): Promise<IGetVersionSimpleReportsResponse>
 }
 
 @DI.injectable()
@@ -22,9 +29,9 @@ export default class VersionStatisticsService implements IVersionStatisticsServi
 		private readonly clients: Model<IClientDocument>,
 		@DI.inject(DI.Models.VersionStatistics)
 		private readonly statistics: Model<IVersionStatisticsDocument>,
-	) {
-		// this.getVersionSimpleReports()
-	}
+		@DI.inject(DI.Models.App)
+		private readonly apps: Model<IAppDocument>,
+	) {}
 
 	@bind
 	public async downloadingUpdate({ clientId, versionId }: IClientReport) {
@@ -79,18 +86,21 @@ export default class VersionStatisticsService implements IVersionStatisticsServi
 	}
 
 	@bind
-	public async getVersionSimpleReports({ versionId }: IGetVersionSimpleReports) {
-		const [statistics] = await this.statistics.aggregate([
-			{ $match: { version: new ObjectID(versionId) } },
+	public async getVersionSimpleReports({ appId }: IGetVersionSimpleReportsRequest) {
+		const { versions } = await this.apps.findById(appId).select('versions')
+		const ids = versions.map((x) => new ObjectID(`${x}`))
+
+		const reports = await this.statistics.aggregate([
+			{ $match: { version: { $in: ids } } },
 			{ $project: {
-				downloading: { $size: '$downloading' },
-				downloaded: { $size: '$downloaded' },
-				using: { $size: '$using' },
-				errorMessages: { $size: '$errorMessages' },
+				downloadingCount: { $size: '$downloading' },
+				downloadedCount: { $size: '$downloaded' },
+				usingCount: { $size: '$using' },
+				errorsCount: { $size: '$errorMessages' },
+				version: '$version',
 			}},
 		])
 
-		// tslint:disable-next-line:no-console
-		return statistics
+		return { reports }
 	}
 }

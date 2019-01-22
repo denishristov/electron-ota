@@ -5,6 +5,7 @@ import '../../styles/Modal.sass'
 
 import Close from '../../img/Close.svg'
 import { stopPropagation, getConfig, list, stopEvent } from '../../util/functions'
+import { modalBackgroundAnimations, modalContentAnimations } from '../../util/constants/animations'
 
 interface IProps {
 	title: string
@@ -15,24 +16,6 @@ interface IProps {
 interface IState {
 	isOpened: boolean
 	isClosing: boolean
-}
-
-const contentFrom = {
-	transform: 'scale(0.92) translateY(-32%)',
-	// opacity: 0,
-}
-
-const contentTo = {
-	transform: 'scale(1) translateY(0)',
-	// opacity: 1,
-}
-
-const backgroundFrom = {
-	opacity: 0,
-}
-
-const backgroundTo = {
-	opacity: 1,
 }
 
 export default class Modal extends React.Component<IProps, IState> {
@@ -61,13 +44,12 @@ export default class Modal extends React.Component<IProps, IState> {
 
 		return isOpened && (
 			<Spring
-				native
-				from={backgroundFrom}
-				to={backgroundTo}
+				native={true}
 				reverse={isClosing}
 				force={isClosing}
 				onRest={this._close}
 				config={getConfig}
+				{...modalBackgroundAnimations}
 			>
 				{(style) =>
 					<animated.div
@@ -85,12 +67,11 @@ export default class Modal extends React.Component<IProps, IState> {
 							</div>
 						)}
 						<Spring
-							from={contentFrom}
-							to={contentTo}
-							native
+							native={true}
 							reverse={isClosing}
 							force={isClosing}
 							config={getConfig}
+							{...modalContentAnimations}
 						>
 							{(style) =>
 								<animated.div

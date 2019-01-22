@@ -11,6 +11,7 @@
 	justify-content: center
 	align-items: center
 	background-color: #e6e6e6cc
+	// will-change: opacity
 
 	.content
 		@include defaultShadow($accent)
@@ -21,6 +22,7 @@
 		background-color: white
 		position: relative
 		overflow: hidden
+		// will-change: transform
 		
 	.progress-bar
 		position: absolute
@@ -37,6 +39,7 @@
 			box-shadow: $hover-shadow
 			animation: moving-gradient infinite 3s ease
 			background-size: 200% 200%
+			will-change: width
 
 	svg
 		width: 24px

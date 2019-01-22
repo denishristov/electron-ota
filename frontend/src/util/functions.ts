@@ -1,6 +1,6 @@
 import { config } from 'react-spring'
-import { ClassName, IEvent } from './types'
-import { emailRegex } from '../constants/regex'
+import { ClassName, IEvent, IEntry } from './types'
+import { emailRegex } from './constants/regex'
 
 export function isEmail(candidate: string): boolean {
 	return emailRegex.test(candidate)
@@ -96,4 +96,12 @@ export function formatFileSize(bytes: number) {
 	}
 
 	return bytes.toFixed(1) + ' ' + units[i]
+}
+
+export function formatDate(date: Date) {
+	return date.toLocaleDateString()
+}
+
+export function getId(entry: IEntry) {
+	return entry.id
 }

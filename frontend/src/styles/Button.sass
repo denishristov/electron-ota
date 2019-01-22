@@ -50,7 +50,7 @@ button
 	background: white
 	text-transform: uppercase
 	font-weight: 700
-	transition: all .13s ease-out
+	transition: box-shadow .23s ease-out, background-color .22s ease-out, transform .13s ease-out
 	min-width: 180px
 	user-select: none
 
@@ -80,7 +80,7 @@ button.white.shrink
 
 button.blue
 	@include light-button($light-blue, white)
-	background-image: linear-gradient(left top, $dark-blue 0%, $light-blue 100%)
+	background-image: linear-gradient(to left top, $dark-blue 0%, $light-blue 100%)
 	// @include outline-button($light-blue)
 
 button.blue.shrink
