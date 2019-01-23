@@ -1,7 +1,10 @@
 import AWS from 'aws-sdk'
+
 import { IS3SignUrlRequest, IS3SignUrlResponse } from 'shared'
 
-AWS.config.loadFromPath('./src/config/awsCredentials.json')
+import { AWS_CREDENTIALS } from '../config'
+
+AWS.config.update(AWS_CREDENTIALS)
 
 enum S3Action {
 	Get = 'getObject',

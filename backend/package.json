@@ -10,8 +10,8 @@
   "scripts": {
     "start": "npm run serve",
     "build": "npm run build-sass && npm run build-ts && npm run tslint && npm run copy-static-assets",
-    "serve": "node dist/app.js",
-    "watch-node": "nodemon dist/app.js",
+    "serve": "node ./dist",
+    "watch-node": "nodemon ./dist",
     "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run watch-node\"",
     "test": "jest --forceExit --coverage --verbose",
     "watch-test": "npm run test -- --watchAll",
@@ -19,10 +19,11 @@
     "watch-ts": "tsc -w",
     "tslint": "tslint -c tslint.json -p tsconfig.json",
     "debug": "npm run build && npm run watch-debug",
-    "serve-debug": "nodemon --inspect=0.0.0.0:9229 dist/app.js",
+    "serve-debug": "nodemon --inspect=0.0.0.0:9229 ./dist",
     "watch-debug": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run serve-debug\""
   },
   "dependencies": {
+    "@sentry/node": "4.5.3",
     "aws-sdk": "2.377.0",
     "bcrypt": "3.0.2",
     "bind-decorator": "1.0.11",

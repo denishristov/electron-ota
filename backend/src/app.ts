@@ -1,6 +1,4 @@
 import 'reflect-metadata'
-import './config/global'
-import './config/mongoose'
 
 import container from './dependencies/inversify.config'
 
@@ -8,7 +6,7 @@ import { Server } from 'http'
 import { UpdateClientsMediatorFactory } from './mediator/MediatorFactory'
 import { IAppService } from './services/AppService'
 
-import { ENVIRONMENT, PORT } from './config/config'
+import { ENVIRONMENT, PORT } from './config'
 
 async function setup() {
 	const httpServer = container.get<Server>(DI.HTTPServer)

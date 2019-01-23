@@ -7,11 +7,10 @@ import {
 	IUserAuthenticationResponse,
 	IUserLoginRequest,
 	IUserLoginResponse,
-	IRegisterAdminRequest,
 	IRegisterAdminResponse,
 } from 'shared'
 import { IUserDocument } from '../models/User'
-import { PASS_SECRET_KEY } from '../config/config'
+import { PASS_SECRET_KEY } from '../config'
 
 export interface IAdminsService {
 	login(req: IUserLoginRequest): Promise<IUserLoginResponse>

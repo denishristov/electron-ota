@@ -24,7 +24,7 @@ import { IAppModel } from 'shared'
 import http from 'http'
 import socketio from 'socket.io'
 
-import { S3_CONFIG } from '../config/config'
+import { S3_CONFIG } from '../config'
 
 const container = new Container()
 
@@ -102,8 +102,8 @@ container.bind<UpdateClientsMediatorFactory>(DI.Factories.ClientsMediator)
 	})
 
 container.bind<ISocketMediator>(DI.Mediators.Admins)
-	.toDynamicValue(({ container }) => 
-		container.get<IMediatorFactory>(DI.Factories.Mediator).createAdminMediator()
+	.toDynamicValue(({ container }) =>
+		container.get<IMediatorFactory>(DI.Factories.Mediator).createAdminMediator(),
 	).inSingletonScope()
 
 export default container

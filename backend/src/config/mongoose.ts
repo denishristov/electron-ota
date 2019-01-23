@@ -1,7 +1,7 @@
 import bluebird from 'bluebird'
 import mongoose from 'mongoose'
 
-import { MONGODB_URI } from './config'
+import { MONGODB_URI } from './'
 
 mongoose.Promise = bluebird
 mongoose.set('useCreateIndex', true)

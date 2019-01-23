@@ -54,7 +54,7 @@ export default class AppService implements IAppService {
 
 		return {
 			apps: apps.map(toPlain)
-				.map(app => ({ ...app, versions: app.versions.length })),
+				.map((app) => ({ ...app, versions: app.versions.length })),
 		}
 	}
 
