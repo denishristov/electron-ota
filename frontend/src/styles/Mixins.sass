@@ -1,2 +1,36 @@
-@mixin defaultShadow($color)
-	box-shadow: 0 16px 60px $color, 0 4px 14px $color
+@mixin glowingShadow($color)
+	box-shadow: 0 $spacing 60px $color, 0 4px 14px $color
+
+@mixin text-overflow
+	white-space: nowrap
+	overflow: hidden
+	text-overflow: ellipsis
+
+@mixin shrink
+	transform: scale(0.96)
+
+@mixin transition($properties...)
+	transition-duration: .23s
+	transition-timing-function: ease-out
+	transition-property: $properties
+
+@mixin container
+	flex-grow: 1
+	min-height: 100vh
+
+@mixin dot($color)
+	$size: $spacing / 2
+	width: $size
+	height: $size
+	background-color: $color
+	border-radius: 4px
+	box-shadow: $hover-shadow
+	margin-right: 4px
+
+
+// .switch
+// 	margin: 0 0 0 auto !important
+
+// .react-switch-bg	
+// 	margin: 0 !important
+// 	margin: 0 !important

@@ -1,10 +1,11 @@
 import React from 'react'
 import { list } from '../../util/functions'
 
-import '../../styles/Button.sass'
+import styles from '../../styles/Button.module.sass'
+import indexStyles from '../../index.module.sass'
 
 interface IProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-	color: 'green' | 'white' | 'blue'
+	color?: 'green' | 'white' | 'blue'
 	size?: 'big' | 'small'
 	noShadow?: boolean
 }
@@ -31,10 +32,10 @@ export default class Button extends React.Component<IProps, IState> {
 				onMouseUp={this.handleMouseUp}
 				className={list(
 					className,
-					color,
-					size,
-					this.state.isPushed && 'shrink',
-					Boolean(noShadow) && 'no-shadow',
+					color && styles[color],
+					size && styles[size],
+					this.state.isPushed && indexStyles.shrink,
+					Boolean(noShadow) && styles.noShadow,
 				)}
 				{...props}
 			/>

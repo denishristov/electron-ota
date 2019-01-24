@@ -1,0 +1,59 @@
+@import './variables'
+@import './mixins'
+
+.upload-icon
+	// @include transition()
+	border-radius: 50%
+	margin: $spacing / 2 0
+	width: 96px
+	height: 96px
+	display: flex
+	justify-content: center
+	align-items: center
+	cursor: pointer
+	margin-bottom: $spacing
+
+	svg
+		width: 56px
+		height: 56px    
+		transition: all .33s ease-out
+		color: $dark-accent
+
+	&:hover
+		svg 
+			fill: darken($default-text-color, 15%)
+
+.upload-label
+	margin-bottom: $spacing
+
+.apps-page-container
+	@include container
+
+	header
+		display: flex
+		justify-content: space-between
+		border-bottom: 1px solid $accent
+		align-items: flex-end
+		margin: $spacing $spacing * 2 0
+
+		h1
+			margin: $spacing * 2 0 $spacing / 2
+
+		button
+			margin: 0 0 $spacing / 2 
+
+			span
+				width: 22px
+				height: 22px
+				margin-right: $spacing / 2
+	
+	.apps-container
+		display: grid
+		grid-template-columns: repeat(auto-fill, $spacing * 2 * 8)
+		grid-auto-rows: $spacing * 2 * 9
+		margin: $spacing
+		justify-content: center
+		align-content: center
+
+.dropzone
+	margin: 0 $spacing auto $spacing

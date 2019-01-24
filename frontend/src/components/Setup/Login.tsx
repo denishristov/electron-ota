@@ -8,18 +8,19 @@ import Input from '../Generic/Input'
 import { isEmail } from '../../util/functions'
 import Button from '../Generic/Button'
 import { Redirect, RouterProps } from 'react-router'
-import Row from '../Generic/Row'
+import Flex from '../Generic/Flex'
 
 import User from '../../img/User.svg'
 import Key from '../../img/Key.svg'
 import Container from '../Generic/Container'
 
-import '../../styles/LoginPage.sass'
+import styles from '../../styles/LoginPage.module.sass'
+import Loading from '../Generic/Loading'
 
 interface ILoginFormEvent extends FormEvent<HTMLFormElement> {
 	target: EventTarget & {
 		elements: {
-			nameOrEmail: HTMLInputElement
+			nameOrEmail: HTMLInputElement,
 			password: HTMLInputElement,
 		},
 	}
@@ -27,20 +28,10 @@ interface ILoginFormEvent extends FormEvent<HTMLFormElement> {
 
 interface IProps extends RouterProps {
 	userStore: IUserStore
-	style: {
-		opacity: number;
-		transform: string;
-	}
+	style: React.CSSProperties
 }
 
-interface IState {
-	isSuccessful: boolean
-}
-
-class Login extends React.Component<IProps, IState> {
-	public readonly state = {
-		isSuccessful: false,
-	}
+class Login extends React.Component<IProps> {
 
 	@bind
 	public async handleSubmit(event: ILoginFormEvent) {
@@ -57,44 +48,42 @@ class Login extends React.Component<IProps, IState> {
 			password: password.value,
 		})
 
-		this.setState({ isSuccessful })
+		isSuccessful && this.props.history.push('/apps')
 
 	}
 
 	public render() {
-		if (this.state.isSuccessful) {
-			return <Redirect to='/apps' />
-		}
-
 		return (
 			<Container style={this.props.style}>
 				{this.props.userStore.isLoading
-					? <div></div>
+					? <Loading />
 					: (
 						<form onSubmit={this.handleSubmit}>
-						<h1>Sign in</h1>
-							<Input
-								label='Username'
-								type='text'
-								name='nameOrEmail'
-								// required
-								icon={User}
-							/>
-							<Input
-								label='Password'
-								type='password'
-								name='password'
-								icon={Key}
-								// required
-							/>
-							<Row>
-								<Button color='white' type='button' onClick={this.goToSetup}>
-									Sign up
-								</Button>
-								<Button color='blue' type='submit'>
-									Submit
-								</Button>
-							</Row>
+							<Flex column list>
+								<h1>Sign in</h1>
+								<Input
+									label='Username'
+									type='text'
+									name='nameOrEmail'
+									required
+									icon={User}
+									/>
+								<Input
+									label='Password'
+									type='password'
+									name='password'
+									icon={Key}
+									required
+									/>
+								<Flex>
+									<Button color='white' type='button' onClick={this.goToSetup}>
+										Sign up
+									</Button>
+									<Button color='blue' type='submit'>
+										Submit
+									</Button>
+								</Flex>
+							</Flex>
 						</form>
 					)
 				}

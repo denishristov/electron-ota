@@ -4,9 +4,12 @@ import { IAppModel } from 'shared'
 import AppsStore from '../../stores/AppsStore'
 import { injectAppsStore } from '../../stores/RootStore'
 import { RouterProps } from 'react-router'
-import Row from '../Generic/Row'
+import Flex from '../Generic/Flex'
 import { IAnimatable } from '../../util/types'
 import { animated } from 'react-spring'
+
+import styles from '../../styles/App.module.sass'
+import indexStyles from '../../index.module.sass'
 
 interface IProps extends RouterProps, IAnimatable {
 	app: IAppModel
@@ -31,11 +34,15 @@ class App extends Component<IProps> {
 		} = this.props.app
 
 		return (
-			<animated.div className='app-tile' onClick={this.goToApp} style={this.props.animation}>
-				<Row className='top-row'>
+			<animated.div
+				className={styles.appTile}
+				onClick={this.goToApp}
+				style={this.props.animation}
+			>
+				<Flex centerY>
 					<img src={pictureUrl} />
-					<h3 className='text-overflow'>{name}</h3>
-				</Row>
+					<h3 className={indexStyles.textOverflow}>{name}</h3>
+				</Flex>
 				<label>{`Bundle ID ${bundleId}`}</label>
 				<label>{`Versions ${versions}`}</label>
 				<label>{`Latest version ${latestVersion}`}</label>

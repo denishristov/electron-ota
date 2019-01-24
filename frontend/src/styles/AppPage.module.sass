@@ -1,0 +1,55 @@
+@import './variables'
+
+.version-container
+	flex-grow: 1
+	flex-flow: column
+	display: flex
+	align-items: center
+	margin: $spacing
+
+.version-modal
+	form
+		max-width: none
+		justify-content: space-between
+
+		> .row
+			margin: $spacing
+
+			.column
+				&:first-child
+					flex-grow: 1
+				
+				+ .column
+					max-width: 300px
+					min-width: 300px
+					margin-left: $spacing
+
+					> .spread.center-y
+						padding-bottom: $spacing
+
+	header
+		display: flex
+		justify-content: space-between
+
+	button
+		min-width: 280px
+
+	.dropzone
+		margin: 0 0 0 $spacing
+		height: $spacing * 2
+		
+	textarea
+		flex-grow: 1
+
+.os-row
+	> * 
+		flex-grow: 0
+
+	span
+		width: $icon-size
+		height: $icon-size
+
+	label
+		margin-left: $spacing
+		margin-right: auto
+	

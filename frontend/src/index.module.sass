@@ -1,4 +1,4 @@
-@import './styles/Variables.sass'
+@import './styles/variables'
 
 html
 	background-color: #f6f6f6
@@ -27,13 +27,12 @@ table
 	font-size: 0.8rem
 
 label
-	margin: 0px 16px
 	text-transform: uppercase
 	font-size: 0.84rem
 	font-weight: 500
 	user-select: none
 
-label.light
+label[light]
 	color: $dark-accent
 
 form
@@ -41,10 +40,8 @@ form
 	flex-flow: column
 	min-width: 400px
 	max-width: 700px
-	padding: 16px
 
 h1
-	margin: 32px 16px
 	font-weight: 500
 	font-size: 3em
 	line-height: 58px
@@ -52,7 +49,6 @@ h1
 
 h2
 	line-height: 40px
-	margin: 16px 0px
 	font-weight: 400
 	font-size: 2.2rem
 	user-select: none
@@ -66,7 +62,6 @@ textarea
 	transition: all .23s ease-out
 	border: 1px solid brighten($accent, 5%)
 	border-radius: 10px
-	margin: 16px 0 0
 	font-size: 0.86rem
 	padding: 16px
 	background-color: $bright-accent
@@ -79,81 +74,6 @@ textarea
 	&::placeholder
 		color: $dark-accent
 
-.text-overflow
-	white-space: nowrap
-	overflow: hidden
-	text-overflow: ellipsis
-
-.shrink
-	transform: scale(0.96)
-
-.row
-	display: flex
-	flex-flow: row wrap
-
-.column
-	display: flex
-	flex-flow: column wrap
-
-.spread
-	display: flex
-	justify-content: space-between
-
-.center-x
-	justify-content: center
-
-.center-y
-	align-items: center
-
-.expand
-	> * 
-		flex-grow: 1
-
-.container-page
-	position: absolute
-	top: 0
-	left: 0
-	width: 100vw
-	min-height: 100vh
-	// height: 100%
-	overflow: scroll
-	display: flex
-	justify-content: center
-	align-items: center
-	scroll-behavior: smooth
-	// will-change: transform, opacity
-
-.switch
-	margin: 0 0 0 auto !important
-
-.react-switch-bg	
-	margin: 0 !important
-
-.dropzone
-	display: flex
-	margin: 16px
-	padding: 16px
-	border-radius: 10px
-	background-color: $bright-accent
-	color: $dark-accent
-	transition: all .23s ease-out
-	font-weight: 400
-	overflow: hidden
-	align-items: center
-	cursor: pointer
-
-	label
-		color: $default-text-color
-		margin-right: 0px
-
-	&:focus, &:hover
-		outline: none
-		box-shadow: $rest-shadow
-		background-color: $accent-hover
-
-	&-active
-		background-color: transparentize($green, 0.9)
-
 .background
 	background-image: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
 	position: fixed
@@ -164,14 +84,14 @@ textarea
 	height: 100vh
 	overflow: hidden
 
-$break-phone: 440px
-@media screen and (max-width: $break-phone)
-	button
-		margin: 16px auto !important
-		min-width: 160px !important
+// $break-phone: 440px
+// @media screen and (max-width: $break-phone)
+// 	button
+// 		margin: 16px auto !important
+// 		min-width: 160px !important
 
-	form
-		flex-grow: 1
+// 	form
+// 		flex-grow: 1
 
-	h1
-		font-size: 4rem
+// 	h1
+// 		font-size: 4rem

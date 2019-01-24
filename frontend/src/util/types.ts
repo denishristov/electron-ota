@@ -12,3 +12,5 @@ export interface IAnimatable {
 export interface IEntry {
 	id: string
 }
+
+export type DivProps = React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>

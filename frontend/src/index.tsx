@@ -2,25 +2,26 @@ import React from 'react'
 import { render } from 'react-dom'
 import createBrowserHistory from 'history/createBrowserHistory'
 import { configure } from 'mobx'
-import { Route, Router } from 'react-router-dom'
+import { Route, Router, RouteProps } from 'react-router-dom'
 
-import 'shared/dist/extensions'
 import 'reflect-metadata'
 import './config/global'
-
-import './index.sass'
+import './util/extensions'
+import 'shared/dist/extensions'
 
 import container from './dependencies/inversify.config'
-import './util/extensions'
 
 import { Provider } from 'mobx-react'
 import { IRootStore } from './stores/RootStore'
 import { Stores } from './dependencies/symbols'
+
+import styles from './index.module.sass'
 import { Transition } from 'react-spring'
 import { getConfig } from './util/functions'
+import { pageAnimations } from './util/constants/animations'
 import { AnimationProvider } from './components/Context/AnimationContext'
 import Routes from './components/Routes'
-import { pageAnimations } from './util/constants/animations'
+import { AuthProvider } from './components/Context/AuthProvider'
 
 configure({
 	computedRequiresReaction: true,
@@ -31,31 +32,41 @@ configure({
 const stores = container.get<IRootStore>(Stores.Root)
 const browserHistory = createBrowserHistory()
 
+function getPathName(location: RouteProps['location']) {
+	return location ? location.pathname : 'key'
+}
+
+function appRenderer({ location }: RouteProps) {
+	return (
+		<>
+			<div className={styles.background} />
+			<Transition
+				native
+				keys={getPathName}
+				items={location}
+				config={getConfig}
+				{...browserHistory.action === 'POP'
+					? pageAnimations.POP
+					: pageAnimations.PUSH
+				}
+			>
+				{(location) => (animation) => (
+					<AnimationProvider value={animation}>
+						<Routes location={location} />
+					</AnimationProvider>
+				)}
+			</Transition>
+		</>
+	)
+}
+
 const app = (
 	<Provider {...stores}>
-		<Router history={browserHistory}>
-			<Route render={({ location }) => (
-				<>
-					<div className='background' />
-					<Transition
-						native
-					 	items={location}
-						keys={(location) => location.pathname}
-						config={getConfig}
-						{...browserHistory.action === 'POP'
-							? pageAnimations.POP
-							: pageAnimations.PUSH
-						}
-					>
-						{(location) => (animation) => (
-							<AnimationProvider value={animation}>
-								<Routes location={location} />
-							</AnimationProvider>
-						)}
-					</Transition>
-				</>
-			)} />
-		</Router>
+		<AuthProvider>
+			<Router history={browserHistory}>
+				<Route component={appRenderer} />
+			</Router>
+		</AuthProvider>
 	</Provider>
 )
 

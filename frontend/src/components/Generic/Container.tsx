@@ -1,11 +1,11 @@
 import React from 'react'
 import { list } from '../../util/functions'
-import { Animated } from '../Context/AnimationContext'
+import { Animated, IAnimationProps } from '../Context/AnimationContext'
 
-export default function Container({ children, className, ...props }: any) {
+import styles from '../../styles/Container.module.sass'
+
+export default function Container({ className, ...props }: IAnimationProps) {
 	return (
-		<Animated className={list('container-page', className)} {...props}>
-			{children}
-		</Animated>
+		<Animated className={list(styles.containerPage, className)} {...props} />
 	)
 }

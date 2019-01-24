@@ -8,7 +8,9 @@ import Input from '../Generic/Input'
 import Button from '../Generic/Button'
 import Container from '../Generic/Container'
 
-import '../../styles/LoginPage.sass'
+import styles from '../../styles/LoginPage.module.sass'
+import Loading from '../Generic/Loading'
+
 interface IProps {
 	registerStore: IRegisterStore
 	style: {
@@ -34,16 +36,66 @@ interface IRegisterFormEvent extends FormEvent<HTMLFormElement> {
 }
 
 class Register extends React.Component<IProps, IState> {
-	public readonly state = {
-		isRegistered: false,
-	}
-
 	private get command() {
 		return `cat ${this.props.registerStore.path}`
 	}
 
+	public readonly state = {
+		isRegistered: false,
+	}
+
 	public componentDidMount() {
 		this.props.registerStore.fetchKeyPath()
+	}
+
+	public render() {
+		if (this.state.isRegistered) {
+			return <Redirect to='/apps' />
+		}
+
+		if (this.props.registerStore.isLoading) {
+			return <Loading />
+		}
+
+		return (
+			<Container style={this.props.style}>
+				<form onSubmit={this.handleRegister}>
+					<h1>Sign up</h1>
+					<label>Key path</label>
+					<code className={styles.keyPath} onClick={this.handleCopyCommand}>
+						{this.command}
+					</code>
+					<Input
+						label='key'
+						type='password'
+						name='key'
+					/>
+					<Input
+						type='email'
+						name='email'
+						label='Email'
+					/>
+					<Input
+						type='text'
+						name='name'
+						label='Username'
+					/>
+					<Input
+						type='password'
+						name='password1'
+						label='Password'
+					/>
+					<Input
+						type='password'
+						name='password2'
+						label='Confirm password'
+					/>
+					<Button color='blue' type='submit'>
+						Submit
+					</Button>
+				</form>
+			</Container>
+		)
 	}
 
 	@bind
@@ -69,57 +121,6 @@ class Register extends React.Component<IProps, IState> {
 	@bind
 	private handleCopyCommand() {
 		copyToClipboard(this.command)
-	}
-
-	// tslint:disable-next-line:member-ordering
-	public render() {
-		if (this.state.isRegistered) {
-			return <Redirect to='/apps' />
-		}
-
-		if (this.props.registerStore.isLoading) {
-			return <div></div>
-		}
-
-		return (
-			<Container style={this.props.style}>
-			<form onSubmit={this.handleRegister}>
-				<h1>Sign up</h1>
-				<label>Key path</label>
-				<code className='key-path' onClick={this.handleCopyCommand}>
-					{this.command}
-				</code>
-				<Input
-					label='key'
-					type='password'
-					name='key'
-				/>
-				<Input
-					type='email'
-					name='email'
-					label='Email'
-				/>
-				<Input
-					type='text'
-					name='name'
-					label='Username'
-				/>
-				<Input
-					type='password'
-					name='password1'
-					label='Password'
-				/>
-				<Input
-					type='password'
-					name='password2'
-					label='Confirm password'
-				/>
-				<Button color='blue' type='submit'>
-					Submit
-				</Button>
-			</form>
-			</Container>
-		)
 	}
 }
 

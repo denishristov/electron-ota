@@ -6,7 +6,7 @@ import axios from 'axios'
 
 import App from '../../stores/App'
 import AppsStore from '../../stores/AppsStore'
-import { hashBlob, formatFileSize, downloadFile } from '../../util/functions'
+import { hashBlob, formatFileSize, downloadFile, list } from '../../util/functions'
 import { injectAppsStore } from '../../stores/RootStore'
 import { IVersionModel } from 'shared'
 import Version from './Version'
@@ -16,8 +16,7 @@ import Input from '../Generic/Input'
 import Button from '../Generic/Button'
 import Container from '../Generic/Container'
 import Switch from '../Generic/Switch'
-import Row from '../Generic/Row'
-import Column from '../Generic/Column'
+import Flex from '../Generic/Flex'
 import Dropzone from '../Generic/Dropzone'
 import AppearAnimation from '../Generic/AppearAnimation'
 
@@ -27,8 +26,11 @@ import Apple from '../../img/Apple.svg'
 import Ubuntu from '../../img/Ubuntu.svg'
 import Electron from '../../img/Electron.svg'
 
-import '../../styles/AppsPage.sass'
-import '../../styles/AppPage.sass'
+import appsPageStyles from '../../styles/AppsPage.module.sass'
+import styles from '../../styles/AppPage.module.sass'
+import indexStyles from '../../index.module.sass'
+
+import Loading from '../Generic/Loading'
 
 interface IParams {
 	id: string
@@ -107,7 +109,7 @@ class AppPage extends Component<IProps, IState> {
 
 	public render() {
 		if (!this.state.hasLoaded) {
-			return <div />
+			return <Loading />
 		}
 
 		if (!this.app) {
@@ -133,7 +135,7 @@ class AppPage extends Component<IProps, IState> {
 
 		return (
 			<Container style={this.props.style}>
-				<div className='apps-page-container'>
+				<div className={appsPageStyles.appsPageContainer}>
 					<header>
 						<h1>{name}</h1>
 						<Button color='blue' noShadow size='small' onClick={this.openModal}>
@@ -141,7 +143,7 @@ class AppPage extends Component<IProps, IState> {
 							Add new version
 						</Button>
 					</header>
-					<div className='version-container'>
+					<div className={styles.versionContainer}>
 						<AppearAnimation items={allVersions}>
 							{(version) => (animation) => (
 								<Version
@@ -155,13 +157,13 @@ class AppPage extends Component<IProps, IState> {
 				</div>
 				<Modal
 					title='Add a new version'
-					className='version-modal'
+					className={styles.versionModal}
 					progress={progress}
 					ref={this.modalRef}
 				>
 					<form onSubmit={this.handleCreateVersion}>
-						<Row>
-							<Column>
+						<Flex>
+							<Flex column margin list>
 								<Input
 									type='text'
 									name='versionName'
@@ -169,43 +171,43 @@ class AppPage extends Component<IProps, IState> {
 								/>
 								<label>Description</label>
 								<textarea placeholder='Optional description for the update' />
-							</Column>
-							<Column>
+							</Flex>
+							<Flex column margin list>
 								<label>Supporting systems</label>
-								<Row className='os-row'>
+								<Flex centerY className={styles.osRow}>
 									<SVG src={Windows} />
-									<label className='light'>Windows</label>
+									<label className={indexStyles.light}>Windows</label>
 									<Switch value={isWindows} onChange={this.toggleIsWindows} />
-								</Row>
-								<Row className='os-row'>
+								</Flex>
+								<Flex centerY className={styles.osRow}>
 									<SVG src={Apple} />
-									<label className='light'>Macos</label>
+									<label className={indexStyles.light}>Macos</label>
 									<Switch value={isDarwin} onChange={this.toggleIsDarwin}	/>
-								</Row>
-								<Row className='os-row'>
+								</Flex>
+								<Flex centerY className={styles.osRow}>
 									<SVG src={Ubuntu} />
-									<label className='light'>Ubuntu</label>
+									<label className={indexStyles.light}>Ubuntu</label>
 									<Switch value={isLinux} onChange={this.toggleIsLinux} />
-								</Row>
+								</Flex>
 								<label>Release</label>
-								<Row className='spread center-y'>
-									<label className='light'>
+								<Flex spread centerY>
+									<label className={indexStyles.light}>
 										Immediately?
 									</label>
 									<Switch value={isReleasing} onChange={this.toggleIsReleasing} />
-								</Row>
-								<Row className='spread center-y'>
-									<label className='light'>
+								</Flex>
+								<Flex spread centerY>
+									<label className={indexStyles.light}>
 										Critical?
 									</label>
 									<Switch value={isCritical} onChange={this.toggleIsCritical} />
-								</Row>
-								<Row className='spread center-y'>
-									<label className='light'>
+								</Flex>
+								<Flex spread centerY>
+									<label className={indexStyles.light}>
 										Base?
 									</label>
 									<Switch value={isBase} onChange={this.toggleIsBase} />
-								</Row>
+								</Flex>
 								{!isBase && (
 									<Dropzone
 										onDrop={this.handleDrop}
@@ -216,25 +218,25 @@ class AppPage extends Component<IProps, IState> {
 									{file && (
 										<>
 											<SVG src={Electron} />
-											<Row className='expand'>
-												<Row className='spread center-y'>
+											<Flex expand>
+												<Flex spread centerY>
 													<label className='text-overflow'>{file.name}</label>
-												</Row>
-												<Row className='spread center-y'>
-													<label className='light'>
+												</Flex>
+												<Flex spread centerY>
+													<label className={indexStyles.light}>
 														{formatFileSize(file.size)}
 													</label>
-													<label className='light'>
+													<label className={indexStyles.light}>
 														{file.date.toLocaleDateString()}
 													</label>
-												</Row>
-											</Row>
+												</Flex>
+											</Flex>
 										</>
 									)}
 									</Dropzone>
 								)}
-							</Column>
-						</Row>
+							</Flex>
+						</Flex>
 						<footer>
 							<Button size='small' color='blue' noShadow type='submit'>
 								ADD

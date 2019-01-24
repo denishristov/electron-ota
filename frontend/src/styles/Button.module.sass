@@ -1,5 +1,5 @@
-@import './Mixins.sass'
-@import './Variables.sass'
+@import './mixins'
+@import './variables'
 
 @mixin outline-button($color)
 	$darker: darken($color, 15%)
@@ -16,17 +16,17 @@
 
 
 @mixin color-button($background, $color, $accent)
-	@include defaultShadow($accent)
+	@include glowingShadow($accent)
 	background-color: $background
 	color: $color
 
 	&:focus
-		@include defaultShadow(desaturate($accent, 15%))
+		@include glowingShadow(desaturate($accent, 15%))
 		border-color: desaturate($background, 15%)
 		background-color: desaturate($background, 15%)
 
 	&:hover
-		@include defaultShadow(desaturate($accent, 15%))
+		@include glowingShadow(desaturate($accent, 15%))
 		border-color: desaturate($background, 15%)
 		background-color: desaturate($background, 15%)
 
@@ -41,12 +41,12 @@ button
 	justify-content: center
 	align-items: center
 	flex-flow: row
-	padding: 16px
+	padding: $spacing
 	border: 0
 	font-size: 1.14rem
 	border-radius: 40px
 	overflow: hidden
-	margin: 16px
+	margin: $spacing
 	background: white
 	text-transform: uppercase
 	font-weight: 700
@@ -68,7 +68,7 @@ button.green
 	@include light-button($green, white)
 	
 button.green.shrink
-	@include defaultShadow(desaturate(lighten($green, 15%), 30%))
+	@include glowingShadow(desaturate(lighten($green, 15%), 30%))
 
 button.white
 	// @include dark-button($transparent, $default-text-color)
@@ -76,7 +76,7 @@ button.white
 	@include color-button(transparent, $default-text-color, $accent)
 
 button.white.shrink
-	@include defaultShadow(desaturate($accent, 15%))	
+	@include glowingShadow(desaturate($accent, 15%))	
 
 button.blue
 	@include light-button($light-blue, white)
@@ -84,5 +84,5 @@ button.blue
 	// @include outline-button($light-blue)
 
 button.blue.shrink
-	@include defaultShadow(desaturate(lighten($light-blue, 15%), 30%))
+	@include glowingShadow(desaturate(lighten($light-blue, 15%), 30%))
 

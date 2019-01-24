@@ -1,6 +1,5 @@
 import { inject, observer } from 'mobx-react'
 import React, { Component, FormEvent } from 'react'
-import { IAppModel } from 'shared'
 import AppStore from '../../stores/AppsStore'
 import { injectAppsStore } from '../../stores/RootStore'
 
@@ -9,18 +8,19 @@ import App from './App'
 import Input from '../Generic/Input'
 import Button from '../Generic/Button'
 import Modal from '../Generic/Modal'
-import Row from '../Generic/Row'
+import Flex from '../Generic/Flex'
 
 import Camera from '../../img/Camera.svg'
 import Plus from '../../img/Plus.svg'
 
 import { RouterProps } from 'react-router'
 import axios from 'axios'
-import '../../styles/AppsPage.sass'
 import { getSourceFromFile } from '../../util/functions'
 import Container from '../Generic/Container'
 import Dropzone from '../Generic/Dropzone'
 import AppearAnimation from '../Generic/AppearAnimation'
+
+import styles from '../../styles/AppsPage.module.sass'
 
 interface ICreateAppEvent extends FormEvent<HTMLFormElement> {
 	target: EventTarget & {
@@ -31,12 +31,6 @@ interface ICreateAppEvent extends FormEvent<HTMLFormElement> {
 				files: FileList,
 			},
 		},
-	}
-}
-
-interface ISelectPictureEvent extends React.ChangeEvent<HTMLInputElement> {
-	target: EventTarget & HTMLInputElement & {
-		files: FileList,
 	}
 }
 
@@ -95,45 +89,45 @@ class AppsContainer extends Component<IProps, IState> {
 
 		return (
 			<Container style={this.props.style}>
-				<div className='apps-page-container'>
+				<div className={styles.appsPageContainer}>
 					<header>
 						<h1>Apps</h1>
 						<Button color='blue' noShadow size='small' onClick={this.openModal}>
 							<SVG src={Plus} />
-								Add new app
+							Add new app
 						</Button>
 					</header>
-					<div className='apps-container'>
-					<AppearAnimation items={allApps}>
-						{(app) => (animation) => (
-							<App app={app.toModel()} key={app.id} history={this.props.history} animation={animation} />
-						)}
-					</AppearAnimation>
+					<div className={styles.appsContainer}>
+						<AppearAnimation items={allApps}>
+							{(app) => (animation) => (
+								<App
+									app={app.toModel()}
+									key={app.id}
+									history={this.props.history}
+									animation={animation}
+								/>
+							)}
+						</AppearAnimation>
 					</div>
 				</div>
 				<Modal title='Add a new app' ref={this.modalRef}>
-					<form onSubmit={this.handleCreateApp} className='new-app'>
-						<Row className='expand'>
-							<div className='upload-container'>
+					<form onSubmit={this.handleCreateApp} className={styles.newApp}>
+						<Flex expand margin>
+							<Flex margin centerY column className={styles.uploadContainer}>
 								<Dropzone
 									onDrop={this.handleSelectPicture}
 									name='picture'
 									accept='image/*'
+									className={styles.dropzone}
 								>
 									{this.state.pictureSrc
-									 	? <img
-											src={this.state.pictureSrc}
-											className='upload-icon'
-										/>
-										: <SVG
-											src={Camera}
-											className='upload-icon'
-										/>
+									 	? <img src={this.state.pictureSrc} className={styles.uploadIcon} />
+										: <SVG src={Camera} className={styles.uploadIcon} />
 									}
 								</Dropzone>
-								<label>Upload Icon</label>
-							</div>
-							<div>
+								<label className={styles.uploadLabel}>Upload Icon</label>
+							</Flex>
+							<Flex margin column>
 								<Input
 									type='text'
 									name='name'
@@ -144,10 +138,15 @@ class AppsContainer extends Component<IProps, IState> {
 									name='bundleId'
 									label='Bundle ID'
 								/>
-							</div>
-						</Row>
+							</Flex>
+						</Flex>
 						<footer>
-							<Button size='small' color='blue' noShadow type='submit'>
+							<Button
+								size='small'
+								color='blue'
+								noShadow
+								type='submit'
+							>
 								Add
 							</Button>
 						</footer>

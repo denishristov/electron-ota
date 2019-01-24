@@ -1,0 +1,43 @@
+@import './variables'
+
+.row
+	display: flex
+	flex-flow: row wrap
+
+.column
+	display: flex
+	flex-flow: column wrap
+
+.spread
+	display: flex
+	justify-content: space-between
+
+.center-x
+	justify-content: center
+
+.center-y
+	align-items: center
+
+.margin
+	margin: $spacing
+
+.padding
+	padding: $spacing
+
+.expand
+	> * 
+		flex-grow: 1
+
+.list-y
+	> *
+		padding-bottom: $spacing
+
+		// &:last-child
+		// 	padding-bottom: 0px
+
+.list-x
+	> *
+		padding-right: $spacing
+
+		// &:last-child
+		// 	padding-right: 0px

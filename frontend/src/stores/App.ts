@@ -109,9 +109,8 @@ export default class App {
 			EventType.VersionSimpleReports,
 			{ appId: this.id },
 		)
-		const grouped = reports.group((report) => [report.version, report])
 
-		console.log(grouped)
+		const grouped = reports.group((report) => [report.version, report])
 
 		this.simpleReports.merge(grouped)
 	}

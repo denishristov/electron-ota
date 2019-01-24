@@ -1,0 +1,33 @@
+@import './mixins'
+@import './variables'
+
+.version
+	min-width: 800px
+	min-height: 50px
+	border-radius: $default-border-radius
+	background: white
+	display: flex
+	flex-flow: row
+	margin: $spacing 0
+	padding: 0 $spacing
+	display: flex
+	justify-content: space-around
+	align-items: center
+	transition: box-shadow .23s ease-out, background-color .23s ease-out
+	// will-change: transform, opacity
+	box-shadow: $rest-shadow
+
+	&:hover
+		box-shadow: $hover-shadow
+		background-color: $bright-accent
+
+	span
+		svg
+			width: $spacing * 2
+			height: $spacing * 2
+
+.base
+	@include dot($orange)
+	
+.critical
+	@include dot($red)

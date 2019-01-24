@@ -1,14 +1,16 @@
 import React from 'react'
-import { Spring, animated } from 'react-spring'
+import { Spring, animated, config } from 'react-spring'
 
-import '../../styles/Modal.sass'
+import styles from '../../styles/Modal.module.sass'
+import indexStyles from '../../index.module.sass'
 
 import Close from '../../img/Close.svg'
+
 import { stopPropagation, getConfig, list, stopEvent } from '../../util/functions'
 import { modalBackgroundAnimations, modalContentAnimations } from '../../util/constants/animations'
 
 interface IProps {
-	title: string
+	title?: string
 	className?: string
 	progress?: number
 }
@@ -39,7 +41,7 @@ export default class Modal extends React.Component<IProps, IState> {
 	}
 
 	public render() {
-		const { children, title, className ,progress } = this.props
+		const { children, title, className, progress } = this.props
 		const { isOpened, isClosing } = this.state
 
 		return isOpened && (
@@ -53,15 +55,15 @@ export default class Modal extends React.Component<IProps, IState> {
 			>
 				{(style) =>
 					<animated.div
-						className={list('modal-container', className)}
+						className={styles.modalContainer}
 						onClick={this.close}
 						style={style}
-						onScroll={stopEvent}
+						onScroll={stopPropagation}
 					>
 						{Boolean(progress) && (
-							<div className='progress-bar'>
+							<div className={styles.progressBar}>
 								<div
-									className='completed'
+									className={styles.completed}
 									style={{ width: `${progress}%` }}
 								/>
 							</div>
@@ -75,11 +77,11 @@ export default class Modal extends React.Component<IProps, IState> {
 						>
 							{(style) =>
 								<animated.div
-									className='content'
+									className={list(styles.content, className)}
 									style={style}
 									onClick={stopPropagation}
 								>
-									<header className='spread'>
+									<header className={styles.spread}>
 										<h2>{title}</h2>
 										<SVG
 											src={Close}

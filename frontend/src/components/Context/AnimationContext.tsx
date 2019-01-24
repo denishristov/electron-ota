@@ -1,13 +1,13 @@
 import React from 'react'
 import { animated } from 'react-spring'
+import { DivProps } from '../../util/types'
+import { Omit } from 'typelevel-ts'
 
-interface IProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
-	ref: undefined
-}
+export interface IAnimationProps extends Omit<DivProps, 'ref'> {}
 
 const { Provider, Consumer } = React.createContext<React.CSSProperties>({})
 
-export function Animated({ style, ...props }: IProps) {
+export function Animated({ style, ...props }: IAnimationProps) {
 	return (
 		<Consumer>
 			{(animation) => (

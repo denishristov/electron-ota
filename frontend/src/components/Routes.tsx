@@ -1,13 +1,14 @@
 import React from 'react'
 import { Switch, Route, RouteProps } from 'react-router'
-import Register from './HomePage/Register'
-import Login from './HomePage/Login'
+import Register from './Setup/Register'
+import Login from './Setup/Login'
 import AuthenticatedRoute from './Generic/AuthenticatedRoute'
-import AppsPage from './Apps/AppsPage'
-import AppPage from './Apps/AppPage'
-import DefaultPage from './HomePage/DefaultPage'
+import AppsPage from './AppsPage'
+import AppPage from './AppPage'
+import DefaultPage from './Setup/DefaultPage'
+import { observer } from 'mobx-react'
 
-export default function Routes({ location }: RouteProps) {
+export default observer(function Routes({ location }: RouteProps) {
 	return (
 		<Switch location={location}>
 			<Route
@@ -32,4 +33,4 @@ export default function Routes({ location }: RouteProps) {
 			<Route component={DefaultPage} />
 		</Switch>
 	)
-}
+})
