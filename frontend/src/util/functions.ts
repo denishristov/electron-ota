@@ -58,44 +58,43 @@ export function getSourceFromFile(file: File): Promise<string | null> {
 	})
 }
 
-export function hashBlob(blob: Blob): Promise<string> {
+export function hashFile(file: File): Promise<string | null> {
 	return new Promise((resolve, reject) => {
 		const reader = new FileReader()
 
-		reader.readAsArrayBuffer(blob)
+		reader.readAsArrayBuffer(file)
 
 		reader.addEventListener('load', handleLoad)
 		reader.addEventListener('error', reject)
 
 		async function handleLoad() {
-			const buffer = await crypto.subtle.digest('SHA-256', reader.result as ArrayBuffer)
-			const hash = btoa(String.fromCharCode(...new Uint8Array(buffer)))
+			if (reader.result) {
+				const buffer = await crypto.subtle.digest('SHA-256', reader.result as ArrayBuffer)
+				const hash = btoa(String.fromCharCode(...new Uint8Array(buffer)))
 
-			reader.removeEventListener('load', handleLoad)
-
-			resolve(hash)
+				reader.removeEventListener('load', handleLoad)
+				resolve(hash)
+			} else {
+				resolve(null)
+			}
 		}
 	})
 }
 
-export function getConfig(name: string) {
+export function getConfig(key: string) {
 	return config.gentle
 }
 
 export function formatFileSize(bytes: number) {
-	const units = ['KB','MB','GB','TB','PB','EB','ZB','YB']
+	const units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
 	const thresh = 1024
 
-	if (Math.abs(bytes) < thresh) {
-		return bytes + ' B'
-	}
-
-	let i = -1
-	for ( ; Math.abs(bytes) >= thresh && i < units.length - 1; ++i) {
+	let i = 0
+	for ( ; bytes >= thresh && i < units.length - 1; ++i) {
 		bytes /= thresh
 	}
 
-	return bytes.toFixed(1) + ' ' + units[i]
+	return `${bytes.toFixed(1)} ${units[i]}`
 }
 
 export function formatDate(date: Date) {

@@ -10,7 +10,7 @@ export const Services = {
 }
 
 export const Models = {
-	User: Symbol.for('User.Model'),
+	Admin: Symbol.for('User.Model'),
 	App: Symbol.for('App.Model'),
 	Version: Symbol.for('Version.Model'),
 	Update: Symbol.for('Update.Model'),

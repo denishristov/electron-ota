@@ -29,7 +29,7 @@ interface IAdminModel {
 @DI.injectable()
 export default class AdminsService implements IAdminsService {
 	constructor(
-		@DI.inject(DI.Models.User)
+		@DI.inject(DI.Models.Admin)
 		private readonly admins: Model<IAdminDocument>,
 		@DI.inject(DI.Services.RegisterCredentials)
 		private readonly credentialsService: IRegisterCredentialsService,

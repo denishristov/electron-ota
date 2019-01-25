@@ -6,7 +6,7 @@ import axios from 'axios'
 
 import App from '../../stores/App'
 import AppsStore from '../../stores/AppsStore'
-import { hashBlob, formatFileSize, downloadFile, list } from '../../util/functions'
+import { hashFile, formatFileSize, downloadFile, list } from '../../util/functions'
 import { injectAppsStore } from '../../stores/RootStore'
 import { IVersionModel } from 'shared'
 import Version from './Version'
@@ -325,9 +325,13 @@ class AppPage extends Component<IProps, IState> {
 				const upload = this.uploadVersion(versionFile, signedRequest)
 
 				const [hash] = await Promise.all([
-					hashBlob(versionFile),
+					hashFile(versionFile),
 					upload,
 				])
+
+				if (!hash) {
+					throw new Error('Error hashing file')
+				}
 
 				this.app.emitCreateVersion({
 					versionName: versionName.value,
@@ -366,9 +370,7 @@ class AppPage extends Component<IProps, IState> {
 	}
 
 	@bind
-	private handleDrop(files: File[]) {
-		const [{ name, size, lastModified }] = files
-
+	private handleDrop([{ name, size, lastModified }]: File[]) {
 		this.setState({ file: {
 			name,
 			size,

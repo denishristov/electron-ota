@@ -13,7 +13,7 @@ import {
 	IGetVersionsRequest,
 } from 'shared'
 import { IVersionDocument } from '../models/Version'
-import { toPlain, byDateDesc } from '../util/util'
+import { plain, byDateDesc } from '../util/util'
 import { IAppDocument } from '../models/App'
 import { IVersionStatisticsDocument } from '../models/VersionStatistics'
 
@@ -41,7 +41,7 @@ export default class VersionService implements IVersionService {
 	public async getVersion({ id }: IGetVersionRequest): Promise<IGetVersionResponse> {
 		const version = await this.versions.findById(id)
 
-		return toPlain(version)
+		return plain(version)
 	}
 
 	@bind
@@ -53,7 +53,7 @@ export default class VersionService implements IVersionService {
 			.select('versions')
 
 		return {
-			versions: versions.map(toPlain).sort(byDateDesc),
+			versions: versions.map(plain).sort(byDateDesc),
 		}
 	}
 
@@ -75,7 +75,7 @@ export default class VersionService implements IVersionService {
 			},
 		})
 
-		return toPlain(version)
+		return this.toModel(version)
 	}
 
 	@bind
@@ -88,5 +88,9 @@ export default class VersionService implements IVersionService {
 	public async deleteVersion({ id, appId }: IDeleteVersionRequest): Promise<IDeleteVersionResponse> {
 		await this.versions.findByIdAndRemove(id)
 		return { id, appId }
+	}
+
+	private toModel({ app, ...rest }: IVersionDocument) {
+		return plain({ appId: `${app}`, rest })
 	}
 }

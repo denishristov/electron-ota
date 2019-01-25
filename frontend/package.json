@@ -33,7 +33,6 @@
     "socket.io-client": "2.2.0"
   },
   "devDependencies": {
-    "@babel/core": "7.1.0",
     "@svgr/webpack": "2.4.1",
     "@types/history": "^4.7.2",
     "@types/jest": "^23.3.10",
@@ -44,12 +43,6 @@
     "@types/react-router": "^4.4.1",
     "@types/react-router-dom": "4.3.1",
     "@types/socket.io-client": "^1.4.32",
-    "babel-core": "7.0.0-bridge.0",
-    "babel-eslint": "9.0.0",
-    "babel-jest": "23.6.0",
-    "babel-loader": "8.0.4",
-    "babel-plugin-named-asset-import": "^0.2.3",
-    "babel-preset-react-app": "^6.1.0",
     "bfj": "6.1.1",
     "case-sensitive-paths-webpack-plugin": "2.1.2",
     "chalk": "2.4.1",
@@ -88,13 +81,5 @@
     "webpack-dev-server": "3.1.9",
     "webpack-manifest-plugin": "2.0.4",
     "workbox-webpack-plugin": "3.6.3"
-  },
-  "babel": {
-    "presets": [
-      "react-app"
-    ]
-  },
-  "eslintConfig": {
-    "extends": "react-app"
   }
 }

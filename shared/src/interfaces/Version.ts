@@ -1,5 +1,6 @@
 import { IRequest, IResponse } from "./Generic"
 import { SystemType } from "../enums/SystemType"
+import { IAppModel } from "./App"
 
 export interface IVersionModel {
 	id: string
@@ -7,7 +8,7 @@ export interface IVersionModel {
 	downloadUrl: string
 	isCritical: boolean
 	isBase: boolean
-	appId: string
+	app: IAppModel
 	description?: string
 	hash: string
 	createdAt: string

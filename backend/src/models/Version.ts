@@ -1,5 +1,6 @@
 import { Document, Schema } from 'mongoose'
 import { SystemType } from 'shared'
+import { IAppDocument } from './App';
 
 export interface IVersionDocument extends Document {
 	versionName: string
@@ -8,7 +9,7 @@ export interface IVersionDocument extends Document {
 	isReleased: boolean
 	isBase: boolean
 	hash: string
-	appId: string
+	app: IAppDocument
 	description?: string
 	systems: {
 		[key in SystemType]: boolean
@@ -16,7 +17,7 @@ export interface IVersionDocument extends Document {
 }
 
 export const VersionSchema = new Schema({
-	appId: String,
+	app: String,
 	downloadUrl: String,
 	isBase: Boolean,
 	isCritical: Boolean,

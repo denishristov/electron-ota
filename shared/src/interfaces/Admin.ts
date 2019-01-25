@@ -1,4 +1,4 @@
-import { IRequest, IResponse } from "./Generic";
+import { IRequest, IResponse } from "./Generic"
 
 export interface IUserLoginRequest extends IRequest {
 	email?: string

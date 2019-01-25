@@ -48,7 +48,7 @@ export default class ReleaseService implements IReleaseService {
 			// 	clientCount: totalClientCount,
 			// })
 
-			const { appId, systems } = await this.versions.findById(versionId).select(`
+			const { app: appId, systems } = await this.versions.findById(versionId).select(`
 				systems
 				addId
 			`)

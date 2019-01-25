@@ -73,7 +73,7 @@ container.bind<IVersionStatisticsService>(DI.Services.VersionStatistics)
 	.to(VersionStatisticsService)
 	.inSingletonScope()
 
-container.bind<Model<IAdminDocument>>(DI.Models.User)
+container.bind<Model<IAdminDocument>>(DI.Models.Admin)
 	.toConstantValue(createModel(ADMIN, IAdminSchema))
 
 container.bind<Model<IAppDocument>>(DI.Models.App)
