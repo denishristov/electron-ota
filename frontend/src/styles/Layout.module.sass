@@ -9,7 +9,6 @@
 	flex-flow: column wrap
 
 .spread
-	display: flex
 	justify-content: space-between
 
 .center-x
@@ -28,16 +27,25 @@
 	> * 
 		flex-grow: 1
 
+.left
+	margin-right: auto
+
+.right
+	margin-left: auto
+
+.grow
+	flex-grow: 1
+
 .list-y
 	> *
-		padding-bottom: $spacing
+		margin-bottom: $spacing
 
-		// &:last-child
-		// 	padding-bottom: 0px
+		&:last-child
+			margin-bottom: 0px
 
 .list-x
 	> *
-		padding-right: $spacing
+		margin-right: $spacing
 
-		// &:last-child
-		// 	padding-right: 0px
+		&:last-child
+			margin-right: 0px

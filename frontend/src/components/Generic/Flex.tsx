@@ -13,9 +13,26 @@ interface IProps extends DivProps {
 	margin?: boolean
 	padding?: boolean
 	list?: boolean
+	left?: boolean
+	right?: boolean
+	grow?: boolean
 }
 
-function Flex({ className, centerX, centerY, spread, expand, margin, padding, column, list, ...props }: IProps) {
+function Flex({
+	className,
+	centerX,
+	centerY,
+	spread,
+	expand,
+	margin,
+	padding,
+	column,
+	list,
+	left,
+	right,
+	grow,
+	...props
+}: IProps) {
 	const flexClassName = _list(
 		column ? styles.column : styles.row,
 		centerX && styles.centerX,
@@ -24,11 +41,14 @@ function Flex({ className, centerX, centerY, spread, expand, margin, padding, co
 		expand && styles.expand,
 		margin && styles.margin,
 		list && (column ? styles.listY : styles.listX),
+		left && styles.left,
+		right && styles.right,
+		grow && styles.grow,
 		className,
 	)
 
 	return (
-		<div className={flexClassName} {...props} />
+		<span className={flexClassName} {...props} />
 	)
 }
 

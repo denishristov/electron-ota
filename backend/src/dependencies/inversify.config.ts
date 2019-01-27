@@ -25,21 +25,31 @@ import CreateUpdateClientsMediator from '../hooks/CreateUpdateClientsMediator'
 import http from 'http'
 import socketio from 'socket.io'
 
-import { S3_CONFIG } from '../config/config'
+import { S3_CONFIG, ENVIRONMENT, PORT } from '../config/config'
 
 import adminMediatorFactory from './factories/AdminMediatorFactory'
 import updateClientsMediatorFactory from './factories/UpdateClientsMediatorFactory'
 import releaseUpdateHookFactory from './factories/ReleaseUpdateHookFactory'
 
 import { IPreRespondHook, IPostRespondHook, ISocketMediator } from '../util/mediator/Interfaces'
+import { EventType } from 'shared'
 
 const container = new Container()
 
 container.bind<http.Server>(DI.HTTPServer)
-	.toConstantValue(http.createServer())
+	.toConstantValue(http.createServer().listen(PORT, () => {
+		// tslint:disable-next-line:no-console
+		console.log(
+			'App is running at http://localhost:%d in %s mode',
+			PORT,
+			ENVIRONMENT,
+		)
+	}))
 
 container.bind<SocketIO.Server>(DI.SocketServer)
-	.toDynamicValue((context) => socketio(context.container.get<http.Server>(DI.HTTPServer)))
+	.toDynamicValue((context) => {
+		return socketio(context.container.get<http.Server>(DI.HTTPServer))
+	})
 	.inSingletonScope()
 
 container.bind<IAdminsService>(DI.Services.Admin)
@@ -106,7 +116,6 @@ container.bind(DI.Factories.ClientsMediator)
 	.toFactory(updateClientsMediatorFactory)
 
 container.bind<ISocketMediator>(DI.Mediators.Admins)
-	.toDynamicValue(adminMediatorFactory)
-	.inSingletonScope()
+	.toFactory(adminMediatorFactory)
 
 export default container

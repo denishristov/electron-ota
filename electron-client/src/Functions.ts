@@ -13,7 +13,7 @@ export function hashFile(path: string): Promise<string> {
 		const rs = fs.createReadStream(path)
 
 		rs.on('error', reject)
-		rs.on('data', chunk => hash.update(chunk))
+		rs.on('data', (chunk) => hash.update(chunk))
 		rs.on('end', () => resolve(hash.digest('base64')))
 	})
 }

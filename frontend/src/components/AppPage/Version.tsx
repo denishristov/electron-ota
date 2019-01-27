@@ -1,19 +1,22 @@
 import React from 'react'
 import { IVersionModel, IVersionReportModel } from 'shared'
 import { observer } from 'mobx-react'
+import { ObservableMap } from 'mobx'
 
-import Download from '../../img/Download.svg'
-import { downloadFile } from '../../util/functions'
+import { formatDate } from '../../util/functions'
 import { animated } from 'react-spring'
 import Flex from '../Generic/Flex'
 
 import Windows from '../../img/Windows.svg'
 import Apple from '../../img/Apple.svg'
 import Ubuntu from '../../img/Ubuntu.svg'
-import { ObservableMap } from 'mobx'
+import Download from '../../img/Download.svg'
+import Downloading from '../../img/Downloading.svg'
+import Success from '../../img/Success.svg'
+import ErrorIcon from '../../img/Error.svg'
 
-import indexStyles from '../../index.module.sass'
 import styles from '../../styles/Version.module.sass'
+import Counter from '../AppsPage/Counter'
 
 export interface IProps {
 	version: IVersionModel
@@ -26,46 +29,53 @@ function Version({ version, simpleReports, animation }: IProps) {
 
 	return (
 		<animated.div className={styles.version} style={animation}>
-			<h3>{version.versionName}</h3>
-			{version.isBase && (
-				<Flex className={indexStyles.centerY}>
-					<div className={styles.base} />
-					<label>Base</label>
+			<Flex list centerY grow>
+				<h3>{version.versionName}</h3>
+				<h4>
+					{formatDate(new Date(version.createdAt))}
+				</h4>
+				{report && (
+					<>
+						<Counter
+							message='Downloading'
+							icon={Downloading}
+							count={report.downloadingCount}
+						/>
+						<Counter
+							message='Downloaded'
+							icon={Download}
+							count={report.downloadedCount}
+						/>
+						<Counter
+							message='Using'
+							icon={Success}
+							count={report.usingCount}
+						/>
+						<Counter
+							message='Errors'
+							icon={ErrorIcon}
+							count={report.errorsCount}
+						/>
+					</>
+				)}
+				<Flex list centerY right>
+					{version.isBase && (
+						<Flex centerY>
+							<div className={styles.base} />
+							<label>Base</label>
+						</Flex>
+					)}
+					{version.isCritical && (
+						<Flex centerY>
+							<div className={styles.critical} />
+							<label>Critical</label>
+						</Flex>
+					)}
+					{version.systems.Darwin && <SVG src={Apple} />}
+					{version.systems.Linux && <SVG src={Ubuntu} />}
+					{version.systems.Windows_RT && <SVG src={Windows} />}
 				</Flex>
-			)}
-			{version.isCritical && (
-				<Flex className={indexStyles.centerY}>
-					<div className={styles.critical} />
-					<label>Critical</label>
-				</Flex>
-			)}
-			{version.systems.Windows_RT && <SVG src={Windows} />}
-			{version.systems.Darwin && <SVG src={Apple} />}
-			{version.systems.Linux && <SVG src={Ubuntu} />}
-			{new Date(version.createdAt).toLocaleDateString()}
-			{report && (
-				<Flex>
-					<label>Downloading</label>
-					<div>
-						{report.downloadingCount}
-					</div>
-					<label>Downloaded</label>
-					<div>
-						{report.downloadedCount}
-					</div>
-					<label>Using</label>
-					<div>
-						{report.usingCount}
-					</div>
-					<label>Error</label>
-					<div>
-						{report.errorsCount}
-					</div>
-				</Flex>
-			)}
-			{/* <label>Hash</label>
-			<div>{version.hash}</div>
-			<SVG src={Download} onClick={() => downloadFile(version.downloadUrl)} /> */}
+			</Flex>
 		</animated.div>
 	)
 }

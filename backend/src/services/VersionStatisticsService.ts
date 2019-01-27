@@ -10,7 +10,7 @@ import { IClientDocument } from '../models/Client'
 import { IVersionStatisticsDocument } from '../models/VersionStatistics'
 import { ObjectID } from 'bson'
 import { IAppDocument } from '../models/App'
-import { plain } from '../util/util'
+import { toModel } from '../util/util'
 
 export interface IVersionStatisticsService {
 	downloadingUpdate({ clientId }: IClientReport): Promise<void>

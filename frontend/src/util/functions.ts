@@ -97,10 +97,16 @@ export function formatFileSize(bytes: number) {
 	return `${bytes.toFixed(1)} ${units[i]}`
 }
 
-export function formatDate(date: Date) {
-	return date.toLocaleDateString()
-}
-
 export function getId(entry: IEntry) {
 	return entry.id
+}
+
+export function formatDate(date: Date) {
+	const options = {
+		year: date.getFullYear() === new Date().getFullYear() ? void 0 : 'numeric',
+		month: 'long',
+		day: 'numeric',
+	}
+
+	return date.toLocaleDateString('en-US', options)
 }

@@ -5,3 +5,8 @@ export interface IRequest {
 export interface IResponse {
 	errorMessage?: string
 }
+
+export interface ITimestampedDocument {
+	createdAt: string
+	updatedAt: string
+}

@@ -1,5 +1,5 @@
-import { IRequest, IResponse } from "./Generic";
-import { IVersionModel } from "./Version";
+import { IRequest, IResponse } from './Generic'
+import { IVersionModel } from './Version'
 
 export interface IAppModel {
 	id: string

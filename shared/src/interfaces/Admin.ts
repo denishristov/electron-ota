@@ -1,4 +1,4 @@
-import { IRequest, IResponse } from "./Generic"
+import { IRequest, IResponse } from './Generic'
 
 export interface IUserLoginRequest extends IRequest {
 	email?: string
@@ -27,7 +27,7 @@ export interface IRegisterAdminRequest extends IRequest {
 	key: string
 	name: string
 	password: string
-	email: string 
+	email: string
 }
 
 export interface IRegisterAdminResponse extends IResponse {

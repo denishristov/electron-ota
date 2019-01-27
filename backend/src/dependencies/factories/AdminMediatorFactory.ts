@@ -7,13 +7,16 @@ import { IRegisterCredentialsService } from '../../services/RegisterAdminService
 import { IAdminsService } from '../../services/AdminsService'
 import { IFileUploadService } from '../../services/S3Service'
 import { IReleaseService } from '../../services/UpdateService'
-import { IPreRespondHook, IPostRespondHook } from '../../util/mediator/Interfaces'
 import { IVersionStatisticsService } from '../../services/VersionStatisticsService'
+
+import { IPreRespondHook, IPostRespondHook, ISocketMediator } from '../../util/mediator/Interfaces'
 import SocketMediator from '../../util/mediator/Mediator'
+
+export type AdminMediatorFactory = () => ISocketMediator
 
 const namespaceName = '/admins'
 
-export default function adminMediatorFactory({ container }: interfaces.Context) {
+export default function adminMediatorFactory({ container }: interfaces.Context): AdminMediatorFactory {
 	const server = container.get<SocketIO.Server>(DI.SocketServer)
 
 	const adminService = container.get<IAdminsService>(DI.Services.Admin)
@@ -27,46 +30,49 @@ export default function adminMediatorFactory({ container }: interfaces.Context) 
 	const authHook = container.get<IPreRespondHook>(DI.Hooks.Auth)
 	const createClientsMediatorHook = container.get<IPostRespondHook>(DI.Hooks.UpdateClientsMediator)
 
-	const mediator = new SocketMediator(server.of(namespaceName))
+	return () => {
 
-	mediator.use({
-		[EventType.Login]: adminService.login,
-		[EventType.Authentication]: adminService.authenticate,
-		[EventType.RegisterAdmin]: adminService.register,
+		const mediator = new SocketMediator(server.of(namespaceName))
 
-		[EventType.GetRegisterKeyPath]: registerCredentialsService.getCredentialsKeyPath,
+		mediator.use({
+			[EventType.Login]: adminService.login,
+			[EventType.Authentication]: adminService.authenticate,
+			[EventType.RegisterAdmin]: adminService.register,
 
-		[EventType.GetApps]: appService.getAllApps,
-		[EventType.CreateApp]: appService.createApp,
-		[EventType.UpdateApp]: appService.updateApp,
-		[EventType.DeleteApp]: appService.deleteApp,
+			[EventType.GetRegisterKeyPath]: registerCredentialsService.getCredentialsKeyPath,
 
-		[EventType.GetVersions]: versionService.getVersions,
-		[EventType.CreateVersion]: versionService.createVersion,
-		[EventType.UpdateVersion]: versionService.updateVersion,
-		[EventType.DeleteVersion]: versionService.deleteVersion,
+			[EventType.GetApps]: appService.getAllApps,
+			[EventType.CreateApp]: appService.createApp,
+			[EventType.UpdateApp]: appService.updateApp,
+			[EventType.DeleteApp]: appService.deleteApp,
 
-		[EventType.ReleaseUpdate]: updateService.releaseVersion,
+			[EventType.GetVersions]: versionService.getVersions,
+			[EventType.CreateVersion]: versionService.createVersion,
+			[EventType.UpdateVersion]: versionService.updateVersion,
+			[EventType.DeleteVersion]: versionService.deleteVersion,
 
-		[EventType.SignUploadVersionUrl]: fileUploadService.signVersionUploadUrl,
-		[EventType.SignUploadPictureUrl]: fileUploadService.signPictureUploadUrl,
+			[EventType.ReleaseUpdate]: updateService.releaseVersion,
 
-		[EventType.VersionSimpleReports]: versionStatisticsService.getVersionSimpleReports,
-	})
+			[EventType.SignUploadVersionUrl]: fileUploadService.signVersionUploadUrl,
+			[EventType.SignUploadPictureUrl]: fileUploadService.signPictureUploadUrl,
 
-	mediator.usePreRespond(authHook)
+			[EventType.VersionSimpleReports]: versionStatisticsService.getVersionSimpleReports,
+		})
 
-	mediator.usePostRespond(createClientsMediatorHook)
+		mediator.usePreRespond(authHook)
 
-	mediator.broadcastEvents(
-		EventType.CreateApp,
-		EventType.UpdateApp,
-		EventType.DeleteApp,
-		EventType.CreateVersion,
-		EventType.UpdateVersion,
-		EventType.DeleteVersion,
-		EventType.ReleaseUpdate,
-	)
+		mediator.usePostRespond(createClientsMediatorHook)
 
-	return mediator
+		mediator.broadcastEvents(
+			EventType.CreateApp,
+			EventType.UpdateApp,
+			EventType.DeleteApp,
+			EventType.CreateVersion,
+			EventType.UpdateVersion,
+			EventType.DeleteVersion,
+			EventType.ReleaseUpdate,
+		)
+
+		return mediator
+	}
 }

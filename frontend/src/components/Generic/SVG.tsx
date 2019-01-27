@@ -1,11 +1,13 @@
 import React from 'react'
+import Flex from './Flex'
+import { DivProps } from '../../util/types'
 
-interface IProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLSpanElement>, HTMLSpanElement> {
+interface IProps extends DivProps {
 	src: string
 }
 
 export default function SVG({ src, ...props }: IProps) {
 	return (
-		<span dangerouslySetInnerHTML={{ __html: src }} {...props} />
+		<Flex centerY centerX expand dangerouslySetInnerHTML={{ __html: src }} {...props} />
 	)
 }

@@ -1,10 +1,6 @@
 import mongoose from 'mongoose'
 import crypto from 'crypto'
-
-interface ITimestampedDocument {
-	createdAt: string
-	updatedAt: string
-}
+import { ITimestampedDocument } from 'shared'
 
 type Entry<T extends mongoose.Document> =
 	Exclude<Exclude<T, '__v'>, '_id'> &
@@ -12,9 +8,7 @@ type Entry<T extends mongoose.Document> =
 		id: string,
 	}
 
-// type IPlainDocument<T extends> = Exclude<Exclude<T, '_id'>, '__v'>
-
-export function plain<T extends mongoose.Document>(doc: T): Entry<T> {
+export function toModel<T extends mongoose.Document>(doc: T): Entry<T> {
 	const result = { id: doc.id, ...doc.toJSON() }
 
 	delete result._id

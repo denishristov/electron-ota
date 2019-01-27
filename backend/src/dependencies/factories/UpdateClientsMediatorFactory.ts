@@ -22,7 +22,7 @@ export default function updateClientsMediatorFactory({ container }: interfaces.C
 
 		const mediator = new SocketMediator(server.of(namespaceName))
 
-		const releaseUpdateHook = releaseUpdateHookFactory(mediator)
+		const releaseUpdateHook = releaseUpdateHookFactory(mediator, app)
 
 		adminMediator.usePostRespond(releaseUpdateHook)
 

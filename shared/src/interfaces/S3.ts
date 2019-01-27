@@ -1,4 +1,4 @@
-import { IResponse, IRequest } from "./Generic";
+import { IResponse, IRequest } from './Generic'
 
 export interface IS3SignUrlRequest extends IRequest {
 	name: string

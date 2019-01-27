@@ -11,7 +11,7 @@ import {
 	SystemType,
 } from 'shared'
 import { IAppDocument } from '../models/App'
-import { plain } from '../util/util'
+import { toModel } from '../util/util'
 import { IVersionDocument } from '../models/Version'
 import { IReleaseDocument } from '../models/Release'
 
@@ -56,7 +56,7 @@ export default class AppService implements IAppService {
 			.findById(id)
 			.populate('versions')
 			.select('versions')
-			.sort({ 'versions.updatedAt': 1 })
+			.sort({ 'versions.updatedAt': -1 })
 	}
 
 	@bind
@@ -64,7 +64,7 @@ export default class AppService implements IAppService {
 		const apps = await this.apps.find().populate('latestVersions')
 
 		return {
-			apps: apps.map(plain).map((app) => ({ ...app, versions: app.versions.length })),
+			apps: apps.map(toModel).map((app) => ({ ...app, versions: app.versions.length })),
 		}
 	}
 
@@ -76,7 +76,7 @@ export default class AppService implements IAppService {
 			Linux: null,
 		}})
 
-		const { versions, ...rest } = plain(app)
+		const { versions, ...rest } = toModel(app)
 
 		return { ...rest, versions: versions.length }
 	}

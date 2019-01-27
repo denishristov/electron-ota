@@ -1,5 +1,5 @@
-import { IRequest, IResponse } from "./Generic"
-import { SystemType } from "../enums/SystemType"
+import { IRequest, IResponse } from './Generic'
+import { SystemType } from '../enums/SystemType'
 
 export interface ICheckForUpdateRequest extends IRequest {
 	versionName: string

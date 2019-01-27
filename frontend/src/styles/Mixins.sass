@@ -10,9 +10,10 @@
 	transform: scale(0.96)
 
 @mixin transition($properties...)
-	transition-duration: .23s
-	transition-timing-function: ease-out
+	transition-duration: .18s
+	transition-timing-function: ease-in-out
 	transition-property: $properties
+	will-change: $properties
 
 @mixin container
 	flex-grow: 1

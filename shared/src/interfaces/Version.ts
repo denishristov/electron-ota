@@ -1,14 +1,13 @@
-import { IRequest, IResponse } from "./Generic"
-import { SystemType } from "../enums/SystemType"
-import { IAppModel } from "./App"
+import { IRequest, IResponse, ITimestampedDocument } from './Generic'
+import { SystemType } from '../enums/SystemType'
 
-export interface IVersionModel {
+export interface IVersionModel extends ITimestampedDocument {
 	id: string
 	versionName: string
 	downloadUrl: string
 	isCritical: boolean
 	isBase: boolean
-	app: IAppModel
+	appId: string
 	description?: string
 	hash: string
 	createdAt: string

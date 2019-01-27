@@ -7,7 +7,7 @@ import { injectUserStore } from '../../stores/RootStore'
 import Input from '../Generic/Input'
 import { isEmail } from '../../util/functions'
 import Button from '../Generic/Button'
-import { Redirect, RouterProps } from 'react-router'
+import { RouterProps } from 'react-router'
 import Flex from '../Generic/Flex'
 
 import User from '../../img/User.svg'
@@ -32,26 +32,6 @@ interface IProps extends RouterProps {
 }
 
 class Login extends React.Component<IProps> {
-
-	@bind
-	public async handleSubmit(event: ILoginFormEvent) {
-		event.preventDefault()
-
-		const { nameOrEmail, password } = event.target.elements
-
-		const { value: input } = nameOrEmail
-		const inputIsEmail = isEmail(input)
-
-		const isSuccessful = await this.props.userStore.login({
-			name: inputIsEmail ? void 0 : input,
-			email: inputIsEmail ? input : void 0,
-			password: password.value,
-		})
-
-		isSuccessful && this.props.history.push('/apps')
-
-	}
-
 	public render() {
 		return (
 			<Container style={this.props.style}>
@@ -67,14 +47,14 @@ class Login extends React.Component<IProps> {
 									name='nameOrEmail'
 									required
 									icon={User}
-									/>
+								/>
 								<Input
 									label='Password'
 									type='password'
 									name='password'
 									icon={Key}
 									required
-									/>
+								/>
 								<Flex>
 									<Button color='white' type='button' onClick={this.goToSetup}>
 										Sign up
@@ -89,6 +69,25 @@ class Login extends React.Component<IProps> {
 				}
 			</Container>
 		)
+	}
+
+	@bind
+	private async handleSubmit(event: ILoginFormEvent) {
+		event.preventDefault()
+
+		const { nameOrEmail, password } = event.target.elements
+
+		const { value: input } = nameOrEmail
+		const inputIsEmail = isEmail(input)
+
+		const isSuccessful = await this.props.userStore.login({
+			name: inputIsEmail ? void 0 : input,
+			email: inputIsEmail ? input : void 0,
+			password: password.value,
+		})
+
+		isSuccessful && this.props.history.push('/apps')
+
 	}
 
 	@bind
