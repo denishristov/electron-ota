@@ -76,7 +76,7 @@ class Register extends React.Component<IProps, IState> {
 						label='Email'
 					/>
 					<Input
-						type='text'
+						
 						name='name'
 						label='Username'
 					/>

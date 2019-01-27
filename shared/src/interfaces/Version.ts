@@ -55,6 +55,7 @@ export interface ICreateVersionRequest extends IVersionRequest {
 	downloadUrl: string
 	isCritical: boolean
 	isBase: boolean
+	isReleased: boolean
 	hash: string
 	description?: string
 	systems: {

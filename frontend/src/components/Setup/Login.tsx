@@ -43,7 +43,6 @@ class Login extends React.Component<IProps> {
 								<h1>Sign in</h1>
 								<Input
 									label='Username'
-									type='text'
 									name='nameOrEmail'
 									required
 									icon={User}

@@ -2,11 +2,10 @@
 @import './mixins'
 
 .upload-icon
-	// @include transition()
 	border-radius: 50%
 	margin: $spacing / 2 0
-	width: 96px
-	height: 96px
+	width: $spacing * 6
+	height: $spacing * 6
 	display: flex
 	justify-content: center
 	align-items: center
@@ -14,17 +13,17 @@
 	margin-bottom: $spacing
 
 	svg
-		width: 56px
-		height: 56px    
-		transition: all .33s ease-out
+		@include transition(fill, color)
+		width: $spacing * 4
+		height: $spacing * 4    
 		color: $dark-accent
 
 	&:hover
 		svg 
-			fill: darken($default-text-color, 15%)
+			fill: darken($text, 15%)
 
 .upload-label
-	margin-bottom: $spacing
+	margin-top: $spacing
 
 .apps-page-container
 	@include container
@@ -56,4 +55,4 @@
 		align-content: center
 
 .dropzone
-	margin: 0 $spacing auto $spacing
+	margin: 0 $spacing

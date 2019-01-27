@@ -8,7 +8,7 @@ body
 	padding: 0
 	font-family: "Rubic", -apple-system, "Roboto","Arial", sans-serif
 	-webkit-font-smoothing: antialiased
-	color: $default-text-color
+	color: $text
 	height: 100vh
 
 code
@@ -54,7 +54,10 @@ h2
 	user-select: none
 
 svg
-	fill: $default-text-color
+	fill: $dark-accent !important
+	g 
+		fill: $dark-accent !important
+
 
 textarea
 	border: 0
@@ -64,12 +67,12 @@ textarea
 	border-radius: 10px
 	font-size: 0.86rem
 	padding: 16px
-	background-color: $bright-accent
+	background-color: $entry-bg
 
 	&:focus, &:hover
 		outline: none
 		box-shadow: $rest-shadow
-		background-color: $accent-hover
+		background-color: $entry-hover-bg
 
 	&::placeholder
 		color: $dark-accent

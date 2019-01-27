@@ -1,6 +1,8 @@
 @import './variables'
+@import './mixins'
 
 .app-tile
+	@include transition(background-color, box-shadow)
 	box-shadow: $rest-shadow
 	margin: $spacing
 	padding: $spacing
@@ -8,15 +10,13 @@
 	background: white
 	border: 1px solid #f1f2f2
 	cursor: pointer
-	transition: box-shadow .23s ease-out, background-color .23s ease-out
-	// will-change: transform, opacity
 
 	> div:first-child
 		margin-bottom: $spacing / 2
 
 	&:hover
 		background-color: #fcfcfc
-		box-shadow: $hover-shadow
+		box-shadow: $entry-hover-bg-shadow
 
 img
 	width: 48px

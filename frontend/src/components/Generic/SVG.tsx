@@ -8,6 +8,6 @@ interface IProps extends DivProps {
 
 export default function SVG({ src, ...props }: IProps) {
 	return (
-		<Flex centerY centerX expand dangerouslySetInnerHTML={{ __html: src }} {...props} />
+		<Flex centerY centerX fill dangerouslySetInnerHTML={{ __html: src }} {...props} />
 	)
 }

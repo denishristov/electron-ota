@@ -39,7 +39,7 @@ class App extends Component<IProps> {
 				onClick={this.goToApp}
 				style={this.props.animation}
 			>
-				<Flex centerY>
+				<Flex centerY mb>
 					<img src={pictureUrl} />
 					<h3 className={indexStyles.textOverflow}>{name}</h3>
 				</Flex>

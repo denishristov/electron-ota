@@ -15,6 +15,7 @@ import { IApi } from '../util/Api'
 
 interface ICreateVersionInput {
 	versionName: string
+	isReleased: boolean
 	isCritical: boolean
 	isBase: boolean
 	downloadUrl?: string

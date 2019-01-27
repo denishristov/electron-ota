@@ -1,29 +1,52 @@
 @import './mixins'
 @import './variables'
 
+$version-width: 800px
+
 .version
-	min-width: 800px
-	min-height: 50px
+	@include transition(background-color, box-shadow)
+	min-width: $version-width
+	height: $spacing * 3.5
 	border-radius: $default-border-radius
 	background: white
 	margin: $spacing 0
 	padding: 0 $spacing
 	display: flex
-	transition: box-shadow .23s ease-out, background-color .23s ease-out
-	// will-change: transform, opacity
 	box-shadow: $rest-shadow
 
+	h3
+		min-width: $spacing * 3
+
+	h4
+		min-width: $spacing * 6
+
 	&:hover
-		box-shadow: $hover-shadow
-		background-color: $bright-accent
+		box-shadow: $entry-hover-bg-shadow
+		background-color: $entry-bg
 
 	span
 		svg
 			width: $icon-size
 			height:  $icon-size
 
+	.counter
+		h5
+			margin-left: $spacing / 2
+			color: $light-text
+			font-weight: 400
+			font-size: 0.96rem
+
+
 .base
 	@include dot($orange)
 	
 .critical
 	@include dot($red)
+
+@media screen and (max-width: $version-width + 4 * $spacing)
+	.version
+		min-width: calc(100vw - 4 * #{$spacing})
+
+@media screen and (max-width: 800px)
+	.counter
+		display: none

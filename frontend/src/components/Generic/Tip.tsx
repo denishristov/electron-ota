@@ -2,6 +2,7 @@ import React from 'react'
 import { DivProps } from '../../util/types'
 
 import styles from '../../styles/Tip.module.sass'
+import { list } from '../../util/functions'
 
 interface IProps extends DivProps {
 	message: string
@@ -21,14 +22,15 @@ export default class Tip extends React.Component<IProps, IState> {
 	private position?: React.CSSProperties
 
 	public render() {
-		const { children, message } = this.props
+		const { children, message, className, ...props } = this.props
 
 		return (
 			<span
-				className={styles.container}
+				className={list(className, styles.container)}
 				onMouseOver={this.handleMouseOver}
 				onMouseLeave={this.handleMouseLeave}
 				ref={this.containerRef}
+				{...props}
 			>
 				{children}
 				<span className={styles.tip} style={this.position}>{message}</span>

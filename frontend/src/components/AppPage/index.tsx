@@ -165,7 +165,6 @@ class AppPage extends Component<IProps, IState> {
 						<Flex>
 							<Flex column margin list>
 								<Input
-									type='text'
 									name='versionName'
 									label='Name'
 								/>
@@ -218,7 +217,7 @@ class AppPage extends Component<IProps, IState> {
 									{file && (
 										<>
 											<SVG src={Electron} />
-											<Flex expand>
+											<Flex fill>
 												<Flex spread centerY>
 													<label className='text-overflow'>{file.name}</label>
 												</Flex>
@@ -237,12 +236,12 @@ class AppPage extends Component<IProps, IState> {
 								)}
 							</Flex>
 						</Flex>
-						<footer>
-							<Button size='small' color='blue' noShadow type='submit'>
-								ADD
-							</Button>
-						</footer>
 					</form>
+					<footer>
+						<Button size='small' color='blue' noShadow type='submit'>
+							ADD
+						</Button>
+					</footer>
 				</Modal>
 			</Container>
 		)
@@ -295,6 +294,7 @@ class AppPage extends Component<IProps, IState> {
 
 		if (this.app) {
 			const {
+				isReleasing,
 				isCritical,
 				isBase,
 				isWindows,
@@ -307,6 +307,7 @@ class AppPage extends Component<IProps, IState> {
 					versionName: versionName.value,
 					isBase,
 					isCritical,
+					isReleased: isReleasing,
 					systems: {
 						Windows_RT: isWindows,
 						Darwin: isDarwin,
@@ -339,6 +340,7 @@ class AppPage extends Component<IProps, IState> {
 					hash,
 					isBase,
 					isCritical,
+					isReleased: isReleasing,
 					systems: {
 						Windows_RT: isWindows,
 						Darwin: isDarwin,

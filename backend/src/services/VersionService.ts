@@ -68,6 +68,7 @@ export default class VersionService implements IVersionService {
 			using: [],
 			error: [],
 			version: version.id,
+			isReleased: false,
 		})
 
 		await this.apps.findByIdAndUpdate(create.appId, {

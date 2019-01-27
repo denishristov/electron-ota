@@ -112,7 +112,7 @@ class AppsContainer extends Component<IProps, IState> {
 				</div>
 				<Modal title='Add a new app' ref={this.modalRef}>
 					<form onSubmit={this.handleCreateApp} className={styles.newApp}>
-						<Flex expand margin>
+						<Flex fill margin>
 							<Flex margin centerY column className={styles.uploadContainer}>
 								<Dropzone
 									onDrop={this.handleSelectPicture}
@@ -128,16 +128,8 @@ class AppsContainer extends Component<IProps, IState> {
 								<label className={styles.uploadLabel}>Upload Icon</label>
 							</Flex>
 							<Flex margin column>
-								<Input
-									type='text'
-									name='name'
-									label='Name'
-								/>
-								<Input
-									type='text'
-									name='bundleId'
-									label='Bundle ID'
-								/>
+								<Input name='name' label='Name' />
+								<Input name='bundleId' label='Bundle ID' />
 							</Flex>
 						</Flex>
 						<footer>

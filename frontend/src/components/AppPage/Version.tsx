@@ -17,6 +17,7 @@ import ErrorIcon from '../../img/Error.svg'
 
 import styles from '../../styles/Version.module.sass'
 import Counter from '../AppsPage/Counter'
+import { ClassName } from '../../util/types'
 
 export interface IProps {
 	version: IVersionModel
@@ -37,21 +38,25 @@ function Version({ version, simpleReports, animation }: IProps) {
 				{report && (
 					<>
 						<Counter
+							className={styles.counter}
 							message='Downloading'
 							icon={Downloading}
 							count={report.downloadingCount}
 						/>
 						<Counter
+							className={styles.counter}
 							message='Downloaded'
 							icon={Download}
 							count={report.downloadedCount}
 						/>
 						<Counter
+							className={styles.counter}
 							message='Using'
 							icon={Success}
 							count={report.usingCount}
 						/>
 						<Counter
+							className={styles.counter}
 							message='Errors'
 							icon={ErrorIcon}
 							count={report.errorsCount}
@@ -59,21 +64,25 @@ function Version({ version, simpleReports, animation }: IProps) {
 					</>
 				)}
 				<Flex list centerY right>
-					{version.isBase && (
+				{version && [
+					version.isBase && (
 						<Flex centerY>
 							<div className={styles.base} />
 							<label>Base</label>
 						</Flex>
-					)}
-					{version.isCritical && (
+					),
+					version.isCritical && (
 						<Flex centerY>
 							<div className={styles.critical} />
 							<label>Critical</label>
 						</Flex>
-					)}
-					{version.systems.Darwin && <SVG src={Apple} />}
-					{version.systems.Linux && <SVG src={Ubuntu} />}
-					{version.systems.Windows_RT && <SVG src={Windows} />}
+					),
+					version.systems && [
+						version.systems.Darwin && <SVG src={Apple} />,
+						version.systems.Linux && <SVG src={Ubuntu} />,
+						version.systems.Windows_RT && <SVG src={Windows} />,
+					],
+				]}
 				</Flex>
 			</Flex>
 		</animated.div>

@@ -10,7 +10,7 @@
 	box-shadow: $rest-shadow
 
 	&:focus, &:hover
-		box-shadow: $hover-shadow
+		box-shadow: $entry-hover-bg-shadow
 		background-color: $color
 		color: white
 
@@ -57,9 +57,6 @@ button
 	&:focus
 		outline: none
 
-button.no-shadow
-	// box-shadow: none !important
-
 button.small	
 	padding: 0 12px
 	min-height: 40px
@@ -71,9 +68,9 @@ button.green.shrink
 	@include glowingShadow(desaturate(lighten($green, 15%), 30%))
 
 button.white
-	// @include dark-button($transparent, $default-text-color)
+	// @include dark-button($transparent, $text)
 	// @include outline-button($dark-accent)
-	@include color-button(transparent, $default-text-color, $accent)
+	@include color-button(transparent, $text, $accent)
 
 button.white.shrink
 	@include glowingShadow(desaturate($accent, 15%))	
