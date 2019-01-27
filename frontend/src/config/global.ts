@@ -1,7 +1,7 @@
 import bindDecorator from 'bind-decorator'
 import { inject, injectable } from 'inversify'
 import { Api, Connection, Stores } from '../dependencies/symbols'
-import SVGComponent from '../components/Generic/SVG'
+import SVGComponent from '../components/generic/SVG'
 
 interface IDI {
 	inject: typeof inject

@@ -18,6 +18,7 @@ interface ICreateVersionInput {
 	isReleased: boolean
 	isCritical: boolean
 	isBase: boolean
+	description: string
 	downloadUrl?: string
 	hash?: string
 	systems: {
@@ -25,7 +26,23 @@ interface ICreateVersionInput {
 	}
 }
 
-export default class App {
+export interface IApp {
+	id: string
+	name: string
+	pictureUrl: string
+	bundleId: string
+	latestVersion?: IVersionModel
+	versionsCount: number
+	versions: ObservableMap<string, IVersionModel>
+	simpleReports: ObservableMap<string, IVersionReportModel>
+	allVersions: IVersionModel[]
+	fetchVersions(): Promise<void>
+	fetchSignedUploadVersionUrl(req: IS3SignUrlRequest): Promise<IS3SignUrlResponse>
+	emitCreateVersion(inputFields: ICreateVersionInput): Promise<void>
+	fetchSimpleReports(): Promise<void>
+}
+
+export default class App implements IApp {
 	public id: string
 
 	@observable

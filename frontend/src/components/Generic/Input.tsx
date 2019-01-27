@@ -9,13 +9,11 @@ interface IProps extends React.InputHTMLAttributes<HTMLInputElement> {
 
 function Input({ label, icon, ...props }: IProps) {
 	return (
-		<div>
+		<div className={styles.container}>
 			<label>{label}</label>
-			<div className={styles.container}>
-				<input {...props} />
-				<div className={styles.bar} />
-				{icon && <SVG src={icon} className={styles.icon} />}
-			</div>
+			<input {...props} />
+			<div className={styles.bar} />
+			{icon && <SVG src={icon} className={styles.icon} />}
 		</div>
 	)
 }

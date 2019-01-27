@@ -1,6 +1,6 @@
 import React from 'react'
 import { list } from '../../util/functions'
-import { Animated, IAnimationProps } from '../Context/AnimationContext'
+import { Animated, IAnimationProps } from '../contexts/AnimationContext'
 
 import styles from '../../styles/Container.module.sass'
 

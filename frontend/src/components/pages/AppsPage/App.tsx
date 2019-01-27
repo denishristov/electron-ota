@@ -1,18 +1,19 @@
 import { inject, observer } from 'mobx-react'
 import React, { Component } from 'react'
 import { IAppModel } from 'shared'
-import AppsStore from '../../stores/AppsStore'
-import { injectAppsStore } from '../../stores/RootStore'
+import AppsStore from '../../../stores/AppsStore'
+import { injectAppsStore } from '../../../stores/RootStore'
 import { RouterProps } from 'react-router'
-import Flex from '../Generic/Flex'
-import { IAnimatable } from '../../util/types'
+import Flex from '../../generic/Flex'
+import { IAnimatable } from '../../../util/types'
 import { animated } from 'react-spring'
 
-import styles from '../../styles/App.module.sass'
-import indexStyles from '../../index.module.sass'
+import styles from '../../../styles/App.module.sass'
+import indexStyles from '../../../index.module.sass'
+import { IApp } from '../../../stores/App'
 
 interface IProps extends RouterProps, IAnimatable {
-	app: IAppModel
+	app: IApp
 	appsStore: AppsStore
 }
 

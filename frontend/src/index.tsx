@@ -19,9 +19,9 @@ import styles from './index.module.sass'
 import { Transition } from 'react-spring'
 import { getConfig } from './util/functions'
 import { pageAnimations } from './util/constants/animations'
-import { AnimationProvider } from './components/Context/AnimationContext'
+import { AnimationProvider } from './components/contexts/AnimationContext'
 import Routes from './components/Routes'
-import { AuthProvider } from './components/Context/AuthProvider'
+import { AuthProvider } from './components/contexts/AuthProvider'
 
 configure({
 	computedRequiresReaction: true,

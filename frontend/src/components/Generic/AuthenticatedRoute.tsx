@@ -1,6 +1,6 @@
 import React from 'react'
 import { Route, Redirect, RouteProps, RouteComponentProps, StaticContext } from 'react-router'
-import { AuthConsumer } from '../Context/AuthProvider'
+import { AuthConsumer } from '../contexts/AuthProvider'
 import Loading from './Loading'
 
 export default function AuthenticatedRoute({ render, component: Component, ...props }: RouteProps) {

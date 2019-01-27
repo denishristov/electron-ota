@@ -10,7 +10,6 @@
 	justify-content: center
 	align-items: center
 	cursor: pointer
-	margin-bottom: $spacing
 
 	svg
 		@include transition(fill, color)
@@ -23,7 +22,7 @@
 			fill: darken($text, 15%)
 
 .upload-label
-	margin-top: $spacing
+	margin-bottom: $spacing / 2
 
 .apps-page-container
 	@include container
@@ -53,6 +52,3 @@
 		margin: $spacing
 		justify-content: center
 		align-content: center
-
-.dropzone
-	margin: 0 $spacing

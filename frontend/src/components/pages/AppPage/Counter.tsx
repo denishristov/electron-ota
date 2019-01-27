@@ -1,9 +1,9 @@
 import React from 'react'
 
-import Flex from '../Generic/Flex'
-import Tip from '../Generic/Tip'
+import Flex from '../../generic/Flex'
+import Tip from '../../generic/Tip'
 
-import { DivProps } from '../../util/types'
+import { DivProps } from '../../../util/types'
 
 interface IProps extends DivProps {
 	icon: string

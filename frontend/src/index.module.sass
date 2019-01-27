@@ -6,7 +6,7 @@ html
 body
 	margin: 0
 	padding: 0
-	font-family: "Rubic", -apple-system, "Roboto","Arial", sans-serif
+	font-family: "Rubik", -apple-system, "Roboto","Arial", sans-serif
 	-webkit-font-smoothing: antialiased
 	color: $text
 	height: 100vh
@@ -31,9 +31,7 @@ label
 	font-size: 0.84rem
 	font-weight: 500
 	user-select: none
-
-label[light]
-	color: $dark-accent
+	color: $dark-accent	
 
 form
 	display: flex
@@ -68,6 +66,7 @@ textarea
 	font-size: 0.86rem
 	padding: 16px
 	background-color: $entry-bg
+	min-width: $spacing * 16
 
 	&:focus, &:hover
 		outline: none
@@ -86,16 +85,3 @@ textarea
 	width: 100vw
 	height: 100vh
 	overflow: hidden
-
-// $break-phone: 640px
-// @media screen and (max-width: $break-phone)
-	
-// 	button
-// 		margin: 16px auto !important
-// 		min-width: 160px !important
-
-	
-// 		flex-grow: 1
-
-// 	h1
-// 		font-size: 4rem

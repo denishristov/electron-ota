@@ -11,21 +11,6 @@
 	form
 		justify-content: space-between
 
-		> .row
-			margin: $spacing
-
-			.column
-				&:first-child
-					flex-grow: 1
-				
-				+ .column
-					max-width: 300px
-					min-width: 300px
-					margin-left: $spacing
-
-					> .spread.center-y
-						padding-bottom: $spacing
-
 	header
 		display: flex
 		justify-content: space-between
@@ -41,9 +26,6 @@
 		flex-grow: 1
 
 .os-row
-	> * 
-		flex-grow: 0
-
 	span
 		width: $icon-size
 		height: $icon-size
@@ -51,4 +33,4 @@
 	label
 		margin-left: $spacing
 		margin-right: auto
-	
+

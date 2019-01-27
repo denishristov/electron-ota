@@ -1,5 +1,5 @@
 @mixin glowingShadow($color)
-	box-shadow: 0 $spacing 60px $color, 0 4px 14px $color
+	box-shadow: 0 $spacing 60px transparentize(darken($color, 10%), 0.4), 0 4px 14px transparentize($color, 0.6)
 
 @mixin text-overflow
 	white-space: nowrap

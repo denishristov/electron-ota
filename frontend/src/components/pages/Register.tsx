@@ -4,12 +4,13 @@ import { injectRegisterStore } from '../../stores/RootStore'
 import { IRegisterStore } from '../../stores/RegisterStore'
 import { Redirect } from 'react-router'
 import { copyToClipboard } from '../../util/functions'
-import Input from '../Generic/Input'
-import Button from '../Generic/Button'
-import Container from '../Generic/Container'
+import Input from '../generic/Input'
+import Button from '../generic/Button'
+import Container from '../generic/Container'
 
 import styles from '../../styles/LoginPage.module.sass'
-import Loading from '../Generic/Loading'
+import Loading from '../generic/Loading'
+import Flex from '../generic/Flex'
 
 interface IProps {
 	registerStore: IRegisterStore
@@ -60,39 +61,40 @@ class Register extends React.Component<IProps, IState> {
 		return (
 			<Container style={this.props.style}>
 				<form onSubmit={this.handleRegister}>
-					<h1>Sign up</h1>
-					<label>Key path</label>
-					<code className={styles.keyPath} onClick={this.handleCopyCommand}>
-						{this.command}
-					</code>
-					<Input
-						label='key'
-						type='password'
-						name='key'
-					/>
-					<Input
-						type='email'
-						name='email'
-						label='Email'
-					/>
-					<Input
-						
-						name='name'
-						label='Username'
-					/>
-					<Input
-						type='password'
-						name='password1'
-						label='Password'
-					/>
-					<Input
-						type='password'
-						name='password2'
-						label='Confirm password'
-					/>
-					<Button color='blue' type='submit'>
-						Submit
-					</Button>
+					<Flex column list>
+						<h1>Sign up</h1>
+						<label>Key path</label>
+						<code className={styles.keyPath} onClick={this.handleCopyCommand}>
+							{this.command}
+						</code>
+						<Input
+							label='key'
+							type='password'
+							name='key'
+						/>
+						<Input
+							type='email'
+							name='email'
+							label='Email'
+						/>
+						<Input
+							name='name'
+							label='Username'
+						/>
+						<Input
+							type='password'
+							name='password1'
+							label='Password'
+						/>
+						<Input
+							type='password'
+							name='password2'
+							label='Confirm password'
+						/>
+						<Button color='blue' type='submit'>
+							Submit
+						</Button>
+					</Flex>
 				</form>
 			</Container>
 		)

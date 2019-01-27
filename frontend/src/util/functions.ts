@@ -110,3 +110,6 @@ export function formatDate(date: Date) {
 
 	return date.toLocaleDateString('en-US', options)
 }
+
+// tslint:disable-next-line:no-empty
+export function noop() {}

@@ -17,18 +17,18 @@
 
 @mixin color-button($background, $color, $accent)
 	@include glowingShadow($accent)
-	background-color: $background
+
+	$darker: darken($background, 32%)
+
+	background-size: auto 200%
+	background-position: 0 100%
+	background-image: linear-gradient(to right top, $background 0%, $darker 100%)
 	color: $color
 
-	&:focus
-		@include glowingShadow(desaturate($accent, 15%))
-		border-color: desaturate($background, 15%)
-		background-color: desaturate($background, 15%)
-
-	&:hover
-		@include glowingShadow(desaturate($accent, 15%))
-		border-color: desaturate($background, 15%)
-		background-color: desaturate($background, 15%)
+	&:focus, &:hover
+		@include glowingShadow(desaturate($accent, 16%))
+		background-position: 0 0
+		// background-image: linear-gradient(to left top, $desaturated 0%, $lighter-desatirated 100%)
 
 @mixin light-button($background, $color) 
 	@include color-button($background, $color, lighten($background, 15%))
@@ -37,6 +37,7 @@
 	@include color-button($background, $color, darken($background, 5%))
 	
 button
+	@include transition(box-shadow, background-color, transform, background-position)
 	display: flex
 	justify-content: center
 	align-items: center
@@ -50,9 +51,9 @@ button
 	background: white
 	text-transform: uppercase
 	font-weight: 700
-	transition: box-shadow .23s ease-out, background-color .22s ease-out, transform .13s ease-out
 	min-width: 180px
 	user-select: none
+	cursor: pointer
 
 	&:focus
 		outline: none
@@ -63,23 +64,12 @@ button.small
 
 button.green
 	@include light-button($green, white)
-	
-button.green.shrink
-	@include glowingShadow(desaturate(lighten($green, 15%), 30%))
+
 
 button.white
-	// @include dark-button($transparent, $text)
-	// @include outline-button($dark-accent)
-	@include color-button(transparent, $text, $accent)
-
-button.white.shrink
-	@include glowingShadow(desaturate($accent, 15%))	
+	@include color-button($entry-bg, $text, $accent)	
 
 button.blue
-	@include light-button($light-blue, white)
-	background-image: linear-gradient(to left top, $dark-blue 0%, $light-blue 100%)
-	// @include outline-button($light-blue)
+	@include light-button($blue, white)
 
-button.blue.shrink
-	@include glowingShadow(desaturate(lighten($light-blue, 15%), 30%))
 

@@ -4,18 +4,18 @@ import React, { FormEvent } from 'react'
 import { IUserStore } from '../../stores/UserStore'
 
 import { injectUserStore } from '../../stores/RootStore'
-import Input from '../Generic/Input'
+import Input from '../generic/Input'
 import { isEmail } from '../../util/functions'
-import Button from '../Generic/Button'
+import Button from '../generic/Button'
 import { RouterProps } from 'react-router'
-import Flex from '../Generic/Flex'
+import Flex from '../generic/Flex'
 
 import User from '../../img/User.svg'
 import Key from '../../img/Key.svg'
-import Container from '../Generic/Container'
+import Container from '../generic/Container'
 
 import styles from '../../styles/LoginPage.module.sass'
-import Loading from '../Generic/Loading'
+import Loading from '../generic/Loading'
 
 interface ILoginFormEvent extends FormEvent<HTMLFormElement> {
 	target: EventTarget & {

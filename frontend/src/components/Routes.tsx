@@ -1,11 +1,11 @@
 import React from 'react'
 import { Switch, Route, RouteProps } from 'react-router'
-import Register from './Setup/Register'
-import Login from './Setup/Login'
-import AuthenticatedRoute from './Generic/AuthenticatedRoute'
-import AppsPage from './AppsPage'
-import AppPage from './AppPage'
-import DefaultPage from './Setup/DefaultPage'
+import Register from './pages/Register'
+import Login from './pages/Login'
+import AuthenticatedRoute from './generic/AuthenticatedRoute'
+import AppsPage from './pages/AppsPage'
+import AppPage from './pages/AppPage'
+import DefaultPage from './pages/DefaultPage'
 import { observer } from 'mobx-react'
 
 export default observer(function Routes({ location }: RouteProps) {

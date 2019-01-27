@@ -2,14 +2,13 @@
 @import './mixins'
 
 .dropzone
-	@include transition()
+	@include transition(background-color, box-shadow, transform)
 	display: flex
 	min-height: $spacing * 2.5
 	padding: $spacing
 	border-radius: $default-border-radius
 	background-color: $entry-bg
 	color: $dark-accent
-	transition: all .23s ease-out
 	font-weight: 400
 	overflow: hidden
 	align-items: center
