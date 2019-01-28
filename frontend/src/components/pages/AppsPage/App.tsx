@@ -1,30 +1,23 @@
 import { inject, observer } from 'mobx-react'
 import React, { Component } from 'react'
-import { IAppModel } from 'shared'
+
 import AppsStore from '../../../stores/AppsStore'
 import { injectAppsStore } from '../../../stores/RootStore'
-import { RouterProps } from 'react-router'
 import Flex from '../../generic/Flex'
-import { IAnimatable } from '../../../util/types'
+import { IAnimatable, BrowserHistory } from '../../../util/types'
 import { animated } from 'react-spring'
 
 import styles from '../../../styles/App.module.sass'
-import indexStyles from '../../../index.module.sass'
 import { IApp } from '../../../stores/App'
+import Pushable from '../../generic/Pushable'
 
-interface IProps extends RouterProps, IAnimatable {
+interface IProps extends IAnimatable {
 	app: IApp
 	appsStore: AppsStore
+	history: BrowserHistory
 }
 
 class App extends Component<IProps> {
-	@bind
-	public handleDeleteApp() {
-		const { appsStore, app } = this.props
-
-		appsStore.emitDeleteApp({ id: app.id })
-	}
-
 	public render() {
 		const {
 			name,
@@ -35,20 +28,29 @@ class App extends Component<IProps> {
 		} = this.props.app
 
 		return (
-			<animated.div
-				className={styles.appTile}
-				onClick={this.goToApp}
-				style={this.props.animation}
-			>
-				<Flex centerY mb>
-					<img src={pictureUrl} />
-					<h3 className={indexStyles.textOverflow}>{name}</h3>
-				</Flex>
-				<label>{`Bundle ID ${bundleId}`}</label>
-				<label>{`Versions ${versions}`}</label>
-				<label>{`Latest version ${latestVersion}`}</label>
-			</animated.div>
+			<Pushable>
+				<animated.div
+					className={styles.appTile}
+					onClick={this.goToApp}
+					style={this.props.animation}
+				>
+					<Flex centerY mb>
+						<img src={pictureUrl} />
+						<h3>{name}</h3>
+					</Flex>
+					<label>{`Bundle ID ${bundleId}`}</label>
+					<label>{`Versions ${versions}`}</label>
+					<label>{`Latest version ${latestVersion}`}</label>
+				</animated.div>
+			</Pushable>
 		)
+	}
+
+	@bind
+	private handleDeleteApp() {
+		const { appsStore, app } = this.props
+
+		appsStore.emitDeleteApp({ id: app.id })
 	}
 
 	@bind

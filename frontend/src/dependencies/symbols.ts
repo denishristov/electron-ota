@@ -9,3 +9,9 @@ export const Stores = {
 	User: Symbol.for('Store.User'),
 	Register: Symbol.for('Register.Admin'),
 }
+
+export const Factories = {
+	App: Symbol.for('App.Factory'),
+}
+
+export const BrowserHistory = Symbol.for('BrowserHistory')

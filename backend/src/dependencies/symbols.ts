@@ -20,16 +20,18 @@ export const Models = {
 
 export const Hooks = {
 	Auth: Symbol.for('Hook.Auth'),
-	UpdateClientsMediator: Symbol.for('Hook.UpdateClientsMediator'),
+	CreateClientsMediator: Symbol.for('Hook.CreateClientsMediator'),
+	Report: Symbol.for('Hook.Report'),
+	ReleaseUpdate: Symbol.for('Hook.ReleaseUpdate'),
 }
 
 export const Factories = {
-	ReleaseUpdateHook: Symbol.for('Factory.Hook.Update'),
 	ClientsMediator: Symbol.for('Factory.ClientsMediator'),
 }
 
 export const Mediators = {
 	Admins: Symbol.for('Mediator.Admins'),
+	Clients: Symbol.for('Mediator.Clients'),
 }
 
 export const SocketServer = Symbol.for('SocketServer')

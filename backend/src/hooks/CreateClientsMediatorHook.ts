@@ -1,6 +1,6 @@
 import { EventType, ICreateAppRequest, ICreateAppResponse } from 'shared'
 import { IPostRespondHook } from '../util/mediator/Interfaces'
-import { UpdateClientsMediatorFactory } from '../dependencies/factories/UpdateClientsMediatorFactory'
+import { ClientsMediatorFactory } from '../dependencies/factories/ClientsMediatorFactory'
 
 @DI.injectable()
 export default class CreateUpdateClientsMediator implements IPostRespondHook {
@@ -8,10 +8,10 @@ export default class CreateUpdateClientsMediator implements IPostRespondHook {
 
 	constructor(
 		@DI.inject(DI.Factories.ClientsMediator)
-		private readonly clientMediatorFactory: UpdateClientsMediatorFactory,
+		private readonly clientMediatorFactory: ClientsMediatorFactory,
 	) {}
 
-	public async handle(req: ICreateAppRequest, app: ICreateAppResponse) {
-		this.clientMediatorFactory(app)
+	public async handle(_: EventType, req: ICreateAppRequest, app: ICreateAppResponse) {
+		this.clientMediatorFactory(app.bundleId)
 	}
 }

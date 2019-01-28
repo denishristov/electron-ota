@@ -20,7 +20,9 @@ import { IClientDocument, ClientSchema } from '../models/Client'
 import { ADMIN, APP, VERSION, RELEASE, VERSION_STATISTICS, CLIENT } from '../models/constants'
 
 import AuthHook from '../hooks/AuthHook'
-import CreateUpdateClientsMediator from '../hooks/CreateUpdateClientsMediator'
+import ReportHook from '../hooks/ReportHook'
+import ReleaseUpdateHook from '../hooks/ReleaseUpdateHook'
+import CreateClientsMediatorHook from '../hooks/CreateClientsMediatorHook'
 
 import http from 'http'
 import socketio from 'socket.io'
@@ -28,11 +30,9 @@ import socketio from 'socket.io'
 import { S3_CONFIG, ENVIRONMENT, PORT } from '../config/config'
 
 import adminMediatorFactory from './factories/AdminMediatorFactory'
-import updateClientsMediatorFactory from './factories/UpdateClientsMediatorFactory'
-import releaseUpdateHookFactory from './factories/ReleaseUpdateHookFactory'
+import clientsMediatorFactory, { ClientsMediatorFactory } from './factories/ClientsMediatorFactory'
 
 import { IPreRespondHook, IPostRespondHook, ISocketMediator } from '../util/mediator/Interfaces'
-import { EventType } from 'shared'
 
 const container = new Container()
 
@@ -105,17 +105,26 @@ container.bind<IPreRespondHook>(DI.Hooks.Auth)
 	.to(AuthHook)
 	.inSingletonScope()
 
-container.bind<IPostRespondHook>(DI.Hooks.UpdateClientsMediator)
-	.to(CreateUpdateClientsMediator)
+container.bind<IPostRespondHook>(DI.Hooks.CreateClientsMediator)
+	.to(CreateClientsMediatorHook)
 	.inSingletonScope()
 
-container.bind(DI.Factories.ReleaseUpdateHook)
-	.toFactory(releaseUpdateHookFactory)
+container.bind<IPostRespondHook>(DI.Hooks.Report)
+	.to(ReportHook)
+	.inSingletonScope()
 
-container.bind(DI.Factories.ClientsMediator)
-	.toFactory(updateClientsMediatorFactory)
+container.bind<IPostRespondHook>(DI.Hooks.ReleaseUpdate)
+	.to(ReleaseUpdateHook)
+	.inSingletonScope()
+
+container.bind<ClientsMediatorFactory>(DI.Factories.ClientsMediator)
+	.toFactory(clientsMediatorFactory)
 
 container.bind<ISocketMediator>(DI.Mediators.Admins)
-	.toFactory(adminMediatorFactory)
+	.toDynamicValue(adminMediatorFactory)
+	.inSingletonScope()
+
+container.bind<Map<string, ISocketMediator>>(DI.Mediators.Clients)
+	.toConstantValue(new Map())
 
 export default container

@@ -5,17 +5,20 @@ import { Model } from 'mongoose'
 import { toModel } from '../util/util'
 import { IVersionDocument } from '../models/Version'
 
+@DI.injectable()
 export default class ReleaseUpdateHook implements IPostRespondHook {
 	public eventTypes = new Set([EventType.ReleaseUpdate])
 
 	constructor(
-		private readonly clientsMediator: ISocketMediator,
+		@DI.inject(DI.Mediators.Clients)
+		private readonly clientsMediators: Map<string, ISocketMediator>,
+		@DI.inject(DI.Models.Version)
 		private readonly versions: Model<IVersionDocument>,
-		private readonly app: IAppModel,
 	) {}
 
 	@bind
 	public async handle(
+		_: EventType,
 		{ versionId }: IPublishVersionRequest,
 		{ isSuccessful }: IPublishVersionResponse,
 	) {
@@ -35,14 +38,13 @@ export default class ReleaseUpdateHook implements IPostRespondHook {
 				.populate('app')
 				.then(toModel)
 
-			if (version.app.id === this.app.id) {
-				const update = { ... toModel(version), versionId }
+			const clientsMediator = this.clientsMediators.get(version.app.bundleId)
+			const update = { ...version, versionId }
 
-				this.clientsMediator.broadcast(EventType.NewUpdate, update, (client) => {
-					const { type } = client.handshake.query
-					return Boolean(version.systems[type as SystemType])
-				})
-			}
+			clientsMediator.broadcast(EventType.NewUpdate, update, (client) => {
+				const { type } = client.handshake.query
+				return Boolean(version.systems[type as SystemType])
+			})
 		}
 	}
 }

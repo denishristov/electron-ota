@@ -2,30 +2,30 @@ export const pageAnimations = {
 	PUSH: {
 		from: {
 			opacity: 0,
-			transform: 'translateY(32px) scale(0.98)',
+			transform: 'translateY(64px) ',
 		},
 		enter: {
 			opacity: 1,
-			transform: 'translateY(0px) scale(1)',
+			transform: 'translateY(0px) ',
 		},
 		leave: {
 			opacity: 0,
-			transform: 'translateY(-32px) scale(1.02)',
+			transform: 'translateY(-64px) ',
 			pointerEvents: 'none',
 		},
 	},
 	POP: {
 		from: {
 			opacity: 0,
-			transform: 'translateY(-32px) scale(1.02)',
+			transform: 'translateY(-64px) ',
 		},
 		enter: {
 			opacity: 1,
-			transform: 'translateY(0px) scale(1)',
+			transform: 'translateY(0px)',
 		},
 		leave: {
 			opacity: 0,
-			transform: 'translateY(32px) scale(0.98)',
+			transform: 'translateY(64px)',
 			pointerEvents: 'none',
 		},
 	},

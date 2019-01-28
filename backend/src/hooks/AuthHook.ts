@@ -17,7 +17,7 @@ export default class AuthHook implements IPreRespondHook {
 	) {}
 
 	@bind
-	public async handle(data: IUserAuthenticationRequest) {
+	public async handle(_: EventType, data: IUserAuthenticationRequest) {
 		const { isAuthenticated } = await this.userService.authenticate(data)
 
 		if (isAuthenticated) {

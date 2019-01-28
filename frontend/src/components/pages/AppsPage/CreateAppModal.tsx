@@ -11,9 +11,10 @@ import styles from '../../../styles/AppsPage.module.sass'
 
 import Camera from '../../../img/Camera.svg'
 
-import AppsStore from '../../../stores/AppsStore'
+import { IAppsStore } from '../../../stores/AppsStore'
 import { getSourceFromFile } from '../../../util/functions'
 import { injectAppsStore } from '../../../stores/RootStore'
+
 import axios from 'axios'
 
 interface ICreateAppEvent extends FormEvent<HTMLFormElement> {
@@ -29,7 +30,7 @@ interface ICreateAppEvent extends FormEvent<HTMLFormElement> {
 }
 
 interface IProps {
-	appsStore: AppsStore
+	appsStore: IAppsStore
 }
 
 interface ICreateAppEvent extends FormEvent<HTMLFormElement> {
@@ -58,7 +59,7 @@ class CreateAppModal extends React.Component<IProps, IState> {
 			<Modal.Content title='Add a new app'>
 				<Modal.CloseTrigger>
 					<form onSubmit={this.handleCreateApp} className={styles.newApp}>
-						<Flex fill margin>
+						<Flex fill>
 							<Flex margin column centerY>
 								<label className={styles.uploadLabel}>Upload Icon</label>
 								<Dropzone
@@ -78,18 +79,13 @@ class CreateAppModal extends React.Component<IProps, IState> {
 								<Input name='bundleId' label='Bundle ID' />
 							</Flex>
 						</Flex>
+						<footer>
+							<Button size='small' color='blue' type='submit'>
+								Add
+							</Button>
+						</footer>
 					</form>
 				</Modal.CloseTrigger>
-				<footer>
-					<Button
-						size='small'
-						color='blue'
-						noShadow
-						type='submit'
-					>
-						Add
-					</Button>
-				</footer>
 			</Modal.Content>
 		)
 	}

@@ -1,4 +1,7 @@
-@impory './mixins'
+@import './mixins'
 
 .pushed
-	transform: scale(0.88)
+	transform: scale(0.94) !important
+
+	&:hover
+		@include transition(transform)

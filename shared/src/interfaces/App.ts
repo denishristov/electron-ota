@@ -10,7 +10,7 @@ export interface IAppModel {
 	versions: number
 }
 
-export interface IGetAppsRequest extends IRequest {}
+// export interface IGetAppsRequest extends IRequest {}
 
 export interface IGetAppsResponse extends IResponse {
 	apps: IAppModel[]

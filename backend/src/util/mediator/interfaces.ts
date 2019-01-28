@@ -32,9 +32,9 @@ interface IHook {
 }
 
 export interface IPreRespondHook extends IHook {
-	handle(req: object): Promise<object | null>
+	handle(eventType: EventType, req: object): Promise<object | null>
 }
 
 export interface IPostRespondHook extends IHook {
-	handle(req: object, res: object): Promise<void>
+	handle(eventType: EventType, req: object, res: object): Promise<void>
 }

@@ -9,6 +9,9 @@ import AppsStore, { IAppsStore } from '../stores/AppsStore'
 import RootStore, { IRootStore } from '../stores/RootStore'
 import UserStore, { IUserStore } from '../stores/UserStore'
 import RegisterStore, { IRegisterStore } from '../stores/RegisterStore'
+import appFactory, { AppFactory } from './factories/AppFactory'
+import { createBrowserHistory } from 'history'
+import { BrowserHistory } from '../util/types'
 
 const container = new Container()
 
@@ -34,5 +37,11 @@ container.bind<IRootStore>(DI.Stores.Root)
 container.bind<IRegisterStore>(DI.Stores.Register)
 	.to(RegisterStore)
 	.inSingletonScope()
+
+container.bind<AppFactory>(DI.Factories.App)
+	.toFactory(appFactory)
+
+container.bind<BrowserHistory>(DI.BrowserHistory)
+	.toConstantValue(createBrowserHistory())
 
 export default container

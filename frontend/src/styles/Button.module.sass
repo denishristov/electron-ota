@@ -2,39 +2,36 @@
 @import './variables'
 
 @mixin outline-button($color)
+	@include entry-shadow
 	$darker: darken($color, 15%)
 	background-color: transparent
 	border: 2px solid $color
 	color: $color
 	transition: all .23s ease-out
-	box-shadow: $rest-shadow
 
 	&:focus, &:hover
-		box-shadow: $entry-hover-bg-shadow
 		background-color: $color
 		color: white
 
 
-@mixin color-button($background, $color, $accent)
-	@include glowingShadow($accent)
-
-	$darker: darken($background, 32%)
-
+@mixin color-button($background, $background2, $color)
+	@include shadow($background2)
 	background-size: auto 200%
 	background-position: 0 100%
-	background-image: linear-gradient(to right top, $background 0%, $darker 100%)
+	background-image: linear-gradient(to right top, $background 0%, $background2 100%)
 	color: $color
 
+	svg, g, path
+		fill: $color
+
 	&:focus, &:hover
-		@include glowingShadow(desaturate($accent, 16%))
 		background-position: 0 0
-		// background-image: linear-gradient(to left top, $desaturated 0%, $lighter-desatirated 100%)
 
 @mixin light-button($background, $color) 
-	@include color-button($background, $color, lighten($background, 15%))
+	@include color-button($background,  darken($background, 16%), $color)
 
 @mixin dark-button($background, $color) 
-	@include color-button($background, $color, darken($background, 5%))
+	@include color-button($background, darken($background, 32%), $color)
 	
 button
 	@include transition(box-shadow, background-color, transform, background-position)
@@ -47,11 +44,10 @@ button
 	font-size: 1.14rem
 	border-radius: 40px
 	overflow: hidden
-	margin: $spacing
 	background: white
 	text-transform: uppercase
 	font-weight: 700
-	min-width: 180px
+	min-width: $spacing * 10
 	user-select: none
 	cursor: pointer
 
@@ -63,13 +59,12 @@ button.small
 	min-height: 40px
 
 button.green
-	@include light-button($green, white)
-
+	@include dark-button($green, white)
 
 button.white
-	@include color-button($entry-bg, $text, $accent)	
+	@include light-button(white, $text)
 
 button.blue
-	@include light-button($blue, white)
+	@include dark-button($blue, white)
 
 

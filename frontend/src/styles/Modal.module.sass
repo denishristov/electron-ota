@@ -19,7 +19,33 @@
 		background-color: white
 		position: relative
 		overflow: hidden
-		padding: $spacing * 1.5
+		padding: $spacing
+
+		header
+			display: flex
+			justify-content: space-between
+			align-items: center
+			border-bottom: 1px solid $accent
+
+			h2
+				margin: $spacing / 2 0
+
+			.close
+				@include transition(transform)
+				cursor: pointer
+				width: $icon-size
+				height: $icon-size
+
+				svg, g, path
+					fill: $dark-accent
+
+		footer
+			display: flex
+			justify-content: flex-end
+			border-top: 1px solid $accent
+
+			button
+				margin: $spacing 0 0 $spacing
 
 	.progress-bar
 		position: absolute
@@ -33,35 +59,10 @@
 			transition: width .23s ease-out
 			background-image: linear-gradient(to right, $blue 0%, lighten(saturate($blue, 30%), 12%) 100%)
 			height: 4px
-			box-shadow: $entry-hover-bg-shadow
+			box-shadow: $hover-shadow
 			animation: moving-gradient infinite 3s ease
 			background-size: 200% 200%
 			will-change: width
-
-	svg
-		width: $icon-size
-		height: $icon-size
-
-	.close
-		@include transition(transform)
-		cursor: pointer
-
-	header
-		display: flex
-		justify-content: space-between
-		align-items: center
-		border-bottom: 1px solid $accent
-
-		h2
-			margin: $spacing / 2 0
-
-	footer
-		display: flex
-		justify-content: flex-end
-		border-top: 1px solid $accent
-		
-		button
-			margin: $spacing 0 0 $spacing
 
 @keyframes moving-gradient
 	0% 
@@ -76,21 +77,19 @@
 		font-size: 1.8rem
 
 	form
-		span > span
+		> span > span
 			flex-grow: 1
 
 	.modal-container
-		.content, .column
+		.content
 			min-width: 100vw
 			max-width: 100vw
 			padding: 0
 			min-height: 100vh
-
-		.content
 			border-radius: 0
 
 			header
 				padding: 0 $spacing
-	
+
 			footer
 				justify-content: center

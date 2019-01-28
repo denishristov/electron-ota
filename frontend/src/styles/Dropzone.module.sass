@@ -3,6 +3,7 @@
 
 .dropzone
 	@include transition(background-color, box-shadow, transform)
+	@include entry-shadow
 	display: flex
 	min-height: $spacing * 2.5
 	padding: $spacing
@@ -20,7 +21,6 @@
 
 	&:focus, &:hover
 		outline: none
-		box-shadow: $rest-shadow
 		background-color: $entry-hover-bg
 
 	&-active

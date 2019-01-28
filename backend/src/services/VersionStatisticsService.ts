@@ -1,7 +1,7 @@
 import { Model } from 'mongoose'
 import {
-	IClientReport,
-	IErrorReport,
+	IClientReportRequest,
+	IErrorReportRequest,
 	IGetVersionSimpleReportsRequest,
 	IGetVersionSimpleReportsResponse,
 } from 'shared'
@@ -13,10 +13,10 @@ import { IAppDocument } from '../models/App'
 import { toModel } from '../util/util'
 
 export interface IVersionStatisticsService {
-	downloadingUpdate({ clientId }: IClientReport): Promise<void>
-	downloadedUpdate({ clientId }: IClientReport): Promise<void>
-	usingUpdate({ clientId }: IClientReport): Promise<void>
-	error({ clientId, errorMessage }: IErrorReport): Promise<void>
+	downloadingUpdate({ clientId }: IClientReportRequest): Promise<void>
+	downloadedUpdate({ clientId }: IClientReportRequest): Promise<void>
+	usingUpdate({ clientId }: IClientReportRequest): Promise<void>
+	error({ clientId, errorMessage }: IErrorReportRequest): Promise<void>
 	getVersionSimpleReports(req: IGetVersionSimpleReportsRequest): Promise<IGetVersionSimpleReportsResponse>
 }
 
@@ -34,7 +34,7 @@ export default class VersionStatisticsService implements IVersionStatisticsServi
 	) {}
 
 	@bind
-	public async downloadingUpdate({ clientId, versionId }: IClientReport) {
+	public async downloadingUpdate({ clientId, versionId }: IClientReportRequest) {
 		await this.statistics.findOneAndUpdate(
 			{ version: versionId },
 			{ $addToSet: { downloading: clientId } },
@@ -42,7 +42,7 @@ export default class VersionStatisticsService implements IVersionStatisticsServi
 	}
 
 	@bind
-	public async downloadedUpdate({ clientId, versionId }: IClientReport) {
+	public async downloadedUpdate({ clientId, versionId }: IClientReportRequest) {
 		await this.statistics.findOneAndUpdate(
 			{ version: versionId },
 			{
@@ -53,7 +53,7 @@ export default class VersionStatisticsService implements IVersionStatisticsServi
 	}
 
 	@bind
-	public async usingUpdate({ clientId, versionId }: IClientReport) {
+	public async usingUpdate({ clientId, versionId }: IClientReportRequest) {
 		const client = await this.clients.findById(clientId).select('version')
 
 		if (client.version && client.version.toString() === versionId) {
@@ -78,7 +78,7 @@ export default class VersionStatisticsService implements IVersionStatisticsServi
 	}
 
 	@bind
-	public async error({ clientId, versionId, errorMessage }: IErrorReport) {
+	public async error({ clientId, versionId, errorMessage }: IErrorReportRequest) {
 		await this.statistics.findOneAndUpdate(
 			{ version: versionId },
 			{ $push: { errorMessages: { client: clientId, errorMessage } } },

@@ -60,7 +60,6 @@ export default class Tip extends React.Component<IProps, IState> {
 	}
 
 	private calculateLeftOffset(container: ClientRect | DOMRect, tip: ClientRect | DOMRect) {
-		console.log(container.width, tip.width)
 		return { left: Math.round((container.width - tip.width) / 2) }
 	}
 }

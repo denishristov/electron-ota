@@ -30,7 +30,7 @@ updateService.on('update', (info) => {
 })
 
 // tslint:disable:no-console
-console.log(updateService.loadLatestUpdateSync())
+// console.log(updateService.loadLatestUpdateSync())
 // updateService.checkForUpdate()
 
 export {}

@@ -3,7 +3,7 @@
 
 .app-tile
 	@include transition(background-color, box-shadow)
-	box-shadow: $rest-shadow
+	@include entry-shadow
 	margin: $spacing
 	padding: $spacing
 	border-radius: $default-border-radius
@@ -16,25 +16,25 @@
 
 	&:hover
 		background-color: #fcfcfc
-		box-shadow: $entry-hover-bg-shadow
 
-img
-	width: 48px
-	height: 48px
-	border-radius: $spacing / 2
-	flex-grow: 0
-	object-fit: cover
-	border-radius: 50%
-	box-shadow: $rest-shadow
+	img
+		@include entry-shadow
+		@include transition(box-shadow)
+		width: $spacing * 3
+		height: $spacing * 3
+		border-radius: $spacing / 2
+		flex-grow: 0
+		object-fit: cover
+		border-radius: 50%
 
-h3
-	margin: 0 0 0 $spacing / 2
-	flex-grow: 0
-	font-size: 1.34rem
-	text-shadow: none
-	font-weight: 500
+	h3
+		@include text-overflow
+		margin-left: $spacing / 2
+		flex-grow: 0
+		font-size: 1.34rem
+		font-weight: 500
 
-label
-	color: $dark-accent
-	margin: 0
-	display: block
+	label
+		color: $dark-accent
+		margin: 0
+		display: block

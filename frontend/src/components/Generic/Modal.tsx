@@ -10,7 +10,7 @@ import { stopPropagation, getConfig, list } from '../../util/functions'
 import { modalBackgroundAnimations, modalContentAnimations } from '../../util/constants/animations'
 
 import Pushable from './Pushable'
-import { Trigger, ContentContext, TriggerContext } from '../contexts/ModalContext'
+import { ContentContext, TriggerContext, OpenTrigger, CloseTrigger } from '../contexts/ModalContext'
 import { DivProps } from '../../util/types'
 
 interface IProps extends DivProps {
@@ -91,9 +91,9 @@ function Content({ children, title, className, progress }: IProps) {
 }
 
 export default class Modal extends React.Component<Pick<DivProps, 'children'>, IState> {
-	public static readonly OpenTrigger = Trigger('open')
+	public static readonly OpenTrigger = OpenTrigger
 
-	public static readonly CloseTrigger = Trigger('close')
+	public static readonly CloseTrigger = CloseTrigger
 
 	public static readonly Content = Content
 

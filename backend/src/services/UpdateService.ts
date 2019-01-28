@@ -24,8 +24,6 @@ const defaultResponse = {
 @DI.injectable()
 export default class ReleaseService implements IReleaseService {
 	constructor(
-		@DI.inject(DI.Models.Update)
-		private readonly releases: Model<IReleaseDocument>,
 		@DI.inject(DI.Models.App)
 		private readonly apps: Model<IAppDocument>,
 		@DI.inject(DI.Models.Version)
@@ -37,36 +35,20 @@ export default class ReleaseService implements IReleaseService {
 		versionId,
 	}: IPublishVersionRequest): Promise<IPublishVersionResponse> {
 		try {
-			// const totalClientCount = clientCount
-			// 	? clients
-			// 		? clientCount + clients.length
-			// 		: clientCount
-			// 	: clients && clients.length
-
-			// const release = this.releases.create({
-			// 	systems,
-			// 	clientCount: totalClientCount,
-			// })
-
 			const { app: appId, systems } = await this.versions.findById(versionId).select(`
 				systems
 				addId
 			`)
 
-			// release.then((release) => {
-			// 	version.releases.push(release)
-			// 	version.save()
-			// })
-
 			const latestVersions = Object.keys(systems)
-					.filter((systemType) => systems[systemType as SystemType])
-					.group((systemType) => [systemType, versionId])
+				.filter((systemType) => systems[systemType as SystemType])
+				.group((systemType) => [systemType, versionId])
 
 			await this.apps.findByIdAndUpdate(
-					appId,
-					{ latestVersions },
-					{ upsert: true },
-				)
+				appId,
+				{ latestVersions },
+				{ upsert: true },
+			)
 
 			return {
 				isSuccessful: true,

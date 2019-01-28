@@ -50,7 +50,7 @@ class ElectronUpdateServiceClient extends EventEmitter {
 	private readonly checkHashAfterDownload: boolean
 	private readonly checkHashBeforeLoad: boolean
 	private readonly downloadsStore = new Store({ name: 'updater' })
-	private readonly sessionStore = new Store({ name: 'session '})
+	private readonly sessionStore = new Store({ name: 'session' })
 	private readonly connect: Promise<SocketIOClient.Socket>
 
 	constructor({

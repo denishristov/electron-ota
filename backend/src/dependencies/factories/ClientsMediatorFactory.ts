@@ -1,34 +1,34 @@
 import { interfaces } from 'inversify'
 import { IAppModel, EventType } from 'shared'
-import { ReleaseUpdateHookFactory } from './ReleaseUpdateHookFactory'
 import { ISocketMediator } from '../../util/mediator/Interfaces'
 import SocketMediator from '../../util/mediator/Mediator'
 import { IReleaseService } from '../../services/UpdateService'
 import { IClientService } from '../../services/ClientService'
 import { IVersionStatisticsService } from '../../services/VersionStatisticsService'
+import { IPostRespondHook } from '../../util/mediator/interfaces'
 
-export type UpdateClientsMediatorFactory = (app: IAppModel) => ISocketMediator
+export type ClientsMediatorFactory = (bundleId: string) => ISocketMediator
 
-export default function updateClientsMediatorFactory({ container }: interfaces.Context): UpdateClientsMediatorFactory {
+export default function clientsMediatorFactory({ container }: interfaces.Context): ClientsMediatorFactory {
 	const server = container.get<SocketIO.Server>(DI.SocketServer)
+
 	const updateService = container.get<IReleaseService>(DI.Services.Update)
-	const releaseUpdateHookFactory = container.get<ReleaseUpdateHookFactory>(DI.Factories.ReleaseUpdateHook)
 	const clientService = container.get<IClientService>(DI.Services.Client)
 	const statisticsService = container.get<IVersionStatisticsService>(DI.Services.VersionStatistics)
 
-	return (app: IAppModel) => {
-		const namespaceName = `/${app.bundleId}`
-		const adminMediator = container.get<ISocketMediator>(DI.Mediators.Admins)
+	return (bundleId: string) => {
+		const reportHook = container.get<IPostRespondHook>(DI.Hooks.Report)
+
+		const namespaceName = `/${bundleId}`
 
 		const mediator = new SocketMediator(server.of(namespaceName))
 
-		const releaseUpdateHook = releaseUpdateHookFactory(mediator, app)
-
-		adminMediator.usePostRespond(releaseUpdateHook)
+		mediator.usePostRespond(reportHook)
 
 		mediator.use({
 			[EventType.CheckForUpdate]: updateService.checkForUpdate,
 			[EventType.RegisterClient]: clientService.registerClient,
+
 			[EventType.UpdateDownloading]: statisticsService.downloadingUpdate,
 			[EventType.UpdateDownloaded]: statisticsService.downloadedUpdate,
 			[EventType.UpdateUsing]: statisticsService.usingUpdate,

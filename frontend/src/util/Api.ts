@@ -1,12 +1,21 @@
 import { EventType, IResponse } from 'shared'
+import chalk from 'chalk'
 
 export interface IApi {
 	emit<Res extends IResponse = IResponse>(eventType: EventType, request?: object): Promise<Res>
-	on<Res extends IResponse>(eventType: string, cb: (res: Res) => void): void
+	on<Res extends IResponse = IResponse>(eventType: string, cb: (res: Res) => void): this
 	usePreEmit(cb: Hook): void
 }
 
 type Hook = (req: object) => object | void
+
+const colors = {
+	request: chalk.bold.green,
+	response: chalk.bold.blue,
+	error: chalk.bold.red,
+	eventType: chalk.bold.yellow,
+	update: chalk.bold.magenta,
+}
 
 @DI.injectable()
 export default class Api implements IApi {
@@ -29,7 +38,9 @@ export default class Api implements IApi {
 				clearTimeout(timeout)
 				if (data.errorMessage) {
 					reject(data)
+					this.logError(eventType, request || {}, new Error(data.errorMessage))
 				} else {
+					this.logRequest(eventType, request || {}, data)
 					resolve(data)
 				}
 			})
@@ -37,17 +48,43 @@ export default class Api implements IApi {
 	}
 
 	@bind
-	public on<Res extends IResponse = IResponse>(eventType: string, cb: (res: Res) => void): void {
+	public on<Res extends IResponse = IResponse>(eventType: string, cb: (res: Res) => void): this {
 		this.connection.on(eventType, (res: Res) => {
 			if (res && res.errorMessage) {
-				throw new Error(res.errorMessage)
+				const error = new Error(res.errorMessage)
+				this.logError(eventType, res, error)
+				throw error
 			} else {
+				this.logUpdate(eventType, res)
 				cb(res)
 			}
 		})
+
+		return this
 	}
 
-	private attachData<Req extends object>(request: Req): Req & { authToken: string | null; } {
+	private attachData(request: object) {
 		return Object.assign(request, ...this.preEmitHooks.map((cb) => cb(request)).filter(Boolean))
+	}
+
+	// tslint:disable:no-console
+	private logUpdate(eventType: string, data: object) {
+		console.log(colors.eventType(eventType))
+		console.log(colors.update('Update: '), data)
+		console.log('----------------------------------')
+	}
+
+	private logRequest(eventType: string, request: object, response: object) {
+		console.log(colors.eventType(eventType))
+		console.log(colors.request('Request: '), request)
+		console.log(colors.response('Response: '), response)
+		console.log('----------------------------------')
+	}
+
+	private logError(eventType: string, request: object, error: Error) {
+		console.log(colors.eventType(eventType))
+		console.log(colors.request('Request: '), request)
+		console.log(colors.error('Error: '), error)
+		console.log('----------------------------------')
 	}
 }

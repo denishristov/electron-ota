@@ -1,6 +1,7 @@
 import { config } from 'react-spring'
 import { ClassName, IEvent, IEntry } from './types'
 import { emailRegex } from './constants/regex'
+import { RouteProps } from 'react-router'
 
 export function isEmail(candidate: string): boolean {
 	return emailRegex.test(candidate)
@@ -113,3 +114,7 @@ export function formatDate(date: Date) {
 
 // tslint:disable-next-line:no-empty
 export function noop() {}
+
+export function getPathName(location: RouteProps['location']) {
+	return location ? location.pathname : 'key'
+}

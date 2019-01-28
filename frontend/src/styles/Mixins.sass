@@ -1,3 +1,5 @@
+@import './variables'
+
 @mixin glowingShadow($color)
 	box-shadow: 0 $spacing 60px transparentize(darken($color, 10%), 0.4), 0 4px 14px transparentize($color, 0.6)
 
@@ -5,9 +7,6 @@
 	white-space: nowrap
 	overflow: hidden
 	text-overflow: ellipsis
-
-@mixin shrink
-	transform: scale(0.96)
 
 @mixin transition($properties...)
 	transition-duration: .18s
@@ -19,11 +18,43 @@
 	flex-grow: 1
 	min-height: 100vh
 
+	header
+		display: flex
+		justify-content: space-between
+		border-bottom: 1px solid $accent
+		align-items: flex-end
+		margin: $spacing $spacing * 2 0
+
+		h1
+			margin: $spacing * 2 0 $spacing / 2
+
+		button
+			margin: 0 0 $spacing / 2 
+
+			span
+				width: $icon-size
+				height: $icon-size
+				margin-right: $spacing / 2
+
+@mixin shadow($color)
+	box-shadow: 0 0 3px 3px transparentize($color, 0.95), 0 4px 15px transparentize($color, 0.78)
+
+	&:hover, &:focus
+		box-shadow: 0 5px 12px transparentize($color, 0.92), 0 1px 4px transparentize($color, 0.91), 0 -5px 15px -1px transparentize($color, 0.9), inset 0 0 20px -3px transparentize($color, 0.9)
+
+@mixin entry-shadow
+	@include shadow($accent)
+
+@mixin focus-shadow
+	@include shadow($accent)
+	box-shadow: none
+
+
 @mixin dot($color)
+	@include shadow($color)
 	$size: $spacing / 2
 	width: $size
 	height: $size
 	background-color: $color
 	border-radius: 4px
-	box-shadow: $entry-hover-bg-shadow
 	margin-right: 4px

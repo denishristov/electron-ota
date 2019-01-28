@@ -8,7 +8,7 @@ import {
 	IS3SignUrlResponse,
 	IVersionModel,
 	SystemType,
-	IVersionReportModel,
+	IVersionSimpleReportModel,
 	IGetVersionSimpleReportsResponse,
 } from 'shared'
 import { IApi } from '../util/Api'
@@ -34,8 +34,9 @@ export interface IApp {
 	latestVersion?: IVersionModel
 	versionsCount: number
 	versions: ObservableMap<string, IVersionModel>
-	simpleReports: ObservableMap<string, IVersionReportModel>
+	simpleReports: ObservableMap<string, IVersionSimpleReportModel>
 	allVersions: IVersionModel[]
+	getVersion(id: string): IVersionModel | null
 	fetchVersions(): Promise<void>
 	fetchSignedUploadVersionUrl(req: IS3SignUrlRequest): Promise<IS3SignUrlResponse>
 	emitCreateVersion(inputFields: ICreateVersionInput): Promise<void>
@@ -62,7 +63,9 @@ export default class App implements IApp {
 
 	public readonly versions: ObservableMap<string, IVersionModel> = observable.map({})
 
-	public readonly simpleReports: ObservableMap<string, IVersionReportModel> = observable.map({})
+	public readonly simpleReports: ObservableMap<string, IVersionSimpleReportModel> = observable.map({})
+
+	// public readonly clients: ObservableMap<string,
 
 	constructor(
 		{
@@ -81,6 +84,10 @@ export default class App implements IApp {
 		this.bundleId = bundleId
 		this.latestVersion = latestVersion
 		this.versionsCount = versions
+	}
+
+	public getVersion(id: string): IVersionModel | null {
+		return this.versions.get(id) || null
 	}
 
 	@computed

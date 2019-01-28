@@ -7,7 +7,7 @@ import { injectUserStore } from '../../stores/RootStore'
 import Input from '../generic/Input'
 import { isEmail } from '../../util/functions'
 import Button from '../generic/Button'
-import { RouterProps } from 'react-router'
+import {  RouteComponentProps, StaticContext } from 'react-router'
 import Flex from '../generic/Flex'
 
 import User from '../../img/User.svg'
@@ -26,7 +26,7 @@ interface ILoginFormEvent extends FormEvent<HTMLFormElement> {
 	}
 }
 
-interface IProps extends RouterProps {
+interface IProps extends RouteComponentProps<{}, StaticContext, {}> {
 	userStore: IUserStore
 	style: React.CSSProperties
 }
@@ -54,7 +54,7 @@ class Login extends React.Component<IProps> {
 									icon={Key}
 									required
 								/>
-								<Flex>
+								<Flex list spread>
 									<Button color='white' type='button' onClick={this.goToSetup}>
 										Sign up
 									</Button>

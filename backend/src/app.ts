@@ -5,21 +5,20 @@ import './config/mongoose'
 import 'reflect-metadata'
 import container from './dependencies/inversify.config'
 
-import { UpdateClientsMediatorFactory } from './dependencies/factories/UpdateClientsMediatorFactory'
-import { AdminMediatorFactory } from './dependencies/factories/AdminMediatorFactory'
+import { ClientsMediatorFactory } from './dependencies/factories/ClientsMediatorFactory'
 import { IAppService } from './services/AppService'
+import { ISocketMediator } from './util/mediator/interfaces'
 
-async function setup() {
-	container.get<AdminMediatorFactory>(DI.Mediators.Admins)()
+(async function setup() {
+	container.get(DI.Mediators.Admins)
 
 	const appService = container.get<IAppService>(DI.Services.App)
-	const clientsMediatorFactory = container.get<UpdateClientsMediatorFactory>(DI.Factories.ClientsMediator)
+	const clientsMediatorFactory = container.get<ClientsMediatorFactory>(DI.Factories.ClientsMediator)
+	const clientMediators = container.get<Map<string, ISocketMediator>>(DI.Mediators.Clients)
 
-	const { apps } = await appService.getAllApps()
+	const bundleIds = await appService.getAllBundleIds()
 
-	for (const app of apps) {
-		clientsMediatorFactory(app)
+	for (const bundleId of bundleIds) {
+		clientMediators.set(bundleId, clientsMediatorFactory(bundleId))
 	}
-}
-
-setup()
+}())

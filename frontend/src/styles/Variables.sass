@@ -5,7 +5,7 @@ $dark-accent: #9a9a9a
 $accent: #dedede
 
 $entry-bg: #fafafa
-$entry-hover-bg: #F5F5F5
+$entry-hover-bg: #f7f7f7
 
 $green: #54f18e
 $blue: #58B6FD
@@ -14,11 +14,9 @@ $orange: #ffb76b
 
 $spacing: 16px
 $default-border-radius: 10px
-$icon-size: 22px
+$icon-size: $spacing * 1.5
 
-$subtle-shadow: 0 0 3px 3px rgba(62, 103, 184, 0.01), 0 4px 15px rgba(67, 107, 185, 0.03)
-$rest-shadow: 0 0 3px 3px rgba(62, 103, 184, 0.01), 0 4px 15px rgba(67, 107, 185, 0.03)
-$entry-hover-bg-shadow: 0 5px 12px rgba(67, 106, 185, .12), 0 1px 4px rgba(67, 106, 185, .03), 0 -5px 15px -1px rgba(67, 106, 185, .01), inset 0 0 20px -3px rgba(67, 106, 185, .025)
-$default-shadow: 0 0 3px 3px rgba(62, 103, 184, 0.01), 0 4px 15px rgba(67, 107, 185, 0.03)
+$rest-shadow: 0 0 3px 3px transparentize($accent, 0.95), 0 4px 15px transparentize($accent, 0.68)
+$hover-shadow: 0 5px 12px transparentize($accent, 0.92), 0 1px 4px transparentize($accent, 0.91), 0 -5px 15px -1px transparentize($accent, 0.9), inset 0 0 20px -3px transparentize($accent, 0.9)
 
 $break-small: 540px

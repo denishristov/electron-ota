@@ -10,6 +10,7 @@
 	justify-content: center
 	align-items: center
 	cursor: pointer
+	object-fit: cover
 
 	svg
 		@include transition(fill, color)
@@ -26,24 +27,6 @@
 
 .apps-page-container
 	@include container
-
-	header
-		display: flex
-		justify-content: space-between
-		border-bottom: 1px solid $accent
-		align-items: flex-end
-		margin: $spacing $spacing * 2 0
-
-		h1
-			margin: $spacing * 2 0 $spacing / 2
-
-		button
-			margin: 0 0 $spacing / 2 
-
-			span
-				width: $icon-size
-				height: $icon-size
-				margin-right: $spacing / 2
 	
 	.apps-container
 		display: grid

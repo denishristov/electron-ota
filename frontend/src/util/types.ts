@@ -1,3 +1,5 @@
+import { createBrowserHistory } from 'history'
+
 export type ClassName = string | boolean | void | null | number
 
 export interface IEvent {
@@ -14,3 +16,5 @@ export interface IEntry {
 }
 
 export type DivProps = React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>
+
+export type BrowserHistory = ReturnType<typeof createBrowserHistory>

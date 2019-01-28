@@ -100,6 +100,7 @@ export default class SocketMediator implements ISocketMediator {
 			}
 		}
 
+		this.logBroadcast(eventType, data)
 	}
 
 	public removePostRespond(hook: IPostRespondHook) {
@@ -108,10 +109,6 @@ export default class SocketMediator implements ISocketMediator {
 
 	public removePreRespond(hook: IPreRespondHook) {
 		return this.preRespondHooks.delete(hook)
-	}
-
-	private get room() {
-		return this.clients.in(this.roomId)
 	}
 
 	private get sockets(): IClient[] {
@@ -135,7 +132,7 @@ export default class SocketMediator implements ISocketMediator {
 				continue
 			}
 
-			data = await hook.handle(request)
+			data = await hook.handle(eventType, request)
 
 			if (!data) {
 				return null
@@ -157,7 +154,7 @@ export default class SocketMediator implements ISocketMediator {
 				continue
 			}
 
-			postHook.handle(req, res)
+			postHook.handle(eventType, req, res)
 		}
 	}
 
@@ -172,9 +169,9 @@ export default class SocketMediator implements ISocketMediator {
 					throw new Error(data.errorMessage)
 				}
 
-				response = await handle(data)
+				response = await handle(data) || {}
 
-				respond(response || {})
+				respond(response)
 
 				this.logRequest(eventType, request, response)
 			} catch (error) {
@@ -182,13 +179,11 @@ export default class SocketMediator implements ISocketMediator {
 				respond({ errorMessage: error.errorMessage })
 			}
 
-			if (response) {
-				this.applyPostHooks(eventType, request, response)
+			this.applyPostHooks(eventType, request, response)
 
-				if (this.broadcastableEvents.has(eventType)) {
-					this.logBroadcast(eventType, response)
-					client.in(this.roomId).emit(eventType, response)
-				}
+			if (this.broadcastableEvents.has(eventType)) {
+				this.logBroadcast(eventType, response)
+				client.in(this.roomId).emit(eventType, response)
 			}
 		}
 	}

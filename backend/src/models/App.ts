@@ -1,7 +1,6 @@
 import { Document, Schema } from 'mongoose'
 import { IVersionDocument } from './Version'
 import { SystemType } from 'shared'
-import { IReleaseDocument } from './Release'
 import { VERSION_REF } from './constants'
 
 export interface IAppDocument extends Document {

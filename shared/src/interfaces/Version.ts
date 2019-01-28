@@ -50,7 +50,7 @@ export interface IGetVersionsResponse extends IResponse {
 	versions: IVersionModel[]
 }
 
-export interface ICreateVersionRequest extends IVersionRequest {
+export interface ICreateVersionRequest extends IVersionRequest, IVersionModel {
 	versionName: string
 	downloadUrl: string
 	isCritical: boolean

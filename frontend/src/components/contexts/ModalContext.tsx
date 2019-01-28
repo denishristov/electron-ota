@@ -13,20 +13,19 @@ interface IContentContext {
 }
 
 interface IProps {
-	children: ReactElement<any>
+	children: ReactElement<{}>
 }
 
 export const TriggerContext = React.createContext<IModalContext>({ open: noop, close: noop, _close: noop })
 
-export function Trigger(kind: 'open' | 'close') {
+function Trigger(kind: 'open' | 'close') {
 	return (props: IProps) => {
 		const actionType = props.children.type === 'form' ? 'onSubmit' : 'onClick'
-
 		return (
 			<TriggerContext.Consumer>
 				{(context) => React.cloneElement(props.children, {
 					[actionType]: async (event: PointerEvent) => {
-						props[actionType] && await props[actionType](event)
+						props.children.props[actionType] && await props.children.props[actionType](event)
 						context[kind] && context[kind]()
 					},
 				})}
@@ -34,5 +33,8 @@ export function Trigger(kind: 'open' | 'close') {
 		)
 	}
 }
+
+export const OpenTrigger = Trigger('open')
+export const CloseTrigger = Trigger('close')
 
 export const ContentContext = React.createContext<IContentContext>({ isOpened: false, isClosing: false })

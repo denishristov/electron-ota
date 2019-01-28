@@ -90,7 +90,7 @@ export default class CreateVersionModal extends Component<IProps, IState> {
 				<Modal.CloseTrigger>
 					<form onSubmit={this.handleCreateVersion}>
 						<Flex>
-							<Flex column margin list>
+							<Flex column padding list mr>
 								<Input
 									name='versionName'
 									label='Name'
@@ -103,43 +103,41 @@ export default class CreateVersionModal extends Component<IProps, IState> {
 									/>
 								</Flex>
 							</Flex>
-							<Flex column margin list>
-								<Flex column margin list>
-									<label>Supporting systems</label>
-									<Flex centerY className={styles.osRow}>
-										<SVG src={Windows} />
-										<label className={''}>Windows</label>
-										<Switch value={isWindows} onChange={this.toggleIsWindows} />
-									</Flex>
-									<Flex centerY className={styles.osRow}>
-										<SVG src={Apple} />
-										<label className={''}>Macos</label>
-										<Switch value={isDarwin} onChange={this.toggleIsDarwin}	/>
-									</Flex>
-									<Flex centerY className={styles.osRow}>
-										<SVG src={Ubuntu} />
-										<label className={''}>Ubuntu</label>
-										<Switch value={isLinux} onChange={this.toggleIsLinux} />
-									</Flex>
-									<label>Release</label>
-									<Flex spread centerY>
-										<label className={''}>
-											Immediately?
-										</label>
-										<Switch value={isReleasing} onChange={this.toggleIsReleasing} />
-									</Flex>
-									<Flex spread centerY>
-										<label className={''}>
-											Critical?
-										</label>
-										<Switch value={isCritical} onChange={this.toggleIsCritical} />
-									</Flex>
-									<Flex spread centerY>
-										<label className={''}>
-											Base?
-										</label>
-										<Switch value={isBase} onChange={this.toggleIsBase} />
-									</Flex>
+							<Flex column padding list ml className={styles.switchRow}>
+								<label>Supporting systems</label>
+								<Flex centerY className={styles.osRow}>
+									<SVG src={Windows} />
+									<label className={''}>Windows</label>
+									<Switch value={isWindows} onChange={this.toggleIsWindows} />
+								</Flex>
+								<Flex centerY className={styles.osRow}>
+									<SVG src={Apple} />
+									<label className={''}>Macos</label>
+									<Switch value={isDarwin} onChange={this.toggleIsDarwin}	/>
+								</Flex>
+								<Flex centerY className={styles.osRow}>
+									<SVG src={Ubuntu} />
+									<label className={''}>Ubuntu</label>
+									<Switch value={isLinux} onChange={this.toggleIsLinux} />
+								</Flex>
+								<label>Release</label>
+								<Flex spread centerY>
+									<label className={''}>
+										Immediately?
+									</label>
+									<Switch value={isReleasing} onChange={this.toggleIsReleasing} />
+								</Flex>
+								<Flex spread centerY>
+									<label className={''}>
+										Critical?
+									</label>
+									<Switch value={isCritical} onChange={this.toggleIsCritical} />
+								</Flex>
+								<Flex spread centerY>
+									<label className={''}>
+										Base?
+									</label>
+									<Switch value={isBase} onChange={this.toggleIsBase} />
 								</Flex>
 								{!isBase && (
 									<Dropzone
@@ -147,36 +145,37 @@ export default class CreateVersionModal extends Component<IProps, IState> {
 										name='version'
 										accept='.asar'
 										messages={uploadMessages}
+										className={styles.dropzone}
 									>
-									{file && (
-										<>
-											<SVG src={Electron} />
-											<Flex fill>
-												<Flex spread centerY>
-													<label className='text-overflow'>{file.name}</label>
+										{file && (
+											<>
+												<SVG src={Electron} />
+												<Flex fill>
+													<Flex spread centerY>
+														<label>{file.name}</label>
+													</Flex>
+													<Flex spread centerY>
+														<label className={''}>
+															{formatFileSize(file.size)}
+														</label>
+														<label className={''}>
+															{file.date.toLocaleDateString()}
+														</label>
+													</Flex>
 												</Flex>
-												<Flex spread centerY>
-													<label className={''}>
-														{formatFileSize(file.size)}
-													</label>
-													<label className={''}>
-														{file.date.toLocaleDateString()}
-													</label>
-												</Flex>
-											</Flex>
-										</>
-									)}
+											</>
+										)}
 									</Dropzone>
 								)}
 							</Flex>
 						</Flex>
+						<footer>
+							<Button size='small' color='blue' type='submit'>
+								ADD
+							</Button>
+						</footer>
 					</form>
 				</Modal.CloseTrigger>
-				<footer>
-					<Button size='small' color='blue' noShadow type='submit'>
-						ADD
-					</Button>
-				</footer>
 			</Modal.Content>
 		)
 	}
@@ -287,9 +286,6 @@ export default class CreateVersionModal extends Component<IProps, IState> {
 					},
 				})
 			}
-
-			// this.closeModal()
-			this.setState(defaultState)
 		}
 	}
 

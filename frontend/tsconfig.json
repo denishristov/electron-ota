@@ -24,7 +24,7 @@
     "skipLibCheck": false,
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "isolatedModules": true,
+    "isolatedModules": false,
     "strict": true
   },
   "include": [

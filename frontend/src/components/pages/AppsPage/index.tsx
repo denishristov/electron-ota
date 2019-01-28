@@ -1,6 +1,6 @@
 import { inject, observer } from 'mobx-react'
 import React, { Component } from 'react'
-import AppStore from '../../../stores/AppsStore'
+import AppStore, { IAppsStore } from '../../../stores/AppsStore'
 import { injectAppsStore } from '../../../stores/RootStore'
 
 import App from './App'
@@ -10,15 +10,15 @@ import Modal from '../../generic/Modal'
 
 import Plus from '../../../img/Plus.svg'
 
-import { RouterProps } from 'react-router'
+import { RouteComponentProps, StaticContext } from 'react-router'
 import Container from '../../generic/Container'
 import AppearAnimation from '../../generic/AppearAnimation'
 import CreateAppModal from './CreateAppModal'
 
 import styles from '../../../styles/AppsPage.module.sass'
 
-interface IProps extends RouterProps {
-	appsStore: AppStore
+interface IProps extends RouteComponentProps<{}, StaticContext, {}> {
+	appsStore: IAppsStore
 }
 
 class AppsContainer extends Component<IProps> {
@@ -36,7 +36,7 @@ class AppsContainer extends Component<IProps> {
 						<h1>Apps</h1>
 						<Modal>
 							<Modal.OpenTrigger>
-								<Button color='blue' noShadow size='small'>
+								<Button color='blue' size='small'>
 									<SVG src={Plus} />
 									Add new app
 								</Button>

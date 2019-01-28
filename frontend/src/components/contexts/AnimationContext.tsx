@@ -5,16 +5,16 @@ import { Omit } from 'typelevel-ts'
 
 export interface IAnimationProps extends Omit<DivProps, 'ref'> {}
 
-const { Provider, Consumer } = React.createContext<React.CSSProperties>({})
+const AnimationContext = React.createContext<React.CSSProperties>({})
 
 export function Animated({ style, ...props }: IAnimationProps) {
 	return (
-		<Consumer>
+		<AnimationContext.Consumer>
 			{(animation) => (
 				<animated.div style={{ ...style, ...animation }} {...props} />
 			)}
-		</Consumer>
+		</AnimationContext.Consumer>
 	)
 }
 
-export { Provider as AnimationProvider }
+export default AnimationContext

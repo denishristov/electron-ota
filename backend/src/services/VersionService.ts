@@ -3,7 +3,6 @@ import { Model } from 'mongoose'
 import {
 	IGetVersionRequest,
 	ICreateVersionRequest,
-	ICreateVersionResponse,
 	IDeleteVersionRequest,
 	IDeleteVersionResponse,
 	IGetVersionsResponse,
@@ -22,7 +21,7 @@ export interface IVersionService {
 	versions: Model<IVersionDocument>
 	getVersion({ id }: IGetVersionRequest): Promise<IGetVersionResponse>
 	getVersions({ appId }: IGetVersionsRequest): Promise<IGetVersionsResponse>
-	createVersion(createRequest: ICreateVersionRequest): Promise<ICreateVersionResponse>
+	createVersion(createRequest: ICreateVersionRequest): Promise<IVersionModel>
 	updateVersion(updateRequest: IUpdateVersionRequest): Promise<IUpdateVersionResponse>
 	deleteVersion({ id }: IDeleteVersionRequest): Promise<IDeleteVersionResponse>
 }
@@ -59,8 +58,8 @@ export default class VersionService implements IVersionService {
 	}
 
 	@bind
-	public async createVersion(create: ICreateVersionRequest): Promise<ICreateVersionResponse> {
-		const version = await this.versions.create(create)
+	public async createVersion({ appId, ...rest }: ICreateVersionRequest): Promise<IVersionModel> {
+		const version = await this.versions.create({ app: appId, ...rest })
 
 		await this.versionStatistics.create({
 			downloaded: [],
@@ -71,7 +70,7 @@ export default class VersionService implements IVersionService {
 			isReleased: false,
 		})
 
-		await this.apps.findByIdAndUpdate(create.appId, {
+		await this.apps.findByIdAndUpdate(appId, {
 			$push: {
 				versions: version,
 			},

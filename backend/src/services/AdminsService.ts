@@ -2,6 +2,9 @@ import bcrypt from 'bcrypt'
 import crypto from 'crypto'
 import jwt from 'jsonwebtoken'
 import { Model } from 'mongoose'
+import { IAdminDocument } from '../models/Admin'
+import { PASS_SECRET_KEY } from '../config/config'
+import { IRegisterCredentialsService } from './RegisterAdminService'
 import {
 	IUserAuthenticationRequest,
 	IUserAuthenticationResponse,
@@ -10,20 +13,11 @@ import {
 	IRegisterAdminRequest,
 	IRegisterAdminResponse,
 } from 'shared'
-import { IAdminDocument } from '../models/Admin'
-import { PASS_SECRET_KEY } from '../config/config'
-import { IRegisterCredentialsService } from './RegisterAdminService'
 
 export interface IAdminsService {
 	login(req: IUserLoginRequest): Promise<IUserLoginResponse>
 	authenticate(req: IUserAuthenticationRequest): Promise<IUserAuthenticationResponse>
 	register(req: IRegisterAdminRequest): Promise<IRegisterAdminResponse>
-}
-
-interface IAdminModel {
-	email: string
-	name: string
-	password: string
 }
 
 @DI.injectable()

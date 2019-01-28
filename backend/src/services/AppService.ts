@@ -13,9 +13,9 @@ import {
 import { IAppDocument } from '../models/App'
 import { toModel } from '../util/util'
 import { IVersionDocument } from '../models/Version'
-import { IReleaseDocument } from '../models/Release'
 
 export interface IAppService {
+	getAllBundleIds(): Promise<string[]>
 	getApp(id: string, options?: IGetAppOptions): Promise<IAppDocument>
 	getAppVersions(id: string): Promise<{ versions: IVersionDocument[] }>
 	getAppLatestVersion(id: string, systemType: SystemType): Promise<IVersionDocument>
@@ -36,6 +36,11 @@ export default class AppService implements IAppService {
 		@DI.inject(DI.Models.App)
 		private readonly apps: Model<IAppDocument>,
 	) {}
+
+	public async getAllBundleIds(): Promise<string[]> {
+		const apps = await this.apps.find().select('bundleId')
+		return apps.map((app) => app.bundleId)
+	}
 
 	public async getApp(
 		id: string,
@@ -70,11 +75,14 @@ export default class AppService implements IAppService {
 
 	@bind
 	public async createApp(createRequest: ICreateAppRequest): Promise<ICreateAppResponse> {
-		const app = await this.apps.create({ ...createRequest, latestVersions: {
-			Windows_RT: null,
-			Darwin: null,
-			Linux: null,
-		}})
+		const app = await this.apps.create({
+			...createRequest,
+			latestVersions: {
+				Windows_RT: null,
+				Darwin: null,
+				Linux: null,
+			},
+		})
 
 		const { versions, ...rest } = toModel(app)
 

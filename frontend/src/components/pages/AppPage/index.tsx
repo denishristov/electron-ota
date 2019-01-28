@@ -18,12 +18,10 @@ import AppearAnimation from '../../generic/AppearAnimation'
 
 import Plus from '../../../img/Plus.svg'
 
-import appsPageStyles from '../../../styles/AppsPage.module.sass'
 import styles from '../../../styles/AppPage.module.sass'
 
-
 interface IParams {
-	id: string
+	appId: string
 }
 
 interface IProps extends RouteComponentProps<IParams> {
@@ -41,7 +39,7 @@ class AppPage extends Component<IProps, IState> {
 
 	@computed
 	private get app(): IApp | null {
-		return this.props.appsStore.getApp(this.props.match.params.id) || null
+		return this.props.appsStore.getApp(this.props.match.params.appId) || null
 	}
 
 	public async componentDidMount() {
@@ -74,12 +72,12 @@ class AppPage extends Component<IProps, IState> {
 
 		return (
 			<Container>
-				<div className={appsPageStyles.appsPageContainer}>
+				<div className={styles.appPageContainer}>
 					<header>
 						<h1>{name}</h1>
 						<Modal>
 							<Modal.OpenTrigger>
-								<Button color='blue' noShadow size='small'>
+								<Button color='blue' size='small'>
 									<SVG src={Plus} />
 									Add new version
 								</Button>
@@ -94,6 +92,7 @@ class AppPage extends Component<IProps, IState> {
 									simpleReports={simpleReports}
 									version={version}
 									animation={animation}
+									history={this.props.history}
 								/>
 							)}
 						</AppearAnimation>

@@ -7,10 +7,9 @@ import styles from '../../styles/Button.module.sass'
 interface IProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 	color?: 'green' | 'white' | 'blue'
 	size?: 'big' | 'small'
-	noShadow?: boolean
 }
 
-export default function Button({ className, color, size, noShadow, ...props }: IProps) {
+export default function Button({ className, color, size, ...props }: IProps) {
 	return (
 		<Pushable>
 			<button
@@ -18,7 +17,6 @@ export default function Button({ className, color, size, noShadow, ...props }: I
 					className,
 					color && styles[color],
 					size && styles[size],
-					Boolean(noShadow) && styles.noShadow,
 				)}
 				{...props}
 			/>

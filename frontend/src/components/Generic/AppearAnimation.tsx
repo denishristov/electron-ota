@@ -16,7 +16,7 @@ export default function AppearAnimation<T extends IEntry>({ children, items }: I
 			items={items}
 			keys={getId}
 			config={getConfig}
-			trail={64}
+			trail={32}
 			{...versionsTransitions}
 		>
 			{(item) => (animation) => children(item)(animation)}

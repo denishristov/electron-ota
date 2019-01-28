@@ -5,6 +5,7 @@ $version-width: 800px
 
 .version
 	@include transition(background-color, box-shadow)
+	@include entry-shadow
 	min-width: $version-width
 	height: $spacing * 3.5
 	border-radius: $default-border-radius
@@ -12,7 +13,7 @@ $version-width: 800px
 	margin: $spacing 0
 	padding: 0 $spacing
 	display: flex
-	box-shadow: $rest-shadow
+	cursor: pointer
 
 	h3
 		min-width: $spacing * 3
@@ -22,7 +23,6 @@ $version-width: 800px
 		min-width: $spacing * 6
 
 	&:hover
-		box-shadow: $entry-hover-bg-shadow
 		background-color: $entry-bg
 
 	span
@@ -36,6 +36,9 @@ $version-width: 800px
 			color: $light-text
 			font-weight: 400
 			font-size: 0.96rem
+
+		svg, g, path
+			fill: $dark-accent
 
 
 .base

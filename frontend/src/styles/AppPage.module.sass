@@ -1,4 +1,5 @@
 @import './variables'
+@import './mixins'
 
 .version-container
 	flex-grow: 1
@@ -15,11 +16,8 @@
 		display: flex
 		justify-content: space-between
 
-	button
-		min-width: 280px
-
 	.dropzone
-		margin: 0 0 0 $spacing
+		margin: 0 $spacing * -1
 		height: $spacing * 2
 		
 	textarea
@@ -34,3 +32,9 @@
 		margin-left: $spacing
 		margin-right: auto
 
+.switch-row
+	min-width: $spacing * 16
+
+.app-page-container
+	@include container
+	

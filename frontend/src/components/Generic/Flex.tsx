@@ -72,6 +72,7 @@ function Flex({
 		spread && styles.spread,
 		fill && styles.fill,
 		margin && styles.margin,
+		padding && styles.padding,
 		list && (column ? styles.listY : styles.listX),
 		left && styles.left,
 		right && styles.right,
