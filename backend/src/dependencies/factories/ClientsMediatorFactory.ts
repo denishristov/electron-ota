@@ -4,7 +4,7 @@ import { ISocketMediator } from '../../util/mediator/Interfaces'
 import SocketMediator from '../../util/mediator/Mediator'
 import { IReleaseService } from '../../services/UpdateService'
 import { IClientService } from '../../services/ClientService'
-import { IVersionStatisticsService } from '../../services/VersionStatisticsService'
+import { IVersionReportsService } from '../../services/VersionReportsService'
 import { IPostRespondHook } from '../../util/mediator/interfaces'
 
 export type ClientsMediatorFactory = (bundleId: string) => ISocketMediator
@@ -14,7 +14,7 @@ export default function clientsMediatorFactory({ container }: interfaces.Context
 
 	const updateService = container.get<IReleaseService>(DI.Services.Update)
 	const clientService = container.get<IClientService>(DI.Services.Client)
-	const statisticsService = container.get<IVersionStatisticsService>(DI.Services.VersionStatistics)
+	const ReportsService = container.get<IVersionReportsService>(DI.Services.VersionReports)
 
 	return (bundleId: string) => {
 		const reportHook = container.get<IPostRespondHook>(DI.Hooks.Report)
@@ -29,10 +29,10 @@ export default function clientsMediatorFactory({ container }: interfaces.Context
 			[EventType.CheckForUpdate]: updateService.checkForUpdate,
 			[EventType.RegisterClient]: clientService.registerClient,
 
-			[EventType.UpdateDownloading]: statisticsService.downloadingUpdate,
-			[EventType.UpdateDownloaded]: statisticsService.downloadedUpdate,
-			[EventType.UpdateUsing]: statisticsService.usingUpdate,
-			[EventType.UpdateError]: statisticsService.error,
+			[EventType.UpdateDownloading]: ReportsService.downloadingUpdate,
+			[EventType.UpdateDownloaded]: ReportsService.downloadedUpdate,
+			[EventType.UpdateUsing]: ReportsService.usingUpdate,
+			[EventType.UpdateError]: ReportsService.error,
 		})
 
 		return mediator

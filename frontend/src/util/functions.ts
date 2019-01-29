@@ -18,7 +18,7 @@ export function copyToClipboard(text: string) {
 	document.body.removeChild(node)
 }
 
-export function downloadFile(uri: string) {
+export function downloadFile(uri: string, name: string) {
 	const link = document.createElement('a')
 
 	link.download = name

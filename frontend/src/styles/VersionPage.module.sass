@@ -3,3 +3,39 @@
 	
 .container
 	@include container
+
+.report-column
+	border-radius: $default-border-radius
+
+	> span:first-child
+		border-bottom: 1px solid $dark-accent
+
+	h3
+		margin: 0px
+		margin-right: $spacing * 2
+		font-size: 1rem
+
+	h4
+		margin: 0px
+		color: $dark-accent
+
+	h5
+		margin: 0px
+
+.client
+	@include transition(box-shadow, background-color)
+	@include entry-shadow
+	border-radius: $default-border-radius
+	background-color: $entry-bg
+	min-width: $spacing * 16
+
+	&:hover
+		background-color: $entry-hover-bg
+
+	label
+		margin-right: auto
+		margin-left: $spacing
+
+	svg
+		width: $icon-size
+		height: $icon-size

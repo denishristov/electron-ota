@@ -8,7 +8,6 @@ import {
 
 import semver from 'semver'
 import { Model } from 'mongoose'
-import { IReleaseDocument } from '../models/Release'
 import { IVersionDocument } from '../models/Version'
 import { IAppDocument } from '../models/App'
 
@@ -35,17 +34,24 @@ export default class ReleaseService implements IReleaseService {
 		versionId,
 	}: IPublishVersionRequest): Promise<IPublishVersionResponse> {
 		try {
-			const { app: appId, systems } = await this.versions.findById(versionId).select(`
+			const version = await this.versions.findById(versionId).select(`
 				systems
 				addId
 			`)
 
-			const latestVersions = Object.keys(systems)
-				.filter((systemType) => systems[systemType as SystemType])
+			if (version.isReleased) {
+				throw new Error('Version already released')
+			}
+
+			version.isReleased = true
+			await version.save()
+
+			const latestVersions = Object.keys(version.systems)
+				.filter((systemType: SystemType) => version.systems[systemType])
 				.group((systemType) => [systemType, versionId])
 
 			await this.apps.findByIdAndUpdate(
-				appId,
+				version.app,
 				{ latestVersions },
 				{ upsert: true },
 			)

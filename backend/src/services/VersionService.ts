@@ -15,10 +15,9 @@ import {
 import { IVersionDocument } from '../models/Version'
 import { toModel, byDateDesc } from '../util/util'
 import { IAppDocument } from '../models/App'
-import { IVersionStatisticsDocument } from '../models/VersionStatistics'
+import { IVersionReportsDocument } from '../models/VersionReports'
 
 export interface IVersionService {
-	versions: Model<IVersionDocument>
 	getVersion({ id }: IGetVersionRequest): Promise<IGetVersionResponse>
 	getVersions({ appId }: IGetVersionsRequest): Promise<IGetVersionsResponse>
 	createVersion(createRequest: ICreateVersionRequest): Promise<IVersionModel>
@@ -33,8 +32,8 @@ export default class VersionService implements IVersionService {
 		public readonly versions: Model<IVersionDocument>,
 		@DI.inject(DI.Models.App)
 		private readonly apps: Model<IAppDocument>,
-		@DI.inject(DI.Models.VersionStatistics)
-		private readonly versionStatistics: Model<IVersionStatisticsDocument>,
+		@DI.inject(DI.Models.VersionReports)
+		private readonly versionReports: Model<IVersionReportsDocument>,
 	) {}
 
 	@bind
@@ -61,7 +60,7 @@ export default class VersionService implements IVersionService {
 	public async createVersion({ appId, ...rest }: ICreateVersionRequest): Promise<IVersionModel> {
 		const version = await this.versions.create({ app: appId, ...rest })
 
-		await this.versionStatistics.create({
+		await this.versionReports.create({
 			downloaded: [],
 			downloading: [],
 			using: [],

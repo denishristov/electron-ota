@@ -31,5 +31,5 @@ export interface IUpdateInfo extends IUpdate {
 }
 
 export interface IRegistrationResponse {
-	clientId: string
+	id: string
 }

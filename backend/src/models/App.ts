@@ -1,7 +1,7 @@
-import { Document, Schema } from 'mongoose'
+import { Document, Schema, Types } from 'mongoose'
 import { IVersionDocument } from './Version'
 import { SystemType } from 'shared'
-import { VERSION_REF } from './constants'
+import { VersionDocumentRef } from './refs'
 
 export interface IAppDocument extends Document {
 	name: string
@@ -17,11 +17,11 @@ export const AppSchema = new Schema({
 	bundleId: String,
 	name: String,
 	pictureUrl: String,
-	versions: [VERSION_REF],
+	versions: [VersionDocumentRef],
 	latestVersions: {
-		Windows_RT: VERSION_REF,
-		Darwin: VERSION_REF,
-		Linux: VERSION_REF,
+		Windows_RT: VersionDocumentRef,
+		Darwin: VersionDocumentRef,
+		Linux: VersionDocumentRef,
 	},
 }, {
 	timestamps: true,

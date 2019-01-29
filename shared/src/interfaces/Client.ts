@@ -1,22 +1,21 @@
 import { IResponse } from './Generic'
+import { IVersionModel } from './Version'
 
 export interface IClientModel {
 	id: string
 	systemType: string
 	username: string
 	osRelease: string
-	clientId: string
-	versionName: string
 }
 
 export interface IRegisterClientRequest extends Exclude<IClientModel, 'id'> {}
 
 export interface IRegisterClientResponse {
-	clientId: string
+	id: string
 }
 
 export interface IClientReportRequest {
-	clientId: string
+	id: string
 	versionId: string
 }
 

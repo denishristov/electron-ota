@@ -4,7 +4,7 @@ import { IClientDocument } from '../models/Client'
 
 export interface IClientService {
 	registerClient(client: IRegisterClientRequest): Promise<IRegisterClientResponse>
-	getClient(clientId: string, withVersion?: boolean): Promise<IClientDocument>
+	getClient(clientId: string): Promise<IClientDocument>
 }
 
 @DI.injectable()
@@ -18,14 +18,10 @@ export default class ClientService implements IClientService {
 	public async registerClient(client: IRegisterClientRequest) {
 		const { id } = await this.clients.create(client)
 
-		return { clientId: id }
+		return { id }
 	}
 
-	public async getClient(clientId: string, withVersion = false) {
-		const query = this.clients.findById(clientId)
-
-		return withVersion
-			? await query.populate('version')
-			: await query
+	public async getClient(clientId: string) {
+		return await this.clients.findById(clientId)
 	}
 }

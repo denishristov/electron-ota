@@ -23,7 +23,7 @@ export default class ReleaseUpdateHook implements IPostRespondHook {
 		{ isSuccessful }: IPublishVersionResponse,
 	) {
 		if (isSuccessful) {
-			const version = await this.versions
+			const { app, ...version } = await this.versions
 				.findById(versionId)
 				.select(`
 					versionName
@@ -38,7 +38,7 @@ export default class ReleaseUpdateHook implements IPostRespondHook {
 				.populate('app')
 				.then(toModel)
 
-			const clientsMediator = this.clientsMediators.get(version.app.bundleId)
+			const clientsMediator = this.clientsMediators.get(app.bundleId)
 			const update = { ...version, versionId }
 
 			clientsMediator.broadcast(EventType.NewUpdate, update, (client) => {

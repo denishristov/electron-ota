@@ -1,6 +1,6 @@
 export enum EventType {
 	Connection = 'connection',
-	Connect = 'connect',	
+	Connect = 'connect',
 	Disconnect = 'disconnect',
 	Error = 'error',
 
@@ -16,11 +16,13 @@ export enum EventType {
 	CreateVersion = 'version.create',
 	UpdateVersion = 'version.update',
 	DeleteVersion = 'version.delete',
-	VersionSimpleReports = 'version.statistics.simple',
-	
+
+	SimpleVersionReports = 'version.reports.simple',
+	VersionReports = 'version.reports',
+
 	SignUploadVersionUrl = 's3.sign.upload.versions',
 	SignUploadPictureUrl = 's3.sign.upload.pictures',
-	
+
 	ReleaseUpdate = 'update.release',
 	CheckForUpdate = 'update.check',
 	NewUpdate = 'update.new',

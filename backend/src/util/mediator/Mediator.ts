@@ -88,13 +88,7 @@ export default class SocketMediator implements ISocketMediator {
 		predicate?: (client: IClient) => boolean,
 		count?: number,
 	): void {
-		const iterations = count
-			? Math.min(this.sockets.length, count)
-			: this.sockets.length
-
-		for (let i = 0; i < iterations; ++i) {
-			const socket = this.sockets[i]
-
+		for (const socket of this.sockets.splice(count)) {
 			if (predicate ? predicate(socket) : true) {
 				socket.emit(eventType, data)
 			}
@@ -182,8 +176,7 @@ export default class SocketMediator implements ISocketMediator {
 			this.applyPostHooks(eventType, request, response)
 
 			if (this.broadcastableEvents.has(eventType)) {
-				this.logBroadcast(eventType, response)
-				client.in(this.roomId).emit(eventType, response)
+				this.broadcast(eventType, response)
 			}
 		}
 	}

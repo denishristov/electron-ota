@@ -228,8 +228,7 @@ export default class CreateVersionModal extends Component<IProps, IState> {
 			description,
 		} = event.target.elements
 
-		if (app) {
-			const {
+		const {
 				isReleasing,
 				isCritical,
 				isBase,
@@ -238,54 +237,53 @@ export default class CreateVersionModal extends Component<IProps, IState> {
 				isLinux,
 			} = this.state
 
-			if (this.state.isBase) {
-				app.emitCreateVersion({
-					versionName: versionName.value,
-					description: description.value,
-					isBase,
-					isCritical,
-					isReleased: isReleasing,
-					systems: {
-						Windows_RT: isWindows,
-						Darwin: isDarwin,
-						Linux: isLinux,
-					},
-				})
-			} else if (version.files) {
-				const versionFile = version.files[0]
-				const { type } = versionFile
+		if (this.state.isBase) {
+			app.emitCreateVersion({
+				versionName: versionName.value,
+				description: description.value,
+				isBase,
+				isCritical,
+				isReleased: isReleasing,
+				systems: {
+					Windows_RT: isWindows,
+					Darwin: isDarwin,
+					Linux: isLinux,
+				},
+			})
+		} else if (version.files) {
+			const versionFile = version.files[0]
+			const { type } = versionFile
 
-				const {
-					downloadUrl,
-					signedRequest,
-				} = await app.fetchSignedUploadVersionUrl({ name, type })
+			const {
+				downloadUrl,
+				signedRequest,
+			} = await app.fetchSignedUploadVersionUrl({ name, type })
 
-				const upload = this.uploadVersion(versionFile, signedRequest)
+			const upload = this.uploadVersion(versionFile, signedRequest)
 
-				const [hash] = await Promise.all([
-					hashFile(versionFile),
-					upload,
-				])
+			const [hash] = await Promise.all([
+				hashFile(versionFile),
+				upload,
+			])
 
-				if (!hash) {
-					throw new Error('Error hashing file')
-				}
-
-				app.emitCreateVersion({
-					versionName: versionName.value,
-					description: description.value,
-					downloadUrl,
-					hash,
-					isBase,
-					isCritical,
-					isReleased: isReleasing,
-					systems: {
-						Windows_RT: isWindows,
-						Darwin: isDarwin,
-						Linux: isLinux,
-					},
-				})
+			if (!hash) {
+				throw new Error('Error hashing file')
 			}
+
+			app.emitCreateVersion({
+				versionName: versionName.value,
+				description: description.value,
+				downloadUrl,
+				hash,
+				isBase,
+				isCritical,
+				isReleased: isReleasing,
+				systems: {
+					Windows_RT: isWindows,
+					Darwin: isDarwin,
+					Linux: isLinux,
+				},
+			})
 		}
 	}
 

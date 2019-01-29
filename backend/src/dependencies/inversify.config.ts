@@ -7,17 +7,15 @@ import S3Service, { IFileUploadService } from '../services/S3Service'
 import RegisterCredentialsService, { IRegisterCredentialsService } from '../services/RegisterAdminService'
 import ClientService, { IClientService } from '../services/ClientService'
 import ReleaseService, { IReleaseService } from '../services/UpdateService'
-import VersionStatisticsService, { IVersionStatisticsService } from '../services/VersionStatisticsService'
+import VersionReportsService, { IVersionReportsService } from '../services/VersionReportsService'
 
 import { Model, model as createModel } from 'mongoose'
 
 import { IAppDocument, AppSchema } from '../models/App'
 import { IAdminDocument, IAdminSchema } from '../models/Admin'
 import { IVersionDocument, VersionSchema } from '../models/Version'
-import { IReleaseDocument, ReleaseSchema } from '../models/Release'
-import { IVersionStatisticsDocument, VersionStatisticSchema } from '../models/VersionStatistics'
+import { IVersionReportsDocument, VersionReportsSchema } from '../models/VersionReports'
 import { IClientDocument, ClientSchema } from '../models/Client'
-import { ADMIN, APP, VERSION, RELEASE, VERSION_STATISTICS, CLIENT } from '../models/constants'
 
 import AuthHook from '../hooks/AuthHook'
 import ReportHook from '../hooks/ReportHook'
@@ -33,6 +31,13 @@ import adminMediatorFactory from './factories/AdminMediatorFactory'
 import clientsMediatorFactory, { ClientsMediatorFactory } from './factories/ClientsMediatorFactory'
 
 import { IPreRespondHook, IPostRespondHook, ISocketMediator } from '../util/mediator/Interfaces'
+import {
+	AdminDocumentRef,
+	AppDocumentRef,
+	VersionDocumentRef,
+	VersionReportsDocumentRef,
+	ClientDocumentRef,
+} from '../models/refs'
 
 const container = new Container()
 
@@ -47,9 +52,7 @@ container.bind<http.Server>(DI.HTTPServer)
 	}))
 
 container.bind<SocketIO.Server>(DI.SocketServer)
-	.toDynamicValue((context) => {
-		return socketio(context.container.get<http.Server>(DI.HTTPServer))
-	})
+	.toDynamicValue(({ container }) => socketio(container.get<http.Server>(DI.HTTPServer)))
 	.inSingletonScope()
 
 container.bind<IAdminsService>(DI.Services.Admin)
@@ -79,27 +82,24 @@ container.bind<IClientService>(DI.Services.Client)
 	.to(ClientService)
 	.inSingletonScope()
 
-container.bind<IVersionStatisticsService>(DI.Services.VersionStatistics)
-	.to(VersionStatisticsService)
+container.bind<IVersionReportsService>(DI.Services.VersionReports)
+	.to(VersionReportsService)
 	.inSingletonScope()
 
 container.bind<Model<IAdminDocument>>(DI.Models.Admin)
-	.toConstantValue(createModel(ADMIN, IAdminSchema))
+	.toConstantValue(createModel(AdminDocumentRef.ref, IAdminSchema))
 
 container.bind<Model<IAppDocument>>(DI.Models.App)
-	.toConstantValue(createModel(APP, AppSchema))
+	.toConstantValue(createModel(AppDocumentRef.ref, AppSchema))
 
 container.bind<Model<IVersionDocument>>(DI.Models.Version)
-	.toConstantValue(createModel(VERSION, VersionSchema))
+	.toConstantValue(createModel(VersionDocumentRef.ref, VersionSchema))
 
-container.bind<Model<IReleaseDocument>>(DI.Models.Update)
-	.toConstantValue(createModel(RELEASE, ReleaseSchema))
-
-container.bind<Model<IVersionStatisticsDocument>>(DI.Models.VersionStatistics)
-	.toConstantValue(createModel(VERSION_STATISTICS, VersionStatisticSchema))
+container.bind<Model<IVersionReportsDocument>>(DI.Models.VersionReports)
+	.toConstantValue(createModel(VersionReportsDocumentRef.ref, VersionReportsSchema))
 
 container.bind<Model<IClientDocument>>(DI.Models.Client)
-	.toConstantValue(createModel(CLIENT, ClientSchema))
+	.toConstantValue(createModel(ClientDocumentRef.ref, ClientSchema))
 
 container.bind<IPreRespondHook>(DI.Hooks.Auth)
 	.to(AuthHook)

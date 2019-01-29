@@ -40,7 +40,7 @@ export default class AdminsService implements IAdminsService {
 
 			const user = await this.admins.findOne(params).select('password authTokens')
 
-			if (!await this.doesPasswordMatch(password, user.password)) {
+			if (!await bcrypt.compare(password, user.password)) {
 				throw new Error('Invalid password')
 			}
 
@@ -129,9 +129,5 @@ export default class AdminsService implements IAdminsService {
 
 	private async hashPassword(password: string): Promise<string> {
 		return bcrypt.hash(password, await bcrypt.genSalt(10))
-	}
-
-	private doesPasswordMatch(password: string, hashedPassword: string): Promise<boolean> {
-		return bcrypt.compare(password, hashedPassword)
 	}
 }

@@ -1,7 +1,7 @@
-import { Document, Schema } from 'mongoose'
+import { Document, Schema, Types } from 'mongoose'
 import { SystemType } from 'shared'
 import { IAppDocument } from './App'
-import { APP_REF } from './constants'
+import { AppDocumentRef } from './refs'
 
 export interface IVersionDocument extends Document {
 	versionName: string
@@ -18,7 +18,7 @@ export interface IVersionDocument extends Document {
 }
 
 export const VersionSchema = new Schema({
-	app: APP_REF,
+	app: AppDocumentRef,
 	downloadUrl: String,
 	isBase: Boolean,
 	isCritical: Boolean,

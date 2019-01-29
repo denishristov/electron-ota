@@ -5,7 +5,7 @@ import { list } from '../../util/functions'
 import styles from '../../styles/Button.module.sass'
 
 interface IProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-	color?: 'green' | 'white' | 'blue'
+	color?: 'green' | 'white' | 'blue' | 'orange' | 'red'
 	size?: 'big' | 'small'
 }
 

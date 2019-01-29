@@ -26,9 +26,9 @@ export default class ReportHook implements IPostRespondHook {
 	@bind
 	public async handle(
 		eventType: EventType,
-		{ clientId, versionId, ...rest }: IClientReportRequest | IErrorReportRequest,
+		{ id, versionId, ...rest }: IClientReportRequest | IErrorReportRequest,
 	) {
-		const client = await this.clientsService.getClient(clientId)
+		const client = await this.clientsService.getClient(id)
 		const { app: appId } = await this.versions.findById(versionId).select('app')
 
 		this.adminMediator.broadcast(eventType, {

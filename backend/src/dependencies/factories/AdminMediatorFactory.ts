@@ -7,7 +7,7 @@ import { IRegisterCredentialsService } from '../../services/RegisterAdminService
 import { IAdminsService } from '../../services/AdminsService'
 import { IFileUploadService } from '../../services/S3Service'
 import { IReleaseService } from '../../services/UpdateService'
-import { IVersionStatisticsService } from '../../services/VersionStatisticsService'
+import { IVersionReportsService } from '../../services/VersionReportsService'
 
 import { IPreRespondHook, IPostRespondHook, ISocketMediator } from '../../util/mediator/Interfaces'
 import SocketMediator from '../../util/mediator/Mediator'
@@ -25,7 +25,7 @@ export default function adminMediatorFactory({ container }: interfaces.Context):
 	const fileUploadService = container.get<IFileUploadService>(DI.Services.FileUpload)
 	const updateService = container.get<IReleaseService>(DI.Services.Update)
 	const registerCredentialsService = container.get<IRegisterCredentialsService>(DI.Services.RegisterCredentials)
-	const versionStatisticsService = container.get<IVersionStatisticsService>(DI.Services.VersionStatistics)
+	const versionReportsService = container.get<IVersionReportsService>(DI.Services.VersionReports)
 
 	const authHook = container.get<IPreRespondHook>(DI.Hooks.Auth)
 	const createClientsMediatorHook = container.get<IPostRespondHook>(DI.Hooks.CreateClientsMediator)
@@ -55,7 +55,8 @@ export default function adminMediatorFactory({ container }: interfaces.Context):
 		[EventType.SignUploadVersionUrl]: fileUploadService.signVersionUploadUrl,
 		[EventType.SignUploadPictureUrl]: fileUploadService.signPictureUploadUrl,
 
-		[EventType.VersionSimpleReports]: versionStatisticsService.getVersionSimpleReports,
+		[EventType.SimpleVersionReports]: versionReportsService.getSimpleVersionReports,
+		[EventType.VersionReports]: versionReportsService.getVersionReports,
 	})
 
 	mediator.usePreRespond(authHook)

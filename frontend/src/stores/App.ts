@@ -8,8 +8,10 @@ import {
 	IS3SignUrlResponse,
 	IVersionModel,
 	SystemType,
-	IVersionSimpleReportModel,
-	IGetVersionSimpleReportsResponse,
+	ISimpleVersionReportModel,
+	IGetSimpleVersionReportsResponse,
+	IGetVersionReportsResponse,
+	IVersionReportModel,
 } from 'shared'
 import { IApi } from '../util/Api'
 
@@ -34,13 +36,15 @@ export interface IApp {
 	latestVersion?: IVersionModel
 	versionsCount: number
 	versions: ObservableMap<string, IVersionModel>
-	simpleReports: ObservableMap<string, IVersionSimpleReportModel>
+	simpleReports: ObservableMap<string, ISimpleVersionReportModel>
+	reports: ObservableMap<string, IVersionReportModel>
 	allVersions: IVersionModel[]
 	getVersion(id: string): IVersionModel | null
 	fetchVersions(): Promise<void>
 	fetchSignedUploadVersionUrl(req: IS3SignUrlRequest): Promise<IS3SignUrlResponse>
 	emitCreateVersion(inputFields: ICreateVersionInput): Promise<void>
 	fetchSimpleReports(): Promise<void>
+	fetchReports(versionId: string): Promise<void>
 }
 
 export default class App implements IApp {
@@ -63,9 +67,9 @@ export default class App implements IApp {
 
 	public readonly versions: ObservableMap<string, IVersionModel> = observable.map({})
 
-	public readonly simpleReports: ObservableMap<string, IVersionSimpleReportModel> = observable.map({})
+	public readonly simpleReports: ObservableMap<string, ISimpleVersionReportModel> = observable.map({})
 
-	// public readonly clients: ObservableMap<string,
+	public readonly reports: ObservableMap<string, IVersionReportModel> = observable.map({})
 
 	constructor(
 		{
@@ -113,8 +117,6 @@ export default class App implements IApp {
 			EventType.CreateVersion,
 			{ appId: this.id, ...inputFields },
 		)
-
-		this.versions.set(res.id, res)
 	}
 
 	public toModel(): IAppModel {
@@ -130,14 +132,20 @@ export default class App implements IApp {
 
 	@action
 	public async fetchSimpleReports() {
-		const { reports } = await this.api.emit<IGetVersionSimpleReportsResponse>(
-			EventType.VersionSimpleReports,
+		const { reports } = await this.api.emit<IGetSimpleVersionReportsResponse>(
+			EventType.SimpleVersionReports,
 			{ appId: this.id },
 		)
 
 		const grouped = reports.group((report) => [report.version, report])
 
 		this.simpleReports.merge(grouped)
+	}
+
+	@action
+	public async fetchReports(versionId: string) {
+		const reports = await this.api.emit<IGetVersionReportsResponse>(EventType.VersionReports, { versionId })
+		this.reports.set(versionId, reports)
 	}
 
 	// emitUpdateVersion(inputFields: ICreateVersionInput) {

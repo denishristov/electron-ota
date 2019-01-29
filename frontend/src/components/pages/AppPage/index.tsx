@@ -39,7 +39,9 @@ class AppPage extends Component<IProps, IState> {
 
 	@computed
 	private get app(): IApp | null {
-		return this.props.appsStore.getApp(this.props.match.params.appId) || null
+		const app = this.props.appsStore.getApp(this.props.match.params.appId)
+
+		return app
 	}
 
 	public async componentDidMount() {

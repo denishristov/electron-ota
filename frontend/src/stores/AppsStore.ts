@@ -66,8 +66,8 @@ export default class AppsStore implements IAppsStore {
 	@action
 	public async fetchApps(): Promise<void> {
 		const { apps } = await this.api.emit<IGetAppsResponse>(EventType.GetApps)
-		const appMap = apps.map(this.appFactory).group((app) => [app.id, app])
-		this.apps.merge(appMap)
+
+		this.apps.merge(apps.map(this.appFactory).group((app) => [app.id, app]))
 	}
 
 	public fetchUploadPictureUrl(req: IS3SignUrlRequest): Promise<IS3SignUrlResponse> {
@@ -82,7 +82,7 @@ export default class AppsStore implements IAppsStore {
 	@action.bound
 	public handleUpdateApp(updateAppResponse: IUpdateAppResponse): void {
 		const existingApp = this.apps.get(updateAppResponse.id)
-		Object.assign(existingApp, updateAppResponse)
+		existingApp && Object.assign(existingApp, updateAppResponse)
 	}
 
 	@action.bound

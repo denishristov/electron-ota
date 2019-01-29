@@ -18,7 +18,7 @@
 	@include shadow($background2)
 	background-size: auto 200%
 	background-position: 0 100%
-	background-image: linear-gradient(to right top, $background 0%, $background2 100%)
+	background-image: linear-gradient(to top, $background 0%, $background2 100%)
 	color: $color
 
 	svg, g, path
@@ -58,13 +58,17 @@ button.small
 	padding: 0 12px
 	min-height: 40px
 
-button.green
-	@include dark-button($green, white)
-
 button.white
 	@include light-button(white, $text)
+
+button.green
+	@include dark-button($green, white)
 
 button.blue
 	@include dark-button($blue, white)
 
+button.orange
+	@include dark-button($orange, white)
 
+button.red
+	@include dark-button($red, white)

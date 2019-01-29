@@ -8,8 +8,8 @@ type Entry<T extends mongoose.Document> =
 		id: string,
 	}
 
-export function toModel<T extends mongoose.Document>(doc: T): Entry<T> {
-	const result = { id: doc.id, ...doc.toJSON() }
+export function toModel<T extends mongoose.Document>(doc: T, it = 0): Entry<T> {
+	const result = { id: `${doc.id}`, ...it ? doc : doc.toJSON() }
 
 	delete result._id
 	delete result.__v
@@ -34,4 +34,8 @@ export function uuid() {
 
 export function byDateDesc(a: ITimestampedDocument, b: ITimestampedDocument) {
 	return +new Date(b.createdAt) - +new Date(a.createdAt)
+}
+
+export function getId({ id }: { id: string }) {
+	return id
 }

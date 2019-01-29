@@ -1,5 +1,5 @@
 import React from 'react'
-import { IVersionModel, IVersionSimpleReportModel } from 'shared'
+import { IVersionModel, ISimpleVersionReportModel } from 'shared'
 import { observer } from 'mobx-react'
 import { ObservableMap } from 'mobx'
 
@@ -21,10 +21,10 @@ import styles from '../../../styles/Version.module.sass'
 import Pushable from '../../generic/Pushable'
 import { BrowserHistory } from '../../../util/types'
 
-export interface IProps {
+interface IProps {
 	version: IVersionModel
 	animation: React.CSSProperties
-	simpleReports: ObservableMap<string, IVersionSimpleReportModel>
+	simpleReports: ObservableMap<string, ISimpleVersionReportModel>
 	history: BrowserHistory
 }
 
@@ -108,7 +108,7 @@ class Version extends React.Component<IProps> {
 		this.props.history.push(`${location.pathname}/${this.props.version.id}`)
 	}
 
-	private get simpleReport(): IVersionSimpleReportModel | null {
+	private get simpleReport(): ISimpleVersionReportModel | null {
 		return this.props.simpleReports.get(this.props.version.id) || null
 	}
 }

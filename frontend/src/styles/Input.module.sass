@@ -7,9 +7,6 @@
 .container
 	position: relative
 
-	label
-		margin-bottom: $spacing / 2
-
 .bar
 	@include transition(box-shadow, background-color)
 	// margin: 0 $spacing
@@ -26,7 +23,7 @@ input
 	@include focus-shadow
 	border: none
 	flex-grow: 1
-	margin: 0 $spacing * -1
+	margin: $spacing / 2 $spacing * -1 0
 	background-color: transparent
 	border-radius: $default-border-radius
 	background-color: $entry-bg

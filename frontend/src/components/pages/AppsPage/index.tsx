@@ -1,6 +1,6 @@
 import { inject, observer } from 'mobx-react'
 import React, { Component } from 'react'
-import AppStore, { IAppsStore } from '../../../stores/AppsStore'
+import { IAppsStore } from '../../../stores/AppsStore'
 import { injectAppsStore } from '../../../stores/RootStore'
 
 import App from './App'
@@ -24,6 +24,12 @@ interface IProps extends RouteComponentProps<{}, StaticContext, {}> {
 class AppsContainer extends Component<IProps> {
 	public componentDidMount() {
 		this.props.appsStore.fetchApps()
+	}
+
+	public componentDidCatch() {
+		if (this.props.location.pathname !== '/apps') {
+			this.props.history.push('/apps')
+		}
 	}
 
 	public render() {
