@@ -1,13 +1,11 @@
 import { computed } from 'mobx'
-import { inject, observer } from 'mobx-react'
+import { observer } from 'mobx-react'
 import React, { Component } from 'react'
 import { Redirect, RouteComponentProps } from 'react-router'
 
 import { IApp } from '../../../stores/App'
-import AppsStore from '../../../stores/AppsStore'
+import AppsStore, { IAppsStore } from '../../../stores/AppsStore'
 import Version from './Version'
-
-import { injectAppsStore } from '../../../stores/RootStore'
 
 import Button from '../../generic/Button'
 import Container from '../../generic/Container'
@@ -24,29 +22,29 @@ interface IParams {
 	appId: string
 }
 
-interface IProps extends RouteComponentProps<IParams> {
-	appsStore: AppsStore
-}
-
 interface IState {
 	hasLoaded: boolean
 }
 
-class AppPage extends Component<IProps, IState> {
+@observer
+export default class AppPage extends Component<RouteComponentProps<IParams>, IState> {
 	public readonly state = {
 		hasLoaded: false,
 	}
 
+	@DI.lazyInject(DI.Stores.Apps)
+	private readonly appsStore!: IAppsStore
+
 	@computed
 	private get app(): IApp | null {
-		const app = this.props.appsStore.getApp(this.props.match.params.appId)
+		const app = this.appsStore.getApp(this.props.match.params.appId)
 
 		return app
 	}
 
 	public async componentDidMount() {
-		if (!this.props.appsStore.allApps.length) {
-			await this.props.appsStore.fetchApps()
+		if (!this.appsStore.allApps.length) {
+			await this.appsStore.fetchApps()
 		}
 
 		if (this.app) {
@@ -104,5 +102,3 @@ class AppPage extends Component<IProps, IState> {
 		)
 	}
 }
-
-export default inject(injectAppsStore)(observer(AppPage))

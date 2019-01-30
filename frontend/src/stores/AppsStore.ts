@@ -38,8 +38,10 @@ export default class AppsStore implements IAppsStore {
 	private readonly apps: ObservableMap<string, IApp> = observable.map({})
 
 	constructor(
-		@DI.inject(DI.Api) private readonly api: IApi,
-		@DI.inject(DI.Factories.App) private readonly appFactory: AppFactory,
+		@DI.inject(DI.Api)
+		private readonly api: IApi,
+		@DI.inject(DI.Factories.App)
+		private readonly appFactory: AppFactory,
 	) {
 		this.api
 			.on(EventType.CreateApp, this.handleCreateApp)

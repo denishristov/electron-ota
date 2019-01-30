@@ -6,13 +6,9 @@ import { Route, Router } from 'react-router-dom'
 
 import 'reflect-metadata'
 import './config/global'
-import './util/extensions'
 import 'shared/dist/extensions'
 
 import container from './dependencies/inversify.config'
-
-import { Provider } from 'mobx-react'
-import { IRootStore } from './stores/RootStore'
 
 import { AuthProvider } from './components/contexts/AuthProvider'
 import { BrowserHistory } from './util/types'
@@ -24,15 +20,14 @@ configure({
 	isolateGlobalState: true,
 })
 
-const stores = container.get<IRootStore>(DI.Stores.Root)
 const history = container.get<BrowserHistory>(DI.BrowserHistory)
 
 render(
-	<Provider {...stores}>
+	<React.StrictMode>
 		<AuthProvider>
 			<Router history={history}>
 				<Route component={App} />
 			</Router>
 		</AuthProvider>
-	</Provider>
+	</React.StrictMode>
 , document.getElementById('root'))

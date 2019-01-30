@@ -4,6 +4,7 @@ import Flex from '../../generic/Flex'
 import Tip from '../../generic/Tip'
 
 import { DivProps } from '../../../util/types'
+import { observer } from 'mobx-react'
 
 interface IProps extends DivProps {
 	icon: string
@@ -11,7 +12,7 @@ interface IProps extends DivProps {
 	count: number
 }
 
-export default function Counter({ icon, count, className, message }: IProps) {
+export default observer(function Counter({ icon, count, className, message }: IProps) {
 	return (
 		<Tip className={className} message={message}>
 			<Flex centerY>
@@ -20,4 +21,4 @@ export default function Counter({ icon, count, className, message }: IProps) {
 			</Flex>
 		</Tip>
 	)
-}
+})

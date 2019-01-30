@@ -1,40 +1,49 @@
-import React, { version } from 'react'
+import React from 'react'
 import Container from '../../generic/Container'
 
 import Button from '../../generic/Button'
 import Flex from '../../generic/Flex'
-import { IVersionModel } from 'shared'
+import { IVersionModel, IVersionReportModel, IClientModel, IErrorReport } from 'shared'
 import { RouteComponentProps, Redirect } from 'react-router'
 import { IAppsStore } from '../../../stores/AppsStore'
 import { computed } from 'mobx'
 import { IApp } from '../../../stores/App'
 import Loading from '../../generic/Loading'
-import { inject, observer } from 'mobx-react'
-import { injectAppsStore } from '../../../stores/RootStore'
-import { IVersionReportModel } from '../../../../../shared/dist/interfaces/Reports'
-import { downloadFile } from '../../../util/functions'
+import { observer } from 'mobx-react'
+import { downloadFile, formatDate } from '../../../util/functions'
 
 import styles from '../../../styles/VersionPage.module.sass'
+
 import ClientRow from './ClientRow'
+import Client from './Client'
+import ErrorMessage from './ErrorMessage'
+import icons from '../../../util/constants/icons'
 
 interface IParams {
 	appId: string
 	versionId: string
 }
 
-interface IProps extends RouteComponentProps<IParams> {
-	appsStore: IAppsStore
-}
+const clientMapper = (client: IClientModel) => (
+	<Client key={client.id} client={client} />
+)
+const errorMapper = ({ client, errorMessage }: IErrorReport) => (
+	<ErrorMessage key={client.id} client={client} errorMessage={errorMessage} />
+)
 
-class VersionPage extends React.Component<IProps> {
+@observer
+export default class VersionPage extends React.Component<RouteComponentProps<IParams>> {
 	public readonly state = {
 		hasLoaded: false,
 	}
 
+	@DI.lazyInject(DI.Stores.Apps)
+	private readonly appsStore!: IAppsStore
+
 	@computed
 	private get app(): IApp | null {
 		const { appId } = this.props.match.params
-		return this.props.appsStore.getApp(appId) || null
+		return this.appsStore.getApp(appId) || null
 	}
 
 	@computed
@@ -49,8 +58,8 @@ class VersionPage extends React.Component<IProps> {
 	}
 
 	public async componentDidMount() {
-		if (!this.props.appsStore.allApps.length) {
-			await this.props.appsStore.fetchApps()
+		if (!this.appsStore.allApps.length) {
+			await this.appsStore.fetchApps()
 		}
 
 		if (this.app) {
@@ -81,7 +90,6 @@ class VersionPage extends React.Component<IProps> {
 			isCritical,
 			createdAt,
 			hash,
-			downloadUrl,
 		} = this.version
 
 		return (
@@ -107,13 +115,53 @@ class VersionPage extends React.Component<IProps> {
 						</Modal> */}
 					</header>
 					<Flex column>
-						{description}
+						{description && (
+							<>
+								<label>Description</label>
+								<p>{description}</p>
+							</>
+						)}
+						{hash && (
+							<>
+								<label>Hash</label>
+								<h3>{description}</h3>
+							</>
+						)}
+						{createdAt && (
+							<>
+								<label>Added on</label>
+								<h3>{formatDate(new Date(createdAt))}</h3>
+							</>
+						)}
+						<label>Supports</label>
+						<Flex list>
+							{Object.keys(systems)
+								.filter((key) => systems[key])
+								.map((key) => <SVG key={key} src={icons[key]} />)
+							}
+						</Flex>
 						{this.reports && (
-							<Flex centerY centerX margin list>
-								<ClientRow title='Downloading' clients={this.reports.downloading} />
-								<ClientRow title='Downloaded' clients={this.reports.downloaded} />
-								<ClientRow title='Using' clients={this.reports.using} />
-								{/* <ClientRow title='Errors' clients={this.reports.errorMessages} /> */}
+							<Flex centerX margin list>
+								<ClientRow
+									title='Downloading'
+									clients={this.reports.downloading}
+									mapper={clientMapper}
+								/>
+								<ClientRow
+									title='Downloaded'
+									clients={this.reports.downloaded}
+									mapper={clientMapper}
+								/>
+								<ClientRow
+									title='Using'
+									clients={this.reports.using}
+									mapper={clientMapper}
+								/>
+								<ClientRow
+									clients={this.reports.errorMessages}
+									title='Errors'
+									mapper={errorMapper}
+								/>
 							</Flex>
 						)}
 					</Flex>
@@ -124,7 +172,7 @@ class VersionPage extends React.Component<IProps> {
 
 	@bind
 	private handleRelease() {
-		this.version && this.props.appsStore.emitPublishVersion({ versionId: this.version.id })
+		this.version && this.appsStore.emitPublishVersion({ versionId: this.version.id })
 	}
 
 	@bind
@@ -132,5 +180,3 @@ class VersionPage extends React.Component<IProps> {
 		this.version && downloadFile(this.version.downloadUrl, this.version.versionName)
 	}
 }
-
-export default inject(injectAppsStore)(observer(VersionPage))

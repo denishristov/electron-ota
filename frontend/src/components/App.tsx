@@ -1,13 +1,14 @@
 import React from 'react'
 import { RouteComponentProps, StaticContext } from 'react-router'
 import { Transition } from 'react-spring'
-import { getPathName, getConfig } from '../util/functions'
+import { getPathName } from '../util/functions'
 import { pageAnimations } from '../util/constants/animations'
 import AnimationContext from './contexts/AnimationContext'
 import Routes from './Routes'
 
 import styles from '../index.module.sass'
 import { observer } from 'mobx-react'
+import { animationConfig } from '../config/config';
 
 function App({ location, history }: RouteComponentProps<{}, StaticContext, {}>) {
 	return (
@@ -17,7 +18,7 @@ function App({ location, history }: RouteComponentProps<{}, StaticContext, {}>) 
 				native
 				keys={getPathName}
 				items={location}
-				config={getConfig}
+				config={animationConfig}
 				{...history.action === 'POP'
 					? pageAnimations.POP
 					: pageAnimations.PUSH

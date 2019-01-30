@@ -1,29 +1,27 @@
 import { inject, observer } from 'mobx-react'
 import React, { Component } from 'react'
 import { IAppsStore } from '../../../stores/AppsStore'
-import { injectAppsStore } from '../../../stores/RootStore'
 
 import App from './App'
-
 import Button from '../../generic/Button'
 import Modal from '../../generic/Modal'
 
 import Plus from '../../../img/Plus.svg'
 
-import { RouteComponentProps, StaticContext } from 'react-router'
+import { RouteComponentProps } from 'react-router'
 import Container from '../../generic/Container'
 import AppearAnimation from '../../generic/AppearAnimation'
 import CreateAppModal from './CreateAppModal'
 
 import styles from '../../../styles/AppsPage.module.sass'
 
-interface IProps extends RouteComponentProps<{}, StaticContext, {}> {
-	appsStore: IAppsStore
-}
+@observer
+export default class AppsContainer extends Component<RouteComponentProps> {
+	@DI.lazyInject(DI.Stores.Apps)
+	private readonly appsStore!: IAppsStore
 
-class AppsContainer extends Component<IProps> {
 	public componentDidMount() {
-		this.props.appsStore.fetchApps()
+		this.appsStore.fetchApps()
 	}
 
 	public componentDidCatch() {
@@ -33,7 +31,7 @@ class AppsContainer extends Component<IProps> {
 	}
 
 	public render() {
-		const { allApps } = this.props.appsStore
+		const { allApps } = this.appsStore
 
 		return (
 			<Container>
@@ -67,5 +65,3 @@ class AppsContainer extends Component<IProps> {
 		)
 	}
 }
-
-export default inject(injectAppsStore)(observer(AppsContainer))

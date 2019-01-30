@@ -1,8 +1,9 @@
 import React from 'react'
 import { Transition } from 'react-spring'
 import { versionsTransitions } from '../../util/constants/animations'
-import { getConfig, getId } from '../../util/functions'
+import { getId } from '../../util/functions'
 import { IEntry } from '../../util/types'
+import { animationConfig } from '../../config/config'
 
 interface IProps<T> {
 	children: (item: T) => (style: React.CSSProperties) => JSX.Element
@@ -13,10 +14,11 @@ export default function AppearAnimation<T extends IEntry>({ children, items }: I
 	return children && (
 		<Transition
 			native
+			unique
 			items={items}
 			keys={getId}
-			config={getConfig}
-			trail={32}
+			config={animationConfig}
+			trail={64}
 			{...versionsTransitions}
 		>
 			{(item) => (animation) => children(item)(animation)}

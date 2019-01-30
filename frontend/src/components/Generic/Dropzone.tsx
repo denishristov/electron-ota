@@ -27,7 +27,7 @@ export default function Dropzone({ messages, children, accept, name, onDrop, cla
 							className={list(styles.dropzone, isDragActive && styles.dropzoneActive, className)}
 							{...getRootProps()}
 							{...props}
-							>
+						>
 							<input {...getInputProps()} />
 							{children || (messages && (isDragActive
 								? messages.active

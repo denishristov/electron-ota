@@ -1,8 +1,6 @@
-import { inject, observer } from 'mobx-react'
+import { observer } from 'mobx-react'
 import React, { Component } from 'react'
 
-import AppsStore from '../../../stores/AppsStore'
-import { injectAppsStore } from '../../../stores/RootStore'
 import Flex from '../../generic/Flex'
 import { IAnimatable, BrowserHistory } from '../../../util/types'
 import { animated } from 'react-spring'
@@ -13,11 +11,11 @@ import Pushable from '../../generic/Pushable'
 
 interface IProps extends IAnimatable {
 	app: IApp
-	appsStore: AppsStore
 	history: BrowserHistory
 }
 
-class App extends Component<IProps> {
+@observer
+export default class App extends Component<IProps> {
 	public render() {
 		const {
 			name,
@@ -47,16 +45,7 @@ class App extends Component<IProps> {
 	}
 
 	@bind
-	private handleDeleteApp() {
-		const { appsStore, app } = this.props
-
-		appsStore.emitDeleteApp({ id: app.id })
-	}
-
-	@bind
 	private goToApp() {
 		this.props.history.push(`/apps/${this.props.app.id}`)
 	}
 }
-
-export default inject(injectAppsStore)(observer(App))

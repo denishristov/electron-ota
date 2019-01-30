@@ -1,6 +1,5 @@
 import React, { FormEvent } from 'react'
-import { inject, observer } from 'mobx-react'
-import { injectRegisterStore } from '../../stores/RootStore'
+import { observer } from 'mobx-react'
 import { IRegisterStore } from '../../stores/RegisterStore'
 import { Redirect } from 'react-router'
 import { copyToClipboard } from '../../util/functions'
@@ -11,14 +10,6 @@ import Container from '../generic/Container'
 import styles from '../../styles/LoginPage.module.sass'
 import Loading from '../generic/Loading'
 import Flex from '../generic/Flex'
-
-interface IProps {
-	registerStore: IRegisterStore
-	style: {
-		opacity: number;
-		transform: string;
-	}
-}
 
 interface IState {
 	isRegistered: boolean
@@ -36,17 +27,21 @@ interface IRegisterFormEvent extends FormEvent<HTMLFormElement> {
 	}
 }
 
-class Register extends React.Component<IProps, IState> {
-	private get command() {
-		return `cat ${this.props.registerStore.path}`
-	}
-
+@observer
+export default class Register extends React.Component<{}, IState> {
 	public readonly state = {
 		isRegistered: false,
 	}
 
+	@DI.lazyInject(DI.Stores.User)
+	private readonly registerStore!: IRegisterStore
+
+	private get command() {
+		return `cat ${this.registerStore.path}`
+	}
+
 	public componentDidMount() {
-		this.props.registerStore.fetchKeyPath()
+		this.registerStore.fetchKeyPath()
 	}
 
 	public render() {
@@ -54,12 +49,12 @@ class Register extends React.Component<IProps, IState> {
 			return <Redirect to='/apps' />
 		}
 
-		if (this.props.registerStore.isLoading) {
+		if (this.registerStore.isLoading) {
 			return <Loading />
 		}
 
 		return (
-			<Container style={this.props.style}>
+			<Container>
 				<form onSubmit={this.handleRegister}>
 					<Flex column list>
 						<h1>Sign up</h1>
@@ -107,7 +102,7 @@ class Register extends React.Component<IProps, IState> {
 		const { name, password1, password2, email, key } = event.target.elements
 
 		if (password1.value === password2.value) {
-			const isRegistered = await this.props.registerStore.registerAdmin({
+			const isRegistered = await this.registerStore.registerAdmin({
 				name: name.value,
 				email: email.value,
 				password: password1.value,
@@ -125,5 +120,3 @@ class Register extends React.Component<IProps, IState> {
 		copyToClipboard(this.command)
 	}
 }
-
-export default inject(injectRegisterStore)(observer(Register))

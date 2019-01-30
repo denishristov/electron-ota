@@ -21,7 +21,7 @@ export default class Pushable extends Component<IProps, IState> {
 	}
 
 	public render() {
-		return this.props.children && React.cloneElement(this.props.children, {
+		return React.cloneElement(this.props.children, {
 			onMouseDown: this.handleMouseDown,
 			onMouseUp: this.handleMouseUp,
 			className: list(this.props.children.props.className, this.state.isPushed && styles.pushed),

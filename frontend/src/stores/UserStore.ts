@@ -18,7 +18,10 @@ class UserStore implements IUserStore {
 
 	private authToken?: string = Cookies.get('authToken')
 
-	constructor(@DI.inject(DI.Api) private readonly api: IApi) {
+	constructor(
+		@DI.inject(DI.Api)
+		private readonly api: IApi,
+	) {
 		this.api.on(EventType.Connect, this.authenticate)
 		this.api.usePreEmit(this.getAuthToken)
 	}

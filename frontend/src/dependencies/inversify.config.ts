@@ -1,4 +1,5 @@
 import { Container } from 'inversify'
+import getDecorators from 'inversify-inject-decorators'
 import io from 'socket.io-client'
 
 import { SERVER_URI } from '../config/config'
@@ -6,7 +7,6 @@ import { SERVER_URI } from '../config/config'
 import Api, { IApi } from '../util/Api'
 
 import AppsStore, { IAppsStore } from '../stores/AppsStore'
-import RootStore, { IRootStore } from '../stores/RootStore'
 import UserStore, { IUserStore } from '../stores/UserStore'
 import RegisterStore, { IRegisterStore } from '../stores/RegisterStore'
 import appFactory, { AppFactory } from './factories/AppFactory'
@@ -14,6 +14,9 @@ import { createBrowserHistory } from 'history'
 import { BrowserHistory } from '../util/types'
 
 const container = new Container()
+
+const { lazyInject } = getDecorators(container)
+DI.lazyInject = lazyInject
 
 container.bind(DI.Connection)
 	.toConstantValue(io(SERVER_URI))
@@ -28,10 +31,6 @@ container.bind<IUserStore>(DI.Stores.User)
 
 container.bind<IAppsStore>(DI.Stores.Apps)
 	.to(AppsStore)
-	.inSingletonScope()
-
-container.bind<IRootStore>(DI.Stores.Root)
-	.to(RootStore)
 	.inSingletonScope()
 
 container.bind<IRegisterStore>(DI.Stores.Register)

@@ -22,7 +22,8 @@ export default class Api implements IApi {
 	private readonly preEmitHooks: Hook[] = []
 
 	constructor(
-		@DI.inject(DI.Connection) private readonly connection: SocketIOClient.Socket,
+		@DI.inject(DI.Connection)
+		private readonly connection: SocketIOClient.Socket,
 	) {}
 
 	@bind

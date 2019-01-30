@@ -1,5 +1,5 @@
 import bindDecorator from 'bind-decorator'
-import { inject, injectable } from 'inversify'
+import { inject, injectable, interfaces } from 'inversify'
 import * as Symbols from '../dependencies/symbols'
 import SVGComponent from '../components/generic/SVG'
 
@@ -8,6 +8,8 @@ type SymbolType = typeof Symbols
 interface IDI extends SymbolType {
 	inject: typeof inject
 	injectable: typeof injectable
+	// tslint:disable-next-line:max-line-length no-any
+	lazyInject: (serviceIdentifier: string | symbol | interfaces.Newable<any> | interfaces.Abstract<any>) => (proto: any, key: string) => void
 }
 
 declare global {

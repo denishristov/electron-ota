@@ -88,7 +88,7 @@ export default class SocketMediator implements ISocketMediator {
 		predicate?: (client: IClient) => boolean,
 		count?: number,
 	): void {
-		for (const socket of this.sockets.splice(count)) {
+		for (const socket of this.sockets.slice(0, count)) {
 			if (predicate ? predicate(socket) : true) {
 				socket.emit(eventType, data)
 			}

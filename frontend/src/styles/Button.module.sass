@@ -2,12 +2,11 @@
 @import './variables'
 
 @mixin outline-button($color)
-	@include entry-shadow
-	$darker: darken($color, 15%)
+	@include shadow($color)
+	@include transition(box-shadow, background-color, color)
 	background-color: transparent
-	border: 2px solid $color
+	border: 1px solid $color
 	color: $color
-	transition: all .23s ease-out
 
 	&:focus, &:hover
 		background-color: $color
@@ -18,7 +17,7 @@
 	@include shadow($background2)
 	background-size: auto 200%
 	background-position: 0 100%
-	background-image: linear-gradient(to top, $background 0%, $background2 100%)
+	background-image: radial-gradient(circle, $background , $background2)
 	color: $color
 
 	svg, g, path
@@ -28,10 +27,10 @@
 		background-position: 0 0
 
 @mixin light-button($background, $color) 
-	@include color-button($background,  darken($background, 16%), $color)
+	@include color-button($background,  darken($background, 8%), $color)
 
 @mixin dark-button($background, $color) 
-	@include color-button($background, darken($background, 32%), $color)
+	@include color-button($background, darken($background, 16%), $color)
 	
 button
 	@include transition(box-shadow, background-color, transform, background-position)
@@ -46,7 +45,7 @@ button
 	overflow: hidden
 	background: white
 	text-transform: uppercase
-	font-weight: 700
+	font-weight: 500
 	min-width: $spacing * 10
 	user-select: none
 	cursor: pointer
@@ -59,13 +58,13 @@ button.small
 	min-height: 40px
 
 button.white
-	@include light-button(white, $text)
+	@include outline-button($dark-accent)
 
 button.green
 	@include dark-button($green, white)
 
 button.blue
-	@include dark-button($blue, white)
+	@include dark-button(#72CFF8, white)
 
 button.orange
 	@include dark-button($orange, white)

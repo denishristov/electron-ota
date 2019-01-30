@@ -6,12 +6,13 @@ import styles from '../../styles/Modal.module.sass'
 
 import Close from '../../img/Close.svg'
 
-import { stopPropagation, getConfig, list } from '../../util/functions'
+import { stopPropagation, list } from '../../util/functions'
 import { modalBackgroundAnimations, modalContentAnimations } from '../../util/constants/animations'
 
 import Pushable from './Pushable'
 import { ContentContext, TriggerContext, OpenTrigger, CloseTrigger } from '../contexts/ModalContext'
 import { DivProps } from '../../util/types'
+import { animationConfig } from '../../config/config'
 
 interface IProps extends DivProps {
 	title?: string
@@ -35,7 +36,7 @@ function Content({ children, title, className, progress }: IProps) {
 							reverse={isClosing}
 							force={isClosing}
 							onRest={_close}
-							config={getConfig}
+							config={animationConfig}
 							{...modalBackgroundAnimations}
 						>
 							{(style) =>
@@ -57,7 +58,7 @@ function Content({ children, title, className, progress }: IProps) {
 										native={true}
 										reverse={isClosing}
 										force={isClosing}
-										config={getConfig}
+										config={animationConfig}
 										{...modalContentAnimations}
 									>
 										{(style) =>

@@ -1,7 +1,7 @@
 import React from 'react'
 import { IVersionModel, ISimpleVersionReportModel } from 'shared'
 import { observer } from 'mobx-react'
-import { ObservableMap } from 'mobx'
+import { ObservableMap, computed } from 'mobx'
 
 import { formatDate } from '../../../util/functions'
 import { animated } from 'react-spring'
@@ -28,9 +28,10 @@ interface IProps {
 	history: BrowserHistory
 }
 
-class Version extends React.Component<IProps> {
+@observer
+export default class Version extends React.Component<IProps> {
 	public render() {
-		const { version, animation  } = this.props
+		const { version, animation } = this.props
 
 		return (
 			<Pushable>
@@ -41,9 +42,6 @@ class Version extends React.Component<IProps> {
 				>
 					<Flex list centerY grow>
 						<h3>{version.versionName}</h3>
-						<h4>
-							{formatDate(new Date(version.createdAt))}
-						</h4>
 						{this.simpleReport && (
 							<>
 								<Counter
@@ -98,6 +96,9 @@ class Version extends React.Component<IProps> {
 							)}
 						</Flex>
 					</Flex>
+					<Flex pr centerX centerY className={styles.date}>
+						{formatDate(new Date(version.createdAt))}
+					</Flex>
 				</animated.div>
 			</Pushable>
 		)
@@ -108,9 +109,8 @@ class Version extends React.Component<IProps> {
 		this.props.history.push(`${location.pathname}/${this.props.version.id}`)
 	}
 
+	@computed
 	private get simpleReport(): ISimpleVersionReportModel | null {
 		return this.props.simpleReports.get(this.props.version.id) || null
 	}
 }
-
-export default observer(Version)

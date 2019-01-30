@@ -1,13 +1,12 @@
-import { inject, observer } from 'mobx-react'
+import { observer } from 'mobx-react'
 import React, { FormEvent } from 'react'
 
 import { IUserStore } from '../../stores/UserStore'
 
-import { injectUserStore } from '../../stores/RootStore'
 import Input from '../generic/Input'
 import { isEmail } from '../../util/functions'
 import Button from '../generic/Button'
-import {  RouteComponentProps, StaticContext } from 'react-router'
+import {  RouteComponentProps } from 'react-router'
 import Flex from '../generic/Flex'
 
 import User from '../../img/User.svg'
@@ -26,16 +25,15 @@ interface ILoginFormEvent extends FormEvent<HTMLFormElement> {
 	}
 }
 
-interface IProps extends RouteComponentProps<{}, StaticContext, {}> {
-	userStore: IUserStore
-	style: React.CSSProperties
-}
+@observer
+export default class Login extends React.Component<RouteComponentProps> {
+	@DI.lazyInject(DI.Stores.User)
+	private readonly userStore!: IUserStore
 
-class Login extends React.Component<IProps> {
 	public render() {
 		return (
-			<Container style={this.props.style}>
-				{this.props.userStore.isLoading
+			<Container>
+				{this.userStore.isLoading
 					? <Loading />
 					: (
 						<form onSubmit={this.handleSubmit}>
@@ -79,14 +77,13 @@ class Login extends React.Component<IProps> {
 		const { value: input } = nameOrEmail
 		const inputIsEmail = isEmail(input)
 
-		const isSuccessful = await this.props.userStore.login({
+		const isSuccessful = await this.userStore.login({
 			name: inputIsEmail ? void 0 : input,
 			email: inputIsEmail ? input : void 0,
 			password: password.value,
 		})
 
 		isSuccessful && this.props.history.push('/apps')
-
 	}
 
 	@bind
@@ -94,5 +91,3 @@ class Login extends React.Component<IProps> {
 		this.props.history.push('/setup')
 	}
 }
-
-export default inject(injectUserStore)(observer(Login))

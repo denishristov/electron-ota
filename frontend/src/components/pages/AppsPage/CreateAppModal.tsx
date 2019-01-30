@@ -1,5 +1,5 @@
 import React, { FormEvent } from 'react'
-import { observer, inject } from 'mobx-react'
+import { observer } from 'mobx-react'
 
 import Modal from '../../generic/Modal'
 import Flex from '../../generic/Flex'
@@ -13,7 +13,6 @@ import Camera from '../../../img/Camera.svg'
 
 import { IAppsStore } from '../../../stores/AppsStore'
 import { getSourceFromFile } from '../../../util/functions'
-import { injectAppsStore } from '../../../stores/RootStore'
 
 import axios from 'axios'
 
@@ -27,10 +26,6 @@ interface ICreateAppEvent extends FormEvent<HTMLFormElement> {
 			},
 		},
 	}
-}
-
-interface IProps {
-	appsStore: IAppsStore
 }
 
 interface ICreateAppEvent extends FormEvent<HTMLFormElement> {
@@ -49,10 +44,14 @@ interface IState {
 	pictureSrc: string | null
 }
 
-class CreateAppModal extends React.Component<IProps, IState> {
+@observer
+export default class CreateAppModal extends React.Component<{}, IState> {
 	public readonly state = {
 		pictureSrc: '',
 	}
+
+	@DI.lazyInject(DI.Stores.Apps)
+	private readonly appsStore!: IAppsStore
 
 	public render() {
 		return (
@@ -102,7 +101,7 @@ class CreateAppModal extends React.Component<IProps, IState> {
 		const {
 			downloadUrl,
 			signedRequest,
-		} = await this.props.appsStore.fetchUploadPictureUrl({ name: pictureName, type })
+		} = await this.appsStore.fetchUploadPictureUrl({ name: pictureName, type })
 
 		await axios.put(signedRequest, pictureFile, {
 			headers: {
@@ -110,7 +109,7 @@ class CreateAppModal extends React.Component<IProps, IState> {
 			},
 		})
 
-		this.props.appsStore.emitCreateApp({
+		this.appsStore.emitCreateApp({
 			bundleId: bundleId.value,
 			name: name.value,
 			pictureUrl: downloadUrl,
@@ -123,5 +122,3 @@ class CreateAppModal extends React.Component<IProps, IState> {
 		this.setState({ pictureSrc })
 	}
 }
-
-export default inject(injectAppsStore)(observer(CreateAppModal))

@@ -5,30 +5,37 @@
 	@include container
 
 .report-column
+	@include transition(box-shadow)
+	@include entry-shadow
 	border-radius: $default-border-radius
+	width: $spacing * 16
+	background-color: $entry-bg
 
 	> span:first-child
-		border-bottom: 1px solid $dark-accent
+		border-bottom: 1px solid $accent
+
+	h3, h4, h5
+		margin: 0px
+		font-weight: 500
 
 	h3
-		margin: 0px
 		margin-right: $spacing * 2
 		font-size: 1rem
 
 	h4
-		margin: 0px
 		color: $dark-accent
 
-	h5
-		margin: 0px
+	h6
+		@include text-overflow
+		margin: $spacing / 2 0 0
+		color: $dark-accent
 
 .client
 	@include transition(box-shadow, background-color)
 	@include entry-shadow
 	border-radius: $default-border-radius
 	background-color: $entry-bg
-	min-width: $spacing * 16
-
+	
 	&:hover
 		background-color: $entry-hover-bg
 
@@ -39,3 +46,6 @@
 	svg
 		width: $icon-size
 		height: $icon-size
+
+.error-modal
+	max-width: 60vw

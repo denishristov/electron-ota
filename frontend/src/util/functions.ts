@@ -8,22 +8,27 @@ export function isEmail(candidate: string): boolean {
 }
 
 export function copyToClipboard(text: string) {
-	const node = document.createElement('textarea')
-	node.value = text
+	const element = document.createElement('textarea')
+	element.value = text
 
-	document.body.appendChild(node)
-	node.select()
+	document.body.appendChild(element)
+	element.select()
 
 	document.execCommand('copy')
-	document.body.removeChild(node)
+	document.body.removeChild(element)
 }
 
 export function downloadFile(uri: string, name: string) {
-	const link = document.createElement('a')
+	const element = document.createElement('a')
+	element.setAttribute('href', uri)
+	element.setAttribute('download', name)
 
-	link.download = name
-	link.href = uri
-	link.click()
+	element.style.display = 'none'
+	document.body.appendChild(element)
+
+	element.click()
+
+	document.body.removeChild(element)
 }
 
 export function list(...classNames: ClassName[]) {
@@ -37,6 +42,11 @@ export function stopPropagation(event: IEvent) {
 export function stopEvent(event: IEvent) {
 	event.stopPropagation()
 	event.preventDefault()
+}
+
+export function preventClose(event: BeforeUnloadEvent) {
+	event.preventDefault()
+	event.returnValue = ''
 }
 
 export function getSourceFromFile(file: File): Promise<string | null> {
@@ -80,10 +90,6 @@ export function hashFile(file: File): Promise<string | null> {
 			}
 		}
 	})
-}
-
-export function getConfig(key: string) {
-	return config.gentle
 }
 
 export function formatFileSize(bytes: number) {

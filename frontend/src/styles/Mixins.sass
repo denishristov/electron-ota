@@ -1,7 +1,7 @@
 @import './variables'
 
 @mixin glowingShadow($color)
-	box-shadow: 0 $spacing 60px transparentize(darken($color, 10%), 0.4), 0 4px 14px transparentize($color, 0.6)
+	box-shadow: 0 $spacing 60px transparentize(darken($color, 10%), 0.6), 0 4px 14px transparentize($color, 0.8)
 
 @mixin text-overflow
 	white-space: nowrap
@@ -12,7 +12,7 @@
 	transition-duration: .18s
 	transition-timing-function: ease-in-out
 	transition-property: $properties
-	will-change: $properties
+	// will-change: $properties
 
 @mixin container
 	flex-grow: 1
@@ -36,7 +36,7 @@
 				margin-right: $spacing / 2
 
 @mixin shadow($color)
-	box-shadow: 0 0 3px 3px transparentize($color, 0.95), 0 4px 15px transparentize($color, 0.78)
+	box-shadow: 0 0 20px 0 transparentize($color, 0.76)
 
 	&:hover, &:focus
 		box-shadow: 0 5px 12px transparentize($color, 0.92), 0 1px 4px transparentize($color, 0.91), 0 -5px 15px -1px transparentize($color, 0.9), inset 0 0 20px -3px transparentize($color, 0.9)
@@ -50,7 +50,7 @@
 
 
 @mixin dot($color)
-	@include shadow($color)
+	@include glowingShadow($color)
 	$size: $spacing / 2
 	width: $size
 	height: $size

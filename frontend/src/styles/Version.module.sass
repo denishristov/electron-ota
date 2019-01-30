@@ -47,6 +47,19 @@ $version-width: 800px
 .critical
 	@include dot($red)
 
+.date
+	$width: $spacing * 7
+	width: $width
+	position: absolute
+	left: -$width
+	top: -$spacing * 2
+	height: $spacing * 2
+	border-right: 1px solid $accent
+	text-transform: uppercase
+	color: $light-text
+	font-weight: 400
+	font-size: 0.96rem
+	
 @media screen and (max-width: $version-width + 4 * $spacing)
 	.version
 		min-width: calc(100vw - 4 * #{$spacing})

@@ -6,7 +6,7 @@ import Button from '../../generic/Button'
 import Switch from '../../generic/Switch'
 import Dropzone from '../../generic/Dropzone'
 
-import { formatFileSize, hashFile } from '../../../util/functions'
+import { formatFileSize, hashFile, stopEvent, preventClose } from '../../../util/functions'
 import axios from 'axios'
 
 import Windows from '../../../img/Windows.svg'
@@ -19,6 +19,7 @@ import inputStyles from '../../../styles/Input.module.sass'
 
 import { IApp } from '../../../stores/App'
 import { IVersionModel } from 'shared'
+import { observer } from 'mobx-react'
 
 interface IProps {
 	app: IApp
@@ -66,8 +67,13 @@ const defaultState: IState = {
 	file: void 0,
 }
 
+@observer
 export default class CreateVersionModal extends Component<IProps, IState> {
 	public readonly state = { ... defaultState }
+
+	public componentWillUnmount() {
+		removeEventListener('beforeunload', preventClose)
+	}
 
 	public render() {
 		const {
@@ -261,6 +267,8 @@ export default class CreateVersionModal extends Component<IProps, IState> {
 
 			const upload = this.uploadVersion(versionFile, signedRequest)
 
+			addEventListener('beforeunload', preventClose)
+
 			const [hash] = await Promise.all([
 				hashFile(versionFile),
 				upload,
@@ -269,6 +277,8 @@ export default class CreateVersionModal extends Component<IProps, IState> {
 			if (!hash) {
 				throw new Error('Error hashing file')
 			}
+
+			removeEventListener('beforeunload', preventClose)
 
 			app.emitCreateVersion({
 				versionName: versionName.value,

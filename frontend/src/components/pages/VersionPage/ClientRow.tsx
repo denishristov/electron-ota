@@ -1,24 +1,22 @@
 import React from 'react'
 import Flex from '../../generic/Flex'
-import { IClientModel, IErrorReport } from 'shared'
-import Client from './Client'
-
 import styles from '../../../styles/VersionPage.module.sass'
+import { observer } from 'mobx-react'
 
-
-interface IProps {
-	clients: IClientModel[]
+interface IProps<T> {
+	clients: T[]
+	mapper: (x: T) => JSX.Element
 	title: string
 }
 
-export default function ClientRow({ clients, title }: IProps) {
+export default observer(function ClientRow<T>({ clients, title, mapper }: IProps<T>) {
 	return (
-		<Flex column list margin className={styles.reportColumn}>
-			<Flex padding spread>
+		<Flex column list margin padding className={styles.reportColumn}>
+			<Flex pb spread>
 				<h3>{title}</h3>
 				<h4>{clients.length}</h4>
 			</Flex>
-			{clients.map((client) => <Client key={client.id} {...client} />)}
+			{clients.map(mapper)}
 		</Flex>
 	)
-}
+})
