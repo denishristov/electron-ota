@@ -6,21 +6,32 @@ import Button from '../generic/Button'
 import Switch from '../generic/Switch'
 import Dropzone from '../generic/Dropzone'
 
-import { formatFileSize, hashFile, preventClose } from '../../util/functions'
+import { formatFileSize, hashFile, preventClose, list, formatDate } from '../../util/functions';
 import axios from 'axios'
 
-import styles from '../../styles/AppPage.module.sass'
+import styles from '../../styles/VersionModal.module.sass'
 import inputStyles from '../../styles/Input.module.sass'
 
 import { IApp } from '../../stores/App'
 import { IVersionModel } from 'shared'
 import { observer } from 'mobx-react'
 import icons from '../../util/constants/icons'
-import { IAppsStore } from '../../stores/AppsStore'
+
+import Pushable from '../generic/Pushable'
+import semver from 'semver'
+
+enum ReleaseType {
+	Major = 'Major',
+	Minor = 'Minor',
+	Patch = 'Patch',
+	Custom = 'Custom',
+}
 
 interface IProps {
 	app: IApp
 	version?: IVersionModel
+	previousVersionName?: string | null
+	toggleClosing?: () => void
 }
 
 interface IState {
@@ -38,6 +49,7 @@ interface IState {
 		date: Date,
 	}
 	progress?: number
+	releaseType?: ReleaseType
 }
 
 interface IVersionEvent extends FormEvent<HTMLFormElement> {
@@ -57,8 +69,24 @@ const uploadMessages = {
 	notActive: 'Drop a package or click to upload',
 }
 
+enum Toggle {
+	isCritical = 'isCritical',
+	isReleasing = 'isReleasing',
+	isBase = 'isBase',
+	isWindows = 'isWindows',
+	isDarwin = 'isDarwin',
+	isLinux = 'isLinux',
+}
+
+const CancelToken = axios.CancelToken
+
 @observer
 export default class VersionModal extends Component<IProps, IState> {
+	private readonly cancelTokenSource = CancelToken.source()
+
+	private readonly releaseTypeSetters = Object.keys(ReleaseType)
+		.group((name) => [name, this.setReleaseType.bind(this, name as ReleaseType)])
+
 	constructor(props: IProps) {
 		super(props)
 
@@ -76,7 +104,9 @@ export default class VersionModal extends Component<IProps, IState> {
 			}
 		} else {
 			this.state = {
-				name: '',
+				name: props.previousVersionName
+					? semver.inc(props.previousVersionName, 'patch') || ''
+					: '',
 				description: '',
 				isCritical: false,
 				isBase: false,
@@ -84,6 +114,7 @@ export default class VersionModal extends Component<IProps, IState> {
 				isWindows: true,
 				isDarwin: true,
 				isLinux: true,
+				releaseType: props.previousVersionName ? ReleaseType.Patch : ReleaseType.Custom,
 			}
 		}
 	}
@@ -104,134 +135,185 @@ export default class VersionModal extends Component<IProps, IState> {
 			progress,
 			name,
 			description,
+			releaseType,
 		} = this.state
 
 		const isEditing = Boolean(this.props.version)
+		const isUploading = progress !== void 0
 
 		return (
-			<Modal.Content
-				title='Add a new version'
-				className={styles.versionModal}
-				progress={progress}
-			>
-				<Modal.CloseTrigger>
-					<form onSubmit={this.handleSubmit}>
-						<Flex grow>
-							<Flex column padding list mr>
-								<Input
-									value={name}
-									onChange={this.setName}
-									name='versionName'
-									label='Name'
+			<Modal.CloseTrigger>
+				<form onSubmit={this.handleSubmit}>
+					<Flex grow>
+						<Flex column padding list mr>
+							<Input
+								value={name}
+								onChange={this.setName}
+								name='versionName'
+								label='Name'
+								disabled={!isEditing && releaseType !== ReleaseType.Custom}
+							/>
+							{this.props.previousVersionName && (
+								<>
+									<label>Release type</label>
+									<Flex list fill>
+										{Object.keys(ReleaseType).map((name) => (
+											<Pushable key={name}>
+												<div
+													className={list(
+														styles.releaseButton,
+														releaseType === name && styles.releaseButtonSelected,
+													)}
+													onClick={this.releaseTypeSetters[name]}
+												>
+													{name}
+												</div>
+											</Pushable>
+										))}
+									</Flex>
+								</>
+							)}
+							<Flex grow column>
+								<label className={inputStyles.label}>Description</label>
+								<textarea
+									value={description}
+									onChange={this.setDescription}
+									name='description'
+									placeholder='Optional description for the update'
 								/>
-								<Flex grow column>
-									<label className={inputStyles.label}>Description</label>
-									<textarea
-										value={description}
-										onChange={this.setDescription}
-										name='description'
-										placeholder='Optional description for the update'
-									/>
-								</Flex>
-							</Flex>
-							<Flex column padding list ml className={styles.switchRow}>
-								<label>Supporting systems</label>
-								<Flex centerY className={styles.osRow}>
-									<SVG src={icons.Windows_RT} />
-									<label className={''}>Windows</label>
-									<Switch value={isWindows} onChange={this.toggleIsWindows} />
-								</Flex>
-								<Flex centerY className={styles.osRow}>
-									<SVG src={icons.Darwin} />
-									<label className={''}>Macos</label>
-									<Switch value={isDarwin} onChange={this.toggleIsDarwin}	/>
-								</Flex>
-								<Flex centerY className={styles.osRow}>
-									<SVG src={icons.Linux} />
-									<label className={''}>Linux</label>
-									<Switch value={isLinux} onChange={this.toggleIsLinux} />
-								</Flex>
-								<label>Release</label>
-								{!isEditing && (
-									<Flex spread centerY>
-										<label className={''}>
-											Immediately?
-										</label>
-										<Switch value={isReleasing} onChange={this.toggleIsReleasing} />
-									</Flex>
-								)}
-								<Flex spread centerY>
-									<label className={''}>
-										Critical?
-									</label>
-									<Switch value={isCritical} onChange={this.toggleIsCritical} />
-								</Flex>
-								{!isEditing && (
-									<Flex spread centerY>
-										<label className={''}>
-											Base?
-										</label>
-										<Switch value={isBase} onChange={this.toggleIsBase} />
-									</Flex>
-								)}
-								{!isEditing && !isBase && (
-									<Dropzone
-										onDrop={this.handleDrop}
-										name='version'
-										accept='.asar'
-										messages={uploadMessages}
-										className={styles.dropzone}
-									>
-										{file && (
-											<>
-												<SVG src={icons.Electron} />
-												<Flex fill>
-													<Flex spread centerY>
-														<label>{file.name}</label>
-													</Flex>
-													<Flex spread centerY>
-														<label className={''}>
-															{formatFileSize(file.size)}
-														</label>
-														<label className={''}>
-															{file.date.toLocaleDateString()}
-														</label>
-													</Flex>
-												</Flex>
-											</>
-										)}
-									</Dropzone>
-								)}
 							</Flex>
 						</Flex>
-						<footer>
-							{isEditing && (
-								<Modal.CloseTrigger>
-									<Button size='small' color='red' type='button' onClick={this.handleDelete}>
-										<SVG src={icons.Delete} />
-										Delete
-									</Button>
-								</Modal.CloseTrigger>
+						<Flex column padding list ml className={styles.switchRow}>
+							<label>Supporting systems</label>
+							<Flex centerY className={styles.osRow}>
+								<SVG src={icons.Windows_RT} />
+								<label className={''}>Windows</label>
+								<Switch value={isWindows} onChange={this.toggleIsWindows} />
+							</Flex>
+							<Flex centerY className={styles.osRow}>
+								<SVG src={icons.Darwin} />
+								<label className={''}>Macos</label>
+								<Switch value={isDarwin} onChange={this.toggleIsDarwin}	/>
+							</Flex>
+							<Flex centerY className={styles.osRow}>
+								<SVG src={icons.Linux} />
+								<label className={''}>Linux</label>
+								<Switch value={isLinux} onChange={this.toggleIsLinux} />
+							</Flex>
+							<label>Release</label>
+							{!isEditing && (
+								<Flex spread centerY>
+									<label className={''}>
+										Immediately?
+									</label>
+									<Switch value={isReleasing} onChange={this.toggleIsReleasing} />
+								</Flex>
 							)}
-							{isEditing && (
-								<Modal.CloseTrigger>
+							<Flex spread centerY>
+								<label className={''}>
+									Critical?
+								</label>
+								<Switch value={isCritical} onChange={this.toggleIsCritical} />
+							</Flex>
+							{!isEditing && (
+								<Flex spread centerY>
+									<label className={''}>
+										Base?
+									</label>
+									<Switch value={isBase} onChange={this.toggleIsBase} />
+								</Flex>
+							)}
+							{!isEditing && !isBase && (
+								<Dropzone
+									onDrop={this.handleDrop}
+									name='version'
+									accept='.asar'
+									messages={uploadMessages}
+									className={styles.dropzone}
+								>
+									{file && (
+										<>
+											<SVG src={icons.Electron} />
+											<Flex fill column grow>
+												<Flex centerY ml>
+													<label>{file.name}</label>
+												</Flex>
+												<Flex spread centerY ml grow>
+													<label className={''}>
+														{formatFileSize(file.size)}
+													</label>
+													<label className={''}>
+														{formatDate(file.date)}
+													</label>
+												</Flex>
+											</Flex>
+										</>
+									)}
+								</Dropzone>
+							)}
+						</Flex>
+					</Flex>
+					<footer>
+						{isUploading && (
+							<Flex grow mt centerY>
+								<label>{`${progress}%`}</label>
+								<Flex grow ml className={styles.progressContainer}>
+									<div className={styles.progress} style={{ width: `${progress}%` }} />
+								</Flex>
+							</Flex>
+						)}
+						{isEditing
+							? (
+								<>
+									<Modal.CloseTrigger>
+										<Button size='small' color='red' type='button' onClick={this.handleDelete}>
+											<SVG src={icons.Delete} />
+											Delete
+										</Button>
+									</Modal.CloseTrigger>
 									<Button size='small' color='green' type='submit'>
 										<SVG src={icons.Success} />
 										Save
 									</Button>
-								</Modal.CloseTrigger>
-							)}
-							{!isEditing && (
-								<Button size='small' color='blue' type='submit'>
-									<SVG src={icons.Plus} />
-									ADD
-								</Button>
-							)}
-						</footer>
-					</form>
-				</Modal.CloseTrigger>
-			</Modal.Content>
+								</>
+							)
+							: isUploading
+								? (
+									<Modal.CloseTrigger>
+										<Button size='small' color='red' type='button' onClick={this.handleCancel}>
+											<SVG src={icons.Close} />
+											Cancel
+										</Button>
+									</Modal.CloseTrigger>
+								)
+								: (
+									<Button size='small' color='blue' type='submit'>
+										<SVG src={icons.Plus} />
+										Add
+									</Button>
+								)
+						}
+					</footer>
+				</form>
+			</Modal.CloseTrigger>
 		)
+	}
+
+	@bind
+	private handleCancel() {
+		this.props.toggleClosing && this.props.toggleClosing()
+		this.cancelTokenSource.cancel()
+	}
+
+	@bind
+	private setReleaseType(releaseType: ReleaseType) {
+		if (releaseType !== ReleaseType.Custom && this.props.previousVersionName) {
+			const type = releaseType.toLowerCase() as semver.ReleaseType
+			const name = semver.inc(this.props.previousVersionName, type)
+			name && this.setState({ name })
+		}
+
+		this.setState({ releaseType })
 	}
 
 	@bind
@@ -284,7 +366,7 @@ export default class VersionModal extends Component<IProps, IState> {
 	private async handleSubmit(event: IVersionEvent) {
 		event.preventDefault()
 
-		const { app } = this.props
+		const { app, toggleClosing } = this.props
 
 		const {
 			versionName,
@@ -331,6 +413,7 @@ export default class VersionModal extends Component<IProps, IState> {
 				},
 			})
 		} else if (version.files) {
+			// console.log(version.files)
 			const versionFile = version.files[0]
 			const { type } = versionFile
 
@@ -342,6 +425,7 @@ export default class VersionModal extends Component<IProps, IState> {
 			const upload = this.uploadVersion(versionFile, signedRequest)
 
 			addEventListener('beforeunload', preventClose)
+			toggleClosing && toggleClosing()
 
 			const [hash] = await Promise.all([
 				hashFile(versionFile),
@@ -353,6 +437,7 @@ export default class VersionModal extends Component<IProps, IState> {
 			}
 
 			removeEventListener('beforeunload', preventClose)
+			toggleClosing && toggleClosing()
 
 			app.createVersion({
 				versionName: versionName.value,
@@ -406,6 +491,7 @@ export default class VersionModal extends Component<IProps, IState> {
 					const progress = Math.round((loaded * 100) / total)
 					this.setState({ progress })
 				},
+				cancelToken: this.cancelTokenSource.token,
 			})
 		}
 	}

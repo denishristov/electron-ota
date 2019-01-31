@@ -7,7 +7,7 @@ interface IProps extends React.InputHTMLAttributes<HTMLInputElement> {
 	icon?: string
 }
 
-function Input({ label, icon, ...props }: IProps) {
+function Input({ label, icon, onClick, ...props }: IProps) {
 	return (
 		<div className={styles.container}>
 			<label>{label}</label>

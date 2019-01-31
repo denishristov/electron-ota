@@ -54,37 +54,35 @@ export default class AppModal extends React.Component<{}, IState> {
 
 	public render() {
 		return (
-			<Modal.Content title='Add a new app'>
-				<Modal.CloseTrigger>
-					<form onSubmit={this.handleCreateApp} className={styles.newApp}>
-						<Flex fill>
-							<Flex margin column centerY>
-								<label className={styles.uploadLabel}>Upload Icon</label>
-								<Dropzone
-									onDrop={this.handleSelectPicture}
-									name='picture'
-									accept='image/*'
-									className={styles.dropzone}
-								>
-									{this.state.pictureSrc
-										? <img src={this.state.pictureSrc} className={styles.uploadIcon} />
-										: <SVG src={icons.Camera} className={styles.uploadIcon} />
-									}
-								</Dropzone>
-							</Flex>
-							<Flex margin column list>
-								<Input name='name' label='Name' />
-								<Input name='bundleId' label='Bundle ID' />
-							</Flex>
+			<Modal.CloseTrigger>
+				<form onSubmit={this.handleCreateApp} className={styles.newApp}>
+					<Flex fill>
+						<Flex margin column centerY>
+							<label className={styles.uploadLabel}>Upload Icon</label>
+							<Dropzone
+								onDrop={this.handleSelectPicture}
+								name='picture'
+								accept='image/*'
+								className={styles.dropzone}
+							>
+								{this.state.pictureSrc
+									? <img src={this.state.pictureSrc} className={styles.uploadIcon} />
+									: <SVG src={icons.Camera} className={styles.uploadIcon} />
+								}
+							</Dropzone>
 						</Flex>
-						<footer>
-							<Button size='small' color='blue' type='submit'>
-								Add
-							</Button>
-						</footer>
-					</form>
-				</Modal.CloseTrigger>
-			</Modal.Content>
+						<Flex margin column list>
+							<Input name='name' label='Name' />
+							<Input name='bundleId' label='Bundle ID' />
+						</Flex>
+					</Flex>
+					<footer>
+						<Button size='small' color='blue' type='submit'>
+							Add
+						</Button>
+					</footer>
+				</form>
+			</Modal.CloseTrigger>
 		)
 	}
 

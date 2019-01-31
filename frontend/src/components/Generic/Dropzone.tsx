@@ -5,7 +5,7 @@ import { list } from '../../util/functions'
 import styles from '../../styles/Dropzone.module.sass'
 import { DivProps } from '../../util/types'
 import { Omit } from 'typelevel-ts'
-import Pushable from './Pushable';
+import Pushable from './Pushable'
 
 interface IProps extends Omit<DivProps, 'onDrop'> {
 	onDrop?: DropFilesEventHandler

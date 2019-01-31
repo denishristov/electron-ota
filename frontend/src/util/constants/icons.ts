@@ -12,6 +12,7 @@ import Download from '../../img/Download.svg'
 import Upload from '../../img/Upload.svg'
 import Edit from '../../img/Edit.svg'
 import Delete from '../../img/Delete.svg'
+import Close from '../../img/Close.svg'
 import Plus from '../../img/Plus.svg'
 
 const icons = {
@@ -30,6 +31,7 @@ const icons = {
 	Edit,
 	Delete,
 	Plus,
+	Close,
 }
 
 export default icons

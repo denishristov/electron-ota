@@ -17,6 +17,8 @@ const icons = {
 	Linux: Ubuntu,
 }
 
+const ErrorModal = ({ errorMessage }: { errorMessage: string }) => <p>{errorMessage}</p>
+
 export default observer(function ErrorMessage({ client, errorMessage }: IErrorReport) {
 	return (
 		<Modal>
@@ -34,9 +36,12 @@ export default observer(function ErrorMessage({ client, errorMessage }: IErrorRe
 					</Pushable>
 				</div>
 			</Modal.OpenTrigger>
-			<Modal.Content title='Error' className={styles.errorModal}>
-				<p>{errorMessage}</p>
-			</Modal.Content>
+			<Modal.Content
+				title='Error'
+				className={styles.errorModal}
+				component={ErrorModal}
+				props={{ errorMessage }}
+			/>
 		</Modal>
 	)
 })

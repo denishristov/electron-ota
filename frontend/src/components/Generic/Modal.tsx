@@ -14,10 +14,15 @@ import { ContentContext, TriggerContext, OpenTrigger, CloseTrigger } from '../co
 import { DivProps } from '../../util/types'
 import { animationConfig } from '../../config/config'
 
-interface IProps extends DivProps {
+interface IContentProps<T> extends Exclude<DivProps, 'children'> {
 	title?: string
 	className?: string
-	progress?: number
+	component: React.ComponentClass<T> | React.FunctionComponent<T>
+	props: T
+}
+
+interface IModalProps extends Pick<DivProps, 'children'> {
+	disableClose?: boolean
 }
 
 interface IState {
@@ -25,7 +30,7 @@ interface IState {
 	isClosing: boolean
 }
 
-function Content({ children, title, className, progress }: IProps) {
+function Content<T>({ component: Component, props, title, className }: IContentProps<T>) {
 	return createPortal(
 		<TriggerContext.Consumer>
 			{({ close, _close }) => (
@@ -46,14 +51,6 @@ function Content({ children, title, className, progress }: IProps) {
 									style={style}
 									onScroll={stopPropagation}
 								>
-									{Boolean(progress) && (
-										<div className={styles.progressBar}>
-											<div
-												className={styles.completed}
-												style={{ width: `${progress}%` }}
-											/>
-										</div>
-									)}
 									<Spring
 										native={true}
 										reverse={isClosing}
@@ -77,7 +74,7 @@ function Content({ children, title, className, progress }: IProps) {
 														/>
 													</Pushable>
 												</header>
-												{children}
+												<Component {...props} />
 											</animated.div>
 										}
 									</Spring>
@@ -91,7 +88,7 @@ function Content({ children, title, className, progress }: IProps) {
 	, document.body)
 }
 
-export default class Modal extends React.Component<Pick<DivProps, 'children'>, IState> {
+export default class Modal extends React.Component<IModalProps, IState> {
 	public static readonly OpenTrigger = OpenTrigger
 
 	public static readonly CloseTrigger = CloseTrigger
@@ -109,7 +106,9 @@ export default class Modal extends React.Component<Pick<DivProps, 'children'>, I
 			event.stopPropagation()
 		}
 
-		this.setState({ isClosing: true })
+		if (!this.props.disableClose) {
+			this.setState({ isClosing: true })
+		}
 	}
 
 	@bind

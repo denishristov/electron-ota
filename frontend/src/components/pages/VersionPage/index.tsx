@@ -11,10 +11,10 @@ import { IApp } from '../../../stores/App'
 import Loading from '../../generic/Loading'
 import { observer } from 'mobx-react'
 import { downloadFile, formatDate } from '../../../util/functions'
-// import { Menu, Item, MenuProvider, theme, animation } from 'react-contexify'
-// import 'react-contexify/dist/ReactContexify.min.css'
+
 import styles from '../../../styles/VersionPage.module.sass'
 import versionStyles from '../../../styles/Version.module.sass'
+import versionModalStyles from '../../../styles/VersionModal.module.sass'
 
 import ClientRow from './ClientRow'
 import Client from './Client'
@@ -102,7 +102,7 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 				<div className={styles.container}>
 					<header>
 						<img src={this.app.pictureUrl} />
-						<h1>{`${this.app.name}-${versionName}`}</h1>
+						<h1>{`${this.app.name} v${versionName}`}</h1>
 					</header>
 					<Flex margin centerX>
 						<Flex column margin padding list className={styles.details}>
@@ -118,7 +118,15 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 										<SVG src={icons.Edit} />
 									</Tip>
 								</Modal.OpenTrigger>
-								<VersionModal app={this.app} version={this.version} />
+								<Modal.Content
+									title={`Edit ${versionName}`}
+									className={versionModalStyles.versionModal}
+									component={VersionModal}
+									props={{
+										app: this.app,
+										version: this.version,
+									}}
+								/>
 							</Modal>
 							{hash && (
 								<div>

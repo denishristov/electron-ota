@@ -36,6 +36,7 @@ export interface IApp {
 	bundleId: string
 	latestVersion?: IVersionModel
 	versionsCount: number
+	latestAddedVersion: IVersionModel | null
 	versions: ObservableMap<string, IVersionModel>
 	simpleReports: ObservableMap<string, ISimpleVersionReportModel>
 	reports: ObservableMap<string, IVersionReportModel>
@@ -95,6 +96,11 @@ export default class App implements IApp {
 
 	public getVersion(id: string): IVersionModel | null {
 		return this.versions.get(id) || null
+	}
+
+	@computed
+	get latestAddedVersion(): IVersionModel | null {
+		return this.allVersions[0] || null
 	}
 
 	@computed
