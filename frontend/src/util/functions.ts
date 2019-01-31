@@ -111,8 +111,10 @@ export function getId(entry: IEntry) {
 export function formatDate(date: Date) {
 	const options = {
 		year: date.getFullYear() === new Date().getFullYear() ? void 0 : 'numeric',
-		month: 'long',
+		month: 'short',
 		day: 'numeric',
+		hour: 'numeric',
+		minute: 'numeric',
 	}
 
 	return date.toLocaleDateString('en-US', options)

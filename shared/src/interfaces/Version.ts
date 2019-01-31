@@ -21,7 +21,9 @@ export interface IVersionEditModel {
 	versionName?: string
 	description?: string
 	isCritical?: boolean
-	isBase?: boolean
+	systems: {
+		[key in SystemType]: boolean
+	}
 }
 
 export interface IVersionRequest extends IRequest {

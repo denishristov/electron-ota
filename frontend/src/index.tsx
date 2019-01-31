@@ -23,11 +23,9 @@ configure({
 const history = container.get<BrowserHistory>(DI.BrowserHistory)
 
 render(
-	<React.StrictMode>
-		<AuthProvider>
-			<Router history={history}>
-				<Route component={App} />
-			</Router>
-		</AuthProvider>
-	</React.StrictMode>
+	<AuthProvider>
+		<Router history={history}>
+			<Route component={App} />
+		</Router>
+	</AuthProvider>
 , document.getElementById('root'))

@@ -24,6 +24,7 @@
     "mobx": "5.7.0",
     "mobx-react": "5.4.2",
     "react": "16.7.0",
+    "react-contexify": "4.0.1",
     "react-dom": "16.7.0",
     "react-dropzone": "8.0.3",
     "react-router": "4.3.1",

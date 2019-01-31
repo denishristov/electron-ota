@@ -6,14 +6,13 @@ import App from './App'
 import Button from '../../generic/Button'
 import Modal from '../../generic/Modal'
 
-import Plus from '../../../img/Plus.svg'
-
 import { RouteComponentProps } from 'react-router'
 import Container from '../../generic/Container'
 import AppearAnimation from '../../generic/AppearAnimation'
-import CreateAppModal from './CreateAppModal'
+import AppModal from '../../modals/AppModal'
 
 import styles from '../../../styles/AppsPage.module.sass'
+import icons from '../../../util/constants/icons'
 
 @observer
 export default class AppsContainer extends Component<RouteComponentProps> {
@@ -41,11 +40,11 @@ export default class AppsContainer extends Component<RouteComponentProps> {
 						<Modal>
 							<Modal.OpenTrigger>
 								<Button color='blue' size='small'>
-									<SVG src={Plus} />
+									<SVG src={icons.Plus} />
 									Add new app
 								</Button>
 							</Modal.OpenTrigger>
-							<CreateAppModal />
+							<AppModal />
 						</Modal>
 					</header>
 					<div className={styles.appsContainer}>

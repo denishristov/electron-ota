@@ -1,7 +1,7 @@
 @import './variables'
 
 @mixin glowingShadow($color)
-	box-shadow: 0 $spacing 60px transparentize(darken($color, 10%), 0.6), 0 4px 14px transparentize($color, 0.8)
+	box-shadow: 0 $spacing 60px transparentize($color, 0.6), 0 4px 14px transparentize($color, 0.8)
 
 @mixin text-overflow
 	white-space: nowrap
@@ -34,6 +34,14 @@
 				width: $icon-size
 				height: $icon-size
 				margin-right: $spacing / 2
+
+		img
+			@include glowingShadow($dark-accent)
+			border-radius: 50%
+			width: $spacing * 4
+			height: $spacing * 4
+			margin-right: $spacing
+			margin-bottom: $spacing / 2
 
 @mixin shadow($color)
 	box-shadow: 0 0 20px 0 transparentize($color, 0.76)

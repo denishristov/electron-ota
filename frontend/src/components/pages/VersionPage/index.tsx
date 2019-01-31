@@ -11,13 +11,18 @@ import { IApp } from '../../../stores/App'
 import Loading from '../../generic/Loading'
 import { observer } from 'mobx-react'
 import { downloadFile, formatDate } from '../../../util/functions'
-
+// import { Menu, Item, MenuProvider, theme, animation } from 'react-contexify'
+// import 'react-contexify/dist/ReactContexify.min.css'
 import styles from '../../../styles/VersionPage.module.sass'
+import versionStyles from '../../../styles/Version.module.sass'
 
 import ClientRow from './ClientRow'
 import Client from './Client'
 import ErrorMessage from './ErrorMessage'
 import icons from '../../../util/constants/icons'
+import Tip from '../../generic/Tip'
+import VersionModal from '../../modals/VersionModal'
+import Modal from '../../generic/Modal'
 
 interface IParams {
 	appId: string
@@ -78,7 +83,7 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 			return <Loading />
 		}
 
-		if (!this.version) {
+		if (!this.app || !this.version) {
 			return <Redirect to='/apps' />
 		}
 
@@ -96,74 +101,104 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 			<Container>
 				<div className={styles.container}>
 					<header>
-						<h1>{versionName}</h1>
-						{/* <Modal> */}
-							<Button color='blue' size='small' onClick={this.handleRelease}>
-								Release
-							</Button>
-							<Button color='white' size='small' onClick={this.handleDownload}>
-								Download
-							</Button>
-							<Button color='orange' size='small' onClick={this.handleRelease}>
-								Edit
-							</Button>
-							<Button color='red' size='small' onClick={this.handleRelease}>
-								Delete
-							</Button>
-							{/* </Modal.OpenTrigger>
-							<CreateAppModal />
-						</Modal> */}
+						<img src={this.app.pictureUrl} />
+						<h1>{`${this.app.name}-${versionName}`}</h1>
 					</header>
-					<Flex column>
-						{description && (
-							<>
-								<label>Description</label>
-								<p>{description}</p>
-							</>
-						)}
-						{hash && (
-							<>
-								<label>Hash</label>
-								<h3>{description}</h3>
-							</>
-						)}
-						{createdAt && (
-							<>
-								<label>Added on</label>
-								<h3>{formatDate(new Date(createdAt))}</h3>
-							</>
-						)}
-						<label>Supports</label>
-						<Flex list>
-							{Object.keys(systems)
-								.filter((key) => systems[key])
-								.map((key) => <SVG key={key} src={icons[key]} />)
-							}
-						</Flex>
-						{this.reports && (
-							<Flex centerX margin list>
-								<ClientRow
-									title='Downloading'
-									clients={this.reports.downloading}
-									mapper={clientMapper}
-								/>
-								<ClientRow
-									title='Downloaded'
-									clients={this.reports.downloaded}
-									mapper={clientMapper}
-								/>
-								<ClientRow
-									title='Using'
-									clients={this.reports.using}
-									mapper={clientMapper}
-								/>
-								<ClientRow
-									clients={this.reports.errorMessages}
-									title='Errors'
-									mapper={errorMapper}
-								/>
+					<Flex margin centerX>
+						<Flex column margin padding list className={styles.details}>
+							{createdAt && (
+								<div>
+									<h3>Added on</h3>
+									<h4>{formatDate(new Date(createdAt))}</h4>
+								</div>
+							)}
+							<Modal>
+								<Modal.OpenTrigger>
+									<Tip message='Edit' className={styles.editIcon}>
+										<SVG src={icons.Edit} />
+									</Tip>
+								</Modal.OpenTrigger>
+								<VersionModal app={this.app} version={this.version} />
+							</Modal>
+							{hash && (
+								<div>
+									<h3>Hash</h3>
+									<h4>{hash}</h4>
+								</div>
+							)}
+							{description && (
+								<div>
+									<h3>Description</h3>
+									<p>{description}</p>
+								</div>
+							)}
+							<Flex spread centerY>
+								<h3>Supports</h3>
+								<Flex list>
+									{Object.keys(systems)
+										.filter((key) => systems[key])
+										.map((key) => <SVG key={key} src={icons[key]} />)
+									}
+								</Flex>
 							</Flex>
-						)}
+							<Flex centerY spread>
+								<h3>Labels</h3>
+								<Flex list>
+									{isBase && (
+										<Flex centerY>
+											<div className={versionStyles.base} />
+											<label>Base</label>
+										</Flex>
+									)}
+									{isCritical && (
+										<Flex centerY>
+											<div className={versionStyles.critical} />
+											<label>Critical</label>
+										</Flex>
+									)}
+								</Flex>
+							</Flex>
+							<Flex list margin spread>
+								<Button color='white' size='small' onClick={this.handleDownload}>
+									<SVG src={icons.Download} />
+									Download
+								</Button>
+								<Button color='blue' size='small' onClick={this.handleRelease}>
+									<SVG src={icons.Upload} />
+									Release
+								</Button>
+							</Flex>
+						</Flex>
+						<Flex list centerX>
+							{this.reports && (
+								<>
+									<ClientRow
+										icon={icons.Success}
+										title='Using'
+										clients={this.reports.using}
+										mapper={clientMapper}
+									/>
+									<ClientRow
+										icon={icons.Downloading}
+										title='Downloading'
+										clients={this.reports.downloading}
+										mapper={clientMapper}
+									/>
+									<ClientRow
+										icon={icons.Downloaded}
+										title='Downloaded'
+										clients={this.reports.downloaded}
+										mapper={clientMapper}
+									/>
+									<ClientRow
+										icon={icons.ErrorIcon}
+										clients={this.reports.errorMessages}
+										title='Errors'
+										mapper={errorMapper}
+									/>
+								</>
+							)}
+						</Flex>
 					</Flex>
 				</div>
 			</Container>
@@ -172,8 +207,7 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 
 	@bind
 	private handleRelease() {
-		this.version && this.appsStore.emitPublishVersion({ versionId: this.version.id })
-	}
+		this.version && this.appsStore.emitPublishVersion({ versionId: this.version.id })}
 
 	@bind
 	private handleDownload() {

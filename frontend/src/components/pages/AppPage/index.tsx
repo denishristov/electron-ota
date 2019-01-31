@@ -4,14 +4,14 @@ import React, { Component } from 'react'
 import { Redirect, RouteComponentProps } from 'react-router'
 
 import { IApp } from '../../../stores/App'
-import AppsStore, { IAppsStore } from '../../../stores/AppsStore'
+import { IAppsStore } from '../../../stores/AppsStore'
 import Version from './Version'
 
 import Button from '../../generic/Button'
 import Container from '../../generic/Container'
 import Loading from '../../generic/Loading'
 import Modal from '../../generic/Modal'
-import CreateVersionModal from './CreateVersionModal'
+import VersionModal from '../../modals/VersionModal'
 import AppearAnimation from '../../generic/AppearAnimation'
 
 import Plus from '../../../img/Plus.svg'
@@ -68,12 +68,14 @@ export default class AppPage extends Component<RouteComponentProps<IParams>, ISt
 			name,
 			allVersions,
 			simpleReports,
+			pictureUrl,
 		} = this.app
 
 		return (
 			<Container>
 				<div className={styles.appPageContainer}>
 					<header>
+						<img src={pictureUrl} />
 						<h1>{name}</h1>
 						<Modal>
 							<Modal.OpenTrigger>
@@ -82,7 +84,7 @@ export default class AppPage extends Component<RouteComponentProps<IParams>, ISt
 									Add new version
 								</Button>
 							</Modal.OpenTrigger>
-							<CreateVersionModal app={this.app} />
+							<VersionModal app={this.app} />
 						</Modal>
 					</header>
 					<div className={styles.versionContainer}>

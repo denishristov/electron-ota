@@ -7,13 +7,17 @@ interface IProps<T> {
 	clients: T[]
 	mapper: (x: T) => JSX.Element
 	title: string
+	icon: string
 }
 
-export default observer(function ClientRow<T>({ clients, title, mapper }: IProps<T>) {
+export default observer(function ClientRow<T>({ clients, title, mapper, icon }: IProps<T>) {
 	return (
 		<Flex column list margin padding className={styles.reportColumn}>
 			<Flex pb spread>
-				<h3>{title}</h3>
+				<Flex>
+					<h3>{title}</h3>
+					<SVG src={icon} />
+				</Flex>
 				<h4>{clients.length}</h4>
 			</Flex>
 			{clients.map(mapper)}

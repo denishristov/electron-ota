@@ -1,20 +1,19 @@
 import React, { FormEvent } from 'react'
 import { observer } from 'mobx-react'
 
-import Modal from '../../generic/Modal'
-import Flex from '../../generic/Flex'
-import Input from '../../generic/Input'
-import Button from '../../generic/Button'
-import Dropzone from '../../generic/Dropzone'
+import Modal from '../generic/Modal'
+import Flex from '../generic/Flex'
+import Input from '../generic/Input'
+import Button from '../generic/Button'
+import Dropzone from '../generic/Dropzone'
 
-import styles from '../../../styles/AppsPage.module.sass'
+import styles from '../../styles/AppsPage.module.sass'
 
-import Camera from '../../../img/Camera.svg'
-
-import { IAppsStore } from '../../../stores/AppsStore'
-import { getSourceFromFile } from '../../../util/functions'
+import { IAppsStore } from '../../stores/AppsStore'
+import { getSourceFromFile } from '../../util/functions'
 
 import axios from 'axios'
+import icons from '../../util/constants/icons'
 
 interface ICreateAppEvent extends FormEvent<HTMLFormElement> {
 	target: EventTarget & {
@@ -45,7 +44,7 @@ interface IState {
 }
 
 @observer
-export default class CreateAppModal extends React.Component<{}, IState> {
+export default class AppModal extends React.Component<{}, IState> {
 	public readonly state = {
 		pictureSrc: '',
 	}
@@ -69,7 +68,7 @@ export default class CreateAppModal extends React.Component<{}, IState> {
 								>
 									{this.state.pictureSrc
 										? <img src={this.state.pictureSrc} className={styles.uploadIcon} />
-										: <SVG src={Camera} className={styles.uploadIcon} />
+										: <SVG src={icons.Camera} className={styles.uploadIcon} />
 									}
 								</Dropzone>
 							</Flex>

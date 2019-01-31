@@ -12,6 +12,7 @@ import {
 	IGetSimpleVersionReportsResponse,
 	IGetVersionReportsResponse,
 	IVersionReportModel,
+	IVersionEditModel,
 } from 'shared'
 import { IApi } from '../util/Api'
 
@@ -42,9 +43,11 @@ export interface IApp {
 	getVersion(id: string): IVersionModel | null
 	fetchVersions(): Promise<void>
 	fetchSignedUploadVersionUrl(req: IS3SignUrlRequest): Promise<IS3SignUrlResponse>
-	emitCreateVersion(inputFields: ICreateVersionInput): Promise<void>
 	fetchSimpleReports(): Promise<void>
 	fetchReports(versionId: string): Promise<void>
+	createVersion(inputFields: ICreateVersionInput): void
+	updateVersion(inputFields: IVersionEditModel): void
+	deleteVersion(id: string): void
 }
 
 export default class App implements IApp {
@@ -111,14 +114,6 @@ export default class App implements IApp {
 		return await this.api.emit<IS3SignUrlResponse>(EventType.SignUploadVersionUrl, req)
 	}
 
-	@action
-	public async emitCreateVersion(inputFields: ICreateVersionInput) {
-		const res = await this.api.emit<ICreateVersionResponse>(
-			EventType.CreateVersion,
-			{ appId: this.id, ...inputFields },
-		)
-	}
-
 	public toModel(): IAppModel {
 		return {
 			id: this.id,
@@ -148,11 +143,18 @@ export default class App implements IApp {
 		this.reports.set(versionId, reports)
 	}
 
-	// emitUpdateVersion(inputFields: ICreateVersionInput) {
-	// 	this.api.emit<ICreateVersionResponse>(EventType.CreateApp, { appId: this.id, ...inputFields })
-	// }
+	public createVersion(inputFields: ICreateVersionInput) {
+		this.api.emit<ICreateVersionResponse>(
+			EventType.CreateVersion,
+			{ appId: this.id, ...inputFields },
+		)
+	}
 
-	// emitDeleteVersion(inputFields: ICreateVersionInput) {
-	// 	this.api.emit<ICreateVersionResponse>(EventType.CreateApp, { appId: this.id, ...inputFields })
-	// }
+	public updateVersion(inputFields: IVersionEditModel) {
+		this.api.emit<ICreateVersionResponse>(EventType.UpdateVersion, { appId: this.id, ...inputFields })
+	}
+
+	public deleteVersion(id: string) {
+		this.api.emit<ICreateVersionResponse>(EventType.DeleteVersion, { appId: this.id, id })
+	}
 }

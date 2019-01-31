@@ -1,31 +1,31 @@
-import React, { Component, FormEvent } from 'react'
-import Modal from '../../generic/Modal'
-import Flex from '../../generic/Flex'
-import Input from '../../generic/Input'
-import Button from '../../generic/Button'
-import Switch from '../../generic/Switch'
-import Dropzone from '../../generic/Dropzone'
+import React, { Component, FormEvent, ChangeEvent } from 'react'
+import Modal from '../generic/Modal'
+import Flex from '../generic/Flex'
+import Input from '../generic/Input'
+import Button from '../generic/Button'
+import Switch from '../generic/Switch'
+import Dropzone from '../generic/Dropzone'
 
-import { formatFileSize, hashFile, stopEvent, preventClose } from '../../../util/functions'
+import { formatFileSize, hashFile, preventClose } from '../../util/functions'
 import axios from 'axios'
 
-import Windows from '../../../img/Windows.svg'
-import Apple from '../../../img/Apple.svg'
-import Ubuntu from '../../../img/Ubuntu.svg'
-import Electron from '../../../img/Electron.svg'
+import styles from '../../styles/AppPage.module.sass'
+import inputStyles from '../../styles/Input.module.sass'
 
-import styles from '../../../styles/AppPage.module.sass'
-import inputStyles from '../../../styles/Input.module.sass'
-
-import { IApp } from '../../../stores/App'
+import { IApp } from '../../stores/App'
 import { IVersionModel } from 'shared'
 import { observer } from 'mobx-react'
+import icons from '../../util/constants/icons'
+import { IAppsStore } from '../../stores/AppsStore'
 
 interface IProps {
 	app: IApp
+	version?: IVersionModel
 }
 
 interface IState {
+	name: string
+	description: string
 	isCritical: boolean
 	isReleasing: boolean
 	isBase: boolean
@@ -40,7 +40,7 @@ interface IState {
 	progress?: number
 }
 
-interface ICreateVersionEvent extends FormEvent<HTMLFormElement> {
+interface IVersionEvent extends FormEvent<HTMLFormElement> {
 	target: EventTarget & {
 		elements: {
 			description: HTMLTextAreaElement
@@ -57,19 +57,36 @@ const uploadMessages = {
 	notActive: 'Drop a package or click to upload',
 }
 
-const defaultState: IState = {
-	isCritical: false,
-	isBase: false,
-	isReleasing: false,
-	isWindows: true,
-	isDarwin: true,
-	isLinux: true,
-	file: void 0,
-}
-
 @observer
-export default class CreateVersionModal extends Component<IProps, IState> {
-	public readonly state = { ... defaultState }
+export default class VersionModal extends Component<IProps, IState> {
+	constructor(props: IProps) {
+		super(props)
+
+		if (this.props.version) {
+			const { isCritical, isBase, systems, versionName, description } = this.props.version
+			this.state = {
+				name: versionName,
+				description: description || '',
+				isCritical,
+				isBase,
+				isReleasing: false,
+				isWindows: systems.Windows_RT,
+				isDarwin: systems.Darwin,
+				isLinux: systems.Linux,
+			}
+		} else {
+			this.state = {
+				name: '',
+				description: '',
+				isCritical: false,
+				isBase: false,
+				isReleasing: false,
+				isWindows: true,
+				isDarwin: true,
+				isLinux: true,
+			}
+		}
+	}
 
 	public componentWillUnmount() {
 		removeEventListener('beforeunload', preventClose)
@@ -85,7 +102,11 @@ export default class CreateVersionModal extends Component<IProps, IState> {
 			isLinux,
 			file,
 			progress,
+			name,
+			description,
 		} = this.state
+
+		const isEditing = Boolean(this.props.version)
 
 		return (
 			<Modal.Content
@@ -94,16 +115,20 @@ export default class CreateVersionModal extends Component<IProps, IState> {
 				progress={progress}
 			>
 				<Modal.CloseTrigger>
-					<form onSubmit={this.handleCreateVersion}>
-						<Flex>
+					<form onSubmit={this.handleSubmit}>
+						<Flex grow>
 							<Flex column padding list mr>
 								<Input
+									value={name}
+									onChange={this.setName}
 									name='versionName'
 									label='Name'
 								/>
 								<Flex grow column>
 									<label className={inputStyles.label}>Description</label>
 									<textarea
+										value={description}
+										onChange={this.setDescription}
 										name='description'
 										placeholder='Optional description for the update'
 									/>
@@ -112,40 +137,44 @@ export default class CreateVersionModal extends Component<IProps, IState> {
 							<Flex column padding list ml className={styles.switchRow}>
 								<label>Supporting systems</label>
 								<Flex centerY className={styles.osRow}>
-									<SVG src={Windows} />
+									<SVG src={icons.Windows_RT} />
 									<label className={''}>Windows</label>
 									<Switch value={isWindows} onChange={this.toggleIsWindows} />
 								</Flex>
 								<Flex centerY className={styles.osRow}>
-									<SVG src={Apple} />
+									<SVG src={icons.Darwin} />
 									<label className={''}>Macos</label>
 									<Switch value={isDarwin} onChange={this.toggleIsDarwin}	/>
 								</Flex>
 								<Flex centerY className={styles.osRow}>
-									<SVG src={Ubuntu} />
-									<label className={''}>Ubuntu</label>
+									<SVG src={icons.Linux} />
+									<label className={''}>Linux</label>
 									<Switch value={isLinux} onChange={this.toggleIsLinux} />
 								</Flex>
 								<label>Release</label>
-								<Flex spread centerY>
-									<label className={''}>
-										Immediately?
-									</label>
-									<Switch value={isReleasing} onChange={this.toggleIsReleasing} />
-								</Flex>
+								{!isEditing && (
+									<Flex spread centerY>
+										<label className={''}>
+											Immediately?
+										</label>
+										<Switch value={isReleasing} onChange={this.toggleIsReleasing} />
+									</Flex>
+								)}
 								<Flex spread centerY>
 									<label className={''}>
 										Critical?
 									</label>
 									<Switch value={isCritical} onChange={this.toggleIsCritical} />
 								</Flex>
-								<Flex spread centerY>
-									<label className={''}>
-										Base?
-									</label>
-									<Switch value={isBase} onChange={this.toggleIsBase} />
-								</Flex>
-								{!isBase && (
+								{!isEditing && (
+									<Flex spread centerY>
+										<label className={''}>
+											Base?
+										</label>
+										<Switch value={isBase} onChange={this.toggleIsBase} />
+									</Flex>
+								)}
+								{!isEditing && !isBase && (
 									<Dropzone
 										onDrop={this.handleDrop}
 										name='version'
@@ -155,7 +184,7 @@ export default class CreateVersionModal extends Component<IProps, IState> {
 									>
 										{file && (
 											<>
-												<SVG src={Electron} />
+												<SVG src={icons.Electron} />
 												<Flex fill>
 													<Flex spread centerY>
 														<label>{file.name}</label>
@@ -176,14 +205,43 @@ export default class CreateVersionModal extends Component<IProps, IState> {
 							</Flex>
 						</Flex>
 						<footer>
-							<Button size='small' color='blue' type='submit'>
-								ADD
-							</Button>
+							{isEditing && (
+								<Modal.CloseTrigger>
+									<Button size='small' color='red' type='button' onClick={this.handleDelete}>
+										<SVG src={icons.Delete} />
+										Delete
+									</Button>
+								</Modal.CloseTrigger>
+							)}
+							{isEditing && (
+								<Modal.CloseTrigger>
+									<Button size='small' color='green' type='submit'>
+										<SVG src={icons.Success} />
+										Save
+									</Button>
+								</Modal.CloseTrigger>
+							)}
+							{!isEditing && (
+								<Button size='small' color='blue' type='submit'>
+									<SVG src={icons.Plus} />
+									ADD
+								</Button>
+							)}
 						</footer>
 					</form>
 				</Modal.CloseTrigger>
 			</Modal.Content>
 		)
+	}
+
+	@bind
+	private setName(event: React.ChangeEvent<HTMLInputElement>) {
+		this.setState({ name: event.target.value })
+	}
+
+	@bind
+	private setDescription(event: React.ChangeEvent<HTMLTextAreaElement>) {
+		this.setState({ description: event.target.value })
 	}
 
 	@bind
@@ -223,7 +281,7 @@ export default class CreateVersionModal extends Component<IProps, IState> {
 	}
 
 	@bind
-	private async handleCreateVersion(event: ICreateVersionEvent) {
+	private async handleSubmit(event: IVersionEvent) {
 		event.preventDefault()
 
 		const { app } = this.props
@@ -243,8 +301,24 @@ export default class CreateVersionModal extends Component<IProps, IState> {
 				isLinux,
 			} = this.state
 
+		if (this.props.version) {
+			app.updateVersion({
+				id: this.props.version.id,
+				versionName: versionName.value,
+				description: description.value,
+				isCritical,
+				systems: {
+					Windows_RT: isWindows,
+					Darwin: isDarwin,
+					Linux: isLinux,
+				},
+			})
+
+			return
+		}
+
 		if (this.state.isBase) {
-			app.emitCreateVersion({
+			app.createVersion({
 				versionName: versionName.value,
 				description: description.value,
 				isBase,
@@ -280,7 +354,7 @@ export default class CreateVersionModal extends Component<IProps, IState> {
 
 			removeEventListener('beforeunload', preventClose)
 
-			app.emitCreateVersion({
+			app.createVersion({
 				versionName: versionName.value,
 				description: description.value,
 				downloadUrl,
@@ -310,6 +384,14 @@ export default class CreateVersionModal extends Component<IProps, IState> {
 			size,
 			date: new Date(lastModified),
 		}})
+	}
+
+	@bind
+	private handleDelete() {
+		if (this.props.version) {
+			const { id } = this.props.version
+			this.props.app.deleteVersion(id)
+		}
 	}
 
 	private async uploadVersion(versionFile: File, signedRequest: string) {
