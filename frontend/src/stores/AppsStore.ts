@@ -16,8 +16,8 @@ import {
 	ErrorReportResponse,
 	CreateVersionResponse,
 	DeleteVersionResponse,
+	CreateAppRequest,
 } from 'shared'
-import { CreateAppRequest } from 'shared'
 import { IApi } from '../util/Api'
 import { IApp } from './App'
 import { AppFactory } from '../dependencies/factories/AppFactory'
@@ -178,7 +178,7 @@ export default class AppsStore implements IAppsStore {
 		this.api.emit<DeleteAppResponse>(EventType.DeleteApp, deleteAppRequest)
 	}
 
-	public releaseUpdate(req: PublishVersionRequest): void{
+	public releaseUpdate(req: PublishVersionRequest): void {
 		this.api.emit<PublishVersionResponse>(EventType.ReleaseUpdate, req)
 	}
 }

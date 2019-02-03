@@ -1,12 +1,12 @@
 import { Required } from 'tsdv-joi/constraints/any'
-import { Timestamp } from 'tsdv-joi/constraints/date'
+import { DateSchema } from 'tsdv-joi/constraints/date'
 
 export class TimestampedDocument {
-	@Timestamp()
 	@Required()
+	@DateSchema()
 	public createdAt: string
 
-	@Timestamp()
 	@Required()
+	@DateSchema()
 	public updatedAt: string
 }

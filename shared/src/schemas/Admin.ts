@@ -23,14 +23,13 @@ export class AdminLoginResponse {
 	@BooleanSchema()
 	public isAuthenticated: boolean
 
-	@Required()
-	@Token()
+	@StringSchema()
 	public authToken?: string
 }
 
 export class AdminAuthenticationRequest {
 	@Required()
-	@Token()
+	@StringSchema()
 	public authToken: string
 }
 
@@ -53,11 +52,11 @@ export class RegisterAdminRequest {
 
 	@Email()
 	@Max(256)
-	public email?: string
+	public email: string
 
 	@Min(4)
 	@Max(256)
-	public name?: string
+	public name: string
 
 	@Required()
 	@Max(256)
@@ -70,7 +69,6 @@ export class RegisterAdminResponse {
 	@BooleanSchema()
 	public isSuccessful: boolean
 
-	@Required()
-	@Token()
+	@StringSchema()
 	public authToken?: string
 }

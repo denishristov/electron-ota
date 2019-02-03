@@ -31,6 +31,7 @@ import adminMediatorFactory from './factories/AdminMediatorFactory'
 import clientsMediatorFactory, { ClientsMediatorFactory } from './factories/ClientsMediatorFactory'
 
 import { IPreRespondHook, IPostRespondHook, ISocketMediator } from '../util/mediator/interfaces'
+
 import {
 	AdminDocumentRef,
 	AppDocumentRef,
@@ -113,11 +114,10 @@ container.bind<IPostRespondHook>(DI.Hooks.ReleaseUpdate)
 container.bind<ClientsMediatorFactory>(DI.Factories.ClientsMediator)
 	.toFactory(clientsMediatorFactory)
 
-container.bind<ISocketMediator>(DI.Mediators.Admins)
-	.toDynamicValue(adminMediatorFactory)
-	.inSingletonScope()
+container.bind<ISocketMediator>(DI.Factories.AdminsMediator)
+	.toFactory(adminMediatorFactory)
 
-container.bind<Map<string, ISocketMediator>>(DI.Mediators.Clients)
+container.bind<Map<string, ISocketMediator>>(DI.Mediators)
 	.toConstantValue(new Map())
 
 export default container

@@ -7,40 +7,42 @@ import { BooleanSchema } from 'tsdv-joi/constraints/boolean'
 import { Nested, NestedArray } from 'tsdv-joi'
 
 class SystemSupport {
-	@BooleanSchema()
 	@Required()
+	@BooleanSchema()
 	public Darwin: boolean
 
-	@BooleanSchema()
 	@Required()
+	@BooleanSchema()
 	public Linux: boolean
 
-	@BooleanSchema()
 	@Required()
+	@BooleanSchema()
+	// tslint:disable-next-line:variable-name
 	public Windows_RT: boolean
 }
+
 export class VersionModel extends TimestampedDocument {
-	@Token()
 	@Required()
+	@Token()
 	public id: string
 
-	@StringSchema()
 	@Required()
+	@StringSchema()
 	public versionName: string
 
 	@Uri()
 	public downloadUrl?: string
 
-	@BooleanSchema()
 	@Required()
+	@BooleanSchema()
 	public isCritical: boolean
 
-	@BooleanSchema()
 	@Required()
+	@BooleanSchema()
 	public isBase: boolean
 
-	@Token()
 	@Required()
+	@Token()
 	public appId: string
 
 	@StringSchema()
@@ -55,12 +57,12 @@ export class VersionModel extends TimestampedDocument {
 }
 
 export class VersionEditModel {
-	@Token()
 	@Required()
+	@Token()
 	public id: string
 
-	@Token()
 	@Required()
+	@Token()
 	public appId: string
 
 	@StringSchema()
@@ -77,20 +79,20 @@ export class VersionEditModel {
 }
 
 export class VersionRequest {
-	@Token()
 	@Required()
+	@Token()
 	public appId: string
 }
 
 export class VersionResponse {
-	@Token()
 	@Required()
+	@Token()
 	public appId: string
 }
 
 export class GetVersionRequest {
-	@Token()
 	@Required()
+	@Token()
 	public id: string
 }
 
@@ -111,23 +113,23 @@ export class GetVersionsResponse {
 }
 
 export class CreateVersionRequest extends VersionRequest {
-	@StringSchema()
 	@Required()
+	@StringSchema()
 	public versionName: string
 
 	@Uri()
 	public downloadUrl?: string
 
-	@BooleanSchema()
 	@Required()
+	@BooleanSchema()
 	public isCritical: boolean
 
-	@BooleanSchema()
 	@Required()
+	@BooleanSchema()
 	public isBase: boolean
 
-	@Token()
 	@Required()
+	@Token()
 	public appId: string
 
 	@StringSchema()
@@ -148,13 +150,13 @@ export class UpdateVersionRequest extends VersionEditModel {}
 export class UpdateVersionResponse extends VersionEditModel {}
 
 export class DeleteVersionRequest extends VersionRequest {
-	@Token()
 	@Required()
+	@Token()
 	public id: string
 }
 
 export class DeleteVersionResponse extends VersionResponse {
-	@Token()
 	@Required()
+	@Token()
 	public id: string
 }

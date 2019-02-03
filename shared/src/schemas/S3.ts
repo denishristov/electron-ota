@@ -1,24 +1,23 @@
-import { StringSchema, Uri } from 'tsdv-joi/constraints/string';
-import { Required } from 'tsdv-joi/constraints/any';
-
 // tslint:disable:max-classes-per-file
+import { StringSchema, Uri } from 'tsdv-joi/constraints/string'
+import { Required } from 'tsdv-joi/constraints/any'
 
 export class S3SignUrlRequest {
-	@StringSchema()
 	@Required()
+	@StringSchema()
 	public name: string
 
-	@StringSchema()
 	@Required()
+	@StringSchema()
 	public type: string
 }
 
 export class S3SignUrlResponse {
-	@Uri()
 	@Required()
+	@Uri()
 	public signedRequest: string
 
-	@Uri()
 	@Required()
+	@Uri()
 	public downloadUrl: string
 }

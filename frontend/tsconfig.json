@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "outDir": "build/dist",
-    "module": "esnext",
+    "module": "commonjs",
     "target": "es2017",
     "lib": [
       "esnext",
@@ -18,13 +18,15 @@
     "suppressImplicitAnyIndexErrors": true,
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "types": [
       "reflect-metadata"
     ],
-    "skipLibCheck": false,
     "esModuleInterop": true,
     "resolveJsonModule": true,
+    "skipLibCheck": false,
     "strict": true,
+    "strictPropertyInitialization": false,
     "isolatedModules": true
   },
   "include": [

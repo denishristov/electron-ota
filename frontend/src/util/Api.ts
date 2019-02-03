@@ -1,9 +1,9 @@
-import { EventType, IResponse } from 'shared'
+import { EventType } from 'shared'
 import chalk from 'chalk'
 
 export interface IApi {
-	emit<Res extends IResponse = IResponse>(eventType: EventType, request?: object): Promise<Res>
-	on<Res extends IResponse = IResponse>(eventType: string, cb: (res: Res) => void): this
+	emit<Res extends object>(eventType: EventType, request?: object): Promise<Res>
+	on<Res extends object>(eventType: string, cb: (res: Res) => void): this
 	usePreEmit(cb: Hook): void
 }
 
@@ -31,15 +31,16 @@ export default class Api implements IApi {
 		this.preEmitHooks.push(cb)
 	}
 
-	public emit<Res extends IResponse = IResponse>(eventType: EventType, request?: object): Promise<Res> {
+	public emit<Res extends object>(eventType: EventType, request: object = {}): Promise<Res> {
 		return new Promise((resolve, reject) => {
 			const timeout = setTimeout(() => reject({ eventType, request, message: 'timeout' }), 1000 * 10)
 			// console.log(this.preEmitHooks)
 			this.connection.emit(eventType, this.attachData(request || {}), (data: Res) => {
 				clearTimeout(timeout)
-				if (data.errorMessage) {
+
+				if (Object.keys(data).some((key) => key === 'errorMessage' || key === 'stack')) {
+					this.logError(eventType, request || {}, data)
 					reject(data)
-					this.logError(eventType, request || {}, new Error(data.errorMessage))
 				} else {
 					this.logRequest(eventType, request || {}, data)
 					resolve(data)
@@ -49,16 +50,10 @@ export default class Api implements IApi {
 	}
 
 	@bind
-	public on<Res extends IResponse = IResponse>(eventType: string, cb: (res: Res) => void): this {
+	public on<Res extends object>(eventType: string, cb: (res: Res) => void): this {
 		this.connection.on(eventType, (res: Res) => {
-			if (res && res.errorMessage) {
-				const error = new Error(res.errorMessage)
-				this.logError(eventType, res, error)
-				throw error
-			} else {
-				this.logUpdate(eventType, res)
-				cb(res)
-			}
+			this.logUpdate(eventType, res)
+			cb(res)
 		})
 
 		return this
@@ -82,7 +77,7 @@ export default class Api implements IApi {
 		console.log('----------------------------------')
 	}
 
-	private logError(eventType: string, request: object, error: Error) {
+	private logError(eventType: string, request: object, error: object) {
 		console.log(colors.eventType(eventType))
 		console.log(colors.request('Request: '), request)
 		console.log(colors.error('Error: '), error)

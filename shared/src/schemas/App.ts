@@ -24,8 +24,8 @@ export class AppModel {
 	@Nested()
 	public latestVersion?: VersionModel
 
-	@NumberSchema()
 	@Required()
+	@NumberSchema()
 	public versions: number
 }
 

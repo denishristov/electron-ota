@@ -6,30 +6,30 @@ import { Token, StringSchema } from 'tsdv-joi/constraints/string'
 import { NestedArray, Nested } from 'tsdv-joi'
 
 export class SimpleVersionReportModel {
-	@NumberSchema()
 	@Required()
+	@NumberSchema()
 	public downloadingCount: number
 
-	@NumberSchema()
 	@Required()
+	@NumberSchema()
 	public downloadedCount: number
 
-	@NumberSchema()
 	@Required()
+	@NumberSchema()
 	public usingCount: number
 
-	@NumberSchema()
 	@Required()
+	@NumberSchema()
 	public errorsCount: number
 
-	@Token()
 	@Required()
+	@Token()
 	public version: string
 }
 
 export class GetSimpleVersionReportsRequest {
-	@Token()
 	@Required()
+	@Token()
 	public appId: string
 }
 
@@ -40,12 +40,12 @@ export class GetSimpleVersionReportsResponse {
 }
 
 export class ErrorReport {
-	@Nested()
 	@Required()
+	@Nested()
 	public client: ClientModel
 
-	@StringSchema()
 	@Required()
+	@StringSchema()
 	public errorMessage: string
 }
 
@@ -68,8 +68,8 @@ export class VersionReportModel {
 }
 
 export class GetVersionReportsRequest {
-	@Nested()
 	@Required()
+	@Nested()
 	public versionId: string
 }
 

@@ -146,10 +146,12 @@ module.exports = {
     extensions: paths.moduleFileExtensions
       .map(ext => `.${ext}`)
       .filter(ext => useTypeScript || !ext.includes('ts')),
+    // packageAlias: 'browser',
     alias: {
+      joi: 'joi-browser',
       // Support React Native Web
       // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
-      'react-native': 'react-native-web',
+      'react-native': 'react-native-web'
     },
     plugins: [
       // Adds support for installing with Plug'n'Play, leading to faster installs and adding
@@ -161,7 +163,7 @@ module.exports = {
       // please link the files into your node_modules/ and let module-resolution kick in.
       // Make sure your source files are compiled, as they will not be processed in any way.
       new ModuleScopePlugin(paths.appSrc, [paths.appPackageJson]),
-    ],
+    ]
   },
   resolveLoader: {
     plugins: [
@@ -194,6 +196,7 @@ module.exports = {
           {
             test: /\.(ts|tsx)$/,
             include: paths.appSrc,
+            exclude: [/joi-browser/],
             use: [
               {
                 loader: require.resolve('ts-loader'),

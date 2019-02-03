@@ -26,14 +26,14 @@ export const Hooks = {
 }
 
 export const Factories = {
+	AdminsMediator: Symbol.for('Mediator.Admins'),
 	ClientsMediator: Symbol.for('Factory.ClientsMediator'),
 }
 
-export const Mediators = {
-	Admins: Symbol.for('Mediator.Admins'),
-	Clients: Symbol.for('Mediator.Clients'),
-}
+export const Mediators = Symbol.for('Mediators')
 
 export const SocketServer = Symbol.for('SocketServer')
 
 export const HTTPServer = Symbol.for('HTTPServer')
+
+export const AdminMediator = '/admins'

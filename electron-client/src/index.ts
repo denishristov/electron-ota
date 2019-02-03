@@ -65,8 +65,8 @@ class ElectronUpdateServiceClient extends EventEmitter {
 
 		this.options.checkHashBeforeLoad = Boolean(options.checkHashBeforeLoad)
 
-		const query = `type=${os.type()}&versionName=${options.versionName}`
-		const uri = `${options.updateServerUrl}/${options.bundleId}`
+		const query = `versionName=${options.versionName}`
+		const uri = `${options.updateServerUrl}/${options.bundleId}/${os.type()}`
 
 		this.connect = connect(uri, query)
 

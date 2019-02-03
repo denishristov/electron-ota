@@ -5,7 +5,7 @@ import { getId } from '../../util/functions'
 import { IEntry } from '../../util/types'
 import { animationConfig } from '../../config/config'
 
-interface IProps<T> {
+interface IProps<T extends IEntry> {
 	children: (item: T) => (style: React.CSSProperties) => JSX.Element
 	items: T[]
 }
@@ -15,9 +15,9 @@ export default function AppearAnimation<T extends IEntry>({ children, items }: I
 		<Transition
 			native
 			unique
-			items={items}
-			keys={getId}
 			config={animationConfig}
+			// keys={getId}
+			items={items}
 			trail={64}
 			{...versionsTransitions}
 		>

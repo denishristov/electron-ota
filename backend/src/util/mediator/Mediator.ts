@@ -38,6 +38,10 @@ export default class SocketMediator implements ISocketMediator {
 		clients.on(EventType.Connection, this.subscribe)
 	}
 
+	public get name() {
+		return this.clients.name
+	}
+
 	public use<Req extends object, Res extends object>(
 		eventType: EventType,
 		handler: Handler<Req, Res>,

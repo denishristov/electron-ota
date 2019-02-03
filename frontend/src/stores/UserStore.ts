@@ -41,12 +41,8 @@ class UserStore implements IUserStore {
 	public async login(req: AdminLoginRequest): Promise<boolean> {
 		const {
 			authToken,
-			errorMessage,
 			isAuthenticated,
 		} = await this.api.emit<AdminLoginResponse>(EventType.Login, req)
-
-		// tslint:disable-next-line:no-console
-		errorMessage && console.warn(errorMessage)
 
 		if (isAuthenticated && authToken) {
 			this.setAuthToken(authToken)
@@ -60,15 +56,11 @@ class UserStore implements IUserStore {
 	private async authenticate(): Promise<void> {
 		if (this.authToken) {
 			const {
-				errorMessage,
 				isAuthenticated,
 			} = await this.api.emit<AdminAuthenticationResponse>(
 				EventType.Authentication,
 				{ authToken: this.authToken },
 			)
-
-			// tslint:disable-next-line:no-console
-			errorMessage && console.warn(errorMessage)
 
 			if (isAuthenticated) {
 				this.isAuthenticated = true

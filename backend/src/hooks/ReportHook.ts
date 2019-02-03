@@ -4,6 +4,7 @@ import { IPostRespondHook, ISocketMediator } from '../util/mediator/interfaces'
 import { IClientService } from '../services/ClientService'
 import { Model } from 'mongoose'
 import { IVersionDocument } from '../models/Version'
+// import { AdminMediatorName } from '../dependencies/factories/AdminMediatorFactory'
 
 @DI.injectable()
 export default class ReportHook implements IPostRespondHook {
@@ -15,8 +16,8 @@ export default class ReportHook implements IPostRespondHook {
 	])
 
 	constructor(
-		@DI.inject(DI.Mediators.Admins)
-		private readonly adminMediator: ISocketMediator,
+		@DI.inject(DI.Mediators)
+		private readonly mediators: Map<string, ISocketMediator>,
 		@DI.inject(DI.Services.Client)
 		private readonly clientsService: IClientService,
 		@DI.inject(DI.Models.Version)
@@ -31,7 +32,7 @@ export default class ReportHook implements IPostRespondHook {
 		const client = await this.clientsService.getClient(id)
 		const { app: appId } = await this.versions.findById(versionId).select('app')
 
-		this.adminMediator.broadcast(eventType, {
+		this.mediators.get(DI.AdminMediator).broadcast(eventType, {
 			client,
 			versionId,
 			appId,

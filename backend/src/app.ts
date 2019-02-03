@@ -11,8 +11,30 @@ import { ISocketMediator } from './util/mediator/interfaces'
 import { Server } from 'http'
 import { PORT, ENVIRONMENT } from './config/config'
 
+import { AdminMediatorFactory } from './dependencies/factories/AdminMediatorFactory'
+import { SystemType } from 'shared'
+
 (async function setup() {
-	container.get(DI.Mediators.Admins)
+	const mediators = container.get<Map<string, ISocketMediator>>(DI.Mediators)
+
+	const adminMediator = container.get<AdminMediatorFactory>(DI.Factories.AdminsMediator)()
+
+	mediators.set(adminMediator.name, adminMediator)
+
+	const clientsMediatorFactory = container.get<ClientsMediatorFactory>(DI.Factories.ClientsMediator)
+
+	const appService = container.get<IAppService>(DI.Services.App)
+	const bundleIds = await appService.getAllBundleIds()
+
+	const systemTypes = Object.keys(SystemType) as SystemType[]
+
+	for (const bundleId of bundleIds) {
+		for (const systemType of systemTypes) {
+			const mediator = clientsMediatorFactory(bundleId, systemType)
+			mediators.set(mediator.name, mediator)
+		}
+	}
+
 	container.get<Server>(DI.HTTPServer).listen(PORT, () => {
 		// tslint:disable-next-line:no-console
 		console.log(
@@ -21,15 +43,4 @@ import { PORT, ENVIRONMENT } from './config/config'
 			ENVIRONMENT,
 		)
 	})
-
-	const appService = container.get<IAppService>(DI.Services.App)
-	const clientsMediatorFactory = container.get<ClientsMediatorFactory>(DI.Factories.ClientsMediator)
-	const clientMediators = container.get<Map<string, ISocketMediator>>(DI.Mediators.Clients)
-
-	const bundleIds = await appService.getAllBundleIds()
-
-	for (const bundleId of bundleIds) {
-		// container.bind<ISocketMediator>(DI.Mediators.Clients).toConstantValue(clientsMediatorFactory(bundleId)).w
-		clientMediators.set(bundleId, clientsMediatorFactory(bundleId))
-	}
 }())

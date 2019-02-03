@@ -6,7 +6,7 @@ import Button from '../generic/Button'
 import Switch from '../generic/Switch'
 import Dropzone from '../generic/Dropzone'
 
-import { formatFileSize, hashFile, preventClose, list, formatDate } from '../../util/functions';
+import { formatFileSize, hashFile, preventClose, list, formatDate } from '../../util/functions'
 import axios from 'axios'
 
 import styles from '../../styles/VersionModal.module.sass'

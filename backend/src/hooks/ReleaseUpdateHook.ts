@@ -10,8 +10,8 @@ export default class ReleaseUpdateHook implements IPostRespondHook {
 	public eventTypes = new Set([EventType.ReleaseUpdate])
 
 	constructor(
-		@DI.inject(DI.Mediators.Clients)
-		private readonly clientsMediators: Map<string, ISocketMediator>,
+		@DI.inject(DI.Mediators)
+		private readonly mediators: Map<string, ISocketMediator>,
 		@DI.inject(DI.Models.Version)
 		private readonly versions: Model<IVersionDocument>,
 	) {}
@@ -38,13 +38,20 @@ export default class ReleaseUpdateHook implements IPostRespondHook {
 				.populate('app')
 				.then(toModel)
 
-			const clientsMediator = this.clientsMediators.get(app.bundleId)
 			const update = { ...version, versionId }
+			const supportedSystemTypes = Object.entries(version.systems)
+				.filter(([_, value]) => value)
+				.map(([systemType, _]) => systemType)
 
-			clientsMediator.broadcast(EventType.NewUpdate, update, (client) => {
-				const { type } = client.handshake.query
-				return Boolean(version.systems[type as SystemType])
-			})
+			for (const systemType of supportedSystemTypes) {
+				const mediator = this.mediators.get(`/${app.bundleId}/${systemType}`)
+
+				if (!mediator) {
+					throw new Error(`mediator /${app.bundleId}/${systemType} does not exist`)
+				}
+
+				mediator.broadcast(EventType.NewUpdate, update)
+			}
 		}
 	}
 }

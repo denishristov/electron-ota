@@ -22,6 +22,7 @@ export type ConstructedHandler = (request: object, respond: (res: Error | object
 // }
 
 export interface ISocketMediator {
+	name: string
 	use<Req extends object, Res extends object>(
 		eventType: EventType,
 		handler: Handler<Req, Res>,

@@ -1,8 +1,9 @@
 // tslint:disable:max-classes-per-file
 import { Required } from 'tsdv-joi/constraints/any'
 import { Token, StringSchema } from 'tsdv-joi/constraints/string'
-import { Or } from 'tsdv-joi/constraints/object'
 import { Nested } from 'tsdv-joi'
+import { Or } from 'tsdv-joi/constraints/object'
+import { SystemType } from '../enums/SystemType'
 
 export class ClientModel {
 	@Required()
@@ -10,8 +11,8 @@ export class ClientModel {
 	public id: string
 
 	@Required()
-	@Or('Darwin', 'Linux', 'Windows_RT')
-	public systemType: string
+	// @Or(SystemType)
+	public systemType: SystemType
 
 	@Required()
 	@StringSchema()
@@ -24,7 +25,7 @@ export class ClientModel {
 
 export class RegisterClientRequest {
 	@Required()
-	@Or('Darwin', 'Linux', 'Windows_RT')
+	// @Or(SystemType)
 	public systemType: string
 
 	@Required()
@@ -53,14 +54,14 @@ export class ClientReportRequest {
 }
 
 export class ErrorReportRequest extends ClientReportRequest {
-	@StringSchema()
 	@Required()
+	@StringSchema()
 	public errorMessage: string
 }
 
 export class ClientReportResponse {
-	@Nested()
 	@Required()
+	@Nested()
 	public client: ClientModel
 
 	@Required()
@@ -73,7 +74,7 @@ export class ClientReportResponse {
 }
 
 export class ErrorReportResponse extends ClientReportResponse {
-	@StringSchema()
 	@Required()
+	@StringSchema()
 	public errorMessage: string
 }

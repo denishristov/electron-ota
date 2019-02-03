@@ -6,47 +6,17 @@ import { Nested } from 'tsdv-joi'
 import { SystemType } from '../enums/SystemType'
 import { Or } from 'tsdv-joi/constraints/object'
 
-export class CheckForUpdateRequest {
-	@StringSchema()
-	@Required()
-	public versionName: string
-
-	@StringSchema()
-	@Required()
-	public bundleId: string
-
-	@Required()
-	@Or('Darwin', 'Linux', 'Windows_RT')
-	public systemType: SystemType
-}
-
-export class CheckForUpdateResponse {
-	@BooleanSchema()
-	@Required()
-	public isUpToDate: boolean
-
-	@Nested()
-	@Required()
-	public update?: Update
-}
-
-export class NewUpdateMessage {
-	@Nested()
-	@Required()
-	public update: Update
-}
-
 class Update {
-	@StringSchema()
 	@Required()
+	@StringSchema()
 	public versionName: string
 
-	@BooleanSchema()
 	@Required()
+	@BooleanSchema()
 	public isCritical: boolean
 
-	@BooleanSchema()
 	@Required()
+	@BooleanSchema()
 	public isBase: boolean
 
 	@Token()
@@ -59,16 +29,45 @@ class Update {
 	public downloadUrl: string
 }
 
-export class PublishVersionRequest {
-	@Token()
+export class CheckForUpdateRequest {
 	@Required()
+	@StringSchema()
+	public versionName: string
+
+	@Required()
+	@StringSchema()
+	public bundleId: string
+
+	@Required()
+	// @Or(SystemType)
+	public systemType: SystemType
+}
+
+export class CheckForUpdateResponse {
+	@Required()
+	@BooleanSchema()
+	public isUpToDate: boolean
+
+	@Nested()
+	public update?: Update
+}
+
+export class NewUpdateMessage {
+	@Required()
+	@Nested()
+	public update: Update
+}
+
+export class PublishVersionRequest {
+	@Required()
+	@Token()
 	public versionId: string
 }
 
 export class PublishVersionResponse {
 	public isSuccessful: boolean
 
-	@Token()
 	@Required()
+	@Token()
 	public versionId: string
 }

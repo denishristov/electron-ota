@@ -1,7 +1,6 @@
 import { action, computed, observable, ObservableMap } from 'mobx'
 import {
 	EventType,
-	CreateVersionResponse,
 	GetVersionsResponse,
 	S3SignUrlRequest,
 	S3SignUrlResponse,
@@ -15,6 +14,7 @@ import {
 	AppModel,
 } from 'shared'
 import { IApi } from '../util/Api'
+import { Omit } from 'react-router'
 
 interface ICreateVersionInput {
 	versionName: string
@@ -47,7 +47,7 @@ export interface IApp {
 	fetchSimpleReports(): Promise<void>
 	fetchReports(versionId: string): Promise<void>
 	createVersion(inputFields: ICreateVersionInput): void
-	updateVersion(inputFields: Exclude<VersionEditModel, 'appId'>): void
+	updateVersion(inputFields: Omit<VersionEditModel, 'appId'>): void
 	deleteVersion(id: string): void
 }
 
@@ -153,7 +153,7 @@ export default class App implements IApp {
 		this.api.emit(EventType.CreateVersion, { appId: this.id, ...inputFields })
 	}
 
-	public updateVersion(inputFields: Exclude<VersionEditModel, 'appId'>) {
+	public updateVersion(inputFields: Omit<VersionEditModel, 'appId'>) {
 		this.api.emit(EventType.UpdateVersion, { appId: this.id, ...inputFields })
 	}
 
