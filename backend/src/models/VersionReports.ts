@@ -3,7 +3,7 @@ import { IClientDocument } from './Client'
 import { ClientDocumentRef, VersionDocumentRef } from './refs'
 import { IVersionDocument } from './Version'
 
-interface IUpdateError {
+interface UpdateError {
 	client: IClientDocument
 	errorMessage: string
 }
@@ -12,7 +12,7 @@ export interface IVersionReportsDocument extends Document {
 	downloading: IClientDocument[]
 	downloaded: IClientDocument[]
 	using: IClientDocument[]
-	errorMessages: IUpdateError[]
+	errorMessages: UpdateError[]
 	version: IVersionDocument
 }
 

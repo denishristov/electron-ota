@@ -1,9 +1,9 @@
-import { IRegisterClientRequest, IRegisterClientResponse } from 'shared'
+import { RegisterClientRequest, RegisterClientResponse } from 'shared'
 import { Model } from 'mongoose'
 import { IClientDocument } from '../models/Client'
 
 export interface IClientService {
-	registerClient(client: IRegisterClientRequest): Promise<IRegisterClientResponse>
+	registerClient(client: RegisterClientRequest): Promise<RegisterClientResponse>
 	getClient(clientId: string): Promise<IClientDocument>
 }
 
@@ -15,7 +15,7 @@ export default class ClientService implements IClientService {
 	) {}
 
 	@bind
-	public async registerClient(client: IRegisterClientRequest) {
+	public async registerClient(client: RegisterClientRequest) {
 		const { id } = await this.clients.create(client)
 
 		return { id }

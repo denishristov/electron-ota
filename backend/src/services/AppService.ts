@@ -1,13 +1,13 @@
 
 import { Model } from 'mongoose'
 import {
-	ICreateAppRequest,
-	ICreateAppResponse,
-	IDeleteAppRequest,
-	IDeleteAppResponse,
-	IGetAppsResponse,
-	IUpdateAppRequest,
-	IUpdateAppResponse,
+	CreateAppRequest,
+	CreateAppResponse,
+	DeleteAppRequest,
+	DeleteAppResponse,
+	GetAppsResponse,
+	UpdateAppRequest,
+	UpdateAppResponse,
 	SystemType,
 } from 'shared'
 import { IAppDocument } from '../models/App'
@@ -19,10 +19,10 @@ export interface IAppService {
 	getApp(id: string, options?: IGetAppOptions): Promise<IAppDocument>
 	getAppVersions(id: string): Promise<{ versions: IVersionDocument[] }>
 	getAppLatestVersion(id: string, systemType: SystemType): Promise<IVersionDocument>
-	getAllApps(): Promise<IGetAppsResponse>
-	createApp(createRequest: ICreateAppRequest): Promise<ICreateAppResponse>
-	updateApp(updateRequest: IUpdateAppRequest): Promise<IUpdateAppResponse>
-	deleteApp(deleteRequest: IDeleteAppRequest): Promise<IDeleteAppResponse>
+	getAllApps(): Promise<GetAppsResponse>
+	createApp(createRequest: CreateAppRequest): Promise<CreateAppResponse>
+	updateApp(updateRequest: UpdateAppRequest): Promise<UpdateAppResponse>
+	deleteApp(deleteRequest: DeleteAppRequest): Promise<DeleteAppResponse>
 }
 
 interface IGetAppOptions {
@@ -65,7 +65,7 @@ export default class AppService implements IAppService {
 	}
 
 	@bind
-	public async getAllApps(): Promise<IGetAppsResponse> {
+	public async getAllApps(): Promise<GetAppsResponse> {
 		const apps = await this.apps.find().populate('latestVersions')
 
 		return {
@@ -77,7 +77,7 @@ export default class AppService implements IAppService {
 	}
 
 	@bind
-	public async createApp(createRequest: ICreateAppRequest): Promise<ICreateAppResponse> {
+	public async createApp(createRequest: CreateAppRequest): Promise<CreateAppResponse> {
 		const app = await this.apps.create({
 			...createRequest,
 			latestVersions: {
@@ -93,14 +93,14 @@ export default class AppService implements IAppService {
 	}
 
 	@bind
-	public async updateApp(updateRequest: IUpdateAppRequest): Promise<IUpdateAppResponse> {
+	public async updateApp(updateRequest: UpdateAppRequest): Promise<UpdateAppResponse> {
 		const { id, ...app } = updateRequest
 		await this.apps.updateOne({ _id: id }, { $set: app })
 		return updateRequest
 	}
 
 	@bind
-	public async deleteApp({ id }: IDeleteAppRequest): Promise<IDeleteAppResponse> {
+	public async deleteApp({ id }: DeleteAppRequest): Promise<DeleteAppResponse> {
 		await this.apps.deleteOne({ _id: id })
 		return { id }
 	}

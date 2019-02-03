@@ -1,16 +1,16 @@
 
 import { Model } from 'mongoose'
 import {
-	IGetVersionRequest,
-	ICreateVersionRequest,
-	IDeleteVersionRequest,
-	IDeleteVersionResponse,
-	IGetVersionsResponse,
-	IUpdateVersionRequest,
-	IUpdateVersionResponse,
-	IGetVersionResponse,
-	IGetVersionsRequest,
-	IVersionModel,
+	GetVersionRequest,
+	CreateVersionRequest,
+	DeleteVersionRequest,
+	DeleteVersionResponse,
+	GetVersionsResponse,
+	UpdateVersionRequest,
+	UpdateVersionResponse,
+	VersionRequest,
+	GetVersionsRequest,
+	VersionModel,
 } from 'shared'
 import { IVersionDocument } from '../models/Version'
 import { toModel, byDateDesc } from '../util/util'
@@ -18,11 +18,11 @@ import { IAppDocument } from '../models/App'
 import { IVersionReportsDocument } from '../models/VersionReports'
 
 export interface IVersionService {
-	getVersion({ id }: IGetVersionRequest): Promise<IGetVersionResponse>
-	getVersions({ appId }: IGetVersionsRequest): Promise<IGetVersionsResponse>
-	createVersion(createRequest: ICreateVersionRequest): Promise<IVersionModel>
-	updateVersion(updateRequest: IUpdateVersionRequest): Promise<IUpdateVersionResponse>
-	deleteVersion({ id }: IDeleteVersionRequest): Promise<IDeleteVersionResponse>
+	getVersion({ id }: GetVersionRequest): Promise<VersionRequest>
+	getVersions({ appId }: GetVersionsRequest): Promise<GetVersionsResponse>
+	createVersion(createRequest: CreateVersionRequest): Promise<VersionModel>
+	updateVersion(updateRequest: UpdateVersionRequest): Promise<UpdateVersionResponse>
+	deleteVersion({ id }: DeleteVersionRequest): Promise<DeleteVersionResponse>
 }
 
 @DI.injectable()
@@ -37,14 +37,14 @@ export default class VersionService implements IVersionService {
 	) {}
 
 	@bind
-	public async getVersion({ id }: IGetVersionRequest): Promise<IGetVersionResponse> {
+	public async getVersion({ id }: GetVersionRequest): Promise<VersionRequest> {
 		const version = await this.versions.findById(id)
 
 		return this.toModel(version)
 	}
 
 	@bind
-	public async getVersions({ appId }: IGetVersionsRequest): Promise<IGetVersionsResponse> {
+	public async getVersions({ appId }: GetVersionsRequest): Promise<GetVersionsResponse> {
 		const { versions } = await this.apps
 			.findById(appId)
 			.populate('versions')
@@ -57,7 +57,7 @@ export default class VersionService implements IVersionService {
 	}
 
 	@bind
-	public async createVersion({ appId, ...rest }: ICreateVersionRequest): Promise<IVersionModel> {
+	public async createVersion({ appId, ...rest }: CreateVersionRequest): Promise<VersionModel> {
 		const version = await this.versions.create({ app: appId, ...rest })
 
 		await this.versionReports.create({
@@ -79,18 +79,18 @@ export default class VersionService implements IVersionService {
 	}
 
 	@bind
-	public async updateVersion(update: IUpdateVersionRequest): Promise<IUpdateVersionResponse> {
+	public async updateVersion(update: UpdateVersionRequest): Promise<UpdateVersionResponse> {
 		await this.versions.findByIdAndUpdate(update.id, update)
 		return update
 	}
 
 	@bind
-	public async deleteVersion({ id, appId }: IDeleteVersionRequest): Promise<IDeleteVersionResponse> {
+	public async deleteVersion({ id, appId }: DeleteVersionRequest): Promise<DeleteVersionResponse> {
 		await this.versions.findByIdAndRemove(id)
 		return { id, appId }
 	}
 
-	private toModel(version: IVersionDocument): IVersionModel {
+	private toModel(version: IVersionDocument): VersionModel {
 		return { ...toModel(version), appId: `${version.app}` }
 	}
 }

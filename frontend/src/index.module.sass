@@ -14,11 +14,13 @@ body
 
 code
 	@include entry-shadow
+	display: flex
+	white-space: pre-wrap
 	background-image: linear-gradient(60deg, #29323c 0%, #485563 100%)
 	color: white
-	padding: 16px
-	margin: 16px 0
-	border-radius: 6px
+	padding: $spacing
+	margin: 0 -$spacing
+	border-radius: 10px
 	text-overflow: clip
 	overflow: hidden
 	font-family: "SF Mono", source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace

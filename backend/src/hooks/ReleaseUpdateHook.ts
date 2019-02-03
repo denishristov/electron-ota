@@ -1,6 +1,6 @@
 
-import { EventType, IPublishVersionRequest, IPublishVersionResponse, SystemType, IAppModel } from 'shared'
-import { IPostRespondHook, ISocketMediator } from '../util/mediator/Interfaces'
+import { EventType, PublishVersionRequest, PublishVersionResponse, SystemType } from 'shared'
+import { IPostRespondHook, ISocketMediator } from '../util/mediator/interfaces'
 import { Model } from 'mongoose'
 import { toModel } from '../util/util'
 import { IVersionDocument } from '../models/Version'
@@ -19,8 +19,8 @@ export default class ReleaseUpdateHook implements IPostRespondHook {
 	@bind
 	public async handle(
 		_: EventType,
-		{ versionId }: IPublishVersionRequest,
-		{ isSuccessful }: IPublishVersionResponse,
+		{ versionId }: PublishVersionRequest,
+		{ isSuccessful }: PublishVersionResponse,
 	) {
 		if (isSuccessful) {
 			const { app, ...version } = await this.versions

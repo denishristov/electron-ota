@@ -4,20 +4,20 @@ import jwt from 'jsonwebtoken'
 import { Model } from 'mongoose'
 import { IAdminDocument } from '../models/Admin'
 import { PASS_SECRET_KEY } from '../config/config'
-import { IRegisterCredentialsService } from './RegisterAdminService'
+import { IRegisterCredentialsService } from './RegisterCredentialsService'
 import {
-	IUserAuthenticationRequest,
-	IUserAuthenticationResponse,
-	IUserLoginRequest,
-	IUserLoginResponse,
-	IRegisterAdminRequest,
-	IRegisterAdminResponse,
+	AdminAuthenticationRequest,
+	AdminAuthenticationResponse,
+	AdminLoginRequest,
+	AdminLoginResponse,
+	RegisterAdminRequest,
+	RegisterAdminResponse,
 } from 'shared'
 
 export interface IAdminsService {
-	login(req: IUserLoginRequest): Promise<IUserLoginResponse>
-	authenticate(req: IUserAuthenticationRequest): Promise<IUserAuthenticationResponse>
-	register(req: IRegisterAdminRequest): Promise<IRegisterAdminResponse>
+	login(req: AdminLoginRequest): Promise<AdminLoginResponse>
+	authenticate(req: AdminAuthenticationRequest): Promise<AdminAuthenticationResponse>
+	register(req: RegisterAdminRequest): Promise<RegisterAdminResponse>
 }
 
 @DI.injectable()
@@ -30,7 +30,7 @@ export default class AdminsService implements IAdminsService {
 	) {}
 
 	@bind
-	public async login({ email, name, password }: IUserLoginRequest): Promise<IUserLoginResponse> {
+	public async login({ email, name, password }: AdminLoginRequest): Promise<AdminLoginResponse> {
 		try {
 			const params = email ? { email } : name ? { name } : null
 
@@ -45,21 +45,21 @@ export default class AdminsService implements IAdminsService {
 			}
 
 			return {
-				authToken: await this.generateTokenAndAddToUser(user),
+				authToken: await this.generateTokenAndAddToAdmin(user),
 				isAuthenticated: true,
 			}
 		} catch (error) {
 			// tslint:disable-next-line:no-console
 			console.log(error)
 			return {
-				errorMessage: error.message,
+				// errorMessage: error.message,
 				isAuthenticated: false,
 			}
 		}
 	}
 
 	@bind
-	public async authenticate({ authToken }: IUserAuthenticationRequest): Promise<IUserAuthenticationResponse> {
+	public async authenticate({ authToken }: AdminAuthenticationRequest): Promise<AdminAuthenticationResponse> {
 		try {
 			const { id } = jwt.verify(authToken, PASS_SECRET_KEY, { algorithms: ['HS256'] }) as { id: string }
 
@@ -78,14 +78,15 @@ export default class AdminsService implements IAdminsService {
 			// tslint:disable-next-line:no-console
 			console.log(error)
 			return {
-				errorMessage: error.message,
+				// errorMessage: error.message,
 				isAuthenticated: false,
 			}
 		}
 	}
 
-	public async register({ name, email, password, key }: IRegisterAdminRequest): Promise<IRegisterAdminResponse> {
-		if (!this.credentialsService.verify(key)) {
+	@bind
+	public async register({ name, email, password, key }: RegisterAdminRequest): Promise<RegisterAdminResponse> {
+		if (!await this.credentialsService.verify(key)) {
 			return {
 				isSuccessful: false,
 			}
@@ -99,11 +100,11 @@ export default class AdminsService implements IAdminsService {
 
 		return {
 			isSuccessful: true,
-			authToken: await this.generateTokenAndAddToUser(admin),
+			authToken: await this.generateTokenAndAddToAdmin(admin),
 		}
 	}
 
-	private async generateTokenAndAddToUser(user: IAdminDocument): Promise<string> {
+	private async generateTokenAndAddToAdmin(user: IAdminDocument): Promise<string> {
 		const token = await this.generateToken(user.id)
 
 		const hashed = this.hashAuthToken(token)

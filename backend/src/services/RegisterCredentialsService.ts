@@ -3,11 +3,8 @@ import crypto from 'crypto'
 import fs from 'fs'
 import util from 'util'
 import {
-	IRegisterKeyPathResponse,
-	IRegisterAdminRequest,
-	IRegisterAdminResponse,
+	RegisterKeyPathResponse,
 } from 'shared'
-import { IAdminsService } from './AdminsService'
 
 const randomBytes = util.promisify(crypto.randomBytes)
 const write = util.promisify(fs.write)
@@ -20,8 +17,8 @@ export interface IRegisterCredentials {
 }
 
 export interface IRegisterCredentialsService {
-	getCredentialsKeyPath(): Promise<IRegisterKeyPathResponse>
-	verify(key: string): Promise<boolean>
+	getCredentialsKeyPath(): Promise<RegisterKeyPathResponse>
+	verify(key: string): boolean
 }
 
 @DI.injectable()
@@ -30,14 +27,14 @@ export default class RegisterCredentialsService implements IRegisterCredentialsS
 	private readonly registerCredentials = new Map<string, IRegisterCredentials>()
 
 	@bind
-	public async getCredentialsKeyPath(): Promise<IRegisterKeyPathResponse> {
+	public async getCredentialsKeyPath(): Promise<RegisterKeyPathResponse> {
 		const { path } = await this.genRegisterCredentials()
 
 		return { path }
 	}
 
 	@bind
-	public async verify(key: string): Promise<boolean> {
+	public verify(key: string): boolean {
 		if (this.registerCredentials.has(key)) {
 			const { clean, timeout } = this.registerCredentials.get(key)
 

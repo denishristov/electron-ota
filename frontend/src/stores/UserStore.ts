@@ -1,13 +1,13 @@
 import Cookies from 'js-cookie'
 import { action, computed, observable } from 'mobx'
-import { EventType, IUserAuthenticationResponse, IUserLoginResponse } from 'shared'
+import { EventType, AdminAuthenticationResponse, AdminLoginResponse } from 'shared'
 import { IApi } from '../util/Api'
-import { IUserLoginRequest } from 'shared'
+import { AdminLoginRequest } from 'shared'
 
 export interface IUserStore {
 	isLoading: boolean
 	isAuthenticated: boolean
-	login(req: IUserLoginRequest): Promise<boolean>
+	login(req: AdminLoginRequest): Promise<boolean>
 	setAuthToken(authToken: string): void
 }
 
@@ -38,12 +38,12 @@ class UserStore implements IUserStore {
 	}
 
 	@action.bound
-	public async login(req: IUserLoginRequest): Promise<boolean> {
+	public async login(req: AdminLoginRequest): Promise<boolean> {
 		const {
 			authToken,
 			errorMessage,
 			isAuthenticated,
-		} = await this.api.emit<IUserLoginResponse>(EventType.Login, req)
+		} = await this.api.emit<AdminLoginResponse>(EventType.Login, req)
 
 		// tslint:disable-next-line:no-console
 		errorMessage && console.warn(errorMessage)
@@ -62,7 +62,7 @@ class UserStore implements IUserStore {
 			const {
 				errorMessage,
 				isAuthenticated,
-			} = await this.api.emit<IUserAuthenticationResponse>(
+			} = await this.api.emit<AdminAuthenticationResponse>(
 				EventType.Authentication,
 				{ authToken: this.authToken },
 			)

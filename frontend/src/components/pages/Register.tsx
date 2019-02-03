@@ -33,7 +33,7 @@ export default class Register extends React.Component<{}, IState> {
 		isRegistered: false,
 	}
 
-	@DI.lazyInject(DI.Stores.User)
+	@DI.lazyInject(DI.Stores.Register)
 	private readonly registerStore!: IRegisterStore
 
 	private get command() {
@@ -54,7 +54,7 @@ export default class Register extends React.Component<{}, IState> {
 		}
 
 		return (
-			<Container>
+			<Container className={styles.container}>
 				<form onSubmit={this.handleRegister}>
 					<Flex column list>
 						<h1>Sign up</h1>

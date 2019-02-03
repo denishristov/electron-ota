@@ -1,27 +1,39 @@
 import { EventType } from 'shared'
 
-export type IClient = SocketIO.Socket
-export type IClients = SocketIO.Namespace
+export type Client = SocketIO.Socket
+export type Clients = SocketIO.Namespace
 
-type IHandler<Req = object, Res = object> = (request: Req) => Promise<Res> | Res
+export type Handler<Req = object, Res = object> = (request: Req) => Promise<Res> | Promise<void>
 
-export interface IEventHandler<Req = object, Res = object> extends Iterable<EventType | IHandler<Req, Res>> {
-	[0]: EventType
-	[1]: IHandler<Req, Res>
-}
+export type Newable<T> = new() => T
 
-export type IEventHandlers = {
-	[key in EventType]?: IHandler
-}
+export type ConstructedHandler = (request: object, respond: (res: Error | object) => void) => void
+
+// export interface IEventHandler<Req extends object, Res extends object> extends Iterable<
+// 	EventType |
+// 	Handler<Req, Res> |
+// 	Clazz<Req> |
+// 	Clazz<Res>
+// > {
+// 	[0]: EventType
+// 	[1]: Handler<Req, Res>
+// 	[2]: Clazz<Req>
+// 	[3]: Clazz<Res>
+// }
 
 export interface ISocketMediator {
-	use(eventHandlers: IEventHandlers): void
-	subscribe(client: IClient): void
-	unsubscribe(client: IClient): void
-	broadcast(eventType: EventType, data: object, predicate?: (client: IClient) => boolean, count?: number): void
-	broadcastEvents(...eventTypes: EventType[]): void
-	usePreRespond(...hooks: IPreRespondHook[]): void
-	usePostRespond(...hooks: IPostRespondHook[]): void
+	use<Req extends object, Res extends object>(
+		eventType: EventType,
+		handler: Handler<Req, Res>,
+		requestType: Newable<Req>,
+		responseType?: Newable<Res>,
+	): this
+	subscribe(client: Client): void
+	unsubscribe(client: Client): void
+	broadcast(eventType: EventType, data: object, predicate?: (client: Client) => boolean, count?: number): void
+	broadcastEvents(...eventTypes: EventType[]): this
+	usePreRespond(...hooks: IPreRespondHook[]): this
+	usePostRespond(...hooks: IPostRespondHook[]): this
 	removePostRespond(hook: IPostRespondHook): void
 	removePreRespond(hook: IPreRespondHook): void
 }
@@ -32,7 +44,7 @@ interface IHook {
 }
 
 export interface IPreRespondHook extends IHook {
-	handle(eventType: EventType, req: object): Promise<object | null>
+	handle(eventType: EventType, req: any): Promise<any>
 }
 
 export interface IPostRespondHook extends IHook {

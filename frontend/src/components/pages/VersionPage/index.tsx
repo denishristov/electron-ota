@@ -3,7 +3,7 @@ import Container from '../../generic/Container'
 
 import Button from '../../generic/Button'
 import Flex from '../../generic/Flex'
-import { IVersionModel, IVersionReportModel, IClientModel, IErrorReport } from 'shared'
+import { VersionModel, VersionReportModel, ClientModel, ErrorReport } from 'shared'
 import { RouteComponentProps, Redirect } from 'react-router'
 import { IAppsStore } from '../../../stores/AppsStore'
 import { computed } from 'mobx'
@@ -29,10 +29,10 @@ interface IParams {
 	versionId: string
 }
 
-const clientMapper = (client: IClientModel) => (
+const clientMapper = (client: ClientModel) => (
 	<Client key={client.id} client={client} />
 )
-const errorMapper = ({ client, errorMessage }: IErrorReport) => (
+const errorMapper = ({ client, errorMessage }: ErrorReport) => (
 	<ErrorMessage key={client.id} client={client} errorMessage={errorMessage} />
 )
 
@@ -52,13 +52,13 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 	}
 
 	@computed
-	private get version(): IVersionModel | null {
+	private get version(): VersionModel | null {
 		const { versionId } = this.props.match.params
 		return this.app && this.app.getVersion(versionId) || null
 	}
 
 	@computed
-	get reports(): IVersionReportModel | null {
+	get reports(): VersionReportModel | null {
 		return this.app && this.version && this.app.reports.get(this.version.id) || null
 	}
 
@@ -215,10 +215,10 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 
 	@bind
 	private handleRelease() {
-		this.version && this.appsStore.emitPublishVersion({ versionId: this.version.id })}
+		this.version && this.appsStore.releaseUpdate({ versionId: this.version.id })}
 
 	@bind
 	private handleDownload() {
-		this.version && downloadFile(this.version.downloadUrl, this.version.versionName)
+		this.version && this.version.downloadUrl && downloadFile(this.version.downloadUrl, this.version.versionName || 'app')
 	}
 }

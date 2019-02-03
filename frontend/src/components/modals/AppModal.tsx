@@ -106,7 +106,7 @@ export default class AppModal extends React.Component<{}, IState> {
 			},
 		})
 
-		this.appsStore.emitCreateApp({
+		this.appsStore.createApp({
 			bundleId: bundleId.value,
 			name: name.value,
 			pictureUrl: downloadUrl,

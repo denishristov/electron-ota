@@ -9,12 +9,11 @@ import Button from '../generic/Button'
 import {  RouteComponentProps } from 'react-router'
 import Flex from '../generic/Flex'
 
-import User from '../../img/User.svg'
-import Key from '../../img/Key.svg'
 import Container from '../generic/Container'
 
 import styles from '../../styles/LoginPage.module.sass'
 import Loading from '../generic/Loading'
+import icons from '../../util/constants/icons'
 
 interface ILoginFormEvent extends FormEvent<HTMLFormElement> {
 	target: EventTarget & {
@@ -27,12 +26,12 @@ interface ILoginFormEvent extends FormEvent<HTMLFormElement> {
 
 @observer
 export default class Login extends React.Component<RouteComponentProps> {
-	@DI.lazyInject(DI.Stores.User)
+	@DI.lazyInject(DI.Stores.Admin)
 	private readonly userStore!: IUserStore
 
 	public render() {
 		return (
-			<Container>
+			<Container className={styles.container}>
 				{this.userStore.isLoading
 					? <Loading />
 					: (
@@ -43,13 +42,13 @@ export default class Login extends React.Component<RouteComponentProps> {
 									label='Username'
 									name='nameOrEmail'
 									required
-									icon={User}
+									icon={icons.User}
 								/>
 								<Input
 									label='Password'
 									type='password'
 									name='password'
-									icon={Key}
+									icon={icons.Key}
 									required
 								/>
 								<Flex list spread>

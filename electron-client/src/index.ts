@@ -11,9 +11,9 @@ import { app } from 'electron'
 import * as EventTypes from './EventTypes'
 import {
 	INewUpdate,
-	IUpdateResponse,
-	IUpdateInfo,
-	IUpdateServiceOptions,
+	UpdateResponse,
+	UpdateInfo,
+	UpdateServiceOptions,
 	IRegistrationResponse,
 } from './Interfaces'
 import {
@@ -37,7 +37,7 @@ declare global {
 
 // tslint:disable-next-line:interface-name
 declare interface ElectronUpdateServiceClient {
-	on(event: 'update', listener: (info: IUpdateInfo) => void): this
+	on(event: 'update', listener: (info: UpdateInfo) => void): this
 	on(event: 'error', listener: (error: Error) => void): this
 }
 
@@ -54,7 +54,7 @@ class ElectronUpdateServiceClient extends EventEmitter {
 
 	private readonly connect: Promise<SocketIOClient.Socket>
 
-	constructor(private readonly options: IUpdateServiceOptions) {
+	constructor(private readonly options: UpdateServiceOptions) {
 		super()
 
 		this.updateDirPath = path.join(options.userDataPath || app.getPath('userData'), 'updates')
@@ -200,7 +200,7 @@ class ElectronUpdateServiceClient extends EventEmitter {
 				bundleId,
 				systemType: os.type(),
 			},
-		) as IUpdateResponse
+		) as UpdateResponse
 
 		if (!isUpToDate) {
 			this.downloadUpdate(update)

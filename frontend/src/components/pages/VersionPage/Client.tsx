@@ -1,5 +1,5 @@
 import React from 'react'
-import { IClientModel } from 'shared'
+import { ClientModel } from 'shared'
 
 import styles from '../../../styles/VersionPage.module.sass'
 import Flex from '../../generic/Flex'
@@ -7,7 +7,7 @@ import icons from '../../../util/constants/icons'
 import { observer } from 'mobx-react'
 
 interface IProps {
-	client: IClientModel
+	client: ClientModel
 }
 
 export default observer(function Client({ client }: IProps) {

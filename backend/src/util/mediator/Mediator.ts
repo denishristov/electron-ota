@@ -1,15 +1,17 @@
-import { EventType, IResponse } from 'shared'
+import { EventType } from 'shared'
 import {
-	IClient,
-	IClients,
-	IEventHandler,
+	Client,
+	Clients,
 	IPreRespondHook,
 	ISocketMediator,
 	IPostRespondHook,
-	IEventHandlers,
+	ConstructedHandler,
+	Newable,
+	Handler,
 } from './interfaces'
 import chalk from 'chalk'
 import { uuid } from '../util'
+import { Validator } from 'tsdv-joi'
 
 const colors = {
 	request: chalk.bold.green,
@@ -20,39 +22,42 @@ const colors = {
 }
 
 export default class SocketMediator implements ISocketMediator {
-	private readonly handlers = new Map<string, IEventHandler>()
+	private static readonly validator = new Validator()
+
+	private readonly handlers = new Map<string, ConstructedHandler>()
+
 	private readonly preRespondHooks = new Map<IPreRespondHook, IPreRespondHook>()
+
 	private readonly postRespondHooks = new Map<IPostRespondHook, IPostRespondHook>()
+
 	private readonly broadcastableEvents = new Set<EventType>()
+
 	private readonly roomId = uuid()
 
-	constructor(private readonly clients: IClients) {
+	constructor(private readonly clients: Clients) {
 		clients.on(EventType.Connection, this.subscribe)
 	}
 
-	public use(eventHandlers: IEventHandlers): void {
-		const entries = Object.entries(eventHandlers) as IEventHandler[]
-
-		for (const eventHandler of entries) {
-			const [eventType] = eventHandler
-
-			if (this.handlers.has(eventType)) {
-				throw new Error(`Handler has already been added for ${eventType}`)
-			}
-
-			this.handlers.set(eventType, eventHandler)
-
-			// for (const client of this.sockets) {
-			// 	client.on(eventType, this.createEventHandler(client, eventHandler))
-			// }
+	public use<Req extends object, Res extends object>(
+		eventType: EventType,
+		handler: Handler<Req, Res>,
+		requestType: Newable<Req>,
+		responseType?: Newable<Res>,
+	) {
+		if (this.handlers.has(eventType)) {
+			throw new Error(`Handler has already been added for ${eventType}`)
 		}
+
+		this.handlers.set(eventType, this.createEventHandler(eventType, handler, requestType, responseType))
+
+		return this
 	}
 
 	@bind
-	public subscribe(client: IClient): void {
+	public subscribe(client: Client) {
 		client.join(this.roomId, () => {
-			for (const [eventType, eventHandler] of this.handlers) {
-				client.on(eventType, this.createEventHandler(client, eventHandler))
+			for (const handler of this.handlers) {
+				client.on(...handler)
 			}
 		})
 
@@ -60,32 +65,38 @@ export default class SocketMediator implements ISocketMediator {
 	}
 
 	@bind
-	public unsubscribe(client: IClient) {
+	public unsubscribe(client: Client) {
 		return client.leave(this.roomId)
 	}
 
-	public usePreRespond(...hooks: IPreRespondHook[]): void {
+	public usePreRespond(...hooks: IPreRespondHook[]) {
 		for (const hook of hooks) {
 			this.preRespondHooks.set(hook, hook)
 		}
+
+		return this
 	}
 
-	public usePostRespond(...hooks: IPostRespondHook[]): void {
+	public usePostRespond(...hooks: IPostRespondHook[]) {
 		for (const hook of hooks) {
 			this.postRespondHooks.set(hook, hook)
 		}
+
+		return this
 	}
 
 	public broadcastEvents(...eventTypes: EventType[]) {
 		for (const eventType of eventTypes) {
 			this.broadcastableEvents.add(eventType)
 		}
+
+		return this
 	}
 
 	public broadcast(
 		eventType: EventType,
 		data: object,
-		predicate?: (client: IClient) => boolean,
+		predicate?: (client: Client) => boolean,
 		count?: number,
 	): void {
 		for (const socket of this.sockets.slice(0, count)) {
@@ -105,32 +116,26 @@ export default class SocketMediator implements ISocketMediator {
 		return this.preRespondHooks.delete(hook)
 	}
 
-	private get sockets(): IClient[] {
+	private get sockets(): Client[] {
 		return Object.values(this.clients.sockets)
 	}
 
-	private async applyPreHooks(eventType: EventType, request: object): Promise<IResponse> {
+	private async applyPreHooks<T>(eventType: EventType, request: T): Promise<T> {
 		if (!this.preRespondHooks.size) {
 			return request
 		}
 
-		let data = { ...request }
+		let data = request
 
-		for (const [hook] of this.preRespondHooks) {
-			const { eventTypes, exceptions } = hook
-			if (eventTypes && !eventTypes.has(eventType)) {
+		for (const [{ eventTypes, exceptions, handle }] of this.preRespondHooks) {
+			if (
+				(eventTypes && !eventTypes.has(eventType))
+				|| (exceptions && exceptions.has(eventType))
+			) {
 				continue
 			}
 
-			if (exceptions && exceptions.has(eventType)) {
-				continue
-			}
-
-			data = await hook.handle(eventType, request)
-
-			if (!data) {
-				return null
-			}
+			data = await handle(eventType, request)
 		}
 
 		return data
@@ -152,25 +157,31 @@ export default class SocketMediator implements ISocketMediator {
 		}
 	}
 
-	private createEventHandler(client: IClient, [eventType, handle]: IEventHandler) {
-		return async (request: object, respond: (res: object) => void) => {
+	private createEventHandler<Req extends object, Res>(
+		eventType: EventType,
+		handler: Handler<Req, Res>,
+		requestType: Newable<Req>,
+		responseType?: Newable<Res>,
+	) {
+		return async (request: Req, respond: (res: Res | Error | object) => void) => {
 			let response = null
 
 			try {
+				await SocketMediator.validator.validateAsClass(request, requestType)
 				const data = await this.applyPreHooks(eventType, request)
 
-				if (!data || data.errorMessage) {
-					throw new Error(data.errorMessage)
-				}
+				response = await handler(data) || {}
 
-				response = await handle(data) || {}
+				if (responseType) {
+					await SocketMediator.validator.validateAsClass(response, responseType)
+				}
 
 				respond(response)
 
 				this.logRequest(eventType, request, response)
 			} catch (error) {
 				this.logError(eventType, request, error)
-				respond({ errorMessage: error.errorMessage })
+				respond(error)
 			}
 
 			this.applyPostHooks(eventType, request, response)

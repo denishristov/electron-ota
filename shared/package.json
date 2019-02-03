@@ -10,6 +10,11 @@
     "watch": "tsc -w"
   },
   "devDependencies": {
+    "@types/joi": "^14.3.1",
     "typescript": "^3.2.1"
+  },
+  "dependencies": {
+    "joi": "14.3.1",
+    "tsdv-joi": "0.0.11"
   }
 }

@@ -1,11 +1,11 @@
 import { Model } from 'mongoose'
 import {
-	IClientReportRequest,
-	IErrorReportRequest,
-	IGetSimpleVersionReportsRequest,
-	IGetSimpleVersionReportsResponse,
-	IGetVersionReportsRequest,
-	IGetVersionReportsResponse,
+	ClientReportRequest,
+	ErrorReportRequest,
+	GetSimpleVersionReportsRequest,
+	GetSimpleVersionReportsResponse,
+	GetVersionReportsRequest,
+	GetVersionReportsResponse,
 } from 'shared'
 import { IVersionDocument } from '../models/Version'
 import { IClientDocument } from '../models/Client'
@@ -14,12 +14,12 @@ import { IAppDocument } from '../models/App'
 import { toModel } from '../util/util'
 
 export interface IVersionReportsService {
-	downloadingUpdate(req: IClientReportRequest): Promise<void>
-	downloadedUpdate(req: IClientReportRequest): Promise<void>
-	usingUpdate(req: IClientReportRequest): Promise<void>
-	error(req: IErrorReportRequest): Promise<void>
-	getSimpleVersionReports(req: IGetSimpleVersionReportsRequest): Promise<IGetSimpleVersionReportsResponse>
-	getVersionReports(req: IGetVersionReportsRequest): Promise<IGetVersionReportsResponse>
+	downloadingUpdate(req: ClientReportRequest): Promise<void>
+	downloadedUpdate(req: ClientReportRequest): Promise<void>
+	usingUpdate(req: ClientReportRequest): Promise<void>
+	error(req: ErrorReportRequest): Promise<void>
+	getSimpleVersionReports(req: GetSimpleVersionReportsRequest): Promise<GetSimpleVersionReportsResponse>
+	getVersionReports(req: GetVersionReportsRequest): Promise<GetVersionReportsResponse>
 }
 
 @DI.injectable()
@@ -38,7 +38,7 @@ export default class VersionReportsService implements IVersionReportsService {
 	) {}
 
 	@bind
-	public async downloadingUpdate({ id, versionId }: IClientReportRequest) {
+	public async downloadingUpdate({ id, versionId }: ClientReportRequest) {
 		await this.reports.findOneAndUpdate(
 			{ version: versionId },
 			{ $addToSet: { downloading: id } },
@@ -46,7 +46,7 @@ export default class VersionReportsService implements IVersionReportsService {
 	}
 
 	@bind
-	public async downloadedUpdate({ id, versionId }: IClientReportRequest) {
+	public async downloadedUpdate({ id, versionId }: ClientReportRequest) {
 		await this.reports.findOneAndUpdate(
 			{ version: versionId },
 			{
@@ -57,7 +57,7 @@ export default class VersionReportsService implements IVersionReportsService {
 	}
 
 	@bind
-	public async usingUpdate({ id, versionId }: IClientReportRequest) {
+	public async usingUpdate({ id, versionId }: ClientReportRequest) {
 		const client = await this.clients.findById(id).select('version')
 
 		if (client.version && client.version.toString() === versionId) {
@@ -73,7 +73,7 @@ export default class VersionReportsService implements IVersionReportsService {
 	}
 
 	@bind
-	public async error({ id, versionId, errorMessage }: IErrorReportRequest) {
+	public async error({ id, versionId, errorMessage }: ErrorReportRequest) {
 		await this.reports.findOneAndUpdate(
 			{ version: versionId },
 			{ $push: { errorMessages: { client: id, errorMessage } } },
@@ -81,7 +81,7 @@ export default class VersionReportsService implements IVersionReportsService {
 	}
 
 	@bind
-	public async getSimpleVersionReports({ appId }: IGetSimpleVersionReportsRequest) {
+	public async getSimpleVersionReports({ appId }: GetSimpleVersionReportsRequest) {
 		const { versions } = await this.apps.findById(appId).select('versions')
 
 		const reports = await this.reports.aggregate([
@@ -99,9 +99,9 @@ export default class VersionReportsService implements IVersionReportsService {
 	}
 
 	@bind
-	public async getVersionReports({ versionId }: IGetVersionReportsRequest): Promise<IGetVersionReportsResponse> {
+	public async getVersionReports(arg: GetVersionReportsRequest): Promise<GetVersionReportsResponse> {
 		const reports = await this.reports
-			.findOne({ version: versionId })
+			.findOne({ version: arg.versionId })
 			.populate(VersionReportsService.fields)
 			.select(VersionReportsService.fields)
 

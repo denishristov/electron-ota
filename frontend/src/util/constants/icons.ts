@@ -14,6 +14,8 @@ import Edit from '../../img/Edit.svg'
 import Delete from '../../img/Delete.svg'
 import Close from '../../img/Close.svg'
 import Plus from '../../img/Plus.svg'
+import User from '../../img/User.svg'
+import Key from '../../img/Key.svg'
 
 const icons = {
 	Darwin,
@@ -32,6 +34,8 @@ const icons = {
 	Delete,
 	Plus,
 	Close,
+	User,
+	Key,
 }
 
 export default icons

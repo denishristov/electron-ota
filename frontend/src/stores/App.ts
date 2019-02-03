@@ -1,18 +1,18 @@
 import { action, computed, observable, ObservableMap } from 'mobx'
 import {
 	EventType,
-	IAppModel,
-	ICreateVersionResponse,
-	IGetVersionsResponse,
-	IS3SignUrlRequest,
-	IS3SignUrlResponse,
-	IVersionModel,
+	CreateVersionResponse,
+	GetVersionsResponse,
+	S3SignUrlRequest,
+	S3SignUrlResponse,
+	VersionModel,
 	SystemType,
-	ISimpleVersionReportModel,
-	IGetSimpleVersionReportsResponse,
-	IGetVersionReportsResponse,
-	IVersionReportModel,
-	IVersionEditModel,
+	SimpleVersionReportModel,
+	GetSimpleVersionReportsResponse,
+	GetVersionReportsResponse,
+	VersionReportModel,
+	VersionEditModel,
+	AppModel,
 } from 'shared'
 import { IApi } from '../util/Api'
 
@@ -32,22 +32,22 @@ interface ICreateVersionInput {
 export interface IApp {
 	id: string
 	name: string
-	pictureUrl: string
+	pictureUrl?: string
 	bundleId: string
-	latestVersion?: IVersionModel
+	latestVersion?: VersionModel
 	versionsCount: number
-	latestAddedVersion: IVersionModel | null
-	versions: ObservableMap<string, IVersionModel>
-	simpleReports: ObservableMap<string, ISimpleVersionReportModel>
-	reports: ObservableMap<string, IVersionReportModel>
-	allVersions: IVersionModel[]
-	getVersion(id: string): IVersionModel | null
+	latestAddedVersion: VersionModel | null
+	versions: ObservableMap<string, VersionModel>
+	simpleReports: ObservableMap<string, SimpleVersionReportModel>
+	reports: ObservableMap<string, VersionReportModel>
+	allVersions: VersionModel[]
+	getVersion(id: string): VersionModel | null
 	fetchVersions(): Promise<void>
-	fetchSignedUploadVersionUrl(req: IS3SignUrlRequest): Promise<IS3SignUrlResponse>
+	fetchSignedUploadVersionUrl(req: S3SignUrlRequest): Promise<S3SignUrlResponse>
 	fetchSimpleReports(): Promise<void>
 	fetchReports(versionId: string): Promise<void>
 	createVersion(inputFields: ICreateVersionInput): void
-	updateVersion(inputFields: IVersionEditModel): void
+	updateVersion(inputFields: Exclude<VersionEditModel, 'appId'>): void
 	deleteVersion(id: string): void
 }
 
@@ -58,22 +58,22 @@ export default class App implements IApp {
 	public name: string
 
 	@observable
-	public pictureUrl: string
+	public pictureUrl?: string
 
 	@observable
 	public bundleId: string
 
 	@observable
-	public latestVersion?: IVersionModel
+	public latestVersion?: VersionModel
 
 	@observable
 	public versionsCount: number
 
-	public readonly versions: ObservableMap<string, IVersionModel> = observable.map({})
+	public readonly versions: ObservableMap<string, VersionModel> = observable.map({})
 
-	public readonly simpleReports: ObservableMap<string, ISimpleVersionReportModel> = observable.map({})
+	public readonly simpleReports: ObservableMap<string, SimpleVersionReportModel> = observable.map({})
 
-	public readonly reports: ObservableMap<string, IVersionReportModel> = observable.map({})
+	public readonly reports: ObservableMap<string, VersionReportModel> = observable.map({})
 
 	constructor(
 		{
@@ -83,7 +83,7 @@ export default class App implements IApp {
 			bundleId,
 			latestVersion,
 			versions,
-		}: IAppModel,
+		}: AppModel,
 		private readonly api: IApi,
 	) {
 		this.id = id
@@ -94,33 +94,33 @@ export default class App implements IApp {
 		this.versionsCount = versions
 	}
 
-	public getVersion(id: string): IVersionModel | null {
+	public getVersion(id: string): VersionModel | null {
 		return this.versions.get(id) || null
 	}
 
 	@computed
-	get latestAddedVersion(): IVersionModel | null {
+	get latestAddedVersion(): VersionModel | null {
 		return this.allVersions[0] || null
 	}
 
 	@computed
-	get allVersions(): IVersionModel[] {
+	get allVersions(): VersionModel[] {
 		return Array.from(this.versions.values())
 	}
 
 	@action
 	public async fetchVersions() {
-		const { versions } = await this.api.emit<IGetVersionsResponse>(EventType.GetVersions, { appId: this.id })
+		const { versions } = await this.api.emit<GetVersionsResponse>(EventType.GetVersions, { appId: this.id })
 
 		this.versions.merge(versions.group((version) => [version.id, version]))
 	}
 
 	@action
-	public async fetchSignedUploadVersionUrl(req: IS3SignUrlRequest) {
-		return await this.api.emit<IS3SignUrlResponse>(EventType.SignUploadVersionUrl, req)
+	public async fetchSignedUploadVersionUrl(req: S3SignUrlRequest) {
+		return await this.api.emit<S3SignUrlResponse>(EventType.SignUploadVersionUrl, req)
 	}
 
-	public toModel(): IAppModel {
+	public toModel(): AppModel {
 		return {
 			id: this.id,
 			pictureUrl: this.pictureUrl,
@@ -133,7 +133,7 @@ export default class App implements IApp {
 
 	@action
 	public async fetchSimpleReports() {
-		const { reports } = await this.api.emit<IGetSimpleVersionReportsResponse>(
+		const { reports } = await this.api.emit<GetSimpleVersionReportsResponse>(
 			EventType.SimpleVersionReports,
 			{ appId: this.id },
 		)
@@ -145,22 +145,19 @@ export default class App implements IApp {
 
 	@action
 	public async fetchReports(versionId: string) {
-		const reports = await this.api.emit<IGetVersionReportsResponse>(EventType.VersionReports, { versionId })
+		const reports = await this.api.emit<GetVersionReportsResponse>(EventType.VersionReports, { versionId })
 		this.reports.set(versionId, reports)
 	}
 
 	public createVersion(inputFields: ICreateVersionInput) {
-		this.api.emit<ICreateVersionResponse>(
-			EventType.CreateVersion,
-			{ appId: this.id, ...inputFields },
-		)
+		this.api.emit(EventType.CreateVersion, { appId: this.id, ...inputFields })
 	}
 
-	public updateVersion(inputFields: IVersionEditModel) {
-		this.api.emit<ICreateVersionResponse>(EventType.UpdateVersion, { appId: this.id, ...inputFields })
+	public updateVersion(inputFields: Exclude<VersionEditModel, 'appId'>) {
+		this.api.emit(EventType.UpdateVersion, { appId: this.id, ...inputFields })
 	}
 
 	public deleteVersion(id: string) {
-		this.api.emit<ICreateVersionResponse>(EventType.DeleteVersion, { appId: this.id, id })
+		this.api.emit(EventType.DeleteVersion, { appId: this.id, id })
 	}
 }

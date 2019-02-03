@@ -1,5 +1,5 @@
 import React from 'react'
-import { IErrorReport } from 'shared'
+import { ErrorReport } from 'shared'
 
 import Windows from '../../../img/Windows.svg'
 import Apple from '../../../img/Apple.svg'
@@ -17,9 +17,9 @@ const icons = {
 	Linux: Ubuntu,
 }
 
-const ErrorModal = ({ errorMessage }: { errorMessage: string }) => <p>{errorMessage}</p>
+const ErrorModal = ({ errorMessage }: { errorMessage: string }) => <code>{errorMessage}</code>
 
-export default observer(function ErrorMessage({ client, errorMessage }: IErrorReport) {
+export default observer(function ErrorMessage({ client, errorMessage }: ErrorReport) {
 	return (
 		<Modal>
 			<Modal.OpenTrigger>

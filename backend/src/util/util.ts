@@ -1,10 +1,12 @@
 import mongoose from 'mongoose'
 import crypto from 'crypto'
-import { ITimestampedDocument } from 'shared'
+import { TimestampedDocument } from 'shared'
+
+export class Empty {}
 
 type Entry<T extends mongoose.Document> =
 	Exclude<Exclude<T, '__v'>, '_id'> &
-	ITimestampedDocument & {
+	TimestampedDocument & {
 		id: string,
 	}
 
@@ -32,7 +34,7 @@ export function uuid() {
 	return crypto.randomBytes(16).toString('base64')
 }
 
-export function byDateDesc(a: ITimestampedDocument, b: ITimestampedDocument) {
+export function byDateDesc(a: TimestampedDocument, b: TimestampedDocument) {
 	return +new Date(b.createdAt) - +new Date(a.createdAt)
 }
 

@@ -1,4 +1,4 @@
-export interface IUpdateServiceOptions {
+export interface UpdateServiceOptions {
 	bundleId: string
 	updateServerUrl: string
 	versionName: string
@@ -7,12 +7,12 @@ export interface IUpdateServiceOptions {
 	checkHashBeforeLoad?: boolean
 }
 
-export interface IUpdateResponse extends INewUpdate {
+export interface UpdateResponse extends INewUpdate {
 	isUpToDate: boolean
 	update?: INewUpdate
 }
 
-interface IUpdate {
+interface Update {
 	versionName: string
 	isCritical: boolean
 	isBase: boolean
@@ -20,12 +20,12 @@ interface IUpdate {
 	description?: string
 }
 
-export interface INewUpdate extends IUpdate {
+export interface INewUpdate extends Update {
 	downloadUrl: string
 	versionId: string
 }
 
-export interface IUpdateInfo extends IUpdate {
+export interface UpdateInfo extends Update {
 	fileName: string
 	filePath: string
 }

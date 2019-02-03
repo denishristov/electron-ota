@@ -1,6 +1,6 @@
-import { EventType, IUserAuthenticationRequest } from 'shared'
+import { EventType, AdminAuthenticationRequest } from 'shared'
 import { IAdminsService } from '../services/AdminsService'
-import { IPreRespondHook } from '../util/mediator/Interfaces'
+import { IPreRespondHook } from '../util/mediator/interfaces'
 
 @DI.injectable()
 export default class AuthHook implements IPreRespondHook {
@@ -17,17 +17,15 @@ export default class AuthHook implements IPreRespondHook {
 	) {}
 
 	@bind
-	public async handle(_: EventType, data: IUserAuthenticationRequest) {
+	public async handle(_: EventType, data: AdminAuthenticationRequest) {
 		const { isAuthenticated } = await this.userService.authenticate(data)
 
 		if (isAuthenticated) {
 			const result = { ...data }
 			delete result.authToken
-			return result
+			return result as AdminAuthenticationRequest
 		} else {
-			return {
-				errorMessage: 'Auth token is invalid',
-			}
+			throw new Error('Auth token is invalid')
 		}
 	}
 }

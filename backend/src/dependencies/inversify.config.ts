@@ -4,9 +4,9 @@ import AppService, { IAppService } from '../services/AppService'
 import AdminsService, { IAdminsService } from '../services/AdminsService'
 import VersionService, { IVersionService } from '../services/VersionService'
 import S3Service, { IFileUploadService } from '../services/S3Service'
-import RegisterCredentialsService, { IRegisterCredentialsService } from '../services/RegisterAdminService'
+import RegisterCredentialsService, { IRegisterCredentialsService } from '../services/RegisterCredentialsService'
 import ClientService, { IClientService } from '../services/ClientService'
-import ReleaseService, { IReleaseService } from '../services/UpdateService'
+import ReleaseService, { IReleaseService } from '../services/ReleaseService'
 import VersionReportsService, { IVersionReportsService } from '../services/VersionReportsService'
 
 import { Model, model as createModel } from 'mongoose'
@@ -25,12 +25,12 @@ import CreateClientsMediatorHook from '../hooks/CreateClientsMediatorHook'
 import http from 'http'
 import socketio from 'socket.io'
 
-import { S3_CONFIG, ENVIRONMENT, PORT } from '../config/config'
+import { S3_CONFIG } from '../config/config'
 
 import adminMediatorFactory from './factories/AdminMediatorFactory'
 import clientsMediatorFactory, { ClientsMediatorFactory } from './factories/ClientsMediatorFactory'
 
-import { IPreRespondHook, IPostRespondHook, ISocketMediator } from '../util/mediator/Interfaces'
+import { IPreRespondHook, IPostRespondHook, ISocketMediator } from '../util/mediator/interfaces'
 import {
 	AdminDocumentRef,
 	AppDocumentRef,
@@ -42,14 +42,7 @@ import {
 const container = new Container()
 
 container.bind<http.Server>(DI.HTTPServer)
-	.toConstantValue(http.createServer().listen(PORT, () => {
-		// tslint:disable-next-line:no-console
-		console.log(
-			'App is running at http://localhost:%d in %s mode',
-			PORT,
-			ENVIRONMENT,
-		)
-	}))
+	.toConstantValue(http.createServer())
 
 container.bind<SocketIO.Server>(DI.SocketServer)
 	.toDynamicValue(({ container }) => socketio(container.get<http.Server>(DI.HTTPServer)))

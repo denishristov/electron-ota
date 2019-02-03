@@ -1,8 +1,8 @@
 import {
-	ICheckForUpdateRequest,
-	ICheckForUpdateResponse,
-	IPublishVersionRequest,
-	IPublishVersionResponse,
+	CheckForUpdateRequest,
+	CheckForUpdateResponse,
+	PublishVersionRequest,
+	PublishVersionResponse,
 	SystemType,
 } from 'shared'
 
@@ -12,8 +12,8 @@ import { IVersionDocument } from '../models/Version'
 import { IAppDocument } from '../models/App'
 
 export interface IReleaseService {
-	checkForUpdate(req: ICheckForUpdateRequest): Promise<ICheckForUpdateResponse>
-	releaseVersion(req: IPublishVersionRequest): Promise<IPublishVersionResponse>
+	checkForUpdate(req: CheckForUpdateRequest): Promise<CheckForUpdateResponse>
+	releaseVersion(req: PublishVersionRequest): Promise<PublishVersionResponse>
 }
 
 const defaultResponse = {
@@ -30,50 +30,40 @@ export default class ReleaseService implements IReleaseService {
 	) {}
 
 	@bind
-	public async releaseVersion({
-		versionId,
-	}: IPublishVersionRequest): Promise<IPublishVersionResponse> {
-		try {
-			const version = await this.versions.findById(versionId).select(`
-				systems
-				addId
-			`)
+	public async releaseVersion({ versionId }: PublishVersionRequest): Promise<PublishVersionResponse> {
+		const version = await this.versions.findById(versionId).select(`
+			systems
+			addId
+			isReleased
+		`)
 
-			if (version.isReleased) {
-				throw new Error('Version already released')
-			}
+		if (version.isReleased) {
+			throw new Error('Version already released')
+		}
 
-			version.isReleased = true
-			await version.save()
+		version.isReleased = true
+		await version.save()
 
-			const latestVersions = Object.keys(version.systems)
-				.filter((systemType: SystemType) => version.systems[systemType])
-				.group((systemType) => [systemType, versionId])
+		const latestVersions = Object.keys(version.systems)
+			.filter((systemType: SystemType) => version.systems[systemType])
+			.group((systemType) => [systemType, versionId])
 
-			await this.apps.findByIdAndUpdate(
-				version.app,
-				{ latestVersions },
-				{ upsert: true },
-			)
+		await this.apps.findByIdAndUpdate(
+			version.app,
+			{ latestVersions },
+			{ upsert: true },
+		)
 
-			return {
-				isSuccessful: true,
-				release: {
-					versionId,
-				},
-			}
-		 } catch (error) {
-			return {
-				isSuccessful: false,
-				errorMessage: error.message,
-			}
+		return {
+			isSuccessful: true,
+			versionId,
 		}
 	}
 
 	@bind
 	public async checkForUpdate(
-		{ versionName, bundleId, systemType }: ICheckForUpdateRequest,
-	): Promise < ICheckForUpdateResponse > {
+		{ versionName, bundleId, systemType }: CheckForUpdateRequest,
+	): Promise < CheckForUpdateResponse > {
 		const { latestVersions } = await this.apps
 			.findOne({ bundleId })
 			.populate(`latestVersions.${systemType}`)

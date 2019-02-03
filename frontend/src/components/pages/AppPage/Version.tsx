@@ -1,5 +1,5 @@
 import React from 'react'
-import { IVersionModel, ISimpleVersionReportModel } from 'shared'
+import { VersionModel, SimpleVersionReportModel } from 'shared'
 import { observer } from 'mobx-react'
 import { ObservableMap, computed } from 'mobx'
 
@@ -15,9 +15,9 @@ import { BrowserHistory } from '../../../util/types'
 import icons from '../../../util/constants/icons'
 
 interface IProps {
-	version: IVersionModel
+	version: VersionModel
 	animation: React.CSSProperties
-	simpleReports: ObservableMap<string, ISimpleVersionReportModel>
+	simpleReports: ObservableMap<string, SimpleVersionReportModel>
 	history: BrowserHistory
 }
 
@@ -103,7 +103,7 @@ export default class Version extends React.Component<IProps> {
 	}
 
 	@computed
-	private get simpleReport(): ISimpleVersionReportModel | null {
+	private get simpleReport(): SimpleVersionReportModel | null {
 		return this.props.simpleReports.get(this.props.version.id) || null
 	}
 }

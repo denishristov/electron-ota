@@ -25,7 +25,7 @@ container.bind<IApi>(DI.Api)
 	.to(Api)
 	.inSingletonScope()
 
-container.bind<IUserStore>(DI.Stores.User)
+container.bind<IUserStore>(DI.Stores.Admin)
 	.to(UserStore)
 	.inSingletonScope()
 

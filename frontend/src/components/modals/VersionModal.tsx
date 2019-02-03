@@ -13,7 +13,7 @@ import styles from '../../styles/VersionModal.module.sass'
 import inputStyles from '../../styles/Input.module.sass'
 
 import { IApp } from '../../stores/App'
-import { IVersionModel } from 'shared'
+import { VersionModel } from 'shared'
 import { observer } from 'mobx-react'
 import icons from '../../util/constants/icons'
 
@@ -29,7 +29,7 @@ enum ReleaseType {
 
 interface IProps {
 	app: IApp
-	version?: IVersionModel
+	version?: VersionModel
 	previousVersionName?: string | null
 	toggleClosing?: () => void
 }
@@ -415,7 +415,7 @@ export default class VersionModal extends Component<IProps, IState> {
 		} else if (version.files) {
 			// console.log(version.files)
 			const versionFile = version.files[0]
-			const { type } = versionFile
+			const { type, name } = versionFile
 
 			const {
 				downloadUrl,
@@ -456,7 +456,7 @@ export default class VersionModal extends Component<IProps, IState> {
 		}
 	}
 
-	private handleReleaseVersion(version: IVersionModel) {
+	private handleReleaseVersion(version: VersionModel) {
 		// this.props.appsStore.emitPublishVersion({
 		// 	versionId: version.id,
 		// })
