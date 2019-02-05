@@ -1,5 +1,6 @@
 import {
 	EventType,
+	AuthenticatedRequest,
 	AdminLoginRequest,
 	AdminLoginResponse,
 	AdminAuthenticationRequest,
@@ -43,7 +44,7 @@ import { IVersionReportsService } from '../../services/VersionReportsService'
 
 import { IPreRespondHook, IPostRespondHook, ISocketMediator } from '../../util/mediator/interfaces'
 import SocketMediator from '../../util/mediator/Mediator'
-import { Empty } from '../../util/util'
+import { Empty } from '../../util/types'
 
 export type AdminMediatorFactory = () => ISocketMediator
 
@@ -91,7 +92,7 @@ export default function adminMediatorFactory({ container }: interfaces.Context):
 			.use(
 				EventType.GetApps,
 				appService.getAllApps,
-				Empty,
+				AuthenticatedRequest,
 				GetAppsResponse,
 			)
 			.use(

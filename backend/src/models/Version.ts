@@ -1,44 +1,39 @@
-import { Document, Schema, Types } from 'mongoose'
-import { SystemType } from 'shared'
-import { IAppDocument } from './App'
-import { AppDocumentRef } from './refs'
 
-export interface IVersionDocument extends Document {
-	versionName: string
-	downloadUrl: string
-	isCritical: boolean
-	isReleased: boolean
-	isBase: boolean
-	hash: string
-	app: IAppDocument
-	description?: string
-	systems: {
-		[key in SystemType]: boolean
-	}
+import { index, prop, Typegoose } from 'typegoose'
+import { SupportSystemTypes } from './SupportSystemTypes'
+
+@index({ versionName: 1, app: 1 }, { unique: true })
+export class Version extends Typegoose {
+	public id: string
+
+	public createdAt: string
+
+	public updatedAt: string
+
+	@prop({ required: true })
+	public versionName: string
+
+	@prop()
+	public downloadUrl?: string
+
+	@prop({ required: true })
+	public isCritical: boolean
+
+	@prop({ required: true, default: false })
+	public isReleased: boolean
+
+	@prop({ required: true })
+	public isBase: boolean
+
+	@prop({ unique: true, sparse: true })
+	public hash: string
+
+	@prop({ required: true })
+	public appId: string
+
+	@prop()
+	public description?: string
+
+	@prop({ required: true })
+	public systems: SupportSystemTypes
 }
-
-export const VersionSchema = new Schema({
-	app: AppDocumentRef,
-	downloadUrl: String,
-	isBase: Boolean,
-	isCritical: Boolean,
-	isPublished: Boolean,
-	isReleased: Boolean,
-	hash: {
-		type: String,
-		unique: true,
-		sparse: true,
-		index: true,
-	},
-	versionName: {
-		type: String,
-	},
-	description: String,
-	systems: {
-		Windows_RT: Boolean,
-		Darwin: Boolean,
-		Linux: Boolean,
-	},
-}, {
-	timestamps: true,
-})

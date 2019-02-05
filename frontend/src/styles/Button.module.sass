@@ -23,7 +23,7 @@
 	@include shadow($background2)
 	background-size: auto 200%
 	background-position: 0 100%
-	background-image: linear-gradient(to top	, $background 0%, $background2 100%)
+	background-image: linear-gradient(to top right, $background 0%, $background2 100%)
 	color: $color
 
 	svg, g, path
@@ -33,10 +33,10 @@
 		background-position: 0 0
 
 @mixin light-button($background, $color) 
-	@include color-button($background,  darken($background, 10%), $color)
+	@include color-button($background,  darken($background, 8%), $color)
 
 @mixin dark-button($background, $color) 
-	@include color-button($background, darken($background, 20%), $color)
+	@include color-button($background, adjust-hue($background, 64%), $color)
 	
 button
 	@include transition(box-shadow, background-color, transform, background-position)
@@ -60,8 +60,8 @@ button
 		outline: none
 
 	svg
-		width: $icon-size
-		height: $icon-size
+		width: $spacing
+		height: $spacing
 		
 	span
 		margin-right: $spacing / 2

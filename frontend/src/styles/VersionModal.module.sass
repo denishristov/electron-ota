@@ -10,6 +10,11 @@
 		flex-grow: 1
 		justify-content: space-between
 
+		> span:first-child
+			svg
+				width: $icon-size
+				height: $icon-size
+
 	header
 		display: flex
 		justify-content: space-between
@@ -21,10 +26,6 @@
 		
 	textarea
 		flex-grow: 1
-
-	svg
-		width: $icon-size
-		height: $icon-size
         
 .release-button
 	@include transition(transform, box-shadow, color, background-color)

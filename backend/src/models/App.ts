@@ -1,28 +1,20 @@
-import { Document, Schema, Types } from 'mongoose'
-import { IVersionDocument } from './Version'
-import { SystemType } from 'shared'
-import { VersionDocumentRef } from './refs'
+import { prop, arrayProp, Typegoose } from 'typegoose'
+import { Version } from './Version'
+import { LatestVersions } from './LatestVersions'
 
-export interface IAppDocument extends Document {
-	name: string
-	pictureUrl: string
-	bundleId: string
-	versions: IVersionDocument[]
-	latestVersions: {
-		[key in SystemType]: IVersionDocument
-	}
+export class App extends Typegoose {
+	@prop({ required: true })
+	public name: string
+
+	@prop()
+	public pictureUrl: string
+
+	@prop({ unique: true, required: true })
+	public bundleId: string
+
+	@arrayProp({ itemsRef: Version })
+	public versions: Array<Ref<Version>>
+
+	@prop({ default: new LatestVersions() })
+	public latestVersions: LatestVersions
 }
-
-export const AppSchema = new Schema({
-	bundleId: String,
-	name: String,
-	pictureUrl: String,
-	versions: [VersionDocumentRef],
-	latestVersions: {
-		Windows_RT: VersionDocumentRef,
-		Darwin: VersionDocumentRef,
-		Linux: VersionDocumentRef,
-	},
-}, {
-	timestamps: true,
-})

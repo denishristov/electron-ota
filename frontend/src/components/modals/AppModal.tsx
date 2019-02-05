@@ -56,8 +56,8 @@ export default class AppModal extends React.Component<{}, IState> {
 		return (
 			<Modal.CloseTrigger>
 				<form onSubmit={this.handleCreateApp} className={styles.newApp}>
-					<Flex fill>
-						<Flex margin column centerY>
+					<Flex fill mt mb>
+						<Flex margin column centerY className={styles.pictureContainer}>
 							<label className={styles.uploadLabel}>Upload Icon</label>
 							<Dropzone
 								onDrop={this.handleSelectPicture}
@@ -71,13 +71,21 @@ export default class AppModal extends React.Component<{}, IState> {
 								}
 							</Dropzone>
 						</Flex>
+						<Flex ml mr />
 						<Flex margin column list>
 							<Input name='name' label='Name' />
 							<Input name='bundleId' label='Bundle ID' />
 						</Flex>
 					</Flex>
 					<footer>
+						<Modal.CloseTrigger>
+							<Button size='small' color='white' type='button'>
+							<SVG src={icons.Close} />
+								Cancel
+							</Button>
+						</Modal.CloseTrigger>
 						<Button size='small' color='blue' type='submit'>
+							<SVG src={icons.Plus} />
 							Add
 						</Button>
 					</footer>

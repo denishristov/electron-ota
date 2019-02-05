@@ -2,9 +2,8 @@
 import { EventType, ErrorReportRequest, ClientReportRequest } from 'shared'
 import { IPostRespondHook, ISocketMediator } from '../util/mediator/interfaces'
 import { IClientService } from '../services/ClientService'
-import { Model } from 'mongoose'
-import { IVersionDocument } from '../models/Version'
-// import { AdminMediatorName } from '../dependencies/factories/AdminMediatorFactory'
+import { Version } from '../models/Version'
+import {  ModelType } from 'typegoose'
 
 @DI.injectable()
 export default class ReportHook implements IPostRespondHook {
@@ -21,7 +20,7 @@ export default class ReportHook implements IPostRespondHook {
 		@DI.inject(DI.Services.Client)
 		private readonly clientsService: IClientService,
 		@DI.inject(DI.Models.Version)
-		public readonly versions: Model<IVersionDocument>,
+		public readonly versions: ModelType<Version>,
 	) {}
 
 	@bind
@@ -30,8 +29,8 @@ export default class ReportHook implements IPostRespondHook {
 		{ id, versionId, ...rest }: ClientReportRequest | ErrorReportRequest,
 	) {
 		const client = await this.clientsService.getClient(id)
-		const { app: appId } = await this.versions.findById(versionId).select('app')
-
+		const { appId } = await this.versions.findById(versionId).select('app')
+		const a = new this.versions()
 		this.mediators.get(DI.AdminMediator).broadcast(eventType, {
 			client,
 			versionId,

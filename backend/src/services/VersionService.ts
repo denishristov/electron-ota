@@ -1,5 +1,3 @@
-
-import { Model } from 'mongoose'
 import {
 	GetVersionRequest,
 	CreateVersionRequest,
@@ -12,10 +10,10 @@ import {
 	GetVersionsRequest,
 	VersionModel,
 } from 'shared'
-import { IVersionDocument } from '../models/Version'
-import { toModel, byDateDesc } from '../util/util'
-import { IAppDocument } from '../models/App'
-import { IVersionReportsDocument } from '../models/VersionReports'
+import { Version } from '../models/Version'
+import { App } from '../models/App'
+import { VersionReports } from '../models/VersionReports'
+import { ModelType, InstanceType } from 'typegoose'
 
 export interface IVersionService {
 	getVersion({ id }: GetVersionRequest): Promise<VersionRequest>
@@ -29,68 +27,59 @@ export interface IVersionService {
 export default class VersionService implements IVersionService {
 	constructor(
 		@DI.inject(DI.Models.Version)
-		public readonly versions: Model<IVersionDocument>,
+		public readonly VersionModel: ModelType<Version>,
 		@DI.inject(DI.Models.App)
-		private readonly apps: Model<IAppDocument>,
+		private readonly AppModel: ModelType<App>,
 		@DI.inject(DI.Models.VersionReports)
-		private readonly versionReports: Model<IVersionReportsDocument>,
+		private readonly VersionReportsModel: ModelType<VersionReports>,
 	) {}
 
 	@bind
 	public async getVersion({ id }: GetVersionRequest): Promise<VersionRequest> {
-		const version = await this.versions.findById(id)
+		const version = await this.VersionModel.findById(id)
 
-		return this.toModel(version)
+		return version.toJSON()
 	}
 
 	@bind
 	public async getVersions({ appId }: GetVersionsRequest): Promise<GetVersionsResponse> {
-		const { versions } = await this.apps
+		const { versions } = await this.AppModel
 			.findById(appId)
-			.populate('versions')
-			.sort('-versions._id')
+			.populate({ path: 'versions', options: { sort: { createdAt: -1 } } })
 			.select('versions')
 
 		return {
-			versions: versions.map(this.toModel).sort(byDateDesc),
+			versions: (versions as Array<InstanceType<Version>>).map((version) => version.toJSON()),
+				// .sort(byDateDesc),
 		}
 	}
 
 	@bind
-	public async createVersion({ appId, ...rest }: CreateVersionRequest): Promise<VersionModel> {
-		const version = await this.versions.create({ app: appId, ...rest })
+	public async createVersion(req: CreateVersionRequest): Promise<VersionModel> {
+		const { VersionModel, VersionReportsModel } = this
 
-		await this.versionReports.create({
-			downloaded: [],
-			downloading: [],
-			using: [],
-			error: [],
-			version: version.id,
-			isReleased: false,
+		const version = new VersionModel(req)
+		await version.save()
+
+		const reports = new VersionReportsModel({ version })
+		await reports.save()
+
+		await this.AppModel.findByIdAndUpdate(req.appId, {
+			$push: { versions: version },
 		})
 
-		await this.apps.findByIdAndUpdate(appId, {
-			$push: {
-				versions: version,
-			},
-		})
-
-		return this.toModel(version)
+		return version.toJSON()
 	}
 
 	@bind
 	public async updateVersion(update: UpdateVersionRequest): Promise<UpdateVersionResponse> {
-		await this.versions.findByIdAndUpdate(update.id, update)
+		await this.VersionModel.findByIdAndUpdate(update.id, update)
 		return update
 	}
 
 	@bind
 	public async deleteVersion({ id, appId }: DeleteVersionRequest): Promise<DeleteVersionResponse> {
-		await this.versions.findByIdAndRemove(id)
+		await this.VersionModel.findByIdAndRemove(id)
 		return { id, appId }
-	}
-
-	private toModel(version: IVersionDocument): VersionModel {
-		return { ...toModel(version), appId: `${version.app}` }
 	}
 }

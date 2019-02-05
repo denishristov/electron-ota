@@ -2,6 +2,7 @@ import { config } from 'react-spring'
 import { ClassName, IEvent, IEntry } from './types'
 import { emailRegex } from './constants/regex'
 import { RouteProps } from 'react-router'
+import { SimpleVersionReportModel } from '../../../shared/src/schemas/Reports'
 
 export function isEmail(candidate: string): boolean {
 	return emailRegex.test(candidate)
@@ -125,4 +126,18 @@ export function noop() {}
 
 export function getPathName(location: RouteProps['location']) {
 	return location ? location.pathname : 'key'
+}
+
+export function isError(data: any) {
+	return Boolean(data) && (data.details || data.stack)
+}
+
+export function getDefaultSimpleStatistics(version: string): SimpleVersionReportModel {
+	return {
+		downloadedCount: 0,
+		downloadingCount: 0,
+		usingCount: 0,
+		errorsCount: 0,
+		version,
+	}
 }

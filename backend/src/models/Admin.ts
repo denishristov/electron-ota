@@ -1,23 +1,15 @@
-import { Document, Schema } from 'mongoose'
+import { prop, arrayProp, Typegoose } from 'typegoose'
 
-export interface IAdminDocument extends Document {
-	email: string
-	name: string
-	password: string
-	authTokens: string[]
+export class Admin extends Typegoose {
+	@prop({ unique: true, required: true })
+	public email: string
+
+	@prop({ unique: true, required: true })
+	public name: string
+
+	@prop({ required: true })
+	public password: string
+
+	@arrayProp({ items: String, unique: true })
+	public authTokens: string[] = []
 }
-
-export const IAdminSchema = new Schema({
-	authTokens: [{
-		type: String,
-		unique: true,
-	}],
-	email: {
-		type: String,
-		unique: true,
-	},
-	name: String,
-	password: String,
-}, {
-	timestamps: true,
-})

@@ -1,8 +1,7 @@
 // tslint:disable:max-classes-per-file
-import { TimestampedDocument } from './Generic'
-import { SystemType } from '../enums/SystemType'
+import { TimestampedDocument, AuthenticatedRequest } from './Generic'
 import { Token, StringSchema, Uri } from 'tsdv-joi/constraints/string'
-import { Required } from 'tsdv-joi/constraints/any'
+import { Required, Allow } from 'tsdv-joi/constraints/any'
 import { BooleanSchema } from 'tsdv-joi/constraints/boolean'
 import { Nested, NestedArray } from 'tsdv-joi'
 
@@ -27,11 +26,19 @@ export class VersionModel extends TimestampedDocument {
 	public id: string
 
 	@Required()
+	@Token()
+	public appId: string
+
+	@Required()
 	@StringSchema()
 	public versionName: string
 
 	@Uri()
 	public downloadUrl?: string
+
+	@Required()
+	@BooleanSchema()
+	public isReleased: boolean
 
 	@Required()
 	@BooleanSchema()
@@ -41,14 +48,11 @@ export class VersionModel extends TimestampedDocument {
 	@BooleanSchema()
 	public isBase: boolean
 
-	@Required()
-	@Token()
-	public appId: string
-
+	@Allow('')
 	@StringSchema()
 	public description?: string
 
-	@Token()
+	@StringSchema()
 	public hash: string
 
 	@Required()
@@ -66,19 +70,19 @@ export class VersionEditModel {
 	public appId: string
 
 	@StringSchema()
-	public versionName?: string
-
-	@StringSchema()
-	public description?: string
+	public versionName: string
 
 	@BooleanSchema()
 	public isCritical?: boolean
 
+	@StringSchema()
+	public description?: string
+
 	@Nested()
-	public systems: SystemSupport
+	public systems?: SystemSupport
 }
 
-export class VersionRequest {
+export class VersionRequest extends AuthenticatedRequest {
 	@Required()
 	@Token()
 	public appId: string
@@ -132,10 +136,11 @@ export class CreateVersionRequest extends VersionRequest {
 	@Token()
 	public appId: string
 
+	@Allow('')
 	@StringSchema()
 	public description?: string
 
-	@Token()
+	@StringSchema()
 	public hash: string
 
 	@Required()
@@ -145,7 +150,23 @@ export class CreateVersionRequest extends VersionRequest {
 
 export class CreateVersionResponse extends VersionModel {}
 
-export class UpdateVersionRequest extends VersionEditModel {}
+export class UpdateVersionRequest extends VersionRequest {
+	@Required()
+	@Token()
+	public id: string
+
+	@StringSchema()
+	public versionName: string
+
+	@BooleanSchema()
+	public isCritical?: boolean
+
+	@StringSchema()
+	public description?: string
+
+	@Nested()
+	public systems?: SystemSupport
+}
 
 export class UpdateVersionResponse extends VersionEditModel {}
 

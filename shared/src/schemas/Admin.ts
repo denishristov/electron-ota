@@ -60,7 +60,7 @@ export class RegisterAdminRequest {
 
 	@Required()
 	@Max(256)
-	@Regex(/^[a-zA-Z0-9]{8,64}$/)
+	@Regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,64}$/)
 	public password: string
 }
 

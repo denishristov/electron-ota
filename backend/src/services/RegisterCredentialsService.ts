@@ -85,7 +85,7 @@ export default class RegisterCredentialsService implements IRegisterCredentialsS
 	}
 
 	private async genRegisterKey() {
-		const bytes = await randomBytes(1024)
+		const bytes = await randomBytes(256)
 		return bytes.toString('base64')
 	}
 }

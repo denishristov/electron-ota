@@ -2,9 +2,10 @@ import bcrypt from 'bcrypt'
 import crypto from 'crypto'
 import jwt from 'jsonwebtoken'
 import { Model } from 'mongoose'
-import { IAdminDocument } from '../models/Admin'
+import { Admin } from '../models/Admin'
 import { PASS_SECRET_KEY } from '../config/config'
 import { IRegisterCredentialsService } from './RegisterCredentialsService'
+import { InstanceType, ModelType } from 'typegoose'
 import {
 	AdminAuthenticationRequest,
 	AdminAuthenticationResponse,
@@ -24,7 +25,7 @@ export interface IAdminsService {
 export default class AdminsService implements IAdminsService {
 	constructor(
 		@DI.inject(DI.Models.Admin)
-		private readonly admins: Model<IAdminDocument>,
+		private readonly AdminModel: ModelType<Admin>,
 		@DI.inject(DI.Services.RegisterCredentials)
 		private readonly credentialsService: IRegisterCredentialsService,
 	) {}
@@ -38,7 +39,7 @@ export default class AdminsService implements IAdminsService {
 				throw new Error('No email or name')
 			}
 
-			const user = await this.admins.findOne(params).select('password authTokens')
+			const user = await this.AdminModel.findOne(params).select('password authTokens')
 
 			if (!await bcrypt.compare(password, user.password)) {
 				throw new Error('Invalid password')
@@ -63,7 +64,7 @@ export default class AdminsService implements IAdminsService {
 		try {
 			const { id } = jwt.verify(authToken, PASS_SECRET_KEY, { algorithms: ['HS256'] }) as { id: string }
 
-			const { authTokens } = await this.admins.findById(id).select('authTokens')
+			const { authTokens } = await this.AdminModel.findById(id).select('authTokens')
 
 			if (!authTokens) {
 				throw new Error('Invalid token')
@@ -86,13 +87,15 @@ export default class AdminsService implements IAdminsService {
 
 	@bind
 	public async register({ name, email, password, key }: RegisterAdminRequest): Promise<RegisterAdminResponse> {
-		if (!await this.credentialsService.verify(key)) {
+		if (!this.credentialsService.verify(key)) {
 			return {
 				isSuccessful: false,
 			}
 		}
 
-		const admin = await this.admins.create({
+		const { AdminModel } = this
+
+		const admin = new AdminModel({
 			name,
 			email,
 			password: await this.hashPassword(password),
@@ -104,13 +107,13 @@ export default class AdminsService implements IAdminsService {
 		}
 	}
 
-	private async generateTokenAndAddToAdmin(user: IAdminDocument): Promise<string> {
-		const token = await this.generateToken(user.id)
+	private async generateTokenAndAddToAdmin(admin: InstanceType<Admin>): Promise<string> {
+		const token = await this.generateToken(admin.id)
 
 		const hashed = this.hashAuthToken(token)
 
-		user.authTokens.push(hashed)
-		await user.save()
+		admin.authTokens.push(hashed)
+		await admin.save()
 
 		return token
 	}

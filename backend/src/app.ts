@@ -1,8 +1,10 @@
+import 'reflect-metadata'
+
 import 'shared/dist/extensions'
+
 import './config/global'
 import './config/mongoose'
 
-import 'reflect-metadata'
 import container from './dependencies/inversify.config'
 
 import { ClientsMediatorFactory } from './dependencies/factories/ClientsMediatorFactory'
@@ -14,14 +16,23 @@ import { PORT, ENVIRONMENT } from './config/config'
 import { AdminMediatorFactory } from './dependencies/factories/AdminMediatorFactory'
 import { SystemType } from 'shared'
 
-(async function setup() {
+(async function bootstrap() {
+	container.get<Server>(DI.HTTPServer).listen(PORT, () => {
+		// tslint:disable-next-line:no-console
+		console.log(
+			'App is running at http://localhost:%d in %s mode',
+			PORT,
+			ENVIRONMENT,
+		)
+	})
+
 	const mediators = container.get<Map<string, ISocketMediator>>(DI.Mediators)
 
-	const adminMediator = container.get<AdminMediatorFactory>(DI.Factories.AdminsMediator)()
-
-	mediators.set(adminMediator.name, adminMediator)
-
+	const adminMediatorFactory = container.get<AdminMediatorFactory>(DI.Factories.AdminsMediator)
 	const clientsMediatorFactory = container.get<ClientsMediatorFactory>(DI.Factories.ClientsMediator)
+
+	const adminMediator = adminMediatorFactory()
+	mediators.set(adminMediator.name, adminMediator)
 
 	const appService = container.get<IAppService>(DI.Services.App)
 	const bundleIds = await appService.getAllBundleIds()
@@ -34,13 +45,4 @@ import { SystemType } from 'shared'
 			mediators.set(mediator.name, mediator)
 		}
 	}
-
-	container.get<Server>(DI.HTTPServer).listen(PORT, () => {
-		// tslint:disable-next-line:no-console
-		console.log(
-			'App is running at http://localhost:%d in %s mode',
-			PORT,
-			ENVIRONMENT,
-		)
-	})
 }())

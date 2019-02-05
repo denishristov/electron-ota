@@ -1,9 +1,8 @@
 
 import { EventType, PublishVersionRequest, PublishVersionResponse, SystemType } from 'shared'
 import { IPostRespondHook, ISocketMediator } from '../util/mediator/interfaces'
-import { Model } from 'mongoose'
-import { toModel } from '../util/util'
-import { IVersionDocument } from '../models/Version'
+import { Version } from '../models/Version'
+import {  ModelType } from 'typegoose'
 
 @DI.injectable()
 export default class ReleaseUpdateHook implements IPostRespondHook {
@@ -13,7 +12,7 @@ export default class ReleaseUpdateHook implements IPostRespondHook {
 		@DI.inject(DI.Mediators)
 		private readonly mediators: Map<string, ISocketMediator>,
 		@DI.inject(DI.Models.Version)
-		private readonly versions: Model<IVersionDocument>,
+		private readonly versions: ModelType<Version>,
 	) {}
 
 	@bind
@@ -36,7 +35,7 @@ export default class ReleaseUpdateHook implements IPostRespondHook {
 					systems
 				`)
 				.populate('app')
-				.then(toModel)
+				.then((version) => version.toJSON())
 
 			const update = { ...version, versionId }
 			const supportedSystemTypes = Object.entries(version.systems)
@@ -44,10 +43,11 @@ export default class ReleaseUpdateHook implements IPostRespondHook {
 				.map(([systemType, _]) => systemType)
 
 			for (const systemType of supportedSystemTypes) {
-				const mediator = this.mediators.get(`/${app.bundleId}/${systemType}`)
+				const name = `/${app.bundleId}/${systemType}`
+				const mediator = this.mediators.get(name)
 
 				if (!mediator) {
-					throw new Error(`mediator /${app.bundleId}/${systemType} does not exist`)
+					throw new Error(`mediator ${name} does not exist`)
 				}
 
 				mediator.broadcast(EventType.NewUpdate, update)

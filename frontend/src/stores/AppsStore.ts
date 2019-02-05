@@ -21,6 +21,7 @@ import {
 import { IApi } from '../util/Api'
 import { IApp } from './App'
 import { AppFactory } from '../dependencies/factories/AppFactory'
+import { getDefaultSimpleStatistics } from '../util/functions'
 
 export interface IAppsStore {
 	allApps: IApp[]
@@ -94,7 +95,12 @@ export default class AppsStore implements IAppsStore {
 
 	@action.bound
 	public handleCreateVersion(version: CreateVersionResponse) {
-		this.apps.get(version.appId)!.versions.set(version.id, version)
+		const app = this.apps.get(version.appId)
+
+		if (app) {
+			app.versions.set(version.id, version)
+			app.simpleReports.set(version.id, getDefaultSimpleStatistics(version.id))
+		}
 	}
 
 	@action.bound

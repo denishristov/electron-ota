@@ -23,7 +23,7 @@ export default class AuthHook implements IPreRespondHook {
 		if (isAuthenticated) {
 			const result = { ...data }
 			delete result.authToken
-			return result as AdminAuthenticationRequest
+			return result
 		} else {
 			throw new Error('Auth token is invalid')
 		}

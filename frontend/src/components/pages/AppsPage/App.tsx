@@ -21,7 +21,7 @@ export default class App extends Component<IProps> {
 			name,
 			bundleId,
 			pictureUrl,
-			latestVersion,
+			latestVersions,
 			versions,
 		} = this.props.app
 
@@ -38,7 +38,7 @@ export default class App extends Component<IProps> {
 					</Flex>
 					<label>{`Bundle ID ${bundleId}`}</label>
 					<label>{`Versions ${versions}`}</label>
-					<label>{`Latest version ${latestVersion}`}</label>
+					<label>{`Latest version ${latestVersions}`}</label>
 				</animated.div>
 			</Pushable>
 		)

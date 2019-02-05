@@ -262,6 +262,14 @@ export default class VersionModal extends Component<IProps, IState> {
 								</Flex>
 							</Flex>
 						)}
+						{!isUploading && (
+							<Modal.CloseTrigger>
+								<Button size='small' color='white' type='button'>
+									<SVG src={icons.Close} />
+									Cancel
+								</Button>
+							</Modal.CloseTrigger>
+						)}
 						{isEditing
 							? (
 								<>
@@ -405,7 +413,6 @@ export default class VersionModal extends Component<IProps, IState> {
 				description: description.value,
 				isBase,
 				isCritical,
-				isReleased: isReleasing,
 				systems: {
 					Windows_RT: isWindows,
 					Darwin: isDarwin,
@@ -446,7 +453,6 @@ export default class VersionModal extends Component<IProps, IState> {
 				hash,
 				isBase,
 				isCritical,
-				isReleased: isReleasing,
 				systems: {
 					Windows_RT: isWindows,
 					Darwin: isDarwin,

@@ -9,13 +9,11 @@ import ClientService, { IClientService } from '../services/ClientService'
 import ReleaseService, { IReleaseService } from '../services/ReleaseService'
 import VersionReportsService, { IVersionReportsService } from '../services/VersionReportsService'
 
-import { Model, model as createModel } from 'mongoose'
-
-import { IAppDocument, AppSchema } from '../models/App'
-import { IAdminDocument, IAdminSchema } from '../models/Admin'
-import { IVersionDocument, VersionSchema } from '../models/Version'
-import { IVersionReportsDocument, VersionReportsSchema } from '../models/VersionReports'
-import { IClientDocument, ClientSchema } from '../models/Client'
+import { App } from '../models/App'
+import { Admin } from '../models/Admin'
+import { Version } from '../models/Version'
+import { VersionReports } from '../models/VersionReports'
+import { Client } from '../models/Client'
 
 import AuthHook from '../hooks/AuthHook'
 import ReportHook from '../hooks/ReportHook'
@@ -32,13 +30,8 @@ import clientsMediatorFactory, { ClientsMediatorFactory } from './factories/Clie
 
 import { IPreRespondHook, IPostRespondHook, ISocketMediator } from '../util/mediator/interfaces'
 
-import {
-	AdminDocumentRef,
-	AppDocumentRef,
-	VersionDocumentRef,
-	VersionReportsDocumentRef,
-	ClientDocumentRef,
-} from '../models/refs'
+import { defaultSchemaOptions } from '../models/util'
+import { ModelType } from 'typegoose'
 
 const container = new Container()
 
@@ -80,20 +73,20 @@ container.bind<IVersionReportsService>(DI.Services.VersionReports)
 	.to(VersionReportsService)
 	.inSingletonScope()
 
-container.bind<Model<IAdminDocument>>(DI.Models.Admin)
-	.toConstantValue(createModel(AdminDocumentRef.ref, IAdminSchema))
+container.bind<ModelType<Admin>>(DI.Models.Admin)
+	.toConstantValue(new Admin().getModelForClass(Admin, defaultSchemaOptions))
 
-container.bind<Model<IAppDocument>>(DI.Models.App)
-	.toConstantValue(createModel(AppDocumentRef.ref, AppSchema))
+container.bind<ModelType<App>>(DI.Models.App)
+	.toConstantValue(new App().getModelForClass(App, defaultSchemaOptions))
 
-container.bind<Model<IVersionDocument>>(DI.Models.Version)
-	.toConstantValue(createModel(VersionDocumentRef.ref, VersionSchema))
+container.bind<ModelType<Version>>(DI.Models.Version)
+	.toConstantValue(new Version().getModelForClass(Version, defaultSchemaOptions))
 
-container.bind<Model<IVersionReportsDocument>>(DI.Models.VersionReports)
-	.toConstantValue(createModel(VersionReportsDocumentRef.ref, VersionReportsSchema))
+container.bind<ModelType<VersionReports>>(DI.Models.VersionReports)
+	.toConstantValue(new VersionReports().getModelForClass(VersionReports, defaultSchemaOptions))
 
-container.bind<Model<IClientDocument>>(DI.Models.Client)
-	.toConstantValue(createModel(ClientDocumentRef.ref, ClientSchema))
+container.bind<ModelType<Client>>(DI.Models.Client)
+	.toConstantValue(new Client().getModelForClass(Client, defaultSchemaOptions))
 
 container.bind<IPreRespondHook>(DI.Hooks.Auth)
 	.to(AuthHook)
@@ -114,7 +107,7 @@ container.bind<IPostRespondHook>(DI.Hooks.ReleaseUpdate)
 container.bind<ClientsMediatorFactory>(DI.Factories.ClientsMediator)
 	.toFactory(clientsMediatorFactory)
 
-container.bind<ISocketMediator>(DI.Factories.AdminsMediator)
+container.bind(DI.Factories.AdminsMediator)
 	.toFactory(adminMediatorFactory)
 
 container.bind<Map<string, ISocketMediator>>(DI.Mediators)

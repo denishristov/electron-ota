@@ -10,7 +10,7 @@ import {
 	Handler,
 } from './interfaces'
 import chalk from 'chalk'
-import { uuid } from '../util'
+import { uuid } from '../functions'
 import { Validator } from 'tsdv-joi'
 
 const colors = {
@@ -146,9 +146,7 @@ export default class SocketMediator implements ISocketMediator {
 	}
 
 	private applyPostHooks(eventType: EventType, req: object, res: object): void {
-		for (const [postHook] of this.postRespondHooks) {
-			const { eventTypes, exceptions } = postHook
-
+		for (const [{ eventTypes, exceptions, handle }] of this.postRespondHooks) {
 			if (eventTypes && !eventTypes.has(eventType)) {
 				continue
 			}
@@ -157,7 +155,7 @@ export default class SocketMediator implements ISocketMediator {
 				continue
 			}
 
-			postHook.handle(eventType, req, res)
+			handle(eventType, req, res)
 		}
 	}
 
@@ -174,11 +172,13 @@ export default class SocketMediator implements ISocketMediator {
 				await SocketMediator.validator.validateAsClass(request, requestType)
 				const data = await this.applyPreHooks(eventType, request)
 
-				response = await handler(data) || {}
+				const result = await handler(data) || {}
 
 				if (responseType) {
-					await SocketMediator.validator.validateAsClass(response, responseType)
+					await SocketMediator.validator.validateAsClass(result, responseType)
 				}
+
+				response = result
 
 				respond(response)
 
@@ -188,10 +188,12 @@ export default class SocketMediator implements ISocketMediator {
 				respond(error)
 			}
 
-			this.applyPostHooks(eventType, request, response)
+			if (response) {
+				this.applyPostHooks(eventType, request, response)
 
-			if (this.broadcastableEvents.has(eventType)) {
-				this.broadcast(eventType, response)
+				if (this.broadcastableEvents.has(eventType)) {
+					this.broadcast(eventType, response)
+				}
 			}
 		}
 	}

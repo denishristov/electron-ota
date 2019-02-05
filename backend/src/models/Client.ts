@@ -1,21 +1,17 @@
-import { Document, Schema, Types } from 'mongoose'
-import { IVersionDocument } from './Version'
+import { Version } from './Version'
 import { SystemType } from 'shared'
-import { VersionDocumentRef } from './refs'
+import { prop, Typegoose } from 'typegoose'
 
-export interface IClientDocument extends Document {
-	id: string
-	username: string
-	osRelease: string
-	version: IVersionDocument
-	systemType: SystemType
+export class Client extends Typegoose {
+	@prop({ required: true })
+	public username: string
+
+	@prop()
+	public osRelease: string
+
+	@prop({ ref: Version })
+	public version: Ref<Version>
+
+	@prop({ enum: SystemType })
+	public systemType: SystemType
 }
-
-export const ClientSchema = new Schema({
-	username: String,
-	osRelease: String,
-	systemType: String,
-	version: VersionDocumentRef,
-}, {
-	timestamps: true,
-})

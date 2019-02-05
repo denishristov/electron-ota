@@ -1,5 +1,6 @@
 import { EventType } from 'shared'
 import chalk from 'chalk'
+import { isError } from './functions'
 
 export interface IApi {
 	emit<Res extends object>(eventType: EventType, request?: object): Promise<Res>
@@ -38,7 +39,7 @@ export default class Api implements IApi {
 			this.connection.emit(eventType, this.attachData(request || {}), (data: Res) => {
 				clearTimeout(timeout)
 
-				if (Object.keys(data).some((key) => key === 'errorMessage' || key === 'stack')) {
+				if (isError(data)) {
 					this.logError(eventType, request || {}, data)
 					reject(data)
 				} else {
@@ -51,9 +52,14 @@ export default class Api implements IApi {
 
 	@bind
 	public on<Res extends object>(eventType: string, cb: (res: Res) => void): this {
-		this.connection.on(eventType, (res: Res) => {
-			this.logUpdate(eventType, res)
-			cb(res)
+		this.connection.on(eventType, (data: Res) => {
+			if (isError(data)) {
+				// this.logError(eventType, data)
+				throw data
+			} else {
+				this.logUpdate(eventType, data)
+				cb(data)
+			}
 		})
 
 		return this

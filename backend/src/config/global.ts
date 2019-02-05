@@ -1,6 +1,8 @@
 import bindDecorator from 'bind-decorator'
 import { inject, injectable } from 'inversify'
 import * as Symbols from '../dependencies/symbols'
+import { InstanceType } from 'typegoose'
+import { ObjectID } from 'bson'
 
 type SymbolType = typeof Symbols
 
@@ -12,6 +14,10 @@ interface IDI extends SymbolType {
 declare global {
 	const bind: typeof bindDecorator
 	const DI: IDI
+}
+
+declare global {
+	type Ref<T> = InstanceType<T> | ObjectID
 }
 
 const DI = {

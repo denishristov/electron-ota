@@ -7,9 +7,9 @@ import {
 } from 'shared'
 
 import semver from 'semver'
-import { Model } from 'mongoose'
-import { IVersionDocument } from '../models/Version'
-import { IAppDocument } from '../models/App'
+import { Version } from '../models/Version'
+import { App } from '../models/App'
+import { ModelType } from 'typegoose'
 
 export interface IReleaseService {
 	checkForUpdate(req: CheckForUpdateRequest): Promise<CheckForUpdateResponse>
@@ -24,14 +24,14 @@ const defaultResponse = {
 export default class ReleaseService implements IReleaseService {
 	constructor(
 		@DI.inject(DI.Models.App)
-		private readonly apps: Model<IAppDocument>,
+		private readonly AppModel: ModelType<App>,
 		@DI.inject(DI.Models.Version)
-		private readonly versions: Model<IVersionDocument>,
+		private readonly VersionModel: ModelType<Version>,
 	) {}
 
 	@bind
 	public async releaseVersion({ versionId }: PublishVersionRequest): Promise<PublishVersionResponse> {
-		const version = await this.versions.findById(versionId).select(`
+		const version = await this.VersionModel.findById(versionId).select(`
 			systems
 			addId
 			isReleased
@@ -48,8 +48,8 @@ export default class ReleaseService implements IReleaseService {
 			.filter((systemType: SystemType) => version.systems[systemType])
 			.group((systemType) => [systemType, versionId])
 
-		await this.apps.findByIdAndUpdate(
-			version.app,
+		await this.AppModel.findByIdAndUpdate(
+			version.appId,
 			{ latestVersions },
 			{ upsert: true },
 		)
@@ -64,11 +64,11 @@ export default class ReleaseService implements IReleaseService {
 	public async checkForUpdate(
 		{ versionName, bundleId, systemType }: CheckForUpdateRequest,
 	): Promise < CheckForUpdateResponse > {
-		const { latestVersions } = await this.apps
+		const { latestVersions } = await this.AppModel
 			.findOne({ bundleId })
 			.populate(`latestVersions.${systemType}`)
 
-		const latestVersion = latestVersions && latestVersions[systemType]
+		const latestVersion = latestVersions && latestVersions[systemType] as Version
 
 		if (latestVersion && semver.lt(versionName, latestVersion.versionName)) {
 			const {

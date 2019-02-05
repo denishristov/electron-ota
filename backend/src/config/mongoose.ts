@@ -10,6 +10,8 @@ const disconnected = chalk.bold.red
 const termination = chalk.bold.magenta
 
 mongoose.Promise = bluebird
+global.Promise = bluebird
+
 mongoose.set('useCreateIndex', true)
 
 mongoose.connect(MONGODB_URI, { useNewUrlParser: true })

@@ -5,21 +5,9 @@ export type Clients = SocketIO.Namespace
 
 export type Handler<Req = object, Res = object> = (request: Req) => Promise<Res> | Promise<void>
 
-export type Newable<T> = new() => T
+export type Newable<T> = new(...args: any[]) => T
 
 export type ConstructedHandler = (request: object, respond: (res: Error | object) => void) => void
-
-// export interface IEventHandler<Req extends object, Res extends object> extends Iterable<
-// 	EventType |
-// 	Handler<Req, Res> |
-// 	Clazz<Req> |
-// 	Clazz<Res>
-// > {
-// 	[0]: EventType
-// 	[1]: Handler<Req, Res>
-// 	[2]: Clazz<Req>
-// 	[3]: Clazz<Res>
-// }
 
 export interface ISocketMediator {
 	name: string

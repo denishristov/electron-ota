@@ -5,6 +5,7 @@ import { BooleanSchema } from 'tsdv-joi/constraints/boolean'
 import { Nested } from 'tsdv-joi'
 import { SystemType } from '../enums/SystemType'
 import { Or } from 'tsdv-joi/constraints/object'
+import { AuthenticatedRequest } from './Generic'
 
 class Update {
 	@Required()
@@ -58,7 +59,7 @@ export class NewUpdateMessage {
 	public update: Update
 }
 
-export class PublishVersionRequest {
+export class PublishVersionRequest extends AuthenticatedRequest {
 	@Required()
 	@Token()
 	public versionId: string

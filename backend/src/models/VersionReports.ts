@@ -1,30 +1,22 @@
-import { Schema, Document, Types } from 'mongoose'
-import { IClientDocument } from './Client'
-import { ClientDocumentRef, VersionDocumentRef } from './refs'
-import { IVersionDocument } from './Version'
+import { prop, arrayProp, Typegoose } from 'typegoose'
+import { Client } from './Client'
+import { Version } from './Version'
+import { ErrorReport } from './ErrorReport'
 
-interface UpdateError {
-	client: IClientDocument
-	errorMessage: string
+// tslint:disable-next-line:max-classes-per-file
+export class VersionReports extends Typegoose {
+	@arrayProp({ itemsRef: Client })
+	public downloading: Array<Ref<Client>> = []
+
+	@arrayProp({ itemsRef: Client })
+	public downloaded: Array<Ref<Client>> = []
+
+	@arrayProp({ itemsRef: Client })
+	public using: Array<Ref<Client>> = []
+
+	@arrayProp({ itemsRef: ErrorReport })
+	public errorMessages: Array<Ref<ErrorReport>> = []
+
+	@prop({ ref: Version, required: true })
+	public version: Ref<Version>
 }
-
-export interface IVersionReportsDocument extends Document {
-	downloading: IClientDocument[]
-	downloaded: IClientDocument[]
-	using: IClientDocument[]
-	errorMessages: UpdateError[]
-	version: IVersionDocument
-}
-
-export const VersionReportsSchema = new Schema({
-	version: VersionDocumentRef,
-	downloading: [ClientDocumentRef],
-	downloaded: [ClientDocumentRef],
-	using: [ClientDocumentRef],
-	errorMessages: [{
-		errorMessage: String,
-		client: ClientDocumentRef,
-	}],
-}, {
-	timestamps: true,
-})

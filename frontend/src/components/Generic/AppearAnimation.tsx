@@ -16,7 +16,7 @@ export default function AppearAnimation<T extends IEntry>({ children, items }: I
 			native
 			unique
 			config={animationConfig}
-			// keys={getId}
+			keys={getId}
 			items={items}
 			trail={64}
 			{...versionsTransitions}

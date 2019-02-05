@@ -12,13 +12,13 @@ import {
 	VersionReportModel,
 	VersionEditModel,
 	AppModel,
+	LatestVersionsModel,
 } from 'shared'
 import { IApi } from '../util/Api'
 import { Omit } from 'react-router'
 
 interface ICreateVersionInput {
 	versionName: string
-	isReleased: boolean
 	isCritical: boolean
 	isBase: boolean
 	description: string
@@ -34,7 +34,7 @@ export interface IApp {
 	name: string
 	pictureUrl?: string
 	bundleId: string
-	latestVersion?: VersionModel
+	latestVersions?: LatestVersionsModel
 	versionsCount: number
 	latestAddedVersion: VersionModel | null
 	versions: ObservableMap<string, VersionModel>
@@ -64,7 +64,7 @@ export default class App implements IApp {
 	public bundleId: string
 
 	@observable
-	public latestVersion?: VersionModel
+	public latestVersions?: LatestVersionsModel
 
 	@observable
 	public versionsCount: number
@@ -81,7 +81,7 @@ export default class App implements IApp {
 			name,
 			pictureUrl,
 			bundleId,
-			latestVersion,
+			latestVersions,
 			versions,
 		}: AppModel,
 		private readonly api: IApi,
@@ -90,7 +90,7 @@ export default class App implements IApp {
 		this.name = name
 		this.pictureUrl = pictureUrl
 		this.bundleId = bundleId
-		this.latestVersion = latestVersion
+		this.latestVersions = latestVersions
 		this.versionsCount = versions
 	}
 
@@ -118,17 +118,6 @@ export default class App implements IApp {
 	@action
 	public async fetchSignedUploadVersionUrl(req: S3SignUrlRequest) {
 		return await this.api.emit<S3SignUrlResponse>(EventType.SignUploadVersionUrl, req)
-	}
-
-	public toModel(): AppModel {
-		return {
-			id: this.id,
-			pictureUrl: this.pictureUrl,
-			name: this.name,
-			bundleId: this.bundleId,
-			versions: this.versions.size || this.versionsCount,
-			latestVersion: this.latestVersion,
-		}
 	}
 
 	@action

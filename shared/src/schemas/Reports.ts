@@ -4,6 +4,7 @@ import { NumberSchema } from 'tsdv-joi/constraints/number'
 import { Required } from 'tsdv-joi/constraints/any'
 import { Token, StringSchema } from 'tsdv-joi/constraints/string'
 import { NestedArray, Nested } from 'tsdv-joi'
+import { AuthenticatedRequest } from './Generic'
 
 export class SimpleVersionReportModel {
 	@Required()
@@ -27,7 +28,7 @@ export class SimpleVersionReportModel {
 	public version: string
 }
 
-export class GetSimpleVersionReportsRequest {
+export class GetSimpleVersionReportsRequest extends AuthenticatedRequest {
 	@Required()
 	@Token()
 	public appId: string
@@ -67,7 +68,7 @@ export class VersionReportModel {
 	public errorMessages: ErrorReport[]
 }
 
-export class GetVersionReportsRequest {
+export class GetVersionReportsRequest extends AuthenticatedRequest {
 	@Required()
 	@Nested()
 	public versionId: string
