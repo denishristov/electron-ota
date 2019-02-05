@@ -97,12 +97,14 @@ export default class VersionReportsService implements IVersionReportsService {
 	}
 
 	@bind
-	public async getVersionReports(arg: GetVersionReportsRequest): Promise<GetVersionReportsResponse> {
+	public async getVersionReports({ versionId: version }: GetVersionReportsRequest): Promise<GetVersionReportsResponse> {
 		const reports = await this.VersionReportsModel
-			.findOne({ version: arg.versionId })
+			.findOne({ version })
 			.populate(VersionReportsService.fields)
 			.select(VersionReportsService.fields)
 
-		return reports.toJSON()
+		const { id, ...rest } = reports.toJSON()
+
+		return { ...rest, version }
 	}
 }

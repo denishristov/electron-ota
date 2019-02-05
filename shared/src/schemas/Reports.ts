@@ -66,11 +66,15 @@ export class VersionReportModel {
 	@Required()
 	@NestedArray(ErrorReport)
 	public errorMessages: ErrorReport[]
+
+	@Required()
+	@Token()
+	public version: string
 }
 
 export class GetVersionReportsRequest extends AuthenticatedRequest {
 	@Required()
-	@Nested()
+	@Token()
 	public versionId: string
 }
 

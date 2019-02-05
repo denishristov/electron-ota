@@ -67,13 +67,23 @@ export default class AppService implements IAppService {
 
 	@bind
 	public async getAllApps(): Promise<GetAppsResponse> {
-		const apps = await this.AppModel.find().populate('latestVersions')
+		const apps = await this.AppModel
+		.find()
+		.populate(Object.keys(SystemType).map((x) => `latestVersions.${x}`).join(' '))
 
 		return {
-			apps: apps.map((app) => ({
-				...app.toJSON(),
-				versions: app.versions && app.versions.length,
-			})),
+			apps: apps.map((app) => {
+				const json = app.toJSON()
+
+				if (json.latestVersions) {
+					delete json.latestVersions._id
+				}
+
+				return {
+					...json,
+					versions: app.versions && app.versions.length,
+				}
+			}),
 		}
 	}
 
@@ -115,7 +125,7 @@ export default class AppService implements IAppService {
 			.populate({
 				path: 'latestVersions',
 				populate: {
-					path: 'version',
+					path: systemType,
 				},
 			})
 			.select('latestVersions')

@@ -1,19 +1,17 @@
 import { app, BrowserWindow, dialog } from 'electron'
 import * as path from 'path'
 import './update.config'
-
+import yes from '../package.json'
 import ElectronUpdateServiceClient from 'electron-client'
 
 const config = {
 	bundleId: 'test-electron',
 	updateServerUrl: 'http://localhost:4000',
-	versionName: app.getVersion(),
+	versionName: yes.version,
 }
-
+console.log(yes.version, 'yess')
 const updateService = new ElectronUpdateServiceClient(config)
 
-// tslint:disable-next-line:no-console
-console.log(app.getVersion())
 
 updateService.on('update', (info) => {
 	// tslint:disable-next-line:no-console
@@ -31,8 +29,9 @@ updateService.on('update', (info) => {
 	},
 	)
 })
-
-if (!updateService.loadLatestUpdateSync()) {
+const u = updateService.loadLatestUpdateSync()
+console.log(u)
+if (!u) {
 	main()
 }
 
@@ -48,7 +47,7 @@ function main() {
 		})
 
 		// and load the index.html of the app.
-		mainWindow.loadFile(path.join(__dirname, '../index.html'))
+		mainWindow.loadFile(path.join(__dirname, '../../index.html'))
 
 		// Open the DevTools.
 		mainWindow.webContents.openDevTools()

@@ -14,8 +14,8 @@ export class VersionReports extends Typegoose {
 	@arrayProp({ itemsRef: Client })
 	public using: Array<Ref<Client>> = []
 
-	@arrayProp({ itemsRef: ErrorReport })
-	public errorMessages: Array<Ref<ErrorReport>> = []
+	@arrayProp({ items: ErrorReport })
+	public errorMessages: ErrorReport[] = []
 
 	@prop({ ref: Version, required: true })
 	public version: Ref<Version>

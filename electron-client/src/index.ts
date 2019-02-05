@@ -96,7 +96,7 @@ class ElectronUpdateServiceClient extends EventEmitter {
 
 			const updateInfo = this.downloadsStore.get(latestUpdateFilename)
 
-			if (!updateInfo || semver.gt(this.options.versionName, updateInfo.versionName)) {
+			if (!updateInfo || !semver.lt(this.options.versionName, updateInfo.versionName)) {
 				return null
 			}
 
@@ -123,6 +123,8 @@ class ElectronUpdateServiceClient extends EventEmitter {
 				versionId: updateInfo.versionId,
 				id: this.clientId,
 			})
+
+			this.dispose()
 
 			return updateModule
 		} catch (error) {
@@ -151,7 +153,9 @@ class ElectronUpdateServiceClient extends EventEmitter {
 
 			const updateInfo = this.downloadsStore.get(latestUpdateFilename)
 
-			if (!updateInfo || semver.gt(this.options.versionName, updateInfo.versionName)) {
+			console.log(updateInfo.versionName)
+
+			if (!updateInfo || !semver.lt(this.options.versionName, updateInfo.versionName)) {
 				return null
 			}
 
@@ -182,6 +186,8 @@ class ElectronUpdateServiceClient extends EventEmitter {
 				id: this.clientId,
 			})
 
+			this.dispose()
+
 			return updateModule
 		} catch (error) {
 			this.emit(EventTypes.UpdateService.Error, error)
@@ -207,6 +213,14 @@ class ElectronUpdateServiceClient extends EventEmitter {
 		}
 
 		return isUpToDate
+	}
+
+	private async dispose() {
+		const connection = await this.connect
+
+		connection.disconnect()
+
+		console.log('disconnected')
 	}
 
 	private get clientId(): string | void {

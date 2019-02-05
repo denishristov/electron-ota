@@ -1,5 +1,5 @@
 // tslint:disable:max-classes-per-file
-import { Required } from 'tsdv-joi/constraints/any'
+import { Required, Allow } from 'tsdv-joi/constraints/any'
 import { StringSchema, Token, Uri } from 'tsdv-joi/constraints/string'
 import { BooleanSchema } from 'tsdv-joi/constraints/boolean'
 import { Nested } from 'tsdv-joi'
@@ -20,9 +20,10 @@ class Update {
 	@BooleanSchema()
 	public isBase: boolean
 
-	@Token()
+	@StringSchema()
 	public hash: string
 
+	@Allow('')
 	@StringSchema()
 	public description?: string
 
@@ -66,6 +67,8 @@ export class PublishVersionRequest extends AuthenticatedRequest {
 }
 
 export class PublishVersionResponse {
+	@Required()
+	@BooleanSchema()
 	public isSuccessful: boolean
 
 	@Required()

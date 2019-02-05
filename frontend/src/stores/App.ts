@@ -16,6 +16,7 @@ import {
 } from 'shared'
 import { IApi } from '../util/Api'
 import { Omit } from 'react-router'
+import { byDateDesc } from '../util/functions';
 
 interface ICreateVersionInput {
 	versionName: string
@@ -105,7 +106,7 @@ export default class App implements IApp {
 
 	@computed
 	get allVersions(): VersionModel[] {
-		return Array.from(this.versions.values())
+		return [...this.versions.values()].sort(byDateDesc)
 	}
 
 	@action

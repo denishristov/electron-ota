@@ -76,10 +76,7 @@ export default class AdminsService implements IAdminsService {
 				isAuthenticated: Boolean(authTokens.find((token) => token === hashedToken)),
 			}
 		} catch (error) {
-			// tslint:disable-next-line:no-console
-			console.log(error)
 			return {
-				// errorMessage: error.message,
 				isAuthenticated: false,
 			}
 		}

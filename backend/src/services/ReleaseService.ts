@@ -33,7 +33,7 @@ export default class ReleaseService implements IReleaseService {
 	public async releaseVersion({ versionId }: PublishVersionRequest): Promise<PublishVersionResponse> {
 		const version = await this.VersionModel.findById(versionId).select(`
 			systems
-			addId
+			appId
 			isReleased
 		`)
 
@@ -48,10 +48,9 @@ export default class ReleaseService implements IReleaseService {
 			.filter((systemType: SystemType) => version.systems[systemType])
 			.group((systemType) => [systemType, versionId])
 
-		await this.AppModel.findByIdAndUpdate(
-			version.appId,
-			{ latestVersions },
-			{ upsert: true },
+		await this.AppModel.findOneAndUpdate(
+			{ _id: version.appId },
+			{ $set: { latestVersions } },
 		)
 
 		return {
@@ -63,12 +62,14 @@ export default class ReleaseService implements IReleaseService {
 	@bind
 	public async checkForUpdate(
 		{ versionName, bundleId, systemType }: CheckForUpdateRequest,
-	): Promise < CheckForUpdateResponse > {
+	): Promise <CheckForUpdateResponse> {
 		const { latestVersions } = await this.AppModel
 			.findOne({ bundleId })
+			.select('latestVersions')
 			.populate(`latestVersions.${systemType}`)
 
 		const latestVersion = latestVersions && latestVersions[systemType] as Version
+		console.log(latestVersions,latestVersion)
 
 		if (latestVersion && semver.lt(versionName, latestVersion.versionName)) {
 			const {

@@ -3,6 +3,7 @@ import { EventType, PublishVersionRequest, PublishVersionResponse, SystemType } 
 import { IPostRespondHook, ISocketMediator } from '../util/mediator/interfaces'
 import { Version } from '../models/Version'
 import {  ModelType } from 'typegoose'
+import { App } from '../models/App'
 
 @DI.injectable()
 export default class ReleaseUpdateHook implements IPostRespondHook {
@@ -12,7 +13,9 @@ export default class ReleaseUpdateHook implements IPostRespondHook {
 		@DI.inject(DI.Mediators)
 		private readonly mediators: Map<string, ISocketMediator>,
 		@DI.inject(DI.Models.Version)
-		private readonly versions: ModelType<Version>,
+		private readonly VersionModel: ModelType<Version>,
+		@DI.inject(DI.Models.App)
+		private readonly AppModel: ModelType<App>,
 	) {}
 
 	@bind
@@ -22,7 +25,7 @@ export default class ReleaseUpdateHook implements IPostRespondHook {
 		{ isSuccessful }: PublishVersionResponse,
 	) {
 		if (isSuccessful) {
-			const { app, ...version } = await this.versions
+			const { appId, ...version } = await this.VersionModel
 				.findById(versionId)
 				.select(`
 					versionName
@@ -31,11 +34,12 @@ export default class ReleaseUpdateHook implements IPostRespondHook {
 					downloadUrl
 					description
 					hash
-					app
+					appId
 					systems
 				`)
-				.populate('app')
 				.then((version) => version.toJSON())
+
+			const { bundleId } = await this.AppModel.findById(appId).select('bundleId')
 
 			const update = { ...version, versionId }
 			const supportedSystemTypes = Object.entries(version.systems)
@@ -43,7 +47,7 @@ export default class ReleaseUpdateHook implements IPostRespondHook {
 				.map(([systemType, _]) => systemType)
 
 			for (const systemType of supportedSystemTypes) {
-				const name = `/${app.bundleId}/${systemType}`
+				const name = `/${bundleId}/${systemType}`
 				const mediator = this.mediators.get(name)
 
 				if (!mediator) {

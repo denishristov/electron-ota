@@ -1,5 +1,5 @@
 import { config } from 'react-spring'
-import { ClassName, IEvent, IEntry } from './types'
+import { ClassName, IEvent, IEntry, ITimestampedDocument } from './types'
 import { emailRegex } from './constants/regex'
 import { RouteProps } from 'react-router'
 import { SimpleVersionReportModel } from '../../../shared/src/schemas/Reports'
@@ -140,4 +140,8 @@ export function getDefaultSimpleStatistics(version: string): SimpleVersionReport
 		errorsCount: 0,
 		version,
 	}
+}
+
+export function byDateDesc(a: ITimestampedDocument, b: ITimestampedDocument) {
+	return +new Date(b.createdAt) - +new Date(a.createdAt)
 }

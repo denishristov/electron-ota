@@ -18,3 +18,8 @@ export interface IEntry {
 export type DivProps = React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>
 
 export type BrowserHistory = ReturnType<typeof createBrowserHistory>
+
+export interface ITimestampedDocument {
+	createdAt: string
+	updatedAt: string
+}
