@@ -1,6 +1,5 @@
 import { prop, arrayProp, Typegoose } from 'typegoose'
 import { Version } from './Version'
-import { LatestVersions } from './LatestVersions'
 
 export class App extends Typegoose {
 	@prop({ required: true })
@@ -14,7 +13,4 @@ export class App extends Typegoose {
 
 	@arrayProp({ itemsRef: Version })
 	public versions: Array<Ref<Version>>
-
-	@prop({ default: new LatestVersions() })
-	public latestVersions: LatestVersions
 }

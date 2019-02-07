@@ -30,8 +30,8 @@
 	
 	.apps-container
 		display: grid
-		grid-template-columns: repeat(auto-fill, $spacing * 2 * 8)
-		grid-auto-rows: $spacing * 2 * 9
+		grid-template-columns: repeat(auto-fill, $spacing * 2 * 12)
+		// grid-auto-rows: $spacing * 2 * 9
 		margin: $spacing
 		justify-content: center
 		align-content: center
@@ -42,3 +42,24 @@
 .dropzone
 	margin: 0 $spacing * -1
 	flex-grow: 1
+
+.profile
+	h5
+		font-size: 1.6rem
+		margin: 0 $spacing 0 0
+		text-transform: capitalize
+		color: $dark-accent
+
+	svg, img
+		width: $spacing * 3
+		height: $spacing * 3
+		
+		background-color: $entry-bg
+		box-shadow: $rest-shadow
+		border-radius: 50%
+
+	g, path
+		fill: $dark-accent
+
+.profile-menu
+	border-radius: 10px

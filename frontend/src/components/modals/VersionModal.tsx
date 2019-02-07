@@ -174,7 +174,7 @@ export default class VersionModal extends Component<IProps, IState> {
 								</>
 							)}
 							<Flex grow column>
-								<label className={inputStyles.label}>Description</label>
+								<label>Description</label>
 								<textarea
 									value={description}
 									onChange={this.setDescription}

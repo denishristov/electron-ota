@@ -8,25 +8,22 @@ import {
 	UpdateAppRequest,
 	UpdateAppResponse,
 	SystemType,
+	GetVersionsRequest,
+	GetVersionsResponse,
 } from 'shared'
 import { App } from '../models/App'
 import { Version } from '../models/Version'
-import { ModelType } from 'typegoose'
+import { ModelType, InstanceType } from 'typegoose'
+import { rangedArray } from '../util/functions'
 
 export interface IAppService {
 	getAllBundleIds(): Promise<string[]>
-	getApp(id: string, options?: IGetAppOptions): Promise<App>
-	getAppVersions(id: string): Promise<{ versions: Version[] }>
-	getAppLatestVersion(id: string, systemType: SystemType): Promise<Version>
 	getAllApps(): Promise<GetAppsResponse>
+	getAppVersions({ appId }: GetVersionsRequest): Promise<GetVersionsResponse>
+	getAppLatestVersion(bundleId: string, systemType: SystemType): Promise<Version | null>
 	createApp(createRequest: CreateAppRequest): Promise<CreateAppResponse>
 	updateApp(updateRequest: UpdateAppRequest): Promise<UpdateAppResponse>
 	deleteApp(deleteRequest: DeleteAppRequest): Promise<DeleteAppResponse>
-}
-
-interface IGetAppOptions {
-	versions?: boolean
-	latestVersions?: boolean
 }
 
 @DI.injectable()
@@ -41,49 +38,41 @@ export default class AppService implements IAppService {
 		return apps.map((app) => app.bundleId)
 	}
 
-	public async getApp(
-		id: string,
-		{ versions, latestVersions }: IGetAppOptions = { versions: false, latestVersions: false },
-	): Promise<App> {
-		const populate = [
-			versions && 'versions',
-			latestVersions && 'latestVersions',
-		].filter(Boolean).join(' ')
-
-		return await this.AppModel
-			.findById(id)
-			.populate(populate)
-	}
-
-	public async getAppVersions(id: string): Promise<{ versions: Version[] }> {
+	@bind
+	public async getAppVersions({ appId }: GetVersionsRequest): Promise<GetVersionsResponse> {
 		const app = await this.AppModel
-			.findById(id)
-			.populate('versions')
+			.findById(appId)
+			.populate({
+				path: 'versions',
+				options: { sort: { createdAt: -1 } },
+			})
 			.select('versions')
-			.sort({ 'versions.updatedAt': -1 })
 
-		return { versions: app.versions as Version[] }
+		return {
+			versions: app.versions.map((version) => (version as InstanceType<Version>).toJSON()),
+		}
 	}
 
 	@bind
 	public async getAllApps(): Promise<GetAppsResponse> {
-		const apps = await this.AppModel
-		.find()
-		.populate(Object.keys(SystemType).map((x) => `latestVersions.${x}`).join(' '))
+		const apps = await this.AppModel.find()
 
 		return {
-			apps: apps.map((app) => {
+			apps: await Promise.all(apps.map(async (app) => {
 				const json = app.toJSON()
 
-				if (json.latestVersions) {
-					delete json.latestVersions._id
-				}
+				const systemTypes = Object.keys(SystemType) as SystemType[]
+				const latestVersions = await Promise.all(
+					systemTypes.map((systemType) => this.getAppLatestVersion(app.bundleId, systemType)),
+				)
 
 				return {
 					...json,
 					versions: app.versions && app.versions.length,
+					latestVersions: rangedArray(systemTypes.length)
+						.group((i) => [systemTypes[i], latestVersions[i]]),
 				}
-			}),
+			})),
 		}
 	}
 
@@ -115,21 +104,29 @@ export default class AppService implements IAppService {
 		return { id }
 	}
 
-	public async getAppLatestVersion(id: string, systemType: SystemType) {
+	public async getAppLatestVersion(bundleId: string, systemType: SystemType) {
 		if (!Object.values(SystemType).includes(systemType)) {
 			throw new Error('Bad system type')
 		}
 
-		const { latestVersions } = await this.AppModel
-			.findById(id)
+		const app = await this.AppModel
+			.findOne({ bundleId })
 			.populate({
-				path: 'latestVersions',
-				populate: {
-					path: systemType,
+				path: 'versions',
+				match: {
+					[`systems.${systemType}`]: true,
+					isReleased: true,
+				},
+				options: {
+					limit: 1,
+					sort: { createdAt: -1 },
 				},
 			})
 			.select('latestVersions')
 
-		return latestVersions[systemType] as Version
+		return (app
+			&& app.versions[0]
+			&& (app.versions[0] as InstanceType<Version>).toJSON()
+		) || null
 	}
 }

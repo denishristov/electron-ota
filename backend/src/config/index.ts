@@ -2,7 +2,7 @@ import dotenv from 'dotenv'
 import fs from 'fs'
 import logger from '../util/logger'
 
-import S3_CONFIG from '../config/s3Config.json'
+import S3_CONFIG from './s3Config.json'
 // import AWS_CREDENTIALS from '../config/awsCredentials.json'
 
 if (fs.existsSync('.env')) {

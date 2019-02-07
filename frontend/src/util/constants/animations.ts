@@ -34,7 +34,7 @@ export const pageAnimations = {
 export const versionsTransitions = {
 	from: {
 		opacity: 0,
-		transform: 'translateY(64px) scale(0.8)',
+		transform: 'translateY(64px) scale(0.92)',
 	},
 	enter: {
 		opacity: 1,
@@ -42,7 +42,7 @@ export const versionsTransitions = {
 	},
 	leave: {
 		opacity: 0,
-		transform: 'translateY(64px) scale(0.8)',
+		transform: 'translateY(64px) scale(0.92)',
 		pointerEvents: 'none',
 	},
 }

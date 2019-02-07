@@ -2,7 +2,7 @@
 import bluebird from 'bluebird'
 import mongoose from 'mongoose'
 import chalk from 'chalk'
-import { MONGODB_URI } from './config'
+import { MONGODB_URI } from './index'
 
 const connected = chalk.bold.cyan
 const error = chalk.bold.yellow

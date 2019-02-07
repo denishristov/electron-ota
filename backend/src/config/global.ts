@@ -1,6 +1,6 @@
 import bindDecorator from 'bind-decorator'
 import { inject, injectable } from 'inversify'
-import * as Symbols from '../dependencies/symbols'
+import * as Symbols from '../util/symbols'
 import { InstanceType } from 'typegoose'
 import { ObjectID } from 'bson'
 

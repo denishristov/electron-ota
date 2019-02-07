@@ -34,17 +34,17 @@ import {
 } from 'shared'
 import { interfaces } from 'inversify'
 
-import { IVersionService } from '../../services/VersionService'
-import { IAppService } from '../../services/AppService'
-import { IRegisterCredentialsService } from '../../services/RegisterCredentialsService'
-import { IAdminsService } from '../../services/AdminsService'
-import { IFileUploadService } from '../../services/S3Service'
-import { IReleaseService } from '../../services/ReleaseService'
-import { IVersionReportsService } from '../../services/VersionReportsService'
+import { IVersionService } from '../services/VersionService'
+import { IAppService } from '../services/AppService'
+import { IRegisterCredentialsService } from '../services/RegisterCredentialsService'
+import { IAdminsService } from '../services/AdminsService'
+import { IFileUploadService } from '../services/S3Service'
+import { IReleaseService } from '../services/ReleaseService'
+import { IVersionReportsService } from '../services/VersionReportsService'
 
-import { IPreRespondHook, IPostRespondHook, ISocketMediator } from '../../util/mediator/interfaces'
-import SocketMediator from '../../util/mediator/Mediator'
-import { Empty } from '../../util/types'
+import { IPreRespondHook, IPostRespondHook, ISocketMediator } from '../util/mediator/interfaces'
+import SocketMediator from '../util/mediator/Mediator'
+import { Empty } from '../util/types'
 
 export type AdminMediatorFactory = () => ISocketMediator
 
@@ -115,7 +115,7 @@ export default function adminMediatorFactory({ container }: interfaces.Context):
 			)
 			.use(
 				EventType.GetVersions,
-				versionService.getVersions,
+				appService.getAppVersions,
 				GetVersionsRequest,
 				GetVersionsResponse,
 			)

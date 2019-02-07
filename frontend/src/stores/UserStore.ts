@@ -6,17 +6,18 @@ import { AdminLoginRequest } from 'shared'
 
 export interface IUserStore {
 	isLoading: boolean
-	isAuthenticated: boolean
+	isAuthenticated: boolean | null
 	login(req: AdminLoginRequest): Promise<boolean>
+	logout(): void
 	setAuthToken(authToken: string): void
 }
 
 @DI.injectable()
 class UserStore implements IUserStore {
 	@observable
-	public isAuthenticated = false
+	public isAuthenticated: boolean | null = null
 
-	private authToken?: string = Cookies.get('authToken')
+	private authToken: string | null = Cookies.get('authToken') || null
 
 	constructor(
 		@DI.inject(DI.Api)
@@ -28,7 +29,7 @@ class UserStore implements IUserStore {
 
 	@computed
 	get isLoading(): boolean {
-		return this.isAuthenticated ? false : Boolean(this.authToken)
+		return Boolean(this.authToken) && this.isAuthenticated === null
 	}
 
 	public setAuthToken(authToken: string) {
@@ -53,6 +54,16 @@ class UserStore implements IUserStore {
 	}
 
 	@action.bound
+	public logout() {
+		this.isAuthenticated = null
+		this.authToken = null
+
+		Cookies.remove('authToken')
+
+		this.api.emit(EventType.Logout)
+	}
+
+	@action.bound
 	private async authenticate(): Promise<void> {
 		if (this.authToken) {
 			const {
@@ -62,9 +73,7 @@ class UserStore implements IUserStore {
 				{ authToken: this.authToken },
 			)
 
-			if (isAuthenticated) {
-				this.isAuthenticated = true
-			}
+			this.isAuthenticated = isAuthenticated
 		}
 	}
 

@@ -6,7 +6,7 @@ import { IUserStore } from '../../stores/UserStore'
 import Input from '../generic/Input'
 import { isEmail } from '../../util/functions'
 import Button from '../generic/Button'
-import {  RouteComponentProps } from 'react-router'
+import {  RouteComponentProps, Redirect } from 'react-router'
 import Flex from '../generic/Flex'
 
 import Container from '../generic/Container'
@@ -26,16 +26,20 @@ interface ILoginFormEvent extends FormEvent<HTMLFormElement> {
 
 @observer
 export default class Login extends React.Component<RouteComponentProps> {
-	@DI.lazyInject(DI.Stores.Admin)
+	@DI.lazyInject(DI.Stores.User)
 	private readonly userStore!: IUserStore
 
 	public render() {
+		if (this.userStore.isAuthenticated) {
+			return <Redirect to='/apps' />
+		}
+
 		return (
 			<Container className={styles.container}>
 				{this.userStore.isLoading
 					? <Loading />
 					: (
-						<form onSubmit={this.handleSubmit}>
+						<form onSubmit={this.handleSubmit} className={styles.form}>
 							<Flex column list>
 								<h1>Sign in</h1>
 								<Input

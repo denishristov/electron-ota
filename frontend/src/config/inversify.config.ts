@@ -2,14 +2,14 @@ import { Container } from 'inversify'
 import getDecorators from 'inversify-inject-decorators'
 import io from 'socket.io-client'
 
-import { SERVER_URI } from '../config/config'
+import { SERVER_URI } from '.'
 
 import Api, { IApi } from '../util/Api'
 
 import AppsStore, { IAppsStore } from '../stores/AppsStore'
 import UserStore, { IUserStore } from '../stores/UserStore'
 import RegisterStore, { IRegisterStore } from '../stores/RegisterStore'
-import appFactory, { AppFactory } from './factories/AppFactory'
+import appFactory, { AppFactory } from '../stores/factories/AppFactory'
 import { createBrowserHistory } from 'history'
 import { BrowserHistory } from '../util/types'
 
@@ -25,7 +25,7 @@ container.bind<IApi>(DI.Api)
 	.to(Api)
 	.inSingletonScope()
 
-container.bind<IUserStore>(DI.Stores.Admin)
+container.bind<IUserStore>(DI.Stores.User)
 	.to(UserStore)
 	.inSingletonScope()
 

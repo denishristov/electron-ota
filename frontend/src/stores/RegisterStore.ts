@@ -24,7 +24,7 @@ export default class RegisterStore implements IRegisterStore {
 	constructor(
 		@DI.inject(DI.Api)
 		private readonly api: IApi,
-		@DI.inject(DI.Stores.Admin)
+		@DI.inject(DI.Stores.User)
 		private readonly userStore: IUserStore,
 	) {}
 

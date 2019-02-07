@@ -8,7 +8,7 @@ import Routes from './Routes'
 
 import styles from '../index.module.sass'
 import { observer } from 'mobx-react'
-import { animationConfig } from '../config/config';
+import { animationConfig } from '../config';
 
 function App({ location, history }: RouteComponentProps<{}, StaticContext, {}>) {
 	return (

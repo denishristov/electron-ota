@@ -5,16 +5,18 @@ import 'shared/dist/extensions'
 import './config/global'
 import './config/mongoose'
 
-import container from './dependencies/inversify.config'
+import container from './config/inversify.config'
 
-import { ClientsMediatorFactory } from './dependencies/factories/ClientsMediatorFactory'
-import { IAppService } from './services/AppService'
-import { ISocketMediator } from './util/mediator/interfaces'
-import { Server } from 'http'
-import { PORT, ENVIRONMENT } from './config/config'
-
-import { AdminMediatorFactory } from './dependencies/factories/AdminMediatorFactory'
 import { SystemType } from 'shared'
+import { ISocketMediator } from './util/mediator/interfaces'
+
+import { ClientsMediatorFactory } from './mediators/ClientsMediatorFactory'
+import { AdminMediatorFactory } from './mediators/AdminMediatorFactory'
+
+import { IAppService } from './services/AppService'
+import { Server } from 'http'
+
+import { PORT, ENVIRONMENT } from './config'
 
 (async function bootstrap() {
 	container.get<Server>(DI.HTTPServer).listen(PORT, () => {

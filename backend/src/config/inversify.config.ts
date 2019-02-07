@@ -18,15 +18,15 @@ import { Client } from '../models/Client'
 import AuthHook from '../hooks/AuthHook'
 import ReportHook from '../hooks/ReportHook'
 import ReleaseUpdateHook from '../hooks/ReleaseUpdateHook'
-import CreateClientsMediatorHook from '../hooks/CreateClientsMediatorHook'
+import ClientMediatorManagerHook from '../hooks/ClientMediatorManagerHook'
 
 import http from 'http'
 import socketio from 'socket.io'
 
-import { S3_CONFIG } from '../config/config'
+import { S3_CONFIG } from '.'
 
-import adminMediatorFactory from './factories/AdminMediatorFactory'
-import clientsMediatorFactory, { ClientsMediatorFactory } from './factories/ClientsMediatorFactory'
+import adminMediatorFactory from '../mediators/AdminMediatorFactory'
+import clientsMediatorFactory, { ClientsMediatorFactory } from '../mediators/ClientsMediatorFactory'
 
 import { IPreRespondHook, IPostRespondHook, ISocketMediator } from '../util/mediator/interfaces'
 
@@ -93,7 +93,7 @@ container.bind<IPreRespondHook>(DI.Hooks.Auth)
 	.inSingletonScope()
 
 container.bind<IPostRespondHook>(DI.Hooks.CreateClientsMediator)
-	.to(CreateClientsMediatorHook)
+	.to(ClientMediatorManagerHook)
 	.inSingletonScope()
 
 container.bind<IPostRespondHook>(DI.Hooks.Report)

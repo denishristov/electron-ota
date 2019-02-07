@@ -20,7 +20,7 @@ import {
 } from 'shared'
 import { IApi } from '../util/Api'
 import { IApp } from './App'
-import { AppFactory } from '../dependencies/factories/AppFactory'
+import { AppFactory } from './factories/AppFactory'
 import { getDefaultSimpleStatistics } from '../util/functions'
 
 export interface IAppsStore {

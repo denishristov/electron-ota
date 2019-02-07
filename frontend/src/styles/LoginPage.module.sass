@@ -1,5 +1,6 @@
 @import './variables'
-	
+@import './mixins'
+
 .key-path
 	position: relative
 	overflow: hidden
@@ -29,3 +30,16 @@
 .container
 	button
 		min-width: $spacing * 10
+
+.form
+	@include glowingShadow($accent)
+	background-color: $entry-bg
+	padding: $spacing * 2
+	border-radius: 10px
+
+	h1
+		margin-top: 0px
+
+	> span > *:last-child
+		margin-top: $spacing
+

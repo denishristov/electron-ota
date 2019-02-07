@@ -2,7 +2,7 @@ import { config } from 'react-spring'
 import { ClassName, IEvent, IEntry, ITimestampedDocument } from './types'
 import { emailRegex } from './constants/regex'
 import { RouteProps } from 'react-router'
-import { SimpleVersionReportModel } from '../../../shared/src/schemas/Reports'
+import { SimpleVersionReportModel } from 'shared'
 
 export function isEmail(candidate: string): boolean {
 	return emailRegex.test(candidate)

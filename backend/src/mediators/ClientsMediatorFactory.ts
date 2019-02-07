@@ -1,11 +1,11 @@
 import { interfaces } from 'inversify'
 
-import { ISocketMediator, IPostRespondHook } from '../../util/mediator/interfaces'
-import SocketMediator from '../../util/mediator/Mediator'
+import { ISocketMediator, IPostRespondHook } from '../util/mediator/interfaces'
+import SocketMediator from '../util/mediator/Mediator'
 
-import { IReleaseService } from '../../services/ReleaseService'
-import { IClientService } from '../../services/ClientService'
-import { IVersionReportsService } from '../../services/VersionReportsService'
+import { IReleaseService } from '../services/ReleaseService'
+import { IClientService } from '../services/ClientService'
+import { IVersionReportsService } from '../services/VersionReportsService'
 
 import {
 	CheckForUpdateRequest,

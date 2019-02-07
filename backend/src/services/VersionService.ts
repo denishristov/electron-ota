@@ -3,11 +3,9 @@ import {
 	CreateVersionRequest,
 	DeleteVersionRequest,
 	DeleteVersionResponse,
-	GetVersionsResponse,
 	UpdateVersionRequest,
 	UpdateVersionResponse,
 	VersionRequest,
-	GetVersionsRequest,
 	VersionModel,
 } from 'shared'
 import { Version } from '../models/Version'
@@ -17,7 +15,6 @@ import { ModelType, InstanceType } from 'typegoose'
 
 export interface IVersionService {
 	getVersion({ id }: GetVersionRequest): Promise<VersionRequest>
-	getVersions({ appId }: GetVersionsRequest): Promise<GetVersionsResponse>
 	createVersion(createRequest: CreateVersionRequest): Promise<VersionModel>
 	updateVersion(updateRequest: UpdateVersionRequest): Promise<UpdateVersionResponse>
 	deleteVersion({ id }: DeleteVersionRequest): Promise<DeleteVersionResponse>
@@ -39,19 +36,6 @@ export default class VersionService implements IVersionService {
 		const version = await this.VersionModel.findById(id)
 
 		return version.toJSON()
-	}
-
-	@bind
-	public async getVersions({ appId }: GetVersionsRequest): Promise<GetVersionsResponse> {
-		const { versions } = await this.AppModel
-			.findById(appId)
-			.populate({ path: 'versions', options: { sort: { createdAt: -1 } } })
-			.select('versions')
-
-		return {
-			versions: (versions as Array<InstanceType<Version>>).map((version) => version.toJSON()),
-				// .sort(byDateDesc),
-		}
 	}
 
 	@bind

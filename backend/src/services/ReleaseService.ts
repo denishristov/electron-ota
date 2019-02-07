@@ -8,8 +8,8 @@ import {
 
 import semver from 'semver'
 import { Version } from '../models/Version'
-import { App } from '../models/App'
 import { ModelType } from 'typegoose'
+import { IAppService } from './AppService'
 
 export interface IReleaseService {
 	checkForUpdate(req: CheckForUpdateRequest): Promise<CheckForUpdateResponse>
@@ -23,8 +23,8 @@ const defaultResponse = {
 @DI.injectable()
 export default class ReleaseService implements IReleaseService {
 	constructor(
-		@DI.inject(DI.Models.App)
-		private readonly AppModel: ModelType<App>,
+		@DI.inject(DI.Services.App)
+		private readonly appService: IAppService,
 		@DI.inject(DI.Models.Version)
 		private readonly VersionModel: ModelType<Version>,
 	) {}
@@ -44,15 +44,6 @@ export default class ReleaseService implements IReleaseService {
 		version.isReleased = true
 		await version.save()
 
-		const latestVersions = Object.keys(version.systems)
-			.filter((systemType: SystemType) => version.systems[systemType])
-			.group((systemType) => [systemType, versionId])
-
-		await this.AppModel.findOneAndUpdate(
-			{ _id: version.appId },
-			{ $set: { latestVersions } },
-		)
-
 		return {
 			isSuccessful: true,
 			versionId,
@@ -63,12 +54,7 @@ export default class ReleaseService implements IReleaseService {
 	public async checkForUpdate(
 		{ versionName, bundleId, systemType }: CheckForUpdateRequest,
 	): Promise <CheckForUpdateResponse> {
-		const { latestVersions } = await this.AppModel
-			.findOne({ bundleId })
-			.select('latestVersions')
-			.populate(`latestVersions.${systemType}`)
-
-		const latestVersion = latestVersions && latestVersions[systemType] as Version
+		const latestVersion = await this.appService.getAppLatestVersion(bundleId, systemType)
 
 		if (latestVersion && semver.lt(versionName, latestVersion.versionName)) {
 			const {

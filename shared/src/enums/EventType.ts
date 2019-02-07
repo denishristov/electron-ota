@@ -5,7 +5,10 @@ export enum EventType {
 	Error = 'error',
 
 	Login = 'login',
+	Logout = 'logout',
 	Authentication = 'authentication',
+	EditProfile = 'profile.edit',
+	DeleteProfile = 'profile.delete',
 
 	GetApps = 'app.get',
 	CreateApp = 'app.create',

@@ -8,7 +8,7 @@ import 'reflect-metadata'
 import './config/global'
 import 'shared/dist/extensions'
 
-import container from './dependencies/inversify.config'
+import container from './config/inversify.config'
 
 import { AuthProvider } from './components/contexts/AuthProvider'
 import { BrowserHistory } from './util/types'

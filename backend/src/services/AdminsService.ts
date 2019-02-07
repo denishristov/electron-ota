@@ -3,7 +3,7 @@ import crypto from 'crypto'
 import jwt from 'jsonwebtoken'
 import { Model } from 'mongoose'
 import { Admin } from '../models/Admin'
-import { PASS_SECRET_KEY } from '../config/config'
+import { PASS_SECRET_KEY } from '../config'
 import { IRegisterCredentialsService } from './RegisterCredentialsService'
 import { InstanceType, ModelType } from 'typegoose'
 import {

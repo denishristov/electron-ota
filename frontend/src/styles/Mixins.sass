@@ -52,6 +52,9 @@
 @mixin entry-shadow
 	@include shadow($accent)
 
+	&:hover, &:focus
+		@include glowingShadow($accent)
+
 @mixin focus-shadow
 	@include shadow($accent)
 	box-shadow: none

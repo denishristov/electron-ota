@@ -16,3 +16,13 @@ export function byDateDesc(a: ITimestampedDocument, b: ITimestampedDocument) {
 export function getId({ id }: { id: string }) {
 	return id
 }
+
+export function rangedArray(length: number) {
+	const array = []
+
+	for (let i = 0; i < length; ++i) {
+		array.push(i)
+	}
+
+	return array
+}

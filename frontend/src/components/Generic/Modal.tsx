@@ -12,7 +12,7 @@ import { modalBackgroundAnimations, modalContentAnimations } from '../../util/co
 import Pushable from './Pushable'
 import { ContentContext, TriggerContext, OpenTrigger, CloseTrigger } from '../contexts/ModalContext'
 import { DivProps } from '../../util/types'
-import { animationConfig } from '../../config/config'
+import { animationConfig } from '../../config'
 
 interface IContentProps<T> extends Exclude<DivProps, 'children'> {
 	title?: string
