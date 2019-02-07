@@ -70,11 +70,12 @@ export default class App implements IApp {
 	@observable
 	public versionsCount: number
 
-	public readonly versions: ObservableMap<string, VersionModel> = observable.map({})
+	@observable
+	public readonly versions = observable.map<string, VersionModel>({})
 
-	public readonly simpleReports: ObservableMap<string, SimpleVersionReportModel> = observable.map({})
+	public readonly simpleReports = observable.map<string, SimpleVersionReportModel>({})
 
-	public readonly reports: ObservableMap<string, VersionReportModel> = observable.map({})
+	public readonly reports = observable.map<string, VersionReportModel>({})
 
 	constructor(
 		{

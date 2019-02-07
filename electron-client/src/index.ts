@@ -9,11 +9,12 @@ import Store from 'electron-store'
 import { app } from 'electron'
 
 import * as EventTypes from './EventTypes'
+import { getVersion } from './Functions'
 import {
 	INewUpdate,
-	UpdateResponse,
-	UpdateInfo,
-	UpdateServiceOptions,
+	IUpdateResponse,
+	IUpdateInfo,
+	IUpdateServiceOptions,
 	IRegistrationResponse,
 } from './Interfaces'
 import {
@@ -21,7 +22,6 @@ import {
 	readdir,
 	unlink,
 	hashFileSync,
-	uuid,
 	connect,
 	exists,
 } from './Functions'
@@ -37,7 +37,7 @@ declare global {
 
 // tslint:disable-next-line:interface-name
 declare interface ElectronUpdateServiceClient {
-	on(event: 'update', listener: (info: UpdateInfo) => void): this
+	on(event: 'update', listener: (info: IUpdateInfo) => void): this
 	on(event: 'error', listener: (error: Error) => void): this
 }
 
@@ -54,7 +54,7 @@ class ElectronUpdateServiceClient extends EventEmitter {
 
 	private readonly connect: Promise<SocketIOClient.Socket>
 
-	constructor(private readonly options: UpdateServiceOptions) {
+	constructor(private readonly options: IUpdateServiceOptions) {
 		super()
 
 		this.updateDirPath = path.join(options.userDataPath || app.getPath('userData'), 'updates')
@@ -64,6 +64,11 @@ class ElectronUpdateServiceClient extends EventEmitter {
 			: options.checkHashAfterDownload
 
 		this.options.checkHashBeforeLoad = Boolean(options.checkHashBeforeLoad)
+		this.options.versionName = this.options.versionName || getVersion()
+
+		if (!this.options.versionName) {
+			throw new Error('Invalid versionName')
+		}
 
 		const query = `versionName=${options.versionName}`
 		const uri = `${options.updateServerUrl}/${options.bundleId}/${os.type()}`
@@ -206,7 +211,7 @@ class ElectronUpdateServiceClient extends EventEmitter {
 				bundleId,
 				systemType: os.type(),
 			},
-		) as UpdateResponse
+		) as IUpdateResponse
 
 		if (!isUpToDate) {
 			this.downloadUpdate(update)

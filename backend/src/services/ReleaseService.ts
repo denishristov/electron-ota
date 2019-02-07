@@ -69,7 +69,6 @@ export default class ReleaseService implements IReleaseService {
 			.populate(`latestVersions.${systemType}`)
 
 		const latestVersion = latestVersions && latestVersions[systemType] as Version
-		console.log(latestVersions,latestVersion)
 
 		if (latestVersion && semver.lt(versionName, latestVersion.versionName)) {
 			const {

@@ -35,3 +35,9 @@ export async function connect(uri: string, query: string): Promise<SocketIOClien
 	await Promise.resolve()
 	return io(uri, { query })
 }
+
+export function getVersion(): string | null {
+	const packageJSON = JSON.parse(fs.readFileSync('package.json', 'utf8'))
+
+	return (Boolean(packageJSON) && packageJSON.version) || null
+}
