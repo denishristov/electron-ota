@@ -1,7 +1,7 @@
 import { interfaces } from 'inversify'
 
-import { ISocketMediator, IPostRespondHook } from '../util/mediator/interfaces'
-import SocketMediator from '../util/mediator/Mediator'
+import { ISocketMediator, IPostRespondHook, IPreRespondHook } from '../util/mediator/interfaces'
+import SocketMediator from '../util/mediator/SocketMediator'
 
 import { IReleaseService } from '../services/ReleaseService'
 import { IClientService } from '../services/ClientService'
@@ -21,50 +21,52 @@ import {
 export type ClientsMediatorFactory = (bundleId: string, systemType: SystemType) => ISocketMediator
 
 export default function clientsMediatorFactory({ container }: interfaces.Context): ClientsMediatorFactory {
-	const server = container.get<SocketIO.Server>(DI.SocketServer)
+	const server = container.get<SocketIO.Server>(DI.Server)
 
 	const updateService = container.get<IReleaseService>(DI.Services.Update)
 	const clientService = container.get<IClientService>(DI.Services.Client)
 	const reportsService = container.get<IVersionReportsService>(DI.Services.VersionReports)
 
+	const validationHook = container.get<IPreRespondHook>(DI.Hooks.Validation)
 	const reportHook = container.get<IPostRespondHook>(DI.Hooks.Report)
 
 	return (bundleId: string, systemType: SystemType) => {
 		const namespaceName = `/${bundleId}/${systemType}`
 
 		return new SocketMediator(server.of(namespaceName))
-			.use(
-				EventType.CheckForUpdate,
-				updateService.checkForUpdate,
-				CheckForUpdateRequest,
-				CheckForUpdateResponse,
-			)
-			.use(
-				EventType.RegisterClient,
-				clientService.registerClient,
-				RegisterClientRequest,
-				RegisterClientResponse,
-			)
-			.use(
-				EventType.UpdateDownloading,
-				reportsService.downloadingUpdate,
-				ClientReportRequest,
-			)
-			.use(
-				EventType.UpdateDownloaded,
-				reportsService.downloadedUpdate,
-				ClientReportRequest,
-			)
-			.use(
-				EventType.UpdateUsing,
-				reportsService.usingUpdate,
-				ClientReportRequest,
-			)
-			.use(
-				EventType.UpdateError,
-				reportsService.error,
-				ErrorReportRequest,
-			)
-			.usePostRespond(reportHook)
+			.use({
+				eventType: EventType.CheckForUpdate,
+				handler: updateService.checkForUpdate,
+				requestType: CheckForUpdateRequest,
+				responseType: CheckForUpdateResponse,
+			})
+			.use({
+				eventType: EventType.RegisterClient,
+				handler: clientService.registerClient,
+				requestType: RegisterClientRequest,
+				responseType: RegisterClientResponse,
+			})
+			.use({
+				eventType: EventType.UpdateDownloading,
+				handler: reportsService.downloadingUpdate,
+				requestType: ClientReportRequest,
+			})
+			.use({
+				eventType: EventType.UpdateDownloaded,
+				handler: reportsService.downloadedUpdate,
+				requestType: ClientReportRequest,
+			})
+			.use({
+				eventType: EventType.UpdateUsing,
+				handler: reportsService.usingUpdate,
+				requestType: ClientReportRequest,
+			})
+			.use({
+				eventType: EventType.UpdateError,
+				handler: reportsService.error,
+				requestType: ErrorReportRequest,
+			})
+			.pre(validationHook)
+			.post(reportHook)
 	}
 }

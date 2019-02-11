@@ -13,12 +13,18 @@ import {
 	AdminLoginResponse,
 	RegisterAdminRequest,
 	RegisterAdminResponse,
+	AuthenticatedRequest,
 } from 'shared'
 
 export interface IAdminsService {
 	login(req: AdminLoginRequest): Promise<AdminLoginResponse>
+	logout(req: AuthenticatedRequest): Promise<void>
 	authenticate(req: AdminAuthenticationRequest): Promise<AdminAuthenticationResponse>
 	register(req: RegisterAdminRequest): Promise<RegisterAdminResponse>
+}
+
+interface IJWTPayload {
+	id: string
 }
 
 @DI.injectable()
@@ -60,9 +66,18 @@ export default class AdminsService implements IAdminsService {
 	}
 
 	@bind
+	public async logout({ authToken }: AuthenticatedRequest): Promise<void> {
+		const { id } =  await this.getPayloadFromToken(authToken)
+
+		const hashed = this.hashAuthToken(authToken)
+
+		await this.AdminModel.findByIdAndUpdate(id, { $pull: { authTokens: hashed } })
+	}
+
+	@bind
 	public async authenticate({ authToken }: AdminAuthenticationRequest): Promise<AdminAuthenticationResponse> {
 		try {
-			const { id } = jwt.verify(authToken, PASS_SECRET_KEY, { algorithms: ['HS256'] }) as { id: string }
+			const { id } =  await this.getPayloadFromToken(authToken)
 
 			const { authTokens } = await this.AdminModel.findById(id).select('authTokens')
 
@@ -130,5 +145,9 @@ export default class AdminsService implements IAdminsService {
 
 	private async hashPassword(password: string): Promise<string> {
 		return bcrypt.hash(password, await bcrypt.genSalt(10))
+	}
+
+	private getPayloadFromToken(authToken: string): Promise<IJWTPayload> {
+		return jwt.verify(authToken, PASS_SECRET_KEY, { algorithms: ['HS256'] }) as Promise<IJWTPayload>
 	}
 }

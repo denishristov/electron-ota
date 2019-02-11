@@ -13,10 +13,11 @@ const { Provider, Consumer } = React.createContext<IAuthContext>({ isLoading: tr
 @observer
 export class AuthProvider extends React.Component<Pick<DivProps, 'children'>> {
 	@DI.lazyInject(DI.Stores.User)
-	private readonly userStore!: IUserStore
+	private readonly userStore: IUserStore
 
 	public render() {
 		const { isAuthenticated, isLoading } = this.userStore
+
 		const context = {
 			isAuthenticated: Boolean(isAuthenticated),
 			isLoading,

@@ -19,7 +19,7 @@ import Profile from './Profile'
 @observer
 export default class AppsContainer extends Component<RouteComponentProps> {
 	@DI.lazyInject(DI.Stores.Apps)
-	private readonly appsStore!: IAppsStore
+	private readonly appsStore: IAppsStore
 
 	public componentDidMount() {
 		this.appsStore.fetchApps()

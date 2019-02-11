@@ -1,5 +1,5 @@
 import AWS from 'aws-sdk'
-import { S3SignUrlRequest, S3SignUrlResponse } from 'shared'
+import { SignUploadUrlRequest, SignUploadUrlResponse } from 'shared'
 
 AWS.config.loadFromPath('./src/config/awsCredentials.json')
 
@@ -9,8 +9,8 @@ enum S3Action {
 }
 
 export interface IFileUploadService {
-	signVersionUploadUrl(req: S3SignUrlRequest): Promise<S3SignUrlResponse>
-	signPictureUploadUrl(req: S3SignUrlRequest): Promise<S3SignUrlResponse>
+	signVersionUploadUrl(req: SignUploadUrlRequest): Promise<SignUploadUrlResponse>
+	signPictureUploadUrl(req: SignUploadUrlRequest): Promise<SignUploadUrlResponse>
 }
 
 interface IS3ConfigOptions {
@@ -24,12 +24,12 @@ export default class S3Service implements IFileUploadService {
 	constructor(private readonly s3Config: IS3ConfigOptions) {}
 
 	@bind
-	public async signVersionUploadUrl(req: S3SignUrlRequest): Promise<S3SignUrlResponse> {
+	public async signVersionUploadUrl(req: SignUploadUrlRequest): Promise<SignUploadUrlResponse> {
 		return await this.constructUrls('versions', req)
 	}
 
 	@bind
-	public async signPictureUploadUrl(req: S3SignUrlRequest): Promise<S3SignUrlResponse> {
+	public async signPictureUploadUrl(req: SignUploadUrlRequest): Promise<SignUploadUrlResponse> {
 		return await this.constructUrls('pictures', req)
 	}
 
@@ -42,7 +42,7 @@ export default class S3Service implements IFileUploadService {
 		)
 	}
 
-	private async constructUrls(folderName: string, { name, type }: S3SignUrlRequest): Promise<S3SignUrlResponse> {
+	private async constructUrls(folderName: string, { name, type }: SignUploadUrlRequest): Promise<SignUploadUrlResponse> {
 		const params = {
 			...this.s3Config,
 			ContentType: type,

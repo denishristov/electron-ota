@@ -24,7 +24,7 @@ function Trigger(kind: 'open' | 'close') {
 		return (
 			<TriggerContext.Consumer>
 				{(context) => React.cloneElement(props.children, {
-					[actionType]: async (event: PointerEvent) => {
+					[actionType]: async (event: Event) => {
 						props.children.props[actionType] && await props.children.props[actionType](event)
 						context[kind] && context[kind]()
 					},

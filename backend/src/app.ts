@@ -14,20 +14,8 @@ import { ClientsMediatorFactory } from './mediators/ClientsMediatorFactory'
 import { AdminMediatorFactory } from './mediators/AdminMediatorFactory'
 
 import { IAppService } from './services/AppService'
-import { Server } from 'http'
-
-import { PORT, ENVIRONMENT } from './config'
 
 (async function bootstrap() {
-	container.get<Server>(DI.HTTPServer).listen(PORT, () => {
-		// tslint:disable-next-line:no-console
-		console.log(
-			'App is running at http://localhost:%d in %s mode',
-			PORT,
-			ENVIRONMENT,
-		)
-	})
-
 	const mediators = container.get<Map<string, ISocketMediator>>(DI.Mediators)
 
 	const adminMediatorFactory = container.get<AdminMediatorFactory>(DI.Factories.AdminsMediator)

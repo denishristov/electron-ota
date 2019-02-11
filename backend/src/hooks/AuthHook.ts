@@ -6,6 +6,7 @@ import { IPreRespondHook } from '../util/mediator/interfaces'
 export default class AuthHook implements IPreRespondHook {
 	public exceptions = new Set([
 		EventType.Login,
+		EventType.Logout,
 		EventType.Authentication,
 		EventType.GetRegisterKeyPath,
 		EventType.RegisterAdmin,

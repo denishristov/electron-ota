@@ -5,8 +5,8 @@ import {
 	DeleteAppRequest,
 	DeleteAppResponse,
 	GetAppsResponse,
-	S3SignUrlRequest,
-	S3SignUrlResponse,
+	SignUploadUrlRequest,
+	SignUploadUrlResponse,
 	UpdateAppRequest,
 	UpdateAppResponse,
 	UpdateVersionResponse,
@@ -27,7 +27,7 @@ export interface IAppsStore {
 	allApps: IApp[]
 	getApp(id: string): IApp | null
 	fetchApps(): Promise<void>
-	fetchUploadPictureUrl(req: S3SignUrlRequest): Promise<S3SignUrlResponse>
+	fetchUploadPictureUrl(req: SignUploadUrlRequest): Promise<SignUploadUrlResponse>
 	createApp(createAppRequest: CreateAppRequest): void
 	updateApp(updateAppRequest: UpdateAppRequest): void
 	deleteApp(deleteAppRequest: DeleteAppRequest): void
@@ -73,8 +73,8 @@ export default class AppsStore implements IAppsStore {
 		this.apps.merge(apps.map(this.appFactory).group((app) => [app.id, app]))
 	}
 
-	public fetchUploadPictureUrl(req: S3SignUrlRequest): Promise<S3SignUrlResponse> {
-		return this.api.emit<S3SignUrlResponse>(EventType.SignUploadPictureUrl, req)
+	public fetchUploadPictureUrl(req: SignUploadUrlRequest): Promise<SignUploadUrlResponse> {
+		return this.api.emit<SignUploadUrlResponse>(EventType.SignUploadPictureUrl, req)
 	}
 
 	@action.bound

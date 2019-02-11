@@ -19,8 +19,9 @@ export const Models = {
 }
 
 export const Hooks = {
+	Validation: Symbol.for('Hook.Validation'),
 	Auth: Symbol.for('Hook.Auth'),
-	CreateClientsMediator: Symbol.for('Hook.CreateClientsMediator'),
+	ClientMediatorManager: Symbol.for('Hook.CreateClientsMediator'),
 	Report: Symbol.for('Hook.Report'),
 	ReleaseUpdate: Symbol.for('Hook.ReleaseUpdate'),
 }
@@ -32,8 +33,6 @@ export const Factories = {
 
 export const Mediators = Symbol.for('Mediators')
 
-export const SocketServer = Symbol.for('SocketServer')
-
-export const HTTPServer = Symbol.for('HTTPServer')
+export const Server = Symbol.for('Server')
 
 export const AdminMediator = '/admins'

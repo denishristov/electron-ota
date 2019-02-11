@@ -27,7 +27,7 @@ interface ILoginFormEvent extends FormEvent<HTMLFormElement> {
 @observer
 export default class Login extends React.Component<RouteComponentProps> {
 	@DI.lazyInject(DI.Stores.User)
-	private readonly userStore!: IUserStore
+	private readonly userStore: IUserStore
 
 	public render() {
 		if (this.userStore.isAuthenticated) {

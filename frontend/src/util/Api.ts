@@ -73,20 +73,20 @@ export default class Api implements IApi {
 	private logUpdate(eventType: string, data: object) {
 		console.log(colors.eventType(eventType))
 		console.log(colors.update('Update: '), data)
-		console.log('----------------------------------')
+		console.log('\n')
 	}
 
 	private logRequest(eventType: string, request: object, response: object) {
 		console.log(colors.eventType(eventType))
 		console.log(colors.request('Request: '), request)
 		console.log(colors.response('Response: '), response)
-		console.log('----------------------------------')
+		console.log('\n')
 	}
 
 	private logError(eventType: string, request: object, error: object) {
 		console.log(colors.eventType(eventType))
 		console.log(colors.request('Request: '), request)
 		console.log(colors.error('Error: '), error)
-		console.log('----------------------------------')
+		console.log('\n')
 	}
 }

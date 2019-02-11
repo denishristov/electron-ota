@@ -32,15 +32,14 @@ import { IPreRespondHook, IPostRespondHook, ISocketMediator } from '../util/medi
 
 import { defaultSchemaOptions } from '../models/util'
 import { ModelType } from 'typegoose'
+import { PORT } from './index'
+import socketioConfig from './socketioConfig'
+import ValidationHook from '../hooks/ValidationHook';
 
 const container = new Container()
 
-container.bind<http.Server>(DI.HTTPServer)
-	.toConstantValue(http.createServer())
-
 container.bind<SocketIO.Server>(DI.SocketServer)
-	.toDynamicValue(({ container }) => socketio(container.get<http.Server>(DI.HTTPServer)))
-	.inSingletonScope()
+	.toConstantValue(socketio(PORT, socketioConfig))
 
 container.bind<IAdminsService>(DI.Services.Admin)
 	.to(AdminsService)
@@ -92,7 +91,7 @@ container.bind<IPreRespondHook>(DI.Hooks.Auth)
 	.to(AuthHook)
 	.inSingletonScope()
 
-container.bind<IPostRespondHook>(DI.Hooks.CreateClientsMediator)
+container.bind<IPostRespondHook>(DI.Hooks.ClientMediatorManager)
 	.to(ClientMediatorManagerHook)
 	.inSingletonScope()
 
@@ -102,6 +101,10 @@ container.bind<IPostRespondHook>(DI.Hooks.Report)
 
 container.bind<IPostRespondHook>(DI.Hooks.ReleaseUpdate)
 	.to(ReleaseUpdateHook)
+	.inSingletonScope()
+
+container.bind<IPreRespondHook>(DI.Hooks.Validation)
+	.to(ValidationHook)
 	.inSingletonScope()
 
 container.bind<ClientsMediatorFactory>(DI.Factories.ClientsMediator)

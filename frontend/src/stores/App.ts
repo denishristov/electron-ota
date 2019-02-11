@@ -2,8 +2,8 @@ import { action, computed, observable, ObservableMap } from 'mobx'
 import {
 	EventType,
 	GetVersionsResponse,
-	S3SignUrlRequest,
-	S3SignUrlResponse,
+	SignUploadUrlRequest,
+	SignUploadUrlResponse,
 	VersionModel,
 	SystemType,
 	SimpleVersionReportModel,
@@ -44,7 +44,7 @@ export interface IApp {
 	allVersions: VersionModel[]
 	getVersion(id: string): VersionModel | null
 	fetchVersions(): Promise<void>
-	fetchSignedUploadVersionUrl(req: S3SignUrlRequest): Promise<S3SignUrlResponse>
+	fetchSignedUploadVersionUrl(req: SignUploadUrlRequest): Promise<SignUploadUrlResponse>
 	fetchSimpleReports(): Promise<void>
 	fetchReports(versionId: string): Promise<void>
 	createVersion(inputFields: ICreateVersionInput): void
@@ -118,8 +118,8 @@ export default class App implements IApp {
 	}
 
 	@action
-	public async fetchSignedUploadVersionUrl(req: S3SignUrlRequest) {
-		return await this.api.emit<S3SignUrlResponse>(EventType.SignUploadVersionUrl, req)
+	public async fetchSignedUploadVersionUrl(req: SignUploadUrlRequest) {
+		return await this.api.emit<SignUploadUrlResponse>(EventType.SignUploadVersionUrl, req)
 	}
 
 	@action

@@ -14,7 +14,7 @@ import { ContentContext, TriggerContext, OpenTrigger, CloseTrigger } from '../co
 import { DivProps } from '../../util/types'
 import { animationConfig } from '../../config'
 
-interface IContentProps<T> extends Exclude<DivProps, 'children'> {
+interface IContentProps<T = {}> extends Exclude<DivProps, 'children'> {
 	title?: string
 	className?: string
 	component: React.ComponentClass<T> | React.FunctionComponent<T>
@@ -37,7 +37,7 @@ function Content<T>({ component: Component, props, title, className }: IContentP
 				<ContentContext.Consumer>
 					{({ isOpened, isClosing }) => isOpened && (
 						<Spring
-							native={true}
+							native
 							reverse={isClosing}
 							force={isClosing}
 							onRest={_close}
@@ -52,7 +52,7 @@ function Content<T>({ component: Component, props, title, className }: IContentP
 									onScroll={stopPropagation}
 								>
 									<Spring
-										native={true}
+										native
 										reverse={isClosing}
 										force={isClosing}
 										config={animationConfig}
@@ -118,11 +118,10 @@ export default class Modal extends React.Component<IModalProps, IState> {
 
 	public render() {
 		const { open, close, _close } = this
-		const { isOpened, isClosing } = this.state
 
 		return (
 			<TriggerContext.Provider value={{ open, close, _close }}>
-				<ContentContext.Provider value={{ isOpened, isClosing }}>
+				<ContentContext.Provider value={this.state}>
 					{this.props.children}
 				</ContentContext.Provider>
 			</TriggerContext.Provider>

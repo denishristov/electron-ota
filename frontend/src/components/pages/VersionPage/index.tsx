@@ -43,7 +43,7 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 	}
 
 	@DI.lazyInject(DI.Stores.Apps)
-	private readonly appsStore!: IAppsStore
+	private readonly appsStore: IAppsStore
 
 	@computed
 	private get app(): IApp | null {

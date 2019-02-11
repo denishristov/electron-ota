@@ -34,7 +34,7 @@ export default class Register extends React.Component<{}, IState> {
 	}
 
 	@DI.lazyInject(DI.Stores.Register)
-	private readonly registerStore!: IRegisterStore
+	private readonly registerStore: IRegisterStore
 
 	private get command() {
 		return `cat ${this.registerStore.path}`

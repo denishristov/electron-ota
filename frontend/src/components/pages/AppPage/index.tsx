@@ -38,7 +38,7 @@ export default class AppPage extends Component<RouteComponentProps<IParams>, ISt
 	}
 
 	@DI.lazyInject(DI.Stores.Apps)
-	private readonly appsStore!: IAppsStore
+	private readonly appsStore: IAppsStore
 
 	@computed
 	private get app(): IApp | null {

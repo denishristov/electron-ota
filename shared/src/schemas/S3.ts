@@ -3,7 +3,7 @@ import { StringSchema, Uri } from 'tsdv-joi/constraints/string'
 import { Required, Allow } from 'tsdv-joi/constraints/any'
 import { AuthenticatedRequest } from './Generic'
 
-export class S3SignUrlRequest extends AuthenticatedRequest {
+export class SignUploadUrlRequest extends AuthenticatedRequest {
 	@Required()
 	@StringSchema()
 	public name: string
@@ -13,7 +13,7 @@ export class S3SignUrlRequest extends AuthenticatedRequest {
 	public type: string
 }
 
-export class S3SignUrlResponse {
+export class SignUploadUrlResponse {
 	@Required()
 	@Uri()
 	public signedRequest: string

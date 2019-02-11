@@ -50,7 +50,7 @@ export default class AppModal extends React.Component<{}, IState> {
 	}
 
 	@DI.lazyInject(DI.Stores.Apps)
-	private readonly appsStore!: IAppsStore
+	private readonly appsStore: IAppsStore
 
 	public render() {
 		return (

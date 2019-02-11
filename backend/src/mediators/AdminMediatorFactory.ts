@@ -23,8 +23,8 @@ import {
 	DeleteVersionRequest,
 	PublishVersionRequest,
 	PublishVersionResponse,
-	S3SignUrlRequest,
-	S3SignUrlResponse,
+	SignUploadUrlRequest,
+	SignUploadUrlResponse,
 	GetSimpleVersionReportsRequest,
 	GetSimpleVersionReportsResponse,
 	GetVersionReportsRequest,
@@ -43,13 +43,13 @@ import { IReleaseService } from '../services/ReleaseService'
 import { IVersionReportsService } from '../services/VersionReportsService'
 
 import { IPreRespondHook, IPostRespondHook, ISocketMediator } from '../util/mediator/interfaces'
-import SocketMediator from '../util/mediator/Mediator'
-import { Empty } from '../util/types'
+import SocketMediator from '../util/mediator/SocketMediator'
+import { Server } from '../util/symbols';
 
 export type AdminMediatorFactory = () => ISocketMediator
 
 export default function adminMediatorFactory({ container }: interfaces.Context): AdminMediatorFactory {
-	const server = container.get<SocketIO.Server>(DI.SocketServer)
+	const server = container.get<SocketIO.Server>(DI.Server)
 
 	const adminService = container.get<IAdminsService>(DI.Services.Admin)
 	const appService = container.get<IAppService>(DI.Services.App)
@@ -60,126 +60,126 @@ export default function adminMediatorFactory({ container }: interfaces.Context):
 	const versionReportsService = container.get<IVersionReportsService>(DI.Services.VersionReports)
 
 	const authHook = container.get<IPreRespondHook>(DI.Hooks.Auth)
-	const createClientsMediatorHook = container.get<IPostRespondHook>(DI.Hooks.CreateClientsMediator)
+	const validationHook = container.get<IPreRespondHook>(DI.Hooks.Validation)
+	const clientMediatorManagerHook = container.get<IPostRespondHook>(DI.Hooks.ClientMediatorManager)
 	const releaseUpdateHook = container.get<IPostRespondHook>(DI.Hooks.ReleaseUpdate)
 
-	return () => {
-		return new SocketMediator(server.of(DI.AdminMediator))
-			.use(
-				EventType.Login,
-				adminService.login,
-				AdminLoginRequest,
-				AdminLoginResponse,
-			)
-			.use(
-				EventType.Authentication,
-				adminService.authenticate,
-				AdminAuthenticationRequest,
-				AdminAuthenticationResponse,
-			)
-			.use(
-				EventType.RegisterAdmin,
-				adminService.register,
-				RegisterAdminRequest,
-				RegisterAdminResponse,
-			)
-			.use(
-				EventType.GetRegisterKeyPath,
-				registerCredentialsService.getCredentialsKeyPath,
-				Empty,
-				RegisterKeyPathResponse,
-			)
-			.use(
-				EventType.GetApps,
-				appService.getAllApps,
-				AuthenticatedRequest,
-				GetAppsResponse,
-			)
-			.use(
-				EventType.CreateApp,
-				appService.createApp,
-				CreateAppRequest,
-				CreateAppResponse,
-			)
-			.use(
-				EventType.UpdateApp,
-				appService.updateApp,
-				UpdateAppRequest,
-				UpdateAppResponse,
-			)
-			.use(
-				EventType.DeleteApp,
-				appService.deleteApp,
-				DeleteAppRequest,
-				DeleteAppResponse,
-			)
-			.use(
-				EventType.GetVersions,
-				appService.getAppVersions,
-				GetVersionsRequest,
-				GetVersionsResponse,
-			)
-			.use(
-				EventType.CreateVersion,
-				versionService.createVersion,
-				CreateVersionRequest,
-				CreateVersionResponse,
-			)
-			.use(
-				EventType.UpdateVersion,
-				versionService.updateVersion,
-				UpdateVersionRequest,
-				UpdateVersionResponse,
-			)
-			.use(
-				EventType.DeleteVersion,
-				versionService.deleteVersion,
-				DeleteVersionRequest,
-				DeleteVersionResponse,
-			)
-			.use(
-				EventType.ReleaseUpdate,
-				updateService.releaseVersion,
-				PublishVersionRequest,
-				PublishVersionResponse,
-			)
-			.use(
-				EventType.SignUploadVersionUrl,
-				fileUploadService.signVersionUploadUrl,
-				S3SignUrlRequest,
-				S3SignUrlResponse,
-			)
-			.use(
-				EventType.SignUploadPictureUrl,
-				fileUploadService.signPictureUploadUrl,
-				S3SignUrlRequest,
-				S3SignUrlResponse,
-			)
-			.use(
-				EventType.SimpleVersionReports,
-				versionReportsService.getSimpleVersionReports,
-				GetSimpleVersionReportsRequest,
-				GetSimpleVersionReportsResponse,
-			)
-			.use(
-				EventType.VersionReports,
-				versionReportsService.getVersionReports,
-				GetVersionReportsRequest,
-				GetVersionReportsResponse,
-			)
-			.usePreRespond(authHook)
-			.usePostRespond(
-				createClientsMediatorHook,
-				releaseUpdateHook,
-			)
-			.broadcastEvents(
-				EventType.CreateApp,
-				EventType.UpdateApp,
-				EventType.DeleteApp,
-				EventType.CreateVersion,
-				EventType.UpdateVersion,
-				EventType.DeleteVersion,
-				EventType.ReleaseUpdate,
-			)
-	}
+	return () => new SocketMediator(server.of(DI.AdminMediator))
+		.use({
+			eventType: EventType.Login,
+			handler: adminService.login,
+			requestType: AdminLoginRequest,
+			responseType: AdminLoginResponse,
+		})
+		.use({
+			eventType: EventType.Logout,
+			handler: adminService.logout,
+			requestType: AuthenticatedRequest,
+		})
+		.use({
+			eventType: EventType.Authentication,
+			handler: adminService.authenticate,
+			requestType: AdminAuthenticationRequest,
+			responseType: AdminAuthenticationResponse,
+		})
+		.use({
+			eventType: EventType.RegisterAdmin,
+			handler: adminService.register,
+			requestType: RegisterAdminRequest,
+			responseType: RegisterAdminResponse,
+		})
+		.use({
+			eventType: EventType.GetRegisterKeyPath,
+			handler: registerCredentialsService.getCredentialsKeyPath,
+			responseType: RegisterKeyPathResponse,
+		})
+		.use({
+			eventType: EventType.GetApps,
+			handler: appService.getAllApps,
+			requestType: AuthenticatedRequest,
+			responseType: GetAppsResponse,
+		})
+		.use({
+			eventType: EventType.CreateApp,
+			handler: appService.createApp,
+			requestType: CreateAppRequest,
+			responseType: CreateAppResponse,
+			broadcast: true,
+		})
+		.use({
+			eventType: EventType.UpdateApp,
+			handler: appService.updateApp,
+			requestType: UpdateAppRequest,
+			responseType: UpdateAppResponse,
+			broadcast: true,
+		})
+		.use({
+			eventType: EventType.DeleteApp,
+			handler: appService.deleteApp,
+			requestType: DeleteAppRequest,
+			responseType: DeleteAppResponse,
+			broadcast: true,
+		})
+		.use({
+			eventType: EventType.GetVersions,
+			handler: appService.getAppVersions,
+			requestType: GetVersionsRequest,
+			responseType: GetVersionsResponse,
+		})
+		.use({
+			eventType: EventType.CreateVersion,
+			handler: versionService.createVersion,
+			requestType: CreateVersionRequest,
+			responseType: CreateVersionResponse,
+			broadcast: true,
+		})
+		.use({
+			eventType: EventType.UpdateVersion,
+			handler: versionService.updateVersion,
+			requestType: UpdateVersionRequest,
+			responseType: UpdateVersionResponse,
+			broadcast: true,
+		})
+		.use({
+			eventType: EventType.DeleteVersion,
+			handler: versionService.deleteVersion,
+			requestType: DeleteVersionRequest,
+			responseType: DeleteVersionResponse,
+			broadcast: true,
+		})
+		.use({
+			eventType: EventType.ReleaseUpdate,
+			handler: updateService.releaseVersion,
+			requestType: PublishVersionRequest,
+			responseType: PublishVersionResponse,
+			broadcast: true,
+		})
+		.use({
+			eventType: EventType.SignUploadVersionUrl,
+			handler: fileUploadService.signVersionUploadUrl,
+			requestType: SignUploadUrlRequest,
+			responseType: SignUploadUrlResponse,
+		})
+		.use({
+			eventType: EventType.SignUploadPictureUrl,
+			handler: fileUploadService.signPictureUploadUrl,
+			requestType: SignUploadUrlRequest,
+			responseType: SignUploadUrlResponse,
+		})
+		.use({
+			eventType: EventType.SimpleVersionReports,
+			handler: versionReportsService.getSimpleVersionReports,
+			requestType: GetSimpleVersionReportsRequest,
+			responseType: GetSimpleVersionReportsResponse,
+		})
+		.use({
+			eventType: EventType.VersionReports,
+			handler: versionReportsService.getVersionReports,
+			requestType: GetVersionReportsRequest,
+			responseType: GetVersionReportsResponse,
+		})
+		.pre(validationHook)
+		.pre(authHook)
+		.post(clientMediatorManagerHook)
+		.post(releaseUpdateHook)
 }
