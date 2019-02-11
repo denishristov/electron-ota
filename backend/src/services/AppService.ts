@@ -1,80 +1,132 @@
 
-import { Model } from 'mongoose'
 import {
-	ICreateAppRequest,
-	ICreateAppResponse,
-	IDeleteAppRequest,
-	IDeleteAppResponse,
-	IGetAppsResponse,
-	IUpdateAppRequest,
-	IUpdateAppResponse,
+	CreateAppRequest,
+	CreateAppResponse,
+	DeleteAppRequest,
+	DeleteAppResponse,
+	GetAppsResponse,
+	UpdateAppRequest,
+	UpdateAppResponse,
+	SystemType,
+	GetVersionsRequest,
+	GetVersionsResponse,
 } from 'shared'
-import { IAppDocument } from '../models/App'
-import { toPlain } from '../util/util'
-import { IVersionDocument } from '../models/Version'
+import { App } from '../models/App'
+import { Version } from '../models/Version'
+import { ModelType, InstanceType } from 'typegoose'
+import { rangedArray } from '../util/functions'
 
 export interface IAppService {
-	getApp(id: string, options?: IGetAppOptions): Promise<IAppDocument>
-	getAppVersions(id: string): Promise<{ versions: IVersionDocument[] }>
-	getAllApps(): Promise<IGetAppsResponse>
-	createApp(createRequest: ICreateAppRequest): Promise<ICreateAppResponse>
-	updateApp(updateRequest: IUpdateAppRequest): Promise<IUpdateAppResponse>
-	deleteApp(deleteRequest: IDeleteAppRequest): Promise<IDeleteAppResponse>
-}
-
-interface IGetAppOptions {
-	versions?: boolean
-	latestVersion?: boolean
+	getAllBundleIds(): Promise<string[]>
+	getAllApps(): Promise<GetAppsResponse>
+	getAppVersions({ appId }: GetVersionsRequest): Promise<GetVersionsResponse>
+	getAppLatestVersion(bundleId: string, systemType: SystemType): Promise<Version | null>
+	createApp(createRequest: CreateAppRequest): Promise<CreateAppResponse>
+	updateApp(updateRequest: UpdateAppRequest): Promise<UpdateAppResponse>
+	deleteApp(deleteRequest: DeleteAppRequest): Promise<DeleteAppResponse>
 }
 
 @DI.injectable()
 export default class AppService implements IAppService {
 	constructor(
 		@DI.inject(DI.Models.App)
-		private readonly apps: Model<IAppDocument>,
+		private readonly AppModel: ModelType<App>,
 	) {}
 
-	public async getApp(
-		id: string,
-		{ versions, latestVersion }: IGetAppOptions = { versions: false, latestVersion: false },
-	): Promise<IAppDocument> {
-		return await this.apps
-			.findById(id)
-			.populate(`${versions ? 'versions' : ''}`)
-			.populate(`${latestVersion ? 'latestVersion' : ''}`)
-	}
-
-	public async getAppVersions(id: string): Promise<{ versions: IVersionDocument[] }> {
-		return await this.apps.findById(id).populate('versions').select('versions')
+	public async getAllBundleIds(): Promise<string[]> {
+		const apps = await this.AppModel.find().select('bundleId')
+		return apps.map((app) => app.bundleId)
 	}
 
 	@bind
-	public async getAllApps(): Promise<IGetAppsResponse> {
-		const apps = await this.apps.find().populate('latestVersion')
+	public async getAppVersions({ appId }: GetVersionsRequest): Promise<GetVersionsResponse> {
+		const app = await this.AppModel
+			.findById(appId)
+			.populate({
+				path: 'versions',
+				options: { sort: { createdAt: -1 } },
+			})
+			.select('versions')
 
 		return {
-			apps: apps.map(toPlain)
-				.map((app) => ({ ...app, versions: app.versions.length })),
+			versions: app.versions.map((version) => (version as InstanceType<Version>).toJSON()),
 		}
 	}
 
 	@bind
-	public async createApp(createRequest: ICreateAppRequest): Promise<ICreateAppResponse> {
-		const app = await this.apps.create(createRequest)
+	public async getAllApps(): Promise<GetAppsResponse> {
+		const apps = await this.AppModel.find()
 
-		return toPlain(app)
+		return {
+			apps: await Promise.all(apps.map(async (app) => {
+				const json = app.toJSON()
+
+				const systemTypes = Object.keys(SystemType) as SystemType[]
+				const latestVersions = await Promise.all(
+					systemTypes.map((systemType) => this.getAppLatestVersion(app.bundleId, systemType)),
+				)
+
+				return {
+					...json,
+					versions: app.versions && app.versions.length,
+					latestVersions: rangedArray(systemTypes.length)
+						.group((i) => [systemTypes[i], latestVersions[i]]),
+				}
+			})),
+		}
 	}
 
 	@bind
-	public async updateApp(updateRequest: IUpdateAppRequest): Promise<IUpdateAppResponse> {
+	public async createApp(createRequest: CreateAppRequest): Promise<CreateAppResponse> {
+		const { AppModel } = this
+
+		const app = await new AppModel(createRequest)
+		await app.save()
+
+		const { versions, ...rest } = app.toJSON()
+
+		return { ...rest, versions: versions.length }
+	}
+
+	@bind
+	public async updateApp(updateRequest: UpdateAppRequest): Promise<UpdateAppResponse> {
 		const { id, ...app } = updateRequest
-		await this.apps.updateOne({ _id: id }, { $set: app })
+
+		await this.AppModel.updateOne({ _id: id }, { $set: app })
+
 		return updateRequest
 	}
 
 	@bind
-	public async deleteApp({ id }: IDeleteAppRequest): Promise<IDeleteAppResponse> {
-		await this.apps.deleteOne({ _id: id })
+	public async deleteApp({ id }: DeleteAppRequest): Promise<DeleteAppResponse> {
+		await this.AppModel.deleteOne({ _id: id })
+
 		return { id }
+	}
+
+	public async getAppLatestVersion(bundleId: string, systemType: SystemType) {
+		if (!Object.values(SystemType).includes(systemType)) {
+			throw new Error('Bad system type')
+		}
+
+		const app = await this.AppModel
+			.findOne({ bundleId })
+			.populate({
+				path: 'versions',
+				match: {
+					[`systems.${systemType}`]: true,
+					isReleased: true,
+				},
+				options: {
+					limit: 1,
+					sort: { createdAt: -1 },
+				},
+			})
+			.select('latestVersions')
+
+		return (app
+			&& app.versions[0]
+			&& (app.versions[0] as InstanceType<Version>).toJSON()
+		) || null
 	}
 }

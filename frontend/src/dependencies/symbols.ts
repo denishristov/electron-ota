@@ -6,6 +6,12 @@ export const Connection = Symbol.for('Connection')
 export const Stores = {
 	Apps: Symbol.for('Store.Apps'),
 	Root: Symbol.for('Store.Root'),
-	User: Symbol.for('Store.User'),
+	User: Symbol.for('Store.Admin'),
 	Register: Symbol.for('Register.Admin'),
 }
+
+export const Factories = {
+	App: Symbol.for('App.Factory'),
+}
+
+export const BrowserHistory = Symbol.for('BrowserHistory')

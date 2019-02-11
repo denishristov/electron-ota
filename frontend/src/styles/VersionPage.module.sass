@@ -1,0 +1,85 @@
+@import './mixins'
+@import './variables'
+	
+.container
+	@include container
+
+	h3, h4, h5
+		margin: 0px
+		font-weight: 500
+
+	h4
+		font-weight: 400
+
+	
+	svg
+		width: $icon-size
+		height: $icon-size
+
+.report-column
+	@include transition(box-shadow)
+	@include entry-shadow
+	border-radius: $default-border-radius
+	width: $spacing * 12
+	background-color: $entry-bg
+	max-height: 60vh
+
+	> span:first-child
+		border-bottom: 1px solid $accent
+
+	h3
+		font-size: 1rem
+
+	h4
+		color: $dark-accent
+
+	h6
+		@include text-overflow
+		margin: $spacing / 2 0 0
+		color: $dark-accent
+
+	svg
+		margin-left: $spacing / 2
+		width: 20px
+		height: 20px
+
+	svg, g, path
+		fill: $dark-accent
+		
+
+.client
+	@include transition(box-shadow, background-color)
+	@include entry-shadow
+	border-radius: $default-border-radius
+	background-color: $entry-bg
+	
+	&:hover
+		background-color: $entry-hover-bg
+
+	label
+		margin-right: auto
+		margin-left: $spacing
+
+.error-modal
+	max-width: 60vw
+
+.details
+	@include transition(box-shadow)
+	@include entry-shadow
+	border-radius: $default-border-radius
+	background-color: $entry-bg
+	max-width: $spacing * 10 * 3
+	position: relative
+
+	h3
+		color: $dark-accent
+		text-transform: uppercase
+		font-size: 1rem
+
+	h4
+		margin-top: $spacing / 2
+
+	.edit-icon
+		position: absolute
+		right: $spacing
+		top: $spacing

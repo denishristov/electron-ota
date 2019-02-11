@@ -1,0 +1,26 @@
+@import './variables'
+@import './mixins'
+
+.dropzone
+	@include transition(background-color, transform)
+	display: flex
+	min-height: $spacing * 2.5
+	padding: $spacing
+	border-radius: $default-border-radius
+	background-color: $entry-bg
+	color: $dark-accent
+	font-weight: 400
+	overflow: hidden
+	align-items: center
+	cursor: pointer
+
+	label
+		color: $text
+		margin-right: 0px
+
+	&:focus, &:hover
+		outline: none
+		background-color: $entry-hover-bg
+
+	&-active
+		background-color: transparentize($green, 0.9)

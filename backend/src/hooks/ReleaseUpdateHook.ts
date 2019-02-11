@@ -1,42 +1,61 @@
-import { IPostRespondHook, ISocketMediator } from '../mediator/Interfaces'
-import { EventType, IPublishVersionRequest, IPublishVersionResponse } from 'shared'
-import { IVersionService } from '../services/VersionService'
 
-export type ReleaseUpdateHookFactory = (clientsMediator: ISocketMediator) => ReleaseUpdateHook
+import { EventType, PublishVersionRequest, PublishVersionResponse, SystemType } from 'shared'
+import { IPostRespondHook, ISocketMediator } from '../util/mediator/interfaces'
+import { Version } from '../models/Version'
+import {  ModelType } from 'typegoose'
+import { App } from '../models/App'
 
+@DI.injectable()
 export default class ReleaseUpdateHook implements IPostRespondHook {
-	public eventTypes = new Set([EventType.PublishVersion])
+	public eventTypes = new Set([EventType.ReleaseUpdate])
 
 	constructor(
-		private readonly clientsMediator: ISocketMediator,
-		private readonly versionService: IVersionService,
+		@DI.inject(DI.Mediators)
+		private readonly mediators: Map<string, ISocketMediator>,
+		@DI.inject(DI.Models.Version)
+		private readonly VersionModel: ModelType<Version>,
+		@DI.inject(DI.Models.App)
+		private readonly AppModel: ModelType<App>,
 	) {}
 
 	@bind
 	public async handle(
-		{ id, appId }: IPublishVersionRequest,
-		{ isSuccessful }: IPublishVersionResponse,
+		_: EventType,
+		{ versionId }: PublishVersionRequest,
+		{ isSuccessful }: PublishVersionResponse,
 	) {
 		if (isSuccessful) {
-			const {
-				versionName,
-				isBase,
-				isCritical,
-				downloadUrl,
-				description,
-				hash,
-			} = await this.versionService.getVersion({ id, appId })
+			const { appId, ...version } = await this.VersionModel
+				.findById(versionId)
+				.select(`
+					versionName
+					isBase
+					isCritical
+					downloadUrl
+					description
+					hash
+					appId
+					systems
+				`)
+				.then((version) => version.toJSON())
 
-			const update = {
-				versionName,
-				isBase,
-				isCritical,
-				downloadUrl,
-				description,
-				hash,
+			const { bundleId } = await this.AppModel.findById(appId).select('bundleId')
+
+			const update = { ...version, versionId }
+			const supportedSystemTypes = Object.entries(version.systems)
+				.filter(([_, value]) => value)
+				.map(([systemType, _]) => systemType)
+
+			for (const systemType of supportedSystemTypes) {
+				const name = `/${bundleId}/${systemType}`
+				const mediator = this.mediators.get(name)
+
+				if (!mediator) {
+					throw new Error(`mediator ${name} does not exist`)
+				}
+
+				mediator.broadcast(EventType.NewUpdate, update)
 			}
-
-			this.clientsMediator.broadcast(EventType.NewUpdate, update)
 		}
 	}
 }

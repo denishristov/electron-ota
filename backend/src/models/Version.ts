@@ -1,33 +1,39 @@
-import { Document, Schema } from 'mongoose'
 
-export interface IVersionDocument extends Document {
-	versionName: string
-	downloadUrl: string
-	isCritical: boolean
-	isBase: boolean
-	isPublished: boolean
-	hash: string
-	appId: string
-	description?: string
+import { index, prop, Typegoose } from 'typegoose'
+import { SupportSystemTypes } from './SupportSystemTypes'
+
+@index({ versionName: 1, app: 1 }, { unique: true })
+export class Version extends Typegoose {
+	public id: string
+
+	public createdAt: string
+
+	public updatedAt: string
+
+	@prop({ required: true })
+	public versionName: string
+
+	@prop()
+	public downloadUrl?: string
+
+	@prop({ required: true })
+	public isCritical: boolean
+
+	@prop({ required: true, default: false })
+	public isReleased: boolean
+
+	@prop({ required: true })
+	public isBase: boolean
+
+	@prop({ unique: true, sparse: true })
+	public hash: string
+
+	@prop({ required: true })
+	public appId: string
+
+	@prop()
+	public description?: string
+
+	@prop({ required: true })
+	public systems: SupportSystemTypes
 }
-
-export const VersionSchema = new Schema({
-	appId: {
-		ref: 'App',
-		type: Schema.Types.ObjectId,
-	},
-	downloadUrl: String,
-	isBase: Boolean,
-	isCritical: Boolean,
-	isPublished: Boolean,
-	hash: {
-		type: String,
-		unique: true,
-	},
-	versionName: {
-		type: String,
-	},
-	description: String,
-}, {
-	timestamps: true,
-})

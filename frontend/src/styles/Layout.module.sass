@@ -1,0 +1,99 @@
+@import './variables'
+
+.row
+	display: flex
+	flex-flow: row wrap
+
+.column
+	display: flex
+	flex-flow: column wrap
+
+.spread
+	justify-content: space-between
+
+.center-x
+	justify-content: center
+
+.center-y
+	align-items: center
+
+.margin
+	margin: $spacing
+
+.padding
+	padding: $spacing
+
+.left
+	margin-right: auto
+
+.right
+	margin-left: auto
+
+.grow
+	flex-grow: 1
+
+.fill
+	> * 
+		flex-grow: 1
+
+.list-y
+	> *
+		margin-bottom: $spacing
+
+		&:last-child
+			margin-bottom: 0px
+
+.list-x
+	> *
+		margin-right: $spacing
+
+		&:last-child
+			margin-right: 0px
+
+.mta 
+	margin-top: auto
+	
+.mt 
+	margin-top: $spacing
+
+.mba 
+	margin-bottom: auto
+
+.mb 
+	margin-bottom: $spacing
+
+.mla 
+	margin-left: auto
+
+.ml 
+	margin-left: $spacing
+
+.mra 
+	margin-right: auto
+
+.mr 
+	margin-right: $spacing
+
+.pta 
+	padding-top: auto
+
+.pt 
+	padding-top: $spacing
+
+.pba 
+	padding-bottom: auto
+
+.pb 
+	padding-bottom: $spacing
+
+.pla 
+	padding-left: auto
+
+.pl 
+	padding-left: $spacing
+	
+.pra 
+	padding-right: auto
+
+.pr 
+	padding-right: $spacing

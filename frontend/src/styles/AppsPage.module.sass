@@ -1,0 +1,65 @@
+@import './variables'
+@import './mixins'
+
+.upload-icon
+	border-radius: 50%
+	margin: $spacing / 2 0
+	width: $spacing * 6
+	height: $spacing * 6
+	display: flex
+	justify-content: center
+	align-items: center
+	cursor: pointer
+	object-fit: cover
+
+	svg
+		@include transition(fill, color)
+		width: $spacing * 4
+		height: $spacing * 4    
+		color: $dark-accent
+
+	&:hover
+		svg 
+			fill: darken($text, 15%)
+
+.upload-label
+	margin-bottom: $spacing / 2
+
+.apps-page-container
+	@include container
+	
+	.apps-container
+		display: grid
+		grid-template-columns: repeat(auto-fill, $spacing * 2 * 12)
+		// grid-auto-rows: $spacing * 2 * 9
+		margin: $spacing
+		justify-content: center
+		align-content: center
+
+.picture-container
+	margin-top: 18px
+
+.dropzone
+	margin: 0 $spacing * -1
+	flex-grow: 1
+
+.profile
+	h5
+		font-size: 1.6rem
+		margin: 0 $spacing 0 0
+		text-transform: capitalize
+		color: $dark-accent
+
+	svg, img
+		width: $spacing * 3
+		height: $spacing * 3
+		
+		background-color: $entry-bg
+		box-shadow: $rest-shadow
+		border-radius: 50%
+
+	g, path
+		fill: $dark-accent
+
+.profile-menu
+	border-radius: 10px

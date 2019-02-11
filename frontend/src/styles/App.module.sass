@@ -1,0 +1,63 @@
+@import './variables'
+@import './mixins'
+
+.app-tile
+	@include transition(background-color, box-shadow, filter)
+	@include entry-shadow
+	margin: $spacing * 2 $spacing
+	padding: $spacing
+	border-radius: $default-border-radius
+	background: white
+	border: 1px solid #f1f2f2
+	cursor: pointer
+	position: relative
+	background-color: $entry-bg
+
+	svg
+		width: $spacing
+		height: $spacing
+
+	> div:first-child
+		margin-bottom: $spacing / 2
+
+	&:hover
+		background-color: $entry-hover-bg
+		filter: brightness(-1)
+
+	img
+		@include glowingShadow($accent)
+		@include transition(box-shadow)
+		width: $spacing * 4
+		height: $spacing * 4
+		flex-grow: 0
+		object-fit: cover
+		border-radius: 50%
+		position: absolute
+		top: -1.5 * $spacing
+		right: $spacing
+
+	h3
+		@include text-overflow
+		margin: $spacing * .5 0
+		font-size: 2.2rem
+		font-weight: 500
+		color: $text
+
+	h4
+		font-size: 1.6rem
+
+	.header
+		margin: -1 * $spacing -1 * $spacing $spacing
+		padding-right: $spacing * 7
+		padding-left: $spacing
+		background-color: #f2f2f2
+		border-radius: 10px 10px 0 0
+
+.placeholder
+	height: 100%
+	flex-grow: 1
+	color: $dark-accent
+
+	svg
+		width: $spacing * 1.5
+		height: $spacing * 1.5

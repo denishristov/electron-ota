@@ -4,15 +4,15 @@ import { IApi } from '../util/Api'
 import { IUserStore } from './UserStore'
 import {
 	EventType,
-	IRegisterAdminRequest,
-	IRegisterAdminResponse,
-	IRegisterKeyPathResponse,
+	RegisterAdminRequest,
+	RegisterAdminResponse,
+	RegisterKeyPathResponse,
 } from 'shared'
 
 export interface IRegisterStore {
 	path?: string
 	isLoading: boolean
-	registerAdmin(req: IRegisterAdminRequest): Promise<boolean>
+	registerAdmin(req: RegisterAdminRequest): Promise<boolean>
 	fetchKeyPath(): Promise<void>
 }
 
@@ -33,8 +33,8 @@ export default class RegisterStore implements IRegisterStore {
 		return !this.path
 	}
 
-	public async registerAdmin(req: IRegisterAdminRequest) {
-		const { isSuccessful, authToken } = await this.api.emit<IRegisterAdminResponse>(EventType.Register, req)
+	public async registerAdmin(req: RegisterAdminRequest) {
+		const { isSuccessful, authToken } = await this.api.emit<RegisterAdminResponse>(EventType.RegisterAdmin, req)
 
 		if (authToken) {
 			this.userStore.setAuthToken(authToken)
@@ -44,7 +44,7 @@ export default class RegisterStore implements IRegisterStore {
 	}
 
 	public async fetchKeyPath() {
-		const { path } = await this.api.emit<IRegisterKeyPathResponse>(EventType.GetRegisterKeyPath)
+		const { path } = await this.api.emit<RegisterKeyPathResponse>(EventType.GetRegisterKeyPath)
 		this.path = path
 	}
 }

@@ -1,31 +1,35 @@
 import Cookies from 'js-cookie'
 import { action, computed, observable } from 'mobx'
-import { EventType, IUserAuthenticationResponse, IUserLoginResponse } from 'shared'
+import { EventType, AdminAuthenticationResponse, AdminLoginResponse } from 'shared'
 import { IApi } from '../util/Api'
-import { IUserLoginRequest } from '../../../shared/dist/interfaces/requests/UserLogin';
+import { AdminLoginRequest } from 'shared'
 
 export interface IUserStore {
 	isLoading: boolean
-	isAuthenticated: boolean
-	login(req: IUserLoginRequest): Promise<boolean>
+	isAuthenticated: boolean | null
+	login(req: AdminLoginRequest): Promise<boolean>
+	logout(): void
 	setAuthToken(authToken: string): void
 }
 
 @DI.injectable()
 class UserStore implements IUserStore {
 	@observable
-	public isAuthenticated = false
+	public isAuthenticated: boolean | null = null
 
-	private authToken?: string = Cookies.get('authToken')
+	private authToken: string | null = Cookies.get('authToken') || null
 
-	constructor(@DI.inject(DI.Api) private readonly api: IApi) {
+	constructor(
+		@DI.inject(DI.Api)
+		private readonly api: IApi,
+	) {
 		this.api.on(EventType.Connect, this.authenticate)
 		this.api.usePreEmit(this.getAuthToken)
 	}
 
 	@computed
 	get isLoading(): boolean {
-		return this.isAuthenticated ? false : Boolean(this.authToken)
+		return Boolean(this.authToken) && this.isAuthenticated === null
 	}
 
 	public setAuthToken(authToken: string) {
@@ -35,15 +39,11 @@ class UserStore implements IUserStore {
 	}
 
 	@action.bound
-	public async login(req: IUserLoginRequest): Promise<boolean> {
+	public async login(req: AdminLoginRequest): Promise<boolean> {
 		const {
 			authToken,
-			errorMessage,
 			isAuthenticated,
-		} = await this.api.emit<IUserLoginResponse>(EventType.Login, req)
-
-		// tslint:disable-next-line:no-console
-		errorMessage && console.warn(errorMessage)
+		} = await this.api.emit<AdminLoginResponse>(EventType.Login, req)
 
 		if (isAuthenticated && authToken) {
 			this.setAuthToken(authToken)
@@ -54,22 +54,26 @@ class UserStore implements IUserStore {
 	}
 
 	@action.bound
+	public logout() {
+		this.isAuthenticated = null
+		this.authToken = null
+
+		Cookies.remove('authToken')
+
+		this.api.emit(EventType.Logout)
+	}
+
+	@action.bound
 	private async authenticate(): Promise<void> {
 		if (this.authToken) {
 			const {
-				errorMessage,
 				isAuthenticated,
-			} = await this.api.emit<IUserAuthenticationResponse>(
+			} = await this.api.emit<AdminAuthenticationResponse>(
 				EventType.Authentication,
 				{ authToken: this.authToken },
 			)
 
-			// tslint:disable-next-line:no-console
-			errorMessage && console.warn(errorMessage)
-
-			if (isAuthenticated) {
-				this.isAuthenticated = true
-			}
+			this.isAuthenticated = isAuthenticated
 		}
 	}
 

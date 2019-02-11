@@ -1,0 +1,89 @@
+@import './styles/variables'
+@import './styles/mixins'
+
+html
+	background-color: #f6f6f6
+
+body
+	margin: 0
+	padding: 0
+	font-family: "Rubik", -apple-system, "Roboto","Arial", sans-serif
+	-webkit-font-smoothing: antialiased
+	color: $text
+	height: 100vh
+
+code
+	@include entry-shadow
+	display: flex
+	white-space: pre-wrap
+	background-image: linear-gradient(60deg, #29323c 0%, #485563 100%)
+	color: white
+	padding: $spacing
+	margin: 0 -$spacing
+	border-radius: 10px
+	text-overflow: clip
+	overflow: hidden
+	font-family: "SF Mono", source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace
+
+table
+	width: 100vw
+	font-size: 0.8rem
+
+label
+	@include text-overflow
+	text-transform: uppercase
+	font-size: 0.84rem
+	font-weight: 500
+	user-select: none
+	color: $dark-accent	
+
+form
+	display: flex
+	flex-flow: column
+	min-width: 300px
+	max-width: 700px
+
+h1
+	font-weight: 500
+	font-size: 3em
+	line-height: 58px
+	user-select: none
+
+h2
+	line-height: 40px
+	font-weight: 400
+	font-size: 2.2rem
+	user-select: none
+
+p
+	white-space: pre-wrap
+
+textarea
+	@include focus-shadow
+	@include transition(background-color, box-shadow)
+	border: 0
+	resize: none
+	border: 1px solid brighten($accent, 5%)
+	border-radius: 10px
+	font-size: 0.86rem
+	padding: 16px
+	background-color: $entry-bg
+	min-width: $spacing * 16
+	margin: 0 $spacing * -1
+
+	&:focus, &:hover
+		outline: none
+		background-color: $entry-hover-bg
+
+	&::placeholder
+		color: $dark-accent
+
+.background
+	background-image: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
+	position: fixed
+	z-index: -1
+	left: 0
+	top: 0
+	width: 100vw
+	height: 100vh
+	overflow: hidden

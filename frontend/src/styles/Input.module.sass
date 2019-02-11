@@ -1,0 +1,84 @@
+@import './mixins'
+@import './variables'
+
+.label
+	margin-bottom: $spacing / 2
+
+.container
+	position: relative
+
+.bar
+	@include transition(box-shadow, background-color)
+	// margin: 0 $spacing
+	width: 100%
+	flex-grow: 1
+	position: absolute
+	height: 1px
+	background-color: $accent
+	bottom: $spacing * .75
+	box-shadow: none
+
+input
+	@include transition(box-shadow, background-color)
+	@include focus-shadow
+	border: none
+	flex-grow: 1
+	margin: $spacing * 1.5 $spacing * -1 0
+	background-color: transparent
+	border-radius: $default-border-radius
+	background-color: $entry-bg
+	padding: $spacing
+	font-size: 1.14rem
+	position: relative
+	width: calc(100% - #{2 * $spacing})
+	padding-right: 3 * $spacing
+	color: $text
+
+	&:focus, &:hover
+		outline: none
+		background-color: $entry-hover-bg
+
+	span
+		display: absolute
+		right: $spacing
+
+input:focus 
+	~ .bar
+		background-color: $dark-accent
+		box-shadow: $rest-shadow
+
+		~ .icon
+			svg, g, path
+				fill: $dark-accent
+		
+.icon
+	position: absolute
+	top: 24px
+	right: 0
+	width: $icon-size
+	height: calc(100% - 24px)
+	display: flex
+	justify-content: center
+	align-items: center
+	color: $dark-accent
+
+	svg, g, path
+		@include transition(background-color)
+		fill: $accent
+
+input:placeholder-shown 
+	~ .label
+		transform: translateY((54px - $spacing) / 2 + 1.5 * $spacing)
+
+.label
+	@include text-overflow
+	@include transition(transform)
+	text-transform: uppercase
+	font-size: 0.84rem
+	font-weight: 500
+	user-select: none
+	color: $dark-accent
+	position: absolute	
+	top: 0
+	left: 0
+	transform: translateY(0px)

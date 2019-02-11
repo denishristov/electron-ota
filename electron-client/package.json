@@ -5,7 +5,6 @@
   "license": "UNLICENSED",
   "private": true,
   "scripts": {
-    "postinstall": "yarn run build",
     "build": "tsc",
     "watch": "tsc -w"
   },

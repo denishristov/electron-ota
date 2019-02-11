@@ -1,6 +1,8 @@
 import bindDecorator from 'bind-decorator'
 import { inject, injectable } from 'inversify'
-import { Models, Services, Hooks, Factories, SocketServer, HTTPServer, Mediators } from '../dependencies/symbols'
+import * as Symbols from '../util/symbols'
+import { InstanceType } from 'typegoose'
+import { ObjectID } from 'bson'
 
 import Global = NodeJS.Global
 
@@ -18,16 +20,14 @@ declare global {
 	const DI: DIType
 }
 
+declare global {
+	type Ref<T> = InstanceType<T> | ObjectID
+}
+
 const DI = {
 	inject,
 	injectable,
-	Models,
-	Services,
-	Hooks,
-	Factories,
-	Mediators,
-	HTTPServer,
-	SocketServer,
+	...Symbols,
 }
 
 global.bind = bindDecorator

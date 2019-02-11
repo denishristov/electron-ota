@@ -1,22 +1,20 @@
 import React from 'react'
 
-import '../../styles/Input.sass'
+import styles from '../../styles/Input.module.sass'
 
 interface IProps extends React.InputHTMLAttributes<HTMLInputElement> {
 	label: string
 	icon?: string
 }
 
-function Input({ label, icon, ...props }: IProps) {
+function Input({ label, icon, onClick, ...props }: IProps) {
 	return (
-		<>
-			<label>{label}</label>
-			<div className='input-container'>
-				<input {...props} />
-				<div className='input-bar' />
-				{icon && <SVG src={icon} className='icon' />}
-			</div>
-		</>
+		<div className={styles.container}>
+			<input {...props} placeholder=' ' />
+			<div className={styles.label}>{label}</div>
+			<div className={styles.bar} />
+			{icon && <SVG src={icon} className={styles.icon} />}
+		</div>
 	)
 }
 

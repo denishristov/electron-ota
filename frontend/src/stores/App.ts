@@ -1,42 +1,81 @@
 import { action, computed, observable, ObservableMap } from 'mobx'
 import {
 	EventType,
-	IAppModel,
-	ICreateVersionResponse,
-	IGetVersionsResponse,
-	IS3SignUrlRequest,
-	IS3SignUrlResponse,
-	IVersionModel,
+	GetVersionsResponse,
+	SignUploadUrlRequest,
+	SignUploadUrlResponse,
+	VersionModel,
+	SystemType,
+	SimpleVersionReportModel,
+	GetSimpleVersionReportsResponse,
+	GetVersionReportsResponse,
+	VersionReportModel,
+	VersionEditModel,
+	AppModel,
+	LatestVersionsModel,
 } from 'shared'
 import { IApi } from '../util/Api'
+import { Omit } from 'react-router'
+import { byDateDesc } from '../util/functions';
 
 interface ICreateVersionInput {
 	versionName: string
 	isCritical: boolean
 	isBase: boolean
-	downloadUrl: string
-	hash: string
+	description: string
+	downloadUrl?: string
+	hash?: string
+	systems: {
+		[key in SystemType]: boolean
+	}
 }
 
-export default class App {
+export interface IApp {
+	id: string
+	name: string
+	pictureUrl?: string
+	bundleId: string
+	latestVersions?: LatestVersionsModel
+	versionsCount: number
+	latestAddedVersion: VersionModel | null
+	versions: ObservableMap<string, VersionModel>
+	simpleReports: ObservableMap<string, SimpleVersionReportModel>
+	reports: ObservableMap<string, VersionReportModel>
+	allVersions: VersionModel[]
+	getVersion(id: string): VersionModel | null
+	fetchVersions(): Promise<void>
+	fetchSignedUploadVersionUrl(req: SignUploadUrlRequest): Promise<SignUploadUrlResponse>
+	fetchSimpleReports(): Promise<void>
+	fetchReports(versionId: string): Promise<void>
+	createVersion(inputFields: ICreateVersionInput): void
+	updateVersion(inputFields: Omit<VersionEditModel, 'appId'>): void
+	deleteVersion(id: string): void
+}
+
+export default class App implements IApp {
 	public id: string
 
 	@observable
 	public name: string
 
 	@observable
-	public pictureUrl: string
+	public pictureUrl?: string
 
 	@observable
 	public bundleId: string
 
 	@observable
-	public latestVersion?: IVersionModel
+	public latestVersions?: LatestVersionsModel
 
 	@observable
 	public versionsCount: number
 
-	public readonly versions: ObservableMap<string, IVersionModel> = observable.map({})
+	@observable
+	public readonly versions = observable.map<string, VersionModel>({})
+
+	public readonly simpleReports = observable.map<string, SimpleVersionReportModel>({})
+
+	public readonly reports = observable.map<string, VersionReportModel>({})
 
 	constructor(
 		{
@@ -44,61 +83,72 @@ export default class App {
 			name,
 			pictureUrl,
 			bundleId,
-			latestVersion,
+			latestVersions,
 			versions,
-		}: IAppModel,
+		}: AppModel,
 		private readonly api: IApi,
 	) {
 		this.id = id
 		this.name = name
 		this.pictureUrl = pictureUrl
 		this.bundleId = bundleId
-		this.latestVersion = latestVersion
+		this.latestVersions = latestVersions
 		this.versionsCount = versions
 	}
 
+	public getVersion(id: string): VersionModel | null {
+		return this.versions.get(id) || null
+	}
+
 	@computed
-	get allVersions(): IVersionModel[] {
-		return Array.from(this.versions.values())
+	get latestAddedVersion(): VersionModel | null {
+		return this.allVersions[0] || null
+	}
+
+	@computed
+	get allVersions(): VersionModel[] {
+		return [...this.versions.values()].sort(byDateDesc)
 	}
 
 	@action
 	public async fetchVersions() {
-		const { versions } = await this.api.emit<IGetVersionsResponse>(EventType.GetVersions, { appId: this.id })
+		const { versions } = await this.api.emit<GetVersionsResponse>(EventType.GetVersions, { appId: this.id })
 
 		this.versions.merge(versions.group((version) => [version.id, version]))
 	}
 
 	@action
-	public async fetchSignedUploadVersionUrl(req: IS3SignUrlRequest) {
-		return await this.api.emit<IS3SignUrlResponse>(EventType.SignUploadVersionUrl, req)
+	public async fetchSignedUploadVersionUrl(req: SignUploadUrlRequest) {
+		return await this.api.emit<SignUploadUrlResponse>(EventType.SignUploadVersionUrl, req)
 	}
 
-	public async emitCreateVersion(inputFields: ICreateVersionInput) {
-		const res = await this.api.emit<ICreateVersionResponse>(
-			EventType.CreateVersion,
-			{ appId: this.id, ...inputFields },
+	@action
+	public async fetchSimpleReports() {
+		const { reports } = await this.api.emit<GetSimpleVersionReportsResponse>(
+			EventType.SimpleVersionReports,
+			{ appId: this.id },
 		)
 
-		this.versions.set(res.id, res)
+		const grouped = reports.group((report) => [report.version, report])
+
+		this.simpleReports.merge(grouped)
 	}
 
-	public toModel(): IAppModel {
-		return {
-			id: this.id,
-			pictureUrl: this.pictureUrl,
-			name: this.name,
-			bundleId: this.bundleId,
-			versions: this.versions.size || this.versionsCount,
-			latestVersion: this.latestVersion,
-		}
+	@action
+	public async fetchReports(versionId: string) {
+		const reports = await this.api.emit<GetVersionReportsResponse>(EventType.VersionReports, { versionId })
+		this.reports.set(versionId, reports)
 	}
 
-	// emitUpdateVersion(inputFields: ICreateVersionInput) {
-	// 	this.api.emit<ICreateVersionResponse>(EventType.CreateApp, { appId: this.id, ...inputFields })
-	// }
+	public createVersion(inputFields: ICreateVersionInput) {
+		this.api.emit(EventType.CreateVersion, { appId: this.id, ...inputFields })
+	}
 
-	// emitDeleteVersion(inputFields: ICreateVersionInput) {
-	// 	this.api.emit<ICreateVersionResponse>(EventType.CreateApp, { appId: this.id, ...inputFields })
-	// }
+	public updateVersion(inputFields: Omit<VersionEditModel, 'appId'>) {
+		this.api.emit(EventType.UpdateVersion, { appId: this.id, ...inputFields })
+	}
+
+	public deleteVersion(id: string) {
+		this.api.emit(EventType.DeleteVersion, { appId: this.id, id })
+	}
 }

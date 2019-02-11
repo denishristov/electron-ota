@@ -1,13 +1,28 @@
 import React from 'react'
-import { Spring, animated, config } from 'react-spring'
+import { createPortal } from 'react-dom'
+import { Spring, animated } from 'react-spring'
 
-import '../../styles/Modal.sass'
+import styles from '../../styles/Modal.module.sass'
 
 import Close from '../../img/Close.svg'
-import { stopPropagation } from '../../util/functions'
 
-interface IProps {
-	title: string
+import { stopPropagation, list } from '../../util/functions'
+import { modalBackgroundAnimations, modalContentAnimations } from '../../util/constants/animations'
+
+import Pushable from './Pushable'
+import { ContentContext, TriggerContext, OpenTrigger, CloseTrigger } from '../contexts/ModalContext'
+import { DivProps } from '../../util/types'
+import { animationConfig } from '../../config'
+
+interface IContentProps<T = {}> extends Exclude<DivProps, 'children'> {
+	title?: string
+	className?: string
+	component: React.ComponentClass<T> | React.FunctionComponent<T>
+	props: T
+}
+
+interface IModalProps extends Pick<DivProps, 'children'> {
+	disableClose?: boolean
 }
 
 interface IState {
@@ -15,25 +30,71 @@ interface IState {
 	isClosing: boolean
 }
 
-const contentFrom = {
-	transform: 'scale(0.92) translateY(-32%)',
-	opacity: 0,
+function Content<T>({ component: Component, props, title, className }: IContentProps<T>) {
+	return createPortal(
+		<TriggerContext.Consumer>
+			{({ close, _close }) => (
+				<ContentContext.Consumer>
+					{({ isOpened, isClosing }) => isOpened && (
+						<Spring
+							native
+							reverse={isClosing}
+							force={isClosing}
+							onRest={_close}
+							config={animationConfig}
+							{...modalBackgroundAnimations}
+						>
+							{(style) =>
+								<animated.div
+									className={styles.modalContainer}
+									onClick={close}
+									style={style}
+									onScroll={stopPropagation}
+								>
+									<Spring
+										native
+										reverse={isClosing}
+										force={isClosing}
+										config={animationConfig}
+										{...modalContentAnimations}
+									>
+										{(style) =>
+											<animated.div
+												className={list(styles.content, className)}
+												style={style}
+												onClick={stopPropagation}
+											>
+												<header className={styles.spread}>
+													<h2>{title}</h2>
+													<Pushable>
+														<SVG
+															src={Close}
+															className={styles.close}
+															onClick={close}
+														/>
+													</Pushable>
+												</header>
+												<Component {...props} />
+											</animated.div>
+										}
+									</Spring>
+								</animated.div>
+							}
+						</Spring>
+					)}
+				</ContentContext.Consumer>
+			)}
+		</TriggerContext.Consumer>
+	, document.body)
 }
 
-const contentTo = {
-	transform: 'scale(1) translateY(0)',
-	opacity: 1,
-}
+export default class Modal extends React.Component<IModalProps, IState> {
+	public static readonly OpenTrigger = OpenTrigger
 
-const backgroundFrom = {
-	opacity: 0,
-}
+	public static readonly CloseTrigger = CloseTrigger
 
-const backgroundTo = {
-	opacity: 1,
-}
+	public static readonly Content = Content
 
-export default class Modal extends React.Component<IProps, IState> {
 	public readonly state = {
 		isOpened: false,
 		isClosing: false,
@@ -45,7 +106,9 @@ export default class Modal extends React.Component<IProps, IState> {
 			event.stopPropagation()
 		}
 
-		this.setState({ isClosing: true })
+		if (!this.props.disableClose) {
+			this.setState({ isClosing: true })
+		}
 	}
 
 	@bind
@@ -54,54 +117,16 @@ export default class Modal extends React.Component<IProps, IState> {
 	}
 
 	public render() {
-		const { children, title } = this.props
-		const { isOpened, isClosing } = this.state
+		const { open, close, _close } = this
 
-		return isOpened && (
-			<Spring
-				from={backgroundFrom}
-				to={backgroundTo}
-				native
-				reverse={isClosing}
-				force={isClosing}
-				onRest={this._close}
-			>
-				{(style) =>
-					<animated.div
-						className='modal-container'
-						onClick={this.close}
-						style={style}
-						onScroll={stopPropagation}
-					>
-						<Spring
-							from={contentFrom}
-							to={contentTo}
-							native
-							reverse={isClosing}
-							force={isClosing}
-							config={config.wobbly}
-						>
-							{(style) =>
-								<animated.div
-									className='content'
-									style={style}
-									onClick={stopPropagation}
-								>
-									<header className='spread'>
-										<h2>{title}</h2>
-										<SVG
-											src={Close}
-											onClick={this.close}
-										/>
-									</header>
-									{children}
-								</animated.div>
-							}
-						</Spring>
-					</animated.div>
-				}
-			</Spring>
+		return (
+			<TriggerContext.Provider value={{ open, close, _close }}>
+				<ContentContext.Provider value={this.state}>
+					{this.props.children}
+				</ContentContext.Provider>
+			</TriggerContext.Provider>
 		)
+
 	}
 
 	@bind

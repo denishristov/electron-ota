@@ -1,94 +1,69 @@
-
-import { Model } from 'mongoose'
 import {
-	IGetVersionRequest,
-	ICreateVersionRequest,
-	ICreateVersionResponse,
-	IDeleteVersionRequest,
-	IDeleteVersionResponse,
-	IGetVersionsResponse,
-	IUpdateVersionRequest,
-	IUpdateVersionResponse,
-	IGetVersionResponse,
-	IPublishVersionRequest,
-	IPublishVersionResponse,
+	GetVersionRequest,
+	CreateVersionRequest,
+	DeleteVersionRequest,
+	DeleteVersionResponse,
+	UpdateVersionRequest,
+	UpdateVersionResponse,
+	VersionRequest,
+	VersionModel,
 } from 'shared'
-import { IVersionDocument } from '../models/Version'
-import { IAppService } from './AppService'
-import { toPlain } from '../util/util'
+import { Version } from '../models/Version'
+import { App } from '../models/App'
+import { VersionReports } from '../models/VersionReports'
+import { ModelType, InstanceType } from 'typegoose'
 
 export interface IVersionService {
-	getVersion({ id, appId }: IGetVersionRequest): Promise<IGetVersionResponse>
-	getVersions({ appId }: IGetVersionRequest): Promise<IGetVersionsResponse>
-	createVersion(createRequest: ICreateVersionRequest): Promise<ICreateVersionResponse>
-	updateVersion(updateRequest: IUpdateVersionRequest): Promise<IUpdateVersionResponse>
-	deleteVersion({ id }: IDeleteVersionRequest): Promise<IDeleteVersionResponse>
-	publishVersion(req: IPublishVersionRequest): Promise<IPublishVersionResponse>
+	getVersion({ id }: GetVersionRequest): Promise<VersionRequest>
+	createVersion(createRequest: CreateVersionRequest): Promise<VersionModel>
+	updateVersion(updateRequest: UpdateVersionRequest): Promise<UpdateVersionResponse>
+	deleteVersion({ id }: DeleteVersionRequest): Promise<DeleteVersionResponse>
 }
 
 @DI.injectable()
 export default class VersionService implements IVersionService {
 	constructor(
 		@DI.inject(DI.Models.Version)
-		private readonly versionModel: Model<IVersionDocument>,
-		@DI.inject(DI.Services.App)
-		private readonly appService: IAppService,
+		public readonly VersionModel: ModelType<Version>,
+		@DI.inject(DI.Models.App)
+		private readonly AppModel: ModelType<App>,
+		@DI.inject(DI.Models.VersionReports)
+		private readonly VersionReportsModel: ModelType<VersionReports>,
 	) {}
 
 	@bind
-	public async getVersion({ id, appId }: IGetVersionRequest): Promise<IGetVersionResponse> {
-		const { versions } = await this.appService.getAppVersions(appId)
-		const version = versions.find((version) => version.id === id)
+	public async getVersion({ id }: GetVersionRequest): Promise<VersionRequest> {
+		const version = await this.VersionModel.findById(id)
 
-		return toPlain(version)
+		return version.toJSON()
 	}
 
 	@bind
-	public async getVersions({ appId }: IGetVersionRequest): Promise<IGetVersionsResponse> {
-		const { versions } = await this.appService.getAppVersions(appId)
+	public async createVersion(req: CreateVersionRequest): Promise<VersionModel> {
+		const { VersionModel, VersionReportsModel } = this
 
-		return {
-			versions: versions.map(toPlain),
-		}
+		const version = new VersionModel(req)
+		await version.save()
+
+		const reports = new VersionReportsModel({ version })
+		await reports.save()
+
+		await this.AppModel.findByIdAndUpdate(req.appId, {
+			$push: { versions: version },
+		})
+
+		return version.toJSON()
 	}
 
 	@bind
-	public async createVersion(create: ICreateVersionRequest): Promise<ICreateVersionResponse> {
-		const version = await this.versionModel.create({ ...create, isPublished: false })
-		const app = await this.appService.getApp(create.appId)
-		app.versions.push(version)
-		app.save()
-
-		return toPlain(version)
-	}
-
-	@bind
-	public async updateVersion(update: IUpdateVersionRequest): Promise<IUpdateVersionResponse> {
-		const { id, ...app } = update
-		await this.versionModel.updateOne({ _id: id }, { $set: app })
+	public async updateVersion(update: UpdateVersionRequest): Promise<UpdateVersionResponse> {
+		await this.VersionModel.findByIdAndUpdate(update.id, update)
 		return update
 	}
 
 	@bind
-	public async deleteVersion({ id, appId }: IDeleteVersionRequest): Promise<IDeleteVersionResponse> {
-		await this.versionModel.deleteOne({ _id: id })
+	public async deleteVersion({ id, appId }: DeleteVersionRequest): Promise<DeleteVersionResponse> {
+		await this.VersionModel.findByIdAndRemove(id)
 		return { id, appId }
-	}
-
-	@bind
-	public async publishVersion({ appId, id }: IPublishVersionRequest): Promise<IPublishVersionResponse> {
-		try {
-			await this.updateVersion({ appId, id, isPublished: true })
-			await this.appService.updateApp({ id: appId, latestVersion: id })
-
-			return {
-				isSuccessful: true,
-			}
-		} catch (error) {
-			return {
-				isSuccessful: false,
-				errorMessage: error.message,
-			}
-		}
 	}
 }

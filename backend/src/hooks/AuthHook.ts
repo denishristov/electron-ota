@@ -1,23 +1,24 @@
-import { IPreRespondHook } from '../mediator/Interfaces'
-import { EventType, IUserAuthenticationRequest } from 'shared'
+import { EventType, AdminAuthenticationRequest } from 'shared'
 import { IAdminsService } from '../services/AdminsService'
+import { IPreRespondHook } from '../util/mediator/interfaces'
 
 @DI.injectable()
 export default class AuthHook implements IPreRespondHook {
 	public exceptions = new Set([
 		EventType.Login,
+		EventType.Logout,
 		EventType.Authentication,
 		EventType.GetRegisterKeyPath,
-		EventType.Register,
+		EventType.RegisterAdmin,
 	])
 
 	constructor(
-		@DI.inject(DI.Services.User)
+		@DI.inject(DI.Services.Admin)
 		private readonly userService: IAdminsService,
 	) {}
 
 	@bind
-	public async handle(data: IUserAuthenticationRequest) {
+	public async handle(_: EventType, data: AdminAuthenticationRequest) {
 		const { isAuthenticated } = await this.userService.authenticate(data)
 
 		if (isAuthenticated) {
@@ -25,9 +26,7 @@ export default class AuthHook implements IPreRespondHook {
 			delete result.authToken
 			return result
 		} else {
-			return {
-				errorMessage: 'Auth token is invalid',
-			}
+			throw new Error('Auth token is invalid')
 		}
 	}
 }

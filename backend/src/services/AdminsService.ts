@@ -1,38 +1,43 @@
 import bcrypt from 'bcrypt'
 import crypto from 'crypto'
 import jwt from 'jsonwebtoken'
-import { Model } from 'mongoose'
-import {
-	IUserAuthenticationRequest,
-	IUserAuthenticationResponse,
-	IUserLoginRequest,
-	IUserLoginResponse,
-	IRegisterAdminResponse,
-} from 'shared'
-import { IUserDocument } from '../models/User'
+
+import { Admin } from '../models/Admin'
 import { PASS_SECRET_KEY } from '../config'
+import { IRegisterCredentialsService } from './RegisterCredentialsService'
+import { InstanceType, ModelType } from 'typegoose'
+import {
+	AdminAuthenticationRequest,
+	AdminAuthenticationResponse,
+	AdminLoginRequest,
+	AdminLoginResponse,
+	RegisterAdminRequest,
+	RegisterAdminResponse,
+	AuthenticatedRequest,
+} from 'shared'
 
 export interface IAdminsService {
-	login(req: IUserLoginRequest): Promise<IUserLoginResponse>
-	authenticate(req: IUserAuthenticationRequest): Promise<IUserAuthenticationResponse>
-	addAdmin(req: IAdminModel): Promise<IRegisterAdminResponse>
+	login(req: AdminLoginRequest): Promise<AdminLoginResponse>
+	logout(req: AuthenticatedRequest): Promise<void>
+	authenticate(req: AdminAuthenticationRequest): Promise<AdminAuthenticationResponse>
+	register(req: RegisterAdminRequest): Promise<RegisterAdminResponse>
 }
 
-interface IAdminModel {
-	email: string
-	name: string
-	password: string
+interface IJWTPayload {
+	id: string
 }
 
 @DI.injectable()
 export default class AdminsService implements IAdminsService {
 	constructor(
-		@DI.inject(DI.Models.User)
-		private readonly admins: Model<IUserDocument>,
+		@DI.inject(DI.Models.Admin)
+		private readonly AdminModel: ModelType<Admin>,
+		@DI.inject(DI.Services.RegisterCredentials)
+		private readonly credentialsService: IRegisterCredentialsService,
 	) {}
 
 	@bind
-	public async login({ email, name, password }: IUserLoginRequest): Promise<IUserLoginResponse> {
+	public async login({ email, name, password }: AdminLoginRequest): Promise<AdminLoginResponse> {
 		try {
 			const params = email ? { email } : name ? { name } : null
 
@@ -40,32 +45,41 @@ export default class AdminsService implements IAdminsService {
 				throw new Error('No email or name')
 			}
 
-			const user = await this.admins.findOne(params).select('password authTokens')
+			const user = await this.AdminModel.findOne(params).select('password authTokens')
 
-			if (!await this.doesPasswordMatch(password, user.password)) {
+			if (!await bcrypt.compare(password, user.password)) {
 				throw new Error('Invalid password')
 			}
 
 			return {
-				authToken: await this.generateTokenAndAddToUser(user),
+				authToken: await this.generateTokenAndAddToAdmin(user),
 				isAuthenticated: true,
 			}
 		} catch (error) {
 			// tslint:disable-next-line:no-console
 			console.log(error)
 			return {
-				errorMessage: error.message,
+				// errorMessage: error.message,
 				isAuthenticated: false,
 			}
 		}
 	}
 
 	@bind
-	public async authenticate({ authToken }: IUserAuthenticationRequest): Promise<IUserAuthenticationResponse> {
-		try {
-			const { id } = jwt.verify(authToken, PASS_SECRET_KEY, { algorithms: ['HS256'] }) as { id: string }
+	public async logout({ authToken }: AuthenticatedRequest): Promise<void> {
+		const { id } =  await this.getPayloadFromToken(authToken)
 
-			const { authTokens } = await this.admins.findById(id).select('authTokens')
+		const hashed = this.hashAuthToken(authToken)
+
+		await this.AdminModel.findByIdAndUpdate(id, { $pull: { authTokens: hashed } })
+	}
+
+	@bind
+	public async authenticate({ authToken }: AdminAuthenticationRequest): Promise<AdminAuthenticationResponse> {
+		try {
+			const { id } =  await this.getPayloadFromToken(authToken)
+
+			const { authTokens } = await this.AdminModel.findById(id).select('authTokens')
 
 			if (!authTokens) {
 				throw new Error('Invalid token')
@@ -77,17 +91,23 @@ export default class AdminsService implements IAdminsService {
 				isAuthenticated: Boolean(authTokens.find((token) => token === hashedToken)),
 			}
 		} catch (error) {
-			// tslint:disable-next-line:no-console
-			console.log(error)
 			return {
-				errorMessage: error.message,
 				isAuthenticated: false,
 			}
 		}
 	}
 
-	public async addAdmin({ name, email, password }: IAdminModel): Promise<IRegisterAdminResponse> {
-		const admin = await this.admins.create({
+	@bind
+	public async register({ name, email, password, key }: RegisterAdminRequest): Promise<RegisterAdminResponse> {
+		if (!this.credentialsService.verify(key)) {
+			return {
+				isSuccessful: false,
+			}
+		}
+
+		const { AdminModel } = this
+
+		const admin = new AdminModel({
 			name,
 			email,
 			password: await this.hashPassword(password),
@@ -95,17 +115,17 @@ export default class AdminsService implements IAdminsService {
 
 		return {
 			isSuccessful: true,
-			authToken: await this.generateTokenAndAddToUser(admin),
+			authToken: await this.generateTokenAndAddToAdmin(admin),
 		}
 	}
 
-	private async generateTokenAndAddToUser(user: IUserDocument): Promise<string> {
-		const token = await this.generateToken(user.id)
+	private async generateTokenAndAddToAdmin(admin: InstanceType<Admin>): Promise<string> {
+		const token = await this.generateToken(admin.id)
 
-		this.hashAuthToken(token).then((hashed) => {
-			user.authTokens.push(hashed)
-			user.save()
-		})
+		const hashed = this.hashAuthToken(token)
+
+		admin.authTokens.push(hashed)
+		await admin.save()
 
 		return token
 	}
@@ -119,8 +139,7 @@ export default class AdminsService implements IAdminsService {
 		})
 	}
 
-	private async hashAuthToken(authToken: string): Promise<string> {
-		await Promise.resolve()
+	private hashAuthToken(authToken: string): string {
 		return crypto.createHash('sha256').update(authToken).digest('base64')
 	}
 
@@ -128,7 +147,7 @@ export default class AdminsService implements IAdminsService {
 		return bcrypt.hash(password, await bcrypt.genSalt(10))
 	}
 
-	private doesPasswordMatch(password: string, hashedPassword: string): Promise<boolean> {
-		return bcrypt.compare(password, hashedPassword)
+	private getPayloadFromToken(authToken: string): Promise<IJWTPayload> {
+		return jwt.verify(authToken, PASS_SECRET_KEY, { algorithms: ['HS256'] }) as Promise<IJWTPayload>
 	}
 }

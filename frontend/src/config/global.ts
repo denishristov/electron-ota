@@ -1,14 +1,15 @@
 import bindDecorator from 'bind-decorator'
-import { inject, injectable } from 'inversify'
-import { Api, Connection, Stores } from '../dependencies/symbols'
-import SVGComponent from '../components/Generic/SVG'
+import { inject, injectable, interfaces } from 'inversify'
+import * as Symbols from '../dependencies/symbols'
+import SVGComponent from '../components/generic/SVG'
 
-interface IDI {
+type SymbolType = typeof Symbols
+
+interface IDI extends SymbolType {
 	inject: typeof inject
 	injectable: typeof injectable
-	Api: typeof Api
-	Connection: typeof Connection
-	Stores: typeof Stores
+	// tslint:disable-next-line:max-line-length no-any
+	lazyInject: (serviceIdentifier: string | symbol | interfaces.Newable<any> | interfaces.Abstract<any>) => (proto: any, key: string) => void
 }
 
 declare global {
@@ -20,9 +21,7 @@ declare global {
 const DI = {
 	inject,
 	injectable,
-	Api,
-	Connection,
-	Stores,
+	...Symbols,
 }
 
 Object.defineProperties(global, {
@@ -34,7 +33,7 @@ Object.defineProperties(global, {
 	},
 	SVG: {
 		value: SVGComponent,
-	}
+	},
 })
 
 export {}

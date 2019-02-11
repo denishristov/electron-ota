@@ -21,6 +21,8 @@ coverage
 
 # API keys and secrets
 .env
+*.key
+awsCredentials.json
 
 # Dependency directory
 node_modules
@@ -36,5 +38,6 @@ Thumbs.db
 
 # Ignore built ts files
 dist
-*.key
-/backend/src/util/awsCredentials.json
+build
+
+reports.txt

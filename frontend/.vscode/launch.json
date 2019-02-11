@@ -10,4 +10,5 @@
 			"preLaunchTask": "npm: start",
 		},
 	],
-}
+	"console": "externalTerminal"
+}	

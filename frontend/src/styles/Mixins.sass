@@ -1,2 +1,70 @@
-@mixin defaultShadow($color)
-	box-shadow: 0 10px 34px $color, 0 2px 16px $color
+@import './variables'
+
+@mixin glowingShadow($color)
+	box-shadow: 0 $spacing 60px transparentize($color, 0.6), 0 4px 14px transparentize($color, 0.8)
+
+@mixin text-overflow
+	white-space: nowrap
+	overflow: hidden
+	text-overflow: ellipsis
+
+@mixin transition($properties...)
+	transition-duration: .18s
+	transition-timing-function: ease-in-out
+	transition-property: $properties
+	// will-change: $properties
+
+@mixin container
+	flex-grow: 1
+	min-height: 100vh
+
+	header
+		display: flex
+		border-bottom: 1px solid $accent
+		align-items: flex-end
+		margin: $spacing $spacing * 2 0
+
+		h1
+			margin: $spacing * 2 auto $spacing / 2 0
+
+		button
+			margin: 0 0 $spacing / 2 $spacing
+
+			span
+				width: $spacing
+				height: $spacing
+				margin-right: $spacing / 2
+
+		img
+			@include glowingShadow($dark-accent)
+			border-radius: 50%
+			width: $spacing * 4
+			height: $spacing * 4
+			margin-right: $spacing
+			margin-bottom: $spacing / 2
+
+@mixin shadow($color)
+	box-shadow: 0 0 20px 0 transparentize($color, 0.76)
+
+	&:hover, &:focus
+		box-shadow: 0 5px 12px transparentize($color, 0.92), 0 1px 4px transparentize($color, 0.91), 0 -5px 15px -1px transparentize($color, 0.9), inset 0 0 20px -3px transparentize($color, 0.9)
+
+@mixin entry-shadow
+	@include shadow($accent)
+
+	&:hover, &:focus
+		@include glowingShadow($accent)
+
+@mixin focus-shadow
+	@include shadow($accent)
+	box-shadow: none
+
+
+@mixin dot($color)
+	@include glowingShadow($color)
+	$size: $spacing / 2
+	width: $size
+	height: $size
+	background-color: $color
+	border-radius: 4px
+	margin-right: 4px

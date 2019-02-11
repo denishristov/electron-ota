@@ -1,7 +1,7 @@
 export interface IUpdateServiceOptions {
 	bundleId: string
 	updateServerUrl: string
-	versionName: string
+	versionName?: string
 	userDataPath?: string
 	checkHashAfterDownload?: boolean
 	checkHashBeforeLoad?: boolean
@@ -9,6 +9,7 @@ export interface IUpdateServiceOptions {
 
 export interface IUpdateResponse extends INewUpdate {
 	isUpToDate: boolean
+	update?: INewUpdate
 }
 
 interface IUpdate {
@@ -21,9 +22,14 @@ interface IUpdate {
 
 export interface INewUpdate extends IUpdate {
 	downloadUrl: string
+	versionId: string
 }
 
 export interface IUpdateInfo extends IUpdate {
 	fileName: string
 	filePath: string
+}
+
+export interface IRegistrationResponse {
+	id: string
 }

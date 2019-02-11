@@ -1,0 +1,81 @@
+@import './variables'
+@import './mixins'
+
+.version-modal
+	display: flex
+	flex-flow: column nowrap
+	min-height: 56vh
+
+	form
+		flex-grow: 1
+		justify-content: space-between
+
+		> span:first-child
+			svg
+				width: $icon-size
+				height: $icon-size
+
+	header
+		display: flex
+		justify-content: space-between
+
+	.dropzone
+		margin: 0 $spacing * -1
+		height: $spacing * 2
+		flex-grow: 1
+		
+	textarea
+		flex-grow: 1
+        
+.release-button
+	@include transition(transform, box-shadow, color, background-color)
+	@include entry-shadow
+	border-radius: 4px
+	border: 1px solid $blue
+	color: $blue
+	font-size: 1rem
+	padding: 0 $spacing / 2
+	cursor: pointer
+	user-select: none
+
+	&-selected
+		background-color: $blue
+		color: white
+	
+.os-row
+	label
+		margin-left: $spacing
+		margin-right: auto
+
+.switch-row
+	min-width: $spacing * 16
+
+.progress-container
+	border-radius: $spacing / 2
+	background-color: $entry-bg
+	height: $spacing
+	overflow: hidden
+
+	.progress
+		border-radius: $spacing / 2
+		transition: width .13s ease-in-out
+		background-image: linear-gradient(to right, $blue 0%, lighten(saturate($blue, 30%), 12%) 100%)
+		height: $spacing
+		box-shadow: $hover-shadow
+		animation: moving-gradient infinite 2s ease
+		background-size: 200% 200%
+		will-change: width
+
+
+.disabled
+	form
+		> span
+			pointer-events: none
+
+@keyframes moving-gradient
+	0% 
+		background-position: 0% 50%
+	50%
+		background-position: 100% 50%
+	100%
+		background-position: 0% 50% 

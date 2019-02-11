@@ -1,0 +1,74 @@
+@import './mixins'
+@import './variables'
+
+$version-width: 800px
+
+.container
+	position: relative
+
+.version
+	@include transition(background-color, box-shadow, transform)
+	@include entry-shadow
+	min-width: $version-width
+	height: $spacing * 3.5
+	border-radius: $default-border-radius
+	background: white
+	margin: $spacing 0
+	padding: 0 $spacing
+	display: flex
+	cursor: pointer
+
+	h3
+		min-width: $spacing * 3
+
+	h4
+		font-weight: 400
+		min-width: $spacing * 6
+
+	&:hover
+		background-color: $entry-bg
+
+	span
+		svg
+			width: $icon-size
+			height:  $icon-size
+
+	.counter
+		h5
+			margin-left: $spacing / 2
+			color: $light-text
+			font-weight: 400
+			font-size: 0.96rem
+
+		svg, g, path
+			fill: $dark-accent
+
+
+.base
+	@include dot($orange)
+	
+.critical
+	@include dot($red)
+
+.date
+	$width: $spacing * 7
+	width: $width
+	position: absolute
+	left: -$width
+	top: -$spacing
+	height: $spacing * 2
+	border-right: 1px solid $accent
+	text-transform: uppercase
+	color: $light-text
+	font-weight: 400
+	font-size: 0.76rem
+	padding-bottom: 56px
+	z-index: -1
+	
+@media screen and (max-width: $version-width + 4 * $spacing)
+	.version
+		min-width: calc(100vw - 4 * #{$spacing})
+
+@media screen and (max-width: 800px)
+	.counter
+		display: none

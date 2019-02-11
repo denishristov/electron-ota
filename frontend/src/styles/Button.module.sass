@@ -1,0 +1,86 @@
+@import './mixins'
+@import './variables'
+
+@mixin outline-button($color)
+	@include shadow($color)
+	@include transition(box-shadow, background-color, color, transform)
+	background-color: transparent
+	border: 1px solid $color
+	color: $color
+
+	svg, g, path
+		fill: $color
+
+	&:focus, &:hover
+		background-color: $color
+		color: white
+
+		svg, g, path
+			fill: white
+
+
+@mixin color-button($background, $background2, $color)
+	@include shadow($background2)
+	background-size: auto 200%
+	background-position: 0 100%
+	background-image: linear-gradient(to top right, $background 0%, $background2 100%)
+	color: $color
+
+	svg, g, path
+		fill: $color
+
+	&:focus, &:hover
+		background-position: 0 0
+
+@mixin light-button($background, $color) 
+	@include color-button($background,  darken($background, 8%), $color)
+
+@mixin dark-button($background, $color) 
+	@include color-button($background, adjust-hue($background, 64%), $color)
+	
+button
+	@include transition(box-shadow, background-color, transform, background-position)
+	display: flex
+	justify-content: center
+	align-items: center
+	flex-flow: row
+	padding: $spacing
+	border: 0
+	font-size: 1.14rem
+	border-radius: 40px
+	overflow: hidden
+	background: white
+	text-transform: uppercase
+	font-weight: 500
+	// min-width: $spacing * 10
+	user-select: none
+	cursor: pointer
+
+	&:focus
+		outline: none
+
+	svg
+		width: $spacing
+		height: $spacing
+		
+	span
+		margin-right: $spacing / 2
+
+button.small	
+	padding: 0 12px
+	min-height: 40px
+
+button.white
+	@include outline-button($dark-accent)
+
+button.green
+	@include dark-button($green, white)
+
+button.blue
+	@include dark-button(#72CFF8, white)
+
+button.orange
+	@include dark-button($orange, white)
+
+button.red
+	@include outline-button($red)
