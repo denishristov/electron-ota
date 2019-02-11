@@ -3,7 +3,6 @@ import {
 	AuthenticatedRequest,
 	AdminLoginRequest,
 	AdminLoginResponse,
-	AdminAuthenticationRequest,
 	AdminAuthenticationResponse,
 	RegisterAdminRequest,
 	GetAppsResponse,
@@ -31,6 +30,8 @@ import {
 	GetVersionReportsResponse,
 	RegisterAdminResponse,
 	RegisterKeyPathResponse,
+	AdminEditProfileRequest,
+	GetProfileResponse,
 } from 'shared'
 import { interfaces } from 'inversify'
 
@@ -44,7 +45,6 @@ import { IVersionReportsService } from '../services/VersionReportsService'
 
 import { IPreRespondHook, IPostRespondHook, ISocketMediator } from '../util/mediator/interfaces'
 import SocketMediator from '../util/mediator/SocketMediator'
-import { Server } from '../util/symbols';
 
 export type AdminMediatorFactory = () => ISocketMediator
 
@@ -79,7 +79,7 @@ export default function adminMediatorFactory({ container }: interfaces.Context):
 		.use({
 			eventType: EventType.Authentication,
 			handler: adminService.authenticate,
-			requestType: AdminAuthenticationRequest,
+			requestType: AuthenticatedRequest,
 			responseType: AdminAuthenticationResponse,
 		})
 		.use({
@@ -87,6 +87,22 @@ export default function adminMediatorFactory({ container }: interfaces.Context):
 			handler: adminService.register,
 			requestType: RegisterAdminRequest,
 			responseType: RegisterAdminResponse,
+		})
+		.use({
+			eventType: EventType.GetProfile,
+			handler: adminService.getProfile,
+			requestType: AuthenticatedRequest,
+			responseType: GetProfileResponse,
+		})
+		.use({
+			eventType: EventType.EditProfile,
+			handler: adminService.editProfile,
+			requestType: AdminEditProfileRequest,
+		})
+		.use({
+			eventType: EventType.DeleteProfile,
+			handler: adminService.deleteProfile,
+			requestType: AuthenticatedRequest,
 		})
 		.use({
 			eventType: EventType.GetRegisterKeyPath,

@@ -1,0 +1,24 @@
+@improt './variables.less'
+	
+@mixin moving-gradient
+	animation: moving-gradient infinite 2s ease
+
+@mixin appear
+	animation: appear .24s $cubic-breezer 1
+
+@keyframes moving-gradient
+	0% 
+		background-position: 0% 50%
+	50%
+		background-position: 100% 50%
+	100%
+		background-position: 0% 50% 
+
+@keyframes appear
+	0%
+		opacity: 0
+		transform: scale(.9) translateY(8px)
+
+	100%
+		opacity: 1
+		transform: scale(1) translateY(0px)

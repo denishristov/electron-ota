@@ -6,7 +6,7 @@ import { pageAnimations } from '../util/constants/animations'
 import AnimationContext from './contexts/AnimationContext'
 import Routes from './Routes'
 
-import styles from '../index.module.sass'
+import styles from '../styles/util.module.sass'
 import { observer } from 'mobx-react'
 import { animationConfig } from '../config'
 

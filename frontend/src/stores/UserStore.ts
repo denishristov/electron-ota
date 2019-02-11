@@ -1,10 +1,16 @@
 import Cookies from 'js-cookie'
 import { action, computed, observable } from 'mobx'
-import { EventType, AdminAuthenticationResponse, AdminLoginResponse } from 'shared'
 import { IApi } from '../util/Api'
-import { AdminLoginRequest } from 'shared'
+import {
+	EventType,
+	AdminAuthenticationResponse,
+	AdminLoginResponse,
+	GetProfileResponse,
+	AdminLoginRequest,
+ } from 'shared'
 
 export interface IUserStore {
+	profile: IProfile
 	isLoading: boolean
 	isAuthenticated: boolean | null
 	login(req: AdminLoginRequest): Promise<boolean>
@@ -12,10 +18,23 @@ export interface IUserStore {
 	setAuthToken(authToken: string): void
 }
 
+interface IProfile {
+	name: string
+	email: string
+	pictureUrl: string
+}
+
 @DI.injectable()
 class UserStore implements IUserStore {
 	@observable
 	public isAuthenticated: boolean | null = null
+
+	@observable
+	public profile: IProfile = {
+		name: '',
+		email: '',
+		pictureUrl: '',
+	}
 
 	private authToken: string | null = Cookies.get('authToken') || null
 
@@ -28,8 +47,8 @@ class UserStore implements IUserStore {
 	}
 
 	@computed
-	get isLoading(): boolean {
-		return Boolean(this.authToken) && this.isAuthenticated === null
+	public get isLoading(): boolean {
+		return !this.profile.name && Boolean(this.authToken) && this.isAuthenticated === null
 	}
 
 	public setAuthToken(authToken: string) {
@@ -47,6 +66,10 @@ class UserStore implements IUserStore {
 
 		if (isAuthenticated && authToken) {
 			this.setAuthToken(authToken)
+
+			const profile = await this.api.emit<GetProfileResponse>(EventType.GetProfile)
+			Object.assign(this.profile, profile)
+
 			return true
 		}
 
@@ -74,6 +97,11 @@ class UserStore implements IUserStore {
 			)
 
 			this.isAuthenticated = isAuthenticated
+
+			if (isAuthenticated) {
+				const profile = await this.api.emit<GetProfileResponse>(EventType.GetProfile)
+				Object.assign(this.profile, profile)
+			}
 		}
 	}
 

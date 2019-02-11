@@ -1,0 +1,22 @@
+@import './variables'
+@import './animations'
+@import './mixins'
+// react-contexify react-contexify__theme--menu-theme react-contexify__will-enter--menu-animation
+.react-contexify.react-contexify__theme--menu-theme
+	@include glowingShadow($dark-accent)
+	border-radius: $default-border-radius
+	padding: $spacing / 2 0
+	
+	.react-contexify
+		&__item
+			&__content
+				@include transition(background-color, color)
+				color: $text
+
+			&:hover
+				.react-contexify__item__content
+					background-color: transparentize($blue, .76)
+					color: darken($blue, 20%)
+
+.react-contexify__will-enter--menu-animation
+	@include appear

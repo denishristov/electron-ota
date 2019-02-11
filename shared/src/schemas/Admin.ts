@@ -1,7 +1,10 @@
 // tslint:disable:max-classes-per-file
-import { Email, Regex, Min, StringSchema, Token, Max } from 'tsdv-joi/constraints/string'
+import { Email, Regex, Min, StringSchema, Max, Uri } from 'tsdv-joi/constraints/string'
 import { Required } from 'tsdv-joi/constraints/any'
 import { BooleanSchema } from 'tsdv-joi/constraints/boolean'
+import { AuthenticatedRequest } from './Generic'
+
+const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,64}$/
 
 export class AdminLoginRequest {
 	@Email()
@@ -14,7 +17,7 @@ export class AdminLoginRequest {
 
 	@Required()
 	@Max(256)
-	@Regex(/^[a-zA-Z0-9]{8,64}$/)
+	@Regex(passwordRegex)
 	public password: string
 }
 
@@ -25,12 +28,6 @@ export class AdminLoginResponse {
 
 	@StringSchema()
 	public authToken?: string
-}
-
-export class AdminAuthenticationRequest {
-	@Required()
-	@StringSchema()
-	public authToken: string
 }
 
 export class AdminAuthenticationResponse {
@@ -59,8 +56,7 @@ export class RegisterAdminRequest {
 	public name: string
 
 	@Required()
-	@Max(256)
-	@Regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,64}$/)
+	@Regex(passwordRegex)
 	public password: string
 }
 
@@ -71,4 +67,30 @@ export class RegisterAdminResponse {
 
 	@StringSchema()
 	public authToken?: string
+}
+
+export class AdminEditProfileRequest extends AuthenticatedRequest {
+	@Email()
+	public email?: string
+
+	@Min(4)
+	@Max(256)
+	public name?: string
+
+	@Regex(passwordRegex)
+	public oldPassword?: string
+
+	@Regex(passwordRegex)
+	public newPassword?: string
+
+	@Uri()
+	public pictureUrl?: string
+}
+
+export class GetProfileResponse {
+	public name: string
+
+	public email: string
+
+	public pictureUrl?: string
 }

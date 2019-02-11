@@ -2,14 +2,24 @@ import { EventType } from 'shared'
 import { Newable } from '../types'
 import { EventEmitter } from 'events'
 
-export type Client = SocketIO.Socket
-export type Clients = SocketIO.Namespace
-
 export type Handler<Req = object, Res = object> = (request: Req) => Promise<Res | void>
 
 export type ConstructedHandler = (request: object, respond: (res: Error | object) => void) => void
 
-type ClientPredicate = (client: Client) => boolean
+type ClientPredicate = (client: IClient) => boolean
+
+export interface IClient extends EventEmitter {
+	nsp: {
+		name: string,
+	}
+	handshake: {
+		query: {
+			[x: string]: any,
+		},
+	}
+	join(room: string, callback?: () => void): void
+	leave(room: string, callback?: () => void): void
+}
 export interface IRequestHandler<Req extends object, Res extends object> {
 	eventType: EventType
 	handler: Handler<Req, Res>
@@ -19,10 +29,10 @@ export interface IRequestHandler<Req extends object, Res extends object> {
 }
 export interface ISocketMediator extends EventEmitter {
 	name: string
-	sockets: Client[]
+	clients: IClient[]
 	use<Req extends object, Res extends object>(handler: IRequestHandler<Req, Res>): this
-	subscribe(client: Client): void
-	unsubscribe(client: Client): void
+	subscribe(client: IClient): void
+	unsubscribe(client: IClient): void
 	pre(hook: IPreRespondHook): this
 	post(hook: IPostRespondHook): this
 	broadcast(eventType: EventType, data: object, predicate?: ClientPredicate, count?: number): void

@@ -12,7 +12,7 @@ interface IProps {
 
 export default observer(function Client({ client }: IProps) {
 	return (
-		<Flex centerY padding className={styles.client}>
+		<Flex y p className={styles.client}>
  			<h5>{client.username}</h5>
 			<label>{client.osRelease}</label>
 			<SVG src={icons[client.systemType]} />

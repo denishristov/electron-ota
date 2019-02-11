@@ -56,7 +56,7 @@ export default class Register extends React.Component<{}, IState> {
 		return (
 			<Container className={styles.container}>
 				<form onSubmit={this.handleRegister}>
-					<Flex column list>
+					<Flex col list>
 						<h1>Sign up</h1>
 						<label>Key path</label>
 						<code className={styles.keyPath} onClick={this.handleCopyCommand}>

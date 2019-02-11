@@ -1,11 +1,10 @@
 import { EventType } from 'shared'
 import {
-	Client,
-	Clients,
 	IPreRespondHook,
 	ISocketMediator,
 	IPostRespondHook,
 	ConstructedHandler,
+	IClient,
 } from './interfaces'
 import { uuid } from '../functions'
 import { IRequestHandler } from './interfaces'
@@ -14,7 +13,7 @@ import { colors } from '../constants'
 import { EventEmitter } from 'events'
 
 export default class SocketMediator extends EventEmitter  implements ISocketMediator {
-	private readonly requestHandlers: Map<string, ConstructedHandler> = new Map()
+	private readonly requestHandlers = new Map<string, ConstructedHandler>()
 
 	private readonly preRespondHooks: IPreRespondHook[] = []
 
@@ -22,15 +21,19 @@ export default class SocketMediator extends EventEmitter  implements ISocketMedi
 
 	private readonly roomId = uuid()
 
-	constructor(private readonly clients: Clients) {
+	constructor(private readonly namespace: SocketIO.Namespace) {
 		super()
 
-		clients.on(EventType.Connection, this.subscribe)
-		clients.on(EventType.Connection, (client) => this.emit(EventType.Connection, client))
+		namespace.on(EventType.Connection, this.subscribe)
+		namespace.on(EventType.Connection, (client) => this.emit(EventType.Connection, client))
 	}
 
 	public get name() {
-		return this.clients.name
+		return this.namespace.name
+	}
+
+	public get clients(): IClient[] {
+		return Object.values(this.namespace.sockets)
 	}
 
 	public use<Req extends object, Res extends object>(requestHandler: IRequestHandler<Req, Res>) {
@@ -44,7 +47,7 @@ export default class SocketMediator extends EventEmitter  implements ISocketMedi
 	}
 
 	@bind
-	public subscribe(client: Client) {
+	public subscribe(client: IClient) {
 		client.join(this.roomId, () => {
 			for (const handler of this.requestHandlers) {
 				client.on(...handler)
@@ -56,7 +59,7 @@ export default class SocketMediator extends EventEmitter  implements ISocketMedi
 	}
 
 	@bind
-	public unsubscribe(client: Client) {
+	public unsubscribe(client: IClient) {
 		return client.leave(this.roomId)
 	}
 
@@ -75,20 +78,16 @@ export default class SocketMediator extends EventEmitter  implements ISocketMedi
 	public broadcast(
 		eventType: EventType,
 		data: object,
-		predicate?: (client: Client) => boolean,
+		predicate?: (client: IClient) => boolean,
 		count?: number,
 	): void {
-		for (const socket of this.sockets.slice(0, count)) {
+		for (const socket of this.clients.slice(0, count)) {
 			if (predicate ? predicate(socket) : true) {
 				socket.emit(eventType, data)
 			}
 		}
 
 		this.logBroadcast(eventType, data)
-	}
-
-	public get sockets(): Client[] {
-		return Object.values(this.clients.sockets)
 	}
 
 	private async applyPreHooks<T extends object>(eventType: EventType, request: T): Promise<T> {
@@ -132,7 +131,7 @@ export default class SocketMediator extends EventEmitter  implements ISocketMedi
 		responseType,
 		broadcast,
 	}: IRequestHandler<Req, Res>) {
-		return async (request: Req, respond: (res: Res | Error | object) => void) => {
+		return async (request: Req, respond: (res: object) => void) => {
 			let response = null
 
 			try {

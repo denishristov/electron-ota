@@ -5,16 +5,14 @@ import { DivProps } from '../../util/types'
 import { list as _list } from '../../util/functions'
 
 interface IProps extends DivProps {
-	column?: boolean
-	centerY?: boolean
-	centerX?: boolean
+	col?: boolean
+	y?: boolean
+	x?: boolean
 	spread?: boolean
 	fill?: boolean
-	margin?: boolean
-	padding?: boolean
+	m?: boolean
+	p?: boolean
 	list?: boolean
-	left?: boolean
-	right?: boolean
 	grow?: boolean
 	mta?: boolean
 	mt?: boolean
@@ -36,16 +34,14 @@ interface IProps extends DivProps {
 
 export default React.memo(function Flex({
 	className,
-	centerX,
-	centerY,
+	x,
+	y,
 	spread,
 	fill,
-	margin,
-	padding,
-	column,
+	m,
+	p,
+	col,
 	list,
-	left,
-	right,
 	grow,
 	mta,
 	mt,
@@ -66,16 +62,14 @@ export default React.memo(function Flex({
 	...props
 }: IProps) {
 	const flexClassName = _list(
-		column ? styles.column : styles.row,
-		centerX && styles.centerX,
-		centerY && styles.centerY,
+		col ? styles.column : styles.row,
+		x && styles.centerX,
+		y && styles.centerY,
 		spread && styles.spread,
 		fill && styles.fill,
-		margin && styles.margin,
-		padding && styles.padding,
-		list && (column ? styles.listY : styles.listX),
-		left && styles.left,
-		right && styles.right,
+		m && styles.margin,
+		p && styles.padding,
+		list && (col ? styles.listY : styles.listX),
 		grow && styles.grow,
 		mta && styles.mta,
 		mt && styles.mt,

@@ -12,7 +12,7 @@ interface IProps<T> {
 
 export default observer(function ClientRow<T>({ clients, title, mapper, icon }: IProps<T>) {
 	return (
-		<Flex column list margin padding className={styles.reportColumn}>
+		<Flex col list m p className={styles.reportColumn}>
 			<Flex pb spread>
 				<Flex>
 					<h3>{title}</h3>

@@ -145,3 +145,9 @@ export function getDefaultSimpleStatistics(version: string): SimpleVersionReport
 export function byDateDesc(a: ITimestampedDocument, b: ITimestampedDocument) {
 	return +new Date(b.createdAt) - +new Date(a.createdAt)
 }
+
+export function filterBoolean(object: object) {
+	return Object.entries(object)
+		.filter(([_, value]) => Boolean(value))
+		.group(([key, value]) => [key, value])
+}

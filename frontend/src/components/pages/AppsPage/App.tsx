@@ -30,12 +30,12 @@ export default class App extends Component<IProps> {
 					<animated.div className={styles.appTile} style={this.props.animation}>
 						<Modal>
 							<Modal.OpenTrigger>
-								<Flex grow centerY centerX list className={styles.placeholder}>
+								<Flex grow y x list className={styles.placeholder}>
 									<SVG src={icons.Plus} />
 									<h4>Add a new app</h4>
 								</Flex>
 							</Modal.OpenTrigger>
-							<Modal.Content title='Add a new app' component={AppModal} props={{}} />
+							<Modal.Content title='Add a new app' component={AppModal} />
 						</Modal>
 					</animated.div>
 				</Pushable>
@@ -62,18 +62,18 @@ export default class App extends Component<IProps> {
 					<Flex className={styles.header}>
 						<h3>{name}</h3>
 					</Flex>
-					<Flex list column>
-						<Flex centerY list>
+					<Flex list col>
+						<Flex y list>
 							<label>Bundle ID</label>
 							<label className={utilStyles.dark}>{bundleId}</label>
 						</Flex>
-						<Flex centerY list>
+						<Flex y list>
 							<label>Versions added </label>
 							<label className={utilStyles.dark}>{versions.size || versionsCount}</label>
 						</Flex>
 						<label>Latest versions</label>
 						{latestVersions && Object.entries(latestVersions).map(([systemType, version]) => version && (
-							<Flex centerY list key={systemType}>
+							<Flex y list key={systemType}>
 								<label className={utilStyles.dark}>{version.versionName}</label>
 								<SVG src={icons[systemType]} />
 								<label>{formatDate(new Date(version.createdAt))}</label>

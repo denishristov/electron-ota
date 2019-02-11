@@ -1,4 +1,4 @@
-import { ISocketMediator, Client } from '../util/mediator/interfaces'
+import { ISocketMediator, IClient } from '../util/mediator/interfaces'
 import { SystemType, EventType } from 'shared'
 import { AdminMediator } from '../util/symbols'
 
@@ -17,8 +17,8 @@ interface IAppClientCount {
 export interface IClientCounterService {
 	getAppsClientsCount(): IAppsClientCount
 	getAppClientsCount(bundleId: string): IAppClientCount
-	handleClientConnection(client: Client): void
-	handleClientDisconnection(client: Client): void
+	handleClientConnection(client: IClient): void
+	handleClientDisconnection(client: IClient): void
 }
 
 @DI.injectable()
@@ -45,7 +45,7 @@ export default class ClientCounterService implements IClientCounterService {
 				const [_, bundleId, systemType] = match
 
 				response[bundleId] = response[bundleId] || {}
-				response[bundleId][systemType] = mediator.sockets.length
+				response[bundleId][systemType] = mediator.clients.length
 			}
 		}
 
@@ -59,7 +59,7 @@ export default class ClientCounterService implements IClientCounterService {
 		for (const systemType of Object.values(SystemType)) {
 			const mediator = this.mediators.get(`/${bundleId}/${systemType}`)
 
-			for (const socket of mediator.sockets) {
+			for (const socket of mediator.clients) {
 				const { versionName } = socket.handshake.query
 
 				response[versionName] = response[versionName] || {}
@@ -73,7 +73,7 @@ export default class ClientCounterService implements IClientCounterService {
 	}
 
 	private createClientHandler(eventType: EventType) {
-		return (client: Client) => {
+		return (client: IClient) => {
 			const { versionName } = client.handshake.query
 			const [_, bundleId, systemType] = client.nsp.name.match(ClientCounterService.clientMediatorRegex)
 

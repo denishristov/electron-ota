@@ -1,0 +1,33 @@
+@import './mixins'
+@import './variables'
+
+.picture-container
+	margin-top: 18px
+
+.dropzone
+	margin: 0 $spacing * -1
+	flex-grow: 1
+	
+.upload-icon
+	border-radius: 50%
+	margin: $spacing / 2 0
+	width: $spacing * 6
+	height: $spacing * 6
+	display: flex
+	justify-content: center
+	align-items: center
+	cursor: pointer
+	object-fit: cover
+
+	svg
+		@include transition(fill, color)
+		width: $spacing * 4
+		height: $spacing * 4    
+		color: $dark-accent
+
+	&:hover
+		svg 
+			fill: darken($text, 15%)
+
+.upload-label
+	margin-bottom: $spacing / 2

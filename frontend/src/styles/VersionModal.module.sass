@@ -1,5 +1,6 @@
 @import './variables'
 @import './mixins'
+@import './animations'
 
 .version-modal
 	display: flex
@@ -57,12 +58,12 @@
 	overflow: hidden
 
 	.progress
+		@include moving-gradient
 		border-radius: $spacing / 2
-		transition: width .13s ease-in-out
-		background-image: linear-gradient(to right, $blue 0%, lighten(saturate($blue, 30%), 12%) 100%)
+		transition: width .13s ease
+		background-image: linear-gradient(to right, $blue 0%, adjust-hue($blue, 32%) 100%)
 		height: $spacing
 		box-shadow: $hover-shadow
-		animation: moving-gradient infinite 2s ease
 		background-size: 200% 200%
 		will-change: width
 
@@ -72,10 +73,9 @@
 		> span
 			pointer-events: none
 
-@keyframes moving-gradient
-	0% 
-		background-position: 0% 50%
-	50%
-		background-position: 100% 50%
-	100%
-		background-position: 0% 50% 
+.release-types
+	margin: 0 -8px 16px
+
+.label
+	margin-bottom: $spacing
+

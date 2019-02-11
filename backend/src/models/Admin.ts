@@ -10,6 +10,9 @@ export class Admin extends Typegoose {
 	@prop({ required: true })
 	public password: string
 
+	@prop()
+	public pictureUrl: string
+
 	@arrayProp({ items: String, unique: true })
 	public authTokens: string[] = []
 }

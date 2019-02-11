@@ -1,9 +1,8 @@
 import { prop, arrayProp, Typegoose } from 'typegoose'
 import { Client } from './Client'
 import { Version } from './Version'
-import { ErrorReport } from './ErrorReport'
+import { Report } from './Report'
 
-// tslint:disable-next-line:max-classes-per-file
 export class VersionReports extends Typegoose {
 	@arrayProp({ itemsRef: Client })
 	public downloading: Array<Ref<Client>> = []
@@ -14,8 +13,8 @@ export class VersionReports extends Typegoose {
 	@arrayProp({ itemsRef: Client })
 	public using: Array<Ref<Client>> = []
 
-	@arrayProp({ items: ErrorReport })
-	public errorMessages: ErrorReport[] = []
+	@arrayProp({ items: Report })
+	public errorMessages: Report[] = []
 
 	@prop({ ref: Version, required: true })
 	public version: Ref<Version>

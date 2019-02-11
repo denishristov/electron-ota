@@ -15,7 +15,7 @@ interface IProps extends DivProps {
 export default observer(function Counter({ icon, count, className, message }: IProps) {
 	return (
 		<Tip className={className} message={message}>
-			<Flex centerY>
+			<Flex y>
 				<SVG src={icon} />
 				<h5>{count}</h5>
 			</Flex>

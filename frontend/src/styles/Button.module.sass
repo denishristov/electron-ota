@@ -21,8 +21,8 @@
 
 @mixin color-button($background, $background2, $color)
 	@include shadow($background2)
-	background-size: auto 200%
-	background-position: 0 100%
+	background-size: auto 204%
+	background-position: 0 96%
 	background-image: linear-gradient(to top right, $background 0%, $background2 100%)
 	color: $color
 
@@ -30,7 +30,7 @@
 		fill: $color
 
 	&:focus, &:hover
-		background-position: 0 0
+		background-position: 0 24%
 
 @mixin light-button($background, $color) 
 	@include color-button($background,  darken($background, 8%), $color)
@@ -51,7 +51,7 @@ button
 	overflow: hidden
 	background: white
 	text-transform: uppercase
-	font-weight: 500
+	font-weight: 400
 	// min-width: $spacing * 10
 	user-select: none
 	cursor: pointer

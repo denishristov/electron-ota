@@ -14,6 +14,7 @@ import { getSourceFromFile } from '../../util/functions'
 
 import axios from 'axios'
 import icons from '../../util/constants/icons'
+import PictureUpload from '../generic/PictureUpload'
 
 interface ICreateAppEvent extends FormEvent<HTMLFormElement> {
 	target: EventTarget & {
@@ -57,22 +58,15 @@ export default class AppModal extends React.Component<{}, IState> {
 			<Modal.CloseTrigger>
 				<form onSubmit={this.handleCreateApp} className={styles.newApp}>
 					<Flex fill mt mb>
-						<Flex margin column centerY className={styles.pictureContainer}>
-							<label className={styles.uploadLabel}>Upload Icon</label>
-							<Dropzone
+						<Flex m col y className={styles.pictureContainer}>
+							<PictureUpload
+								label='Upload icon'
+								picture={this.state.pictureSrc}
 								onDrop={this.handleSelectPicture}
-								name='picture'
-								accept='image/*'
-								className={styles.dropzone}
-							>
-								{this.state.pictureSrc
-									? <img src={this.state.pictureSrc} className={styles.uploadIcon} />
-									: <SVG src={icons.Camera} className={styles.uploadIcon} />
-								}
-							</Dropzone>
+							/>
 						</Flex>
 						<Flex ml mr />
-						<Flex margin column list>
+						<Flex m col list>
 							<Input name='name' label='Name' />
 							<Input name='bundleId' label='Bundle ID' />
 						</Flex>

@@ -6,21 +6,27 @@ import { Admin } from '../models/Admin'
 import { PASS_SECRET_KEY } from '../config'
 import { IRegisterCredentialsService } from './RegisterCredentialsService'
 import { InstanceType, ModelType } from 'typegoose'
+
 import {
-	AdminAuthenticationRequest,
+	AuthenticatedRequest,
 	AdminAuthenticationResponse,
 	AdminLoginRequest,
 	AdminLoginResponse,
 	RegisterAdminRequest,
 	RegisterAdminResponse,
-	AuthenticatedRequest,
+	AdminEditProfileRequest,
+	GetProfileResponse,
 } from 'shared'
+import { filterBoolean } from '../util/functions'
 
 export interface IAdminsService {
 	login(req: AdminLoginRequest): Promise<AdminLoginResponse>
 	logout(req: AuthenticatedRequest): Promise<void>
-	authenticate(req: AdminAuthenticationRequest): Promise<AdminAuthenticationResponse>
+	authenticate(req: AuthenticatedRequest): Promise<AdminAuthenticationResponse>
 	register(req: RegisterAdminRequest): Promise<RegisterAdminResponse>
+	getProfile(req: AuthenticatedRequest): Promise<GetProfileResponse>
+	editProfile(req: AdminEditProfileRequest): Promise<void>
+	deleteProfile(req: AuthenticatedRequest): Promise<void>
 }
 
 interface IJWTPayload {
@@ -39,13 +45,13 @@ export default class AdminsService implements IAdminsService {
 	@bind
 	public async login({ email, name, password }: AdminLoginRequest): Promise<AdminLoginResponse> {
 		try {
-			const params = email ? { email } : name ? { name } : null
-
-			if (!params) {
+			if (!email && !name) {
 				throw new Error('No email or name')
 			}
 
-			const user = await this.AdminModel.findOne(params).select('password authTokens')
+			const user = await this.AdminModel
+				.findOne(filterBoolean({ email, name }))
+				.select('password authTokens')
 
 			if (!await bcrypt.compare(password, user.password)) {
 				throw new Error('Invalid password')
@@ -75,7 +81,7 @@ export default class AdminsService implements IAdminsService {
 	}
 
 	@bind
-	public async authenticate({ authToken }: AdminAuthenticationRequest): Promise<AdminAuthenticationResponse> {
+	public async authenticate({ authToken }: AuthenticatedRequest): Promise<AdminAuthenticationResponse> {
 		try {
 			const { id } =  await this.getPayloadFromToken(authToken)
 
@@ -117,6 +123,51 @@ export default class AdminsService implements IAdminsService {
 			isSuccessful: true,
 			authToken: await this.generateTokenAndAddToAdmin(admin),
 		}
+	}
+
+	@bind
+	public async editProfile({
+		authToken,
+		name,
+		email,
+		pictureUrl,
+		newPassword,
+		oldPassword,
+	}: AdminEditProfileRequest) {
+		const { id } = await this.getPayloadFromToken(authToken)
+
+		const user = await this.AdminModel.findByIdAndUpdate(id, filterBoolean({
+			name,
+			email,
+			pictureUrl,
+		}))
+
+		if (oldPassword && newPassword) {
+			if (!await bcrypt.compare(oldPassword, user.password)) {
+				throw new Error('Invalid password')
+			}
+
+			user.authTokens = []
+			user.password = await this.hashPassword(newPassword)
+
+			await user.save()
+		}
+	}
+
+	@bind
+	public async deleteProfile({ authToken }: AuthenticatedRequest) {
+		const { id } = await this.getPayloadFromToken(authToken)
+
+		await this.AdminModel.findByIdAndDelete(id)
+	}
+
+	@bind
+	public async getProfile({ authToken }: AuthenticatedRequest) {
+		const { id } = await this.getPayloadFromToken(authToken)
+
+		const { name, pictureUrl, email } = await this.AdminModel.findById(id).select('name pictureUrl email')
+
+		return { name, pictureUrl, email }
 	}
 
 	private async generateTokenAndAddToAdmin(admin: InstanceType<Admin>): Promise<string> {

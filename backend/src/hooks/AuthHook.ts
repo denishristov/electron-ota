@@ -1,4 +1,4 @@
-import { EventType, AdminAuthenticationRequest } from 'shared'
+import { EventType, AuthenticatedRequest } from 'shared'
 import { IAdminsService } from '../services/AdminsService'
 import { IPreRespondHook } from '../util/mediator/interfaces'
 
@@ -10,6 +10,9 @@ export default class AuthHook implements IPreRespondHook {
 		EventType.Authentication,
 		EventType.GetRegisterKeyPath,
 		EventType.RegisterAdmin,
+		EventType.GetProfile,
+		EventType.EditProfile,
+		EventType.DeleteProfile,
 	])
 
 	constructor(
@@ -18,12 +21,13 @@ export default class AuthHook implements IPreRespondHook {
 	) {}
 
 	@bind
-	public async handle(_: EventType, data: AdminAuthenticationRequest) {
+	public async handle(_: EventType, data: AuthenticatedRequest) {
 		const { isAuthenticated } = await this.userService.authenticate(data)
 
 		if (isAuthenticated) {
 			const result = { ...data }
 			delete result.authToken
+
 			return result
 		} else {
 			throw new Error('Auth token is invalid')

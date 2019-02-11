@@ -32,11 +32,11 @@ export default class Version extends React.Component<IProps> {
 				style={animation}
 				onClick={this.handleClick}
 			>
-				<Flex pr centerY centerX className={styles.date}>
+				<Flex pr y x className={styles.date}>
 					{formatDate(new Date(version.createdAt))}
 				</Flex>
 				<Pushable>
-					<Flex list centerY grow className={styles.version}>
+					<Flex list y grow className={styles.version}>
 						<h3>{version.versionName}</h3>
 						{this.simpleReport && (
 							<>
@@ -66,17 +66,17 @@ export default class Version extends React.Component<IProps> {
 								/>
 							</>
 						)}
-						<Flex list centerY right>
+						<Flex list y mla>
 							{version && (
 								<>
 									{version.isBase && (
-										<Flex centerY>
+										<Flex y>
 											<div className={styles.base} />
 											<label>Base</label>
 										</Flex>
 									)}
 									{version.isCritical && (
-										<Flex centerY>
+										<Flex y>
 											<div className={styles.critical} />
 											<label>Critical</label>
 										</Flex>

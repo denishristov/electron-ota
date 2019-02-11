@@ -104,8 +104,8 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 						<img src={this.app.pictureUrl} />
 						<h1>{`${this.app.name} v${versionName}`}</h1>
 					</header>
-					<Flex margin centerX>
-						<Flex column margin padding list className={styles.details}>
+					<Flex m x>
+						<Flex col m p list className={styles.details}>
 							{createdAt && (
 								<div>
 									<h3>Added on</h3>
@@ -140,7 +140,7 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 									<p>{description}</p>
 								</div>
 							)}
-							<Flex spread centerY>
+							<Flex spread y>
 								<h3>Supports</h3>
 								<Flex list>
 									{Object.keys(systems)
@@ -149,24 +149,24 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 									}
 								</Flex>
 							</Flex>
-							<Flex centerY spread>
+							<Flex y spread>
 								<h3>Labels</h3>
 								<Flex list>
 									{isBase && (
-										<Flex centerY>
+										<Flex y>
 											<div className={versionStyles.base} />
 											<label>Base</label>
 										</Flex>
 									)}
 									{isCritical && (
-										<Flex centerY>
+										<Flex y>
 											<div className={versionStyles.critical} />
 											<label>Critical</label>
 										</Flex>
 									)}
 								</Flex>
 							</Flex>
-							<Flex list margin spread>
+							<Flex list m spread>
 								<Button color='white' size='small' onClick={this.handleDownload}>
 									<SVG src={icons.Download} />
 									Download
@@ -177,7 +177,7 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 								</Button>
 							</Flex>
 						</Flex>
-						<Flex list centerX>
+						<Flex list x>
 							{this.reports && (
 								<>
 									<ClientRow

@@ -10,7 +10,7 @@ import { formatFileSize, hashFile, preventClose, list, formatDate } from '../../
 import axios from 'axios'
 
 import styles from '../../styles/VersionModal.module.sass'
-import inputStyles from '../../styles/Input.module.sass'
+import utilStyles from '../../styles/util.module.sass'
 
 import { IApp } from '../../stores/App'
 import { VersionModel } from 'shared'
@@ -145,7 +145,7 @@ export default class VersionModal extends Component<IProps, IState> {
 			<Modal.CloseTrigger>
 				<form onSubmit={this.handleSubmit}>
 					<Flex grow>
-						<Flex column padding list mr>
+						<Flex col p list mr>
 							<Input
 								value={name}
 								onChange={this.setName}
@@ -156,7 +156,7 @@ export default class VersionModal extends Component<IProps, IState> {
 							{this.props.previousVersionName && (
 								<>
 									<label>Release type</label>
-									<Flex list fill>
+									<Flex list fill className={styles.releaseTypes}>
 										{Object.keys(ReleaseType).map((name) => (
 											<Pushable key={name}>
 												<div
@@ -173,8 +173,8 @@ export default class VersionModal extends Component<IProps, IState> {
 									</Flex>
 								</>
 							)}
-							<Flex grow column>
-								<label>Description</label>
+							<Flex grow col>
+								<label className={styles.label}>Description</label>
 								<textarea
 									value={description}
 									onChange={this.setDescription}
@@ -183,41 +183,41 @@ export default class VersionModal extends Component<IProps, IState> {
 								/>
 							</Flex>
 						</Flex>
-						<Flex column padding list ml className={styles.switchRow}>
+						<Flex col p list ml className={styles.switchRow}>
 							<label>Supporting systems</label>
-							<Flex centerY className={styles.osRow}>
+							<Flex y className={styles.osRow}>
 								<SVG src={icons.Windows_RT} />
-								<label className={''}>Windows</label>
+								<label className={utilStyles.dark}>Windows</label>
 								<Switch value={isWindows} onChange={this.toggleIsWindows} />
 							</Flex>
-							<Flex centerY className={styles.osRow}>
+							<Flex y className={styles.osRow}>
 								<SVG src={icons.Darwin} />
-								<label className={''}>Macos</label>
+								<label className={utilStyles.dark}>Macos</label>
 								<Switch value={isDarwin} onChange={this.toggleIsDarwin}	/>
 							</Flex>
-							<Flex centerY className={styles.osRow}>
+							<Flex y className={styles.osRow}>
 								<SVG src={icons.Linux} />
-								<label className={''}>Linux</label>
+								<label className={utilStyles.dark}>Linux</label>
 								<Switch value={isLinux} onChange={this.toggleIsLinux} />
 							</Flex>
 							<label>Release</label>
 							{!isEditing && (
-								<Flex spread centerY>
-									<label className={''}>
+								<Flex spread y>
+									<label className={utilStyles.dark}>
 										Immediately?
 									</label>
 									<Switch value={isReleasing} onChange={this.toggleIsReleasing} />
 								</Flex>
 							)}
-							<Flex spread centerY>
-								<label className={''}>
+							<Flex spread y>
+								<label className={utilStyles.dark}>
 									Critical?
 								</label>
 								<Switch value={isCritical} onChange={this.toggleIsCritical} />
 							</Flex>
 							{!isEditing && (
-								<Flex spread centerY>
-									<label className={''}>
+								<Flex spread y>
+									<label className={utilStyles.dark}>
 										Base?
 									</label>
 									<Switch value={isBase} onChange={this.toggleIsBase} />
@@ -234,15 +234,15 @@ export default class VersionModal extends Component<IProps, IState> {
 									{file && (
 										<>
 											<SVG src={icons.Electron} />
-											<Flex fill column grow>
-												<Flex centerY ml>
+											<Flex fill col grow>
+												<Flex y ml>
 													<label>{file.name}</label>
 												</Flex>
-												<Flex spread centerY ml grow>
-													<label className={''}>
+												<Flex spread y ml grow>
+													<label className={utilStyles.dark}>
 														{formatFileSize(file.size)}
 													</label>
-													<label className={''}>
+													<label className={utilStyles.dark}>
 														{formatDate(file.date)}
 													</label>
 												</Flex>
@@ -255,7 +255,7 @@ export default class VersionModal extends Component<IProps, IState> {
 					</Flex>
 					<footer>
 						{isUploading && (
-							<Flex grow mt centerY>
+							<Flex grow mt y>
 								<label>{`${progress}%`}</label>
 								<Flex grow ml className={styles.progressContainer}>
 									<div className={styles.progress} style={{ width: `${progress}%` }} />

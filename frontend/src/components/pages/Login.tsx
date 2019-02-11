@@ -40,7 +40,7 @@ export default class Login extends React.Component<RouteComponentProps> {
 					? <Loading />
 					: (
 						<form onSubmit={this.handleSubmit} className={styles.form}>
-							<Flex column list>
+							<Flex col list>
 								<h1>Sign in</h1>
 								<Input
 									label='Username'

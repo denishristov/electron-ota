@@ -18,7 +18,7 @@ interface IContentProps<T = {}> extends Exclude<DivProps, 'children'> {
 	title?: string
 	className?: string
 	component: React.ComponentClass<T> | React.FunctionComponent<T>
-	props: T
+	props?: T
 }
 
 interface IModalProps extends Pick<DivProps, 'children'> {
@@ -74,7 +74,7 @@ function Content<T>({ component: Component, props, title, className }: IContentP
 														/>
 													</Pushable>
 												</header>
-												<Component {...props} />
+												<Component {...props || {} as T} />
 											</animated.div>
 										}
 									</Spring>

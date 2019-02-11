@@ -109,7 +109,7 @@ export default class AppPage extends Component<RouteComponentProps<IParams>, ISt
 							/>
 						</Modal>
 					</header>
-					<Flex column grow margin centerY>
+					<Flex col grow m y>
 						<AppearAnimation items={allVersions}>
 							{(version) => (animation) => (
 								<Version

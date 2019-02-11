@@ -25,8 +25,8 @@ export default observer(function ErrorMessage({ client, errorMessage }: ErrorRep
 			<Modal.OpenTrigger>
 				<div>
 					<Pushable>
-						<Flex centerY padding className={styles.client}>
-							<Flex centerY grow>
+						<Flex y p className={styles.client}>
+							<Flex y grow>
 								<h5>{client.username}</h5>
 								<label>{client.osRelease}</label>
 								<SVG src={icons[client.systemType]} />

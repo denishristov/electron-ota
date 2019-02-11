@@ -1,4 +1,4 @@
-export  class SupportSystemTypes {
+export class SupportSystemTypes {
 	// tslint:disable-next-line:variable-name
 	public Windows_RT: boolean
 

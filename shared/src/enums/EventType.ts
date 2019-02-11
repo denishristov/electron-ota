@@ -7,6 +7,7 @@ export enum EventType {
 	Login = 'login',
 	Logout = 'logout',
 	Authentication = 'authentication',
+	GetProfile = 'profile.get',
 	EditProfile = 'profile.edit',
 	DeleteProfile = 'profile.delete',
 
@@ -41,4 +42,7 @@ export enum EventType {
 
 	ClientConnected = 'client.connected',
 	ClientDisconnected = 'client.disconnected',
+
+	getAppsClientCount = 'livecount.apps',
+	getAppClientCount = 'livecount.app',
 }
