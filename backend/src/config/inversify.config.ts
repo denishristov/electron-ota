@@ -8,6 +8,7 @@ import RegisterCredentialsService, { IRegisterCredentialsService } from '../serv
 import ClientService, { IClientService } from '../services/ClientService'
 import ReleaseService, { IReleaseService } from '../services/ReleaseService'
 import VersionReportsService, { IVersionReportsService } from '../services/VersionReportsService'
+import ClientCounterService, { IClientCounterService } from '../services/ClientCounterService'
 
 import { App } from '../models/App'
 import { Admin } from '../models/Admin'
@@ -69,6 +70,10 @@ container.bind<IClientService>(DI.Services.Client)
 
 container.bind<IVersionReportsService>(DI.Services.VersionReports)
 	.to(VersionReportsService)
+	.inSingletonScope()
+
+container.bind<IClientCounterService>(DI.Services.ClientCounter)
+	.to(ClientCounterService)
 	.inSingletonScope()
 
 container.bind<ModelType<Admin>>(DI.Models.Admin)

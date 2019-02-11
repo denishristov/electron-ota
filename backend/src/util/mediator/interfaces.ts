@@ -1,5 +1,6 @@
 import { EventType } from 'shared'
 import { Newable } from '../types'
+import { EventEmitter } from 'events'
 
 export type Client = SocketIO.Socket
 export type Clients = SocketIO.Namespace
@@ -16,15 +17,14 @@ export interface IRequestHandler<Req extends object, Res extends object> {
 	responseType?: Newable<Res>
 	broadcast?: boolean
 }
-export interface ISocketMediator {
+export interface ISocketMediator extends EventEmitter {
 	name: string
+	sockets: Client[]
 	use<Req extends object, Res extends object>(handler: IRequestHandler<Req, Res>): this
 	subscribe(client: Client): void
 	unsubscribe(client: Client): void
 	pre(hook: IPreRespondHook): this
 	post(hook: IPostRespondHook): this
-	// removePost(hook: IPostRespondHook): boolean
-	// removePre(hook: IPreRespondHook): boolean
 	broadcast(eventType: EventType, data: object, predicate?: ClientPredicate, count?: number): void
 }
 

@@ -6,6 +6,7 @@ import SocketMediator from '../util/mediator/SocketMediator'
 import { IReleaseService } from '../services/ReleaseService'
 import { IClientService } from '../services/ClientService'
 import { IVersionReportsService } from '../services/VersionReportsService'
+import { IClientCounterService } from '../services/ClientCounterService'
 
 import {
 	CheckForUpdateRequest,
@@ -26,6 +27,7 @@ export default function clientsMediatorFactory({ container }: interfaces.Context
 	const updateService = container.get<IReleaseService>(DI.Services.Update)
 	const clientService = container.get<IClientService>(DI.Services.Client)
 	const reportsService = container.get<IVersionReportsService>(DI.Services.VersionReports)
+	const clientCounterService = container.get<IClientCounterService>(DI.Services.ClientCounter)
 
 	const validationHook = container.get<IPreRespondHook>(DI.Hooks.Validation)
 	const reportHook = container.get<IPostRespondHook>(DI.Hooks.Report)
@@ -68,5 +70,7 @@ export default function clientsMediatorFactory({ container }: interfaces.Context
 			})
 			.pre(validationHook)
 			.post(reportHook)
+			.on(EventType.Connection, clientCounterService.handleClientConnection)
+			.on(EventType.Disconnect, clientCounterService.handleClientDisconnection)
 	}
 }

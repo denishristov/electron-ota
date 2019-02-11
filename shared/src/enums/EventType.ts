@@ -38,4 +38,7 @@ export enum EventType {
 	UpdateDownloaded = 'client.downloaded',
 	UpdateUsing = 'client.using',
 	UpdateError = 'client.error',
+
+	ClientConnected = 'client.connected',
+	ClientDisconnected = 'client.disconnected',
 }

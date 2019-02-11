@@ -164,20 +164,20 @@ export default class SocketMediator extends EventEmitter  implements ISocketMedi
 	private logBroadcast(eventType: string, data: object) {
 		console.log(colors.eventType(eventType))
 		console.log(colors.broadcast('Broadcast: '), data)
-		console.log('\n')
+		console.log()
 	}
 
 	private logRequest(eventType: string, request: object, response: object) {
 		console.log(colors.eventType(eventType))
 		console.log(colors.request('Request: '), request)
 		console.log(colors.response('Response: '), response)
-		console.log('\n')
+		console.log()
 	}
 
 	private logError(eventType: string, request: object, error: Error) {
 		console.log(colors.eventType(eventType))
 		console.log(colors.request('Request: '), request)
 		console.log(colors.error('Error: '), error)
-		console.log('\n')
+		console.log()
 	}
 }

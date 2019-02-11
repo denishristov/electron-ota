@@ -7,6 +7,7 @@ export const Services = {
 	Update: Symbol.for('Update.Service'),
 	Client: Symbol.for('Client.Service'),
 	VersionReports: Symbol.for('Version.Reports'),
+	ClientCounter: Symbol.for('ClientCounter.Service'),
 }
 
 export const Models = {

@@ -1,6 +1,6 @@
 
 import { EventType } from 'shared'
-import {  IPreRespondHook } from '../util/mediator/interfaces'
+import { IPreRespondHook } from '../util/mediator/interfaces'
 import { Validator } from 'tsdv-joi'
 
 @DI.injectable()
