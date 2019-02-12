@@ -9,7 +9,12 @@ import Api, { IApi } from '../util/Api'
 import AppsStore, { IAppsStore } from '../stores/AppsStore'
 import UserStore, { IUserStore } from '../stores/UserStore'
 import RegisterStore, { IRegisterStore } from '../stores/RegisterStore'
+
 import appFactory, { AppFactory } from '../stores/factories/AppFactory'
+
+import FileService, { IFileService } from '../services/FileService'
+import UploadService, { IUploadService } from '../services/UploadService'
+
 import { createBrowserHistory } from 'history'
 import { BrowserHistory } from '../util/types'
 
@@ -42,5 +47,13 @@ container.bind<AppFactory>(DI.Factories.App)
 
 container.bind<BrowserHistory>(DI.BrowserHistory)
 	.toConstantValue(createBrowserHistory())
+
+container.bind<IFileService>(DI.Services.File)
+	.to(FileService)
+	.inSingletonScope()
+
+container.bind<IUploadService>(DI.Services.Upload)
+	.to(UploadService)
+	.inSingletonScope()
 
 export default container

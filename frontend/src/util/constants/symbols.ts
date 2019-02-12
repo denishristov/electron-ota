@@ -14,4 +14,9 @@ export const Factories = {
 	App: Symbol.for('App.Factory'),
 }
 
+export const Services = {
+	File: Symbol.for('Services.File'),
+	Upload: Symbol.for('Services.Upload'),
+}
+
 export const BrowserHistory = Symbol.for('BrowserHistory')

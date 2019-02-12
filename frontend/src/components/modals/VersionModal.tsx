@@ -6,8 +6,7 @@ import Button from '../generic/Button'
 import Switch from '../generic/Switch'
 import Dropzone from '../generic/Dropzone'
 
-import { formatFileSize, hashFile, preventClose, list, formatDate } from '../../util/functions'
-import axios from 'axios'
+import { formatFileSize, preventClose, list, formatDate } from '../../util/functions'
 
 import styles from '../../styles/VersionModal.module.sass'
 import utilStyles from '../../styles/util.module.sass'
@@ -19,6 +18,9 @@ import icons from '../../util/constants/icons'
 
 import Pushable from '../generic/Pushable'
 import semver from 'semver'
+import { IFileService } from '../../services/FileService'
+import { IUploadService } from '../../services/UploadService'
+import { CancelTokenSource } from 'axios'
 
 enum ReleaseType {
 	Major = 'Major',
@@ -69,20 +71,15 @@ const uploadMessages = {
 	notActive: 'Drop a package or click to upload',
 }
 
-enum Toggle {
-	isCritical = 'isCritical',
-	isReleasing = 'isReleasing',
-	isBase = 'isBase',
-	isWindows = 'isWindows',
-	isDarwin = 'isDarwin',
-	isLinux = 'isLinux',
-}
-
-const CancelToken = axios.CancelToken
-
 @observer
 export default class VersionModal extends Component<IProps, IState> {
-	private readonly cancelTokenSource = CancelToken.source()
+	private cancelTokenSource?: CancelTokenSource
+
+	@DI.lazyInject(DI.Services.File)
+	private readonly fileService: IFileService
+
+	@DI.lazyInject(DI.Services.Upload)
+	private readonly uploadService: IUploadService
 
 	private readonly releaseTypeSetters = Object.keys(ReleaseType)
 		.group((name) => [name, this.setReleaseType.bind(this, name as ReleaseType)])
@@ -310,7 +307,7 @@ export default class VersionModal extends Component<IProps, IState> {
 	@bind
 	private handleCancel() {
 		this.props.toggleClosing && this.props.toggleClosing()
-		this.cancelTokenSource.cancel()
+		this.cancelTokenSource && this.cancelTokenSource.cancel()
 	}
 
 	@bind
@@ -420,23 +417,23 @@ export default class VersionModal extends Component<IProps, IState> {
 				},
 			})
 		} else if (version.files) {
-			// console.log(version.files)
 			const versionFile = version.files[0]
-			const { type } = versionFile
-			const name = `${this.props.app.bundleId}-${versionName.value}-${Date.now()}.asar`
-
-			const {
-				downloadUrl,
-				signedRequest,
-			} = await app.fetchSignedUploadVersionUrl({ name, type })
-
-			const upload = this.uploadVersion(versionFile, signedRequest)
 
 			addEventListener('beforeunload', preventClose)
 			toggleClosing && toggleClosing()
 
+			const {
+				upload,
+				downloadUrl,
+				onProgress,
+				cancelSource,
+			} = await this.uploadService.uploadVersion(versionName.value, this.props.app.bundleId, versionFile)
+
+			this.cancelTokenSource = cancelSource
+			onProgress((progress) => this.setState({ progress }))
+
 			const [hash] = await Promise.all([
-				hashFile(versionFile),
+				this.fileService.hashFile(versionFile),
 				upload,
 			])
 
@@ -483,23 +480,6 @@ export default class VersionModal extends Component<IProps, IState> {
 		if (this.props.version) {
 			const { id } = this.props.version
 			this.props.app.deleteVersion(id)
-		}
-	}
-
-	private async uploadVersion(versionFile: File, signedRequest: string) {
-		if (this.props.app) {
-			const { type } = versionFile
-
-			return axios.put(signedRequest, versionFile, {
-				headers: {
-					'Content-Type': type,
-				},
-				onUploadProgress: ({ loaded, total }) => {
-					const progress = Math.round((loaded * 100) / total)
-					this.setState({ progress })
-				},
-				cancelToken: this.cancelTokenSource.token,
-			})
 		}
 	}
 }

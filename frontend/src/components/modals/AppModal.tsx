@@ -5,16 +5,15 @@ import Modal from '../generic/Modal'
 import Flex from '../generic/Flex'
 import Input from '../generic/Input'
 import Button from '../generic/Button'
-import Dropzone from '../generic/Dropzone'
 
 import styles from '../../styles/AppsPage.module.sass'
 
 import { IAppsStore } from '../../stores/AppsStore'
-import { getSourceFromFile } from '../../util/functions'
 
-import axios from 'axios'
 import icons from '../../util/constants/icons'
 import PictureUpload from '../generic/PictureUpload'
+import { IFileService } from '../../services/FileService'
+import { IUploadService } from '../../services/UploadService'
 
 interface ICreateAppEvent extends FormEvent<HTMLFormElement> {
 	target: EventTarget & {
@@ -52,6 +51,12 @@ export default class AppModal extends React.Component<{}, IState> {
 
 	@DI.lazyInject(DI.Stores.Apps)
 	private readonly appsStore: IAppsStore
+
+	@DI.lazyInject(DI.Services.File)
+	private readonly fileService: IFileService
+
+	@DI.lazyInject(DI.Services.Upload)
+	private readonly uploadService: IUploadService
 
 	public render() {
 		return (
@@ -95,18 +100,7 @@ export default class AppModal extends React.Component<{}, IState> {
 		const { name, picture, bundleId } = event.target.elements
 
 		const pictureFile = picture.files[0]
-		const { name: pictureName, type } = pictureFile
-
-		const {
-			downloadUrl,
-			signedRequest,
-		} = await this.appsStore.fetchUploadPictureUrl({ name: pictureName, type })
-
-		await axios.put(signedRequest, pictureFile, {
-			headers: {
-				'Content-Type': pictureFile.type,
-			},
-		})
+		const { downloadUrl } = await this.uploadService.uploadPicture(pictureFile)
 
 		this.appsStore.createApp({
 			bundleId: bundleId.value,
@@ -117,7 +111,7 @@ export default class AppModal extends React.Component<{}, IState> {
 
 	@bind
 	private async handleSelectPicture([pictureFile]: File[]) {
-		const pictureSrc = await getSourceFromFile(pictureFile)
+		const pictureSrc = await this.fileService.getSourceFromFile(pictureFile)
 		this.setState({ pictureSrc })
 	}
 }

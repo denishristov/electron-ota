@@ -8,15 +8,15 @@ import Button from '../generic/Button'
 
 import styles from '../../styles/AppsPage.module.sass'
 
-import { IAppsStore } from '../../stores/AppsStore'
-import { getSourceFromFile, filterValues } from '../../util/functions'
+import { filterValues } from '../../util/functions'
 
-import axios from 'axios'
 import icons from '../../util/constants/icons'
 import { IUserStore } from '../../stores/UserStore'
 import PictureUpload from '../generic/PictureUpload'
 import { IApi } from '../../util/Api'
-import { EventType, SignUploadUrlResponse } from 'shared'
+import { EventType } from 'shared'
+import { IFileService } from '../../services/FileService'
+import { IUploadService } from '../../services/UploadService'
 
 interface IEditProfileEvent extends FormEvent<HTMLFormElement> {
 	target: EventTarget & {
@@ -44,6 +44,12 @@ export default class ProfileModal extends React.Component<{}> {
 
 	@DI.lazyInject(DI.Stores.User)
 	private readonly userStore: IUserStore
+
+	@DI.lazyInject(DI.Services.File)
+	private readonly fileService: IFileService
+
+	@DI.lazyInject(DI.Services.Upload)
+	private readonly uploadService: IUploadService
 
 	public render() {
 		const { profile } = this.userStore
@@ -132,23 +138,11 @@ export default class ProfileModal extends React.Component<{}> {
 			newPassword2,
 		} = event.target.elements
 
-		const pictureFile = picture.files[0]
-		const { name: pictureName, type } = pictureFile
-
 		if (newPassword.value !== newPassword2.value) {
 			throw new Error('Passwords do not match')
 		}
 
-		const {
-			downloadUrl,
-			signedRequest,
-		} = await this.api.emit<SignUploadUrlResponse>(EventType.SignUploadPictureUrl , { name: pictureName, type })
-
-		await axios.put(signedRequest, pictureFile, {
-			headers: {
-				'Content-Type': pictureFile.type,
-			},
-		})
+		const { downloadUrl } = await this.uploadService.uploadPicture(picture.files[0])
 
 		await this.api.emit(EventType.EditProfile, {
 			name: name.value,
@@ -167,7 +161,7 @@ export default class ProfileModal extends React.Component<{}> {
 
 	@bind
 	private async handleSelectPicture([pictureFile]: File[]) {
-		const pictureSrc = await getSourceFromFile(pictureFile)
+		const pictureSrc = await this.fileService.getSourceFromFile(pictureFile)
 		this.setState({ pictureSrc })
 	}
 }

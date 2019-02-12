@@ -10,7 +10,7 @@ import { computed } from 'mobx'
 import { IApp } from '../../../stores/App'
 import Loading from '../../generic/Loading'
 import { observer } from 'mobx-react'
-import { downloadFile, formatDate } from '../../../util/functions'
+import { formatDate } from '../../../util/functions'
 
 import styles from '../../../styles/VersionPage.module.sass'
 import versionStyles from '../../../styles/Version.module.sass'
@@ -23,6 +23,7 @@ import icons from '../../../util/constants/icons'
 import Tip from '../../generic/Tip'
 import VersionModal from '../../modals/VersionModal'
 import Modal from '../../generic/Modal'
+import { IFileService } from '../../../services/FileService'
 
 interface IParams {
 	appId: string
@@ -41,6 +42,9 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 	public readonly state = {
 		hasLoaded: false,
 	}
+
+	@DI.lazyInject(DI.Services.File)
+	private readonly fileService: IFileService
 
 	@DI.lazyInject(DI.Stores.Apps)
 	private readonly appsStore: IAppsStore
@@ -219,6 +223,8 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 
 	@bind
 	private handleDownload() {
-		this.version && this.version.downloadUrl && downloadFile(this.version.downloadUrl, this.version.versionName || 'app')
+		if (this.version && this.version.downloadUrl) {
+			this.fileService.downloadFile(this.version.downloadUrl, this.version.versionName || 'app')
+		}
 	}
 }

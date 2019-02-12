@@ -1,6 +1,6 @@
 import bindDecorator from 'bind-decorator'
 import { inject, injectable, interfaces } from 'inversify'
-import * as Symbols from '../dependencies/symbols'
+import * as Symbols from '../util/constants/symbols'
 import SVGComponent from '../components/generic/SVG'
 
 type SymbolType = typeof Symbols
