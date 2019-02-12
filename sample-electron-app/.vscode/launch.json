@@ -7,7 +7,6 @@
 			"name": "Launch Sample Electron app",
 			"runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron",
 			"args": ["."],
-			"preLaunchTask": "npm: watch",
 			"outFiles": [
 				"${workspaceFolder}/dist/**/*.js",
 			],

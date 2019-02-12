@@ -1,27 +1,29 @@
 {
 	"folders": [
 		{
-			"path": "backend"
+			"path": "backend",
 		},
 		{
-			"path": "frontend"
+			"path": "frontend",
 		},
 		{
-			"path": "shared"
+			"path": "shared",
 		},
 		{
-			"path": "electron-client"
+			"path": "electron-client",
 		},
 		{
-			"path": "sample-electron-app"
-		}
+			"path": "sample-electron-app",
+		},
 	],
 	"settings": {
 		"search.exclude": {
 			"**/dist": true,
 		},
 		"editor.insertSpaces": false,
+		"tslint.autoFixOnSave": true,
 		"sasslint.packageManager": "yarn",
-		"tslint.autoFixOnSave": true
+		"tslint.packageManager": "yarn",
+		"npm.packageManager": "yarn",
 	},
 }

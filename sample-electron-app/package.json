@@ -1,21 +1,52 @@
 {
   "name": "sample-electron-app",
-  "version": "1.0.5",
-  "main": "./dist/src/main.js",
+  "version": "0.0.0",
+  "main": "./dist/bootstrap.js",
+  "license": "UNLICENSED",
+  "private": true,
+  "build": {
+    "files": [
+      "dist",
+      "index.html"
+    ],
+    "asar": true,
+    "appId": "test-electron",
+    "productName": "Sample Electron App",
+    "directories": {
+      "output": "build"
+    },
+    "mac": {
+      "target": [
+        "dir"
+      ]
+    }
+  },
   "scripts": {
-    "build": "tsc",
-    "watch": "tsc -w",
+    "vv": "yarn version --no-git-tag-version --new-version",
+    "dist.1.0.0": "yarn vv 1.0.0 && yarn build.1.0.0 && build && yarn vv 0.0.0",
+    "dist.1.0.1": "yarn vv 1.0.1 && yarn build.1.0.1 && build && yarn vv 0.0.0",
+    "dist.1.1.0": "yarn vv 1.1.0 && yarn build.1.1.0 && build && yarn vv 0.0.0",
+    "build.1.0.0": "rimraf dist && tsc -p tsconfig.1.0.0.json",
+    "build.1.0.1": "rimraf dist && tsc -p tsconfig.1.0.1.json",
+    "build.1.1.0": "rimraf dist && tsc -p tsconfig.1.1.0.json",
+    "watch.1.0.0": "rimraf dist && tsc -w -p tsconfig.1.0.0.json",
+    "watch.1.0.1": "rimraf dist && tsc -w -p tsconfig.1.0.1.json",
+    "watch.1.1.0": "rimraf dist && tsc -w -p tsconfig.1.1.0.json",
     "lint": "tslint -c tslint.json -p tsconfig.json",
     "start": "electron ."
   },
-  "private": true,
-  "license": "UNLICENSED",
   "devDependencies": {
-    "electron": "^3.0.13",
+    "@types/react": "^16.8.2",
+    "electron": "^4.0.4",
+    "electron-builder": "^20.38.5",
+    "rimraf": "^2.6.3",
     "tslint": "^5.12.0",
     "typescript": "^3.2.2"
   },
   "dependencies": {
-    "electron-client": "0.0.0"
+    "electron-client": "0.0.0",
+    "react": "16.8.1",
+    "react-dom": "16.8.1",
+    "use-force-update": "1.0.2"
   }
 }

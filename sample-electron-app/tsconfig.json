@@ -5,15 +5,14 @@
 		"moduleResolution": "node",
 		"noImplicitAny": true,
 		"sourceMap": true,
+		"jsx": "react",
+		"jsxFactory": "createElement",
 		"outDir": "dist",
 		"baseUrl": ".",
 		"paths": {
 			"*": ["node_modules/*"]
 		},
-		"resolveJsonModule": true,
+		"resolveJsonModule": false,
 		"esModuleInterop": true
 	},
-	"include": [
-		"src/**/*"
-	]
 }
