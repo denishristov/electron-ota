@@ -66,13 +66,13 @@ function Content<T>({ component: Component, props, title, className }: IContentP
 											>
 												<header className={styles.spread}>
 													<h2>{title}</h2>
-													<Pushable>
+													{/* <Pushable>
 														<SVG
 															src={Close}
 															className={styles.close}
 															onClick={close}
 														/>
-													</Pushable>
+													</Pushable> */}
 												</header>
 												<Component {...props || {} as T} />
 											</animated.div>

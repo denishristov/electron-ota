@@ -21,25 +21,25 @@
 
 @mixin color-button($background, $background2, $color)
 	@include shadow($background2)
-	background-size: auto 204%
-	background-position: 0 96%
-	background-image: linear-gradient(to top right, $background 0%, $background2 100%)
+	background-size: auto 200%
+	background-position: 0 100%
+	background-image: linear-gradient(to top right, $background 0%, $background 20%, $background2 100%)
 	color: $color
 
 	svg, g, path
 		fill: $color
 
 	&:focus, &:hover
-		background-position: 0 24%
+		background-position: 0 0
 
 @mixin light-button($background, $color) 
 	@include color-button($background,  darken($background, 8%), $color)
 
 @mixin dark-button($background, $color) 
-	@include color-button($background, adjust-hue($background, 64%), $color)
+	@include color-button($background, adjust-hue($background, 25%), $color)
 	
 button
-	@include transition(box-shadow, background-color, transform, background-position)
+	@include ease(box-shadow, background-color, transform, background-position)
 	display: flex
 	justify-content: center
 	align-items: center

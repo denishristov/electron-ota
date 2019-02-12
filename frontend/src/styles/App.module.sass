@@ -25,16 +25,16 @@
 		filter: brightness(-1)
 
 	img
-		@include glowingShadow($accent)
+		@include glowing-shadow($dark-accent)
 		@include transition(box-shadow)
 		width: $spacing * 4
 		height: $spacing * 4
 		flex-grow: 0
 		object-fit: cover
 		border-radius: 50%
-		position: absolute
-		top: -1.5 * $spacing
-		right: $spacing
+		// position: absolute
+		// top: -1.5 * $spacing
+		// right: $spacing
 
 	h3
 		@include text-overflow

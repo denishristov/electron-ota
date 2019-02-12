@@ -17,7 +17,7 @@ import {
 	AdminEditProfileRequest,
 	GetProfileResponse,
 } from 'shared'
-import { filterBoolean } from '../util/functions'
+import { filterValues } from '../util/functions'
 
 export interface IAdminsService {
 	login(req: AdminLoginRequest): Promise<AdminLoginResponse>
@@ -50,7 +50,7 @@ export default class AdminsService implements IAdminsService {
 			}
 
 			const user = await this.AdminModel
-				.findOne(filterBoolean({ email, name }))
+				.findOne(filterValues({ email, name }))
 				.select('password authTokens')
 
 			if (!await bcrypt.compare(password, user.password)) {
@@ -136,7 +136,7 @@ export default class AdminsService implements IAdminsService {
 	}: AdminEditProfileRequest) {
 		const { id } = await this.getPayloadFromToken(authToken)
 
-		const user = await this.AdminModel.findByIdAndUpdate(id, filterBoolean({
+		const user = await this.AdminModel.findByIdAndUpdate(id, filterValues({
 			name,
 			email,
 			pictureUrl,

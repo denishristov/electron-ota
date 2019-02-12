@@ -5,6 +5,7 @@ import {
 	IPostRespondHook,
 	ConstructedHandler,
 	IClient,
+	MediatorEvent,
 } from './interfaces'
 import { uuid } from '../functions'
 import { IRequestHandler } from './interfaces'
@@ -12,7 +13,7 @@ import { Empty } from '../types'
 import { colors } from '../constants'
 import { EventEmitter } from 'events'
 
-export default class SocketMediator extends EventEmitter  implements ISocketMediator {
+export default class SocketMediator extends EventEmitter implements ISocketMediator {
 	private readonly requestHandlers = new Map<string, ConstructedHandler>()
 
 	private readonly preRespondHooks: IPreRespondHook[] = []
@@ -25,7 +26,7 @@ export default class SocketMediator extends EventEmitter  implements ISocketMedi
 		super()
 
 		namespace.on(EventType.Connection, this.subscribe)
-		namespace.on(EventType.Connection, (client) => this.emit(EventType.Connection, client))
+		namespace.on(EventType.Connection, (client) => this.emit(MediatorEvent.Subscribe, client))
 	}
 
 	public get name() {
@@ -55,11 +56,11 @@ export default class SocketMediator extends EventEmitter  implements ISocketMedi
 		})
 
 		client.on(EventType.Disconnect, () => this.unsubscribe(client))
-		client.on(EventType.Disconnect, () => this.emit(EventType.Disconnect, client))
 	}
 
 	@bind
 	public unsubscribe(client: IClient) {
+		this.emit(MediatorEvent.Unsubscribe, client)
 		return client.leave(this.roomId)
 	}
 

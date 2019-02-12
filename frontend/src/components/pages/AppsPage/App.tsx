@@ -58,10 +58,12 @@ export default class App extends Component<IProps> {
 					onClick={this.goToApp}
 					style={this.props.animation}
 				>
+				<Flex y list mb>
 					<img src={pictureUrl} />
-					<Flex className={styles.header}>
-						<h3>{name}</h3>
-					</Flex>
+					{/* <Flex className={styles.header}> */}
+					<h3>{name}</h3>
+					{/* </Flex> */}
+				</Flex>
 					<Flex list col>
 						<Flex y list>
 							<label>Bundle ID</label>

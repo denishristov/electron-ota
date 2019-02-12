@@ -9,7 +9,7 @@ import Button from '../generic/Button'
 import styles from '../../styles/AppsPage.module.sass'
 
 import { IAppsStore } from '../../stores/AppsStore'
-import { getSourceFromFile, filterBoolean } from '../../util/functions'
+import { getSourceFromFile, filterValues } from '../../util/functions'
 
 import axios from 'axios'
 import icons from '../../util/constants/icons'
@@ -158,7 +158,7 @@ export default class ProfileModal extends React.Component<{}> {
 			pictureUrl: downloadUrl,
 		})
 
-		Object.assign(this.userStore.profile, filterBoolean({
+		Object.assign(this.userStore.profile, filterValues({
 			name: name.value,
 			email: email.value,
 			pictureUrl: downloadUrl,

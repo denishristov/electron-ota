@@ -1,6 +1,6 @@
 import { EventType } from 'shared'
 import chalk from 'chalk'
-import { isError, filterBoolean } from './functions'
+import { isError, filterValues } from './functions'
 
 export interface IApi {
 	emit<Res extends object>(eventType: EventType, request?: object): Promise<Res>
@@ -36,7 +36,7 @@ export default class Api implements IApi {
 		return new Promise((resolve, reject) => {
 			const timeout = setTimeout(() => reject({ eventType, request, message: 'timeout' }), 1000 * 10)
 			// console.log(this.preEmitHooks)
-			this.connection.emit(eventType, filterBoolean(this.attachData(request || {})), (data: Res) => {
+			this.connection.emit(eventType, filterValues(this.attachData(request || {})), (data: Res) => {
 				clearTimeout(timeout)
 
 				if (isError(data)) {

@@ -422,7 +422,8 @@ export default class VersionModal extends Component<IProps, IState> {
 		} else if (version.files) {
 			// console.log(version.files)
 			const versionFile = version.files[0]
-			const { type, name } = versionFile
+			const { type } = versionFile
+			const name = `${this.props.app.bundleId}-${versionName}-${Date.now()}.asar`
 
 			const {
 				downloadUrl,

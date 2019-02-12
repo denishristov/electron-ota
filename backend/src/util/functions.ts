@@ -27,8 +27,8 @@ export function rangedArray(length: number) {
 	return array
 }
 
-export function filterBoolean(object: object) {
+export function filterValues(object: object) {
 	return Object.entries(object)
-		.filter(([_, value]) => Boolean(value))
+		.filter(([_, value]) => value !== null && value !== void 0)
 		.group(([key, value]) => [key, value])
 }

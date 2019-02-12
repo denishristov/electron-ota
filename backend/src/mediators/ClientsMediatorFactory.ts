@@ -1,6 +1,6 @@
 import { interfaces } from 'inversify'
 
-import { ISocketMediator, IPostRespondHook, IPreRespondHook } from '../util/mediator/interfaces'
+import { ISocketMediator, IPostRespondHook, IPreRespondHook, MediatorEvent } from '../util/mediator/interfaces'
 import SocketMediator from '../util/mediator/SocketMediator'
 
 import { IReleaseService } from '../services/ReleaseService'
@@ -70,7 +70,7 @@ export default function clientsMediatorFactory({ container }: interfaces.Context
 			})
 			.pre(validationHook)
 			.post(reportHook)
-			.on(EventType.Connection, clientCounterService.handleClientConnection)
-			.on(EventType.Disconnect, clientCounterService.handleClientDisconnection)
+			.on(MediatorEvent.Subscribe, clientCounterService.handleClientConnection)
+			.on(MediatorEvent.Unsubscribe, clientCounterService.handleClientDisconnection)
 	}
 }

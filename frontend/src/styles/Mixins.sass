@@ -1,6 +1,6 @@
 @import './variables'
 
-@mixin glowingShadow($color)
+@mixin glowing-shadow($color)
 	box-shadow: 0 $spacing 60px transparentize($color, 0.6), 0 4px 14px transparentize($color, 0.8)
 
 @mixin text-overflow
@@ -13,6 +13,11 @@
 	transition-timing-function: $cubic-breezer
 	transition-property: $properties
 	// will-change: $properties
+
+@mixin ease($properties...)
+	transition-duration: .32s
+	transition-timing-function: ease
+	transition-property: $properties
 
 @mixin container
 	flex-grow: 1
@@ -36,7 +41,7 @@
 				margin-right: $spacing / 2
 
 		img
-			@include glowingShadow($dark-accent)
+			@include glowing-shadow($dark-accent)
 			border-radius: 50%
 			width: $spacing * 4
 			height: $spacing * 4
@@ -53,7 +58,7 @@
 	@include shadow($accent)
 
 	&:hover, &:focus
-		@include glowingShadow($accent)
+		@include glowing-shadow($accent)
 
 @mixin focus-shadow
 	@include shadow($accent)
@@ -61,7 +66,7 @@
 
 
 @mixin dot($color)
-	@include glowingShadow($color)
+	@include glowing-shadow($color)
 	$size: $spacing / 2
 	width: $size
 	height: $size

@@ -8,6 +8,11 @@ export type ConstructedHandler = (request: object, respond: (res: Error | object
 
 type ClientPredicate = (client: IClient) => boolean
 
+export enum MediatorEvent {
+	Subscribe = 'Subscribe',
+	Unsubscribe = 'Unsubscribe',
+}
+
 export interface IClient extends EventEmitter {
 	nsp: {
 		name: string,
@@ -20,6 +25,7 @@ export interface IClient extends EventEmitter {
 	join(room: string, callback?: () => void): void
 	leave(room: string, callback?: () => void): void
 }
+
 export interface IRequestHandler<Req extends object, Res extends object> {
 	eventType: EventType
 	handler: Handler<Req, Res>
@@ -27,6 +33,7 @@ export interface IRequestHandler<Req extends object, Res extends object> {
 	responseType?: Newable<Res>
 	broadcast?: boolean
 }
+
 export interface ISocketMediator extends EventEmitter {
 	name: string
 	clients: IClient[]

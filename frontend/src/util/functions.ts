@@ -146,8 +146,8 @@ export function byDateDesc(a: ITimestampedDocument, b: ITimestampedDocument) {
 	return +new Date(b.createdAt) - +new Date(a.createdAt)
 }
 
-export function filterBoolean(object: object) {
+export function filterValues(object: object) {
 	return Object.entries(object)
-		.filter(([_, value]) => Boolean(value))
+		.filter(([_, value]) => value !== null && value !== void 0)
 		.group(([key, value]) => [key, value])
 }
