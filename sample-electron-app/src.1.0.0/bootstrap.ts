@@ -10,7 +10,7 @@ declare global {
 }
 
 global.updateService = new ElectronUpdateServiceClient({
-	bundleId: require('../package.json').build.appId,
+	bundleId: 'test-electron',
 	updateServerUrl: 'http://localhost:4000',
 	versionName: require('../package.json').version,
 })
