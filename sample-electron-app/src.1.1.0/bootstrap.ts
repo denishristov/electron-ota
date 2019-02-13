@@ -9,12 +9,14 @@ declare global {
 	}
 }
 
-global.updateService = new ElectronUpdateServiceClient({
+const isDevMode = /[\\/]electron[\\/]/u.test(process.execPath)
+
+isDevMode && (global.updateService = new ElectronUpdateServiceClient({
 	bundleId: 'test-electron',
 	updateServerUrl: 'http://localhost:4000',
 	versionName: require('../package.json').version,
-})
+}))
 
-if (!global.updateService.loadLatestUpdateSync()) {
+if (isDevMode || !global.updateService.loadLatestUpdateSync()) {
 	import('./main')
 }
