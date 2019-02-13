@@ -2,7 +2,7 @@
 import { Email, Regex, Min, StringSchema, Max, Uri } from 'tsdv-joi/constraints/string'
 import { Required } from 'tsdv-joi/constraints/any'
 import { BooleanSchema } from 'tsdv-joi/constraints/boolean'
-import { AuthenticatedRequest } from './Generic'
+import { AuthenticatedRequest } from './generic'
 
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,64}$/
 

@@ -13,10 +13,11 @@ import {
 	VersionEditModel,
 	AppModel,
 	LatestVersionsModel,
+	ISystemTypeCount,
 } from 'shared'
 import { IApi } from '../util/Api'
 import { Omit } from 'react-router'
-import { byDateDesc } from '../util/functions';
+import { byDateDesc } from '../util/functions'
 
 interface ICreateVersionInput {
 	versionName: string
@@ -41,6 +42,7 @@ export interface IApp {
 	versions: ObservableMap<string, VersionModel>
 	simpleReports: ObservableMap<string, SimpleVersionReportModel>
 	reports: ObservableMap<string, VersionReportModel>
+	clientCounters: ObservableMap<string, ObservableMap<string, ISystemTypeCount>>
 	allVersions: VersionModel[]
 	getVersion(id: string): VersionModel | null
 	fetchVersions(): Promise<void>
@@ -70,12 +72,13 @@ export default class App implements IApp {
 	@observable
 	public versionsCount: number
 
-	@observable
 	public readonly versions = observable.map<string, VersionModel>({})
 
 	public readonly simpleReports = observable.map<string, SimpleVersionReportModel>({})
 
 	public readonly reports = observable.map<string, VersionReportModel>({})
+
+	public readonly clientCounters = observable.map<string, ObservableMap<string, ISystemTypeCount>>({})
 
 	constructor(
 		{
@@ -151,4 +154,6 @@ export default class App implements IApp {
 	public deleteVersion(id: string) {
 		this.api.emit(EventType.DeleteVersion, { appId: this.id, id })
 	}
+
+	// public fetchApps
 }

@@ -7,4 +7,7 @@ export class Report {
 
 	@prop()
 	public errorMessage?: string
+
+	@prop({ default: Date.now() })
+	public time: Date
 }

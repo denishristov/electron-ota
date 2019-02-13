@@ -5,7 +5,7 @@ import { BooleanSchema } from 'tsdv-joi/constraints/boolean'
 import { Nested } from 'tsdv-joi'
 import { SystemType } from '../enums/SystemType'
 import { Or } from 'tsdv-joi/constraints/object'
-import { AuthenticatedRequest } from './Generic'
+import { AuthenticatedRequest } from './generic'
 
 class Update {
 	@Required()

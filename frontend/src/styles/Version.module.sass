@@ -6,12 +6,16 @@ $version-width: 800px
 .container
 	position: relative
 
+	&:first-of-type 
+		.date
+			border: none
+
 .version
 	@include transition(background-color, box-shadow, transform)
 	@include entry-shadow
-	min-width: $version-width
-	height: $spacing * 3.5
-	border-radius: $default-border-radius
+	// min-width: $version-width
+	height: $spacing * 2
+	border-radius: $spacing
 	background: white
 	margin: $spacing 0
 	padding: 0 $spacing
@@ -25,13 +29,16 @@ $version-width: 800px
 		font-weight: 400
 		min-width: $spacing * 6
 
+	h3, h4, h5
+		margin: 0
+
 	&:hover
 		background-color: $entry-bg
 
 	span
 		svg
-			width: $icon-size
-			height:  $icon-size
+			width: $spacing
+			height:  $spacing
 
 	.counter
 		h5
@@ -62,7 +69,7 @@ $version-width: 800px
 	color: $light-text
 	font-weight: 400
 	font-size: 0.76rem
-	padding-bottom: 56px
+	padding-bottom: 28px
 	z-index: -1
 	
 @media screen and (max-width: $version-width + 4 * $spacing)

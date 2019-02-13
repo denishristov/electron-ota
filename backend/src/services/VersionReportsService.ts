@@ -38,7 +38,7 @@ export default class VersionReportsService implements IVersionReportsService {
 	public async downloadingUpdate({ id, versionId }: ClientReportRequest) {
 		await this.VersionReportsModel.findOneAndUpdate(
 			{ version: versionId },
-			{ $addToSet: { downloading: id } },
+			{ $addToSet: { downloading: { client: id } } },
 		)
 	}
 
@@ -47,8 +47,8 @@ export default class VersionReportsService implements IVersionReportsService {
 		await this.VersionReportsModel.findOneAndUpdate(
 			{ version: versionId },
 			{
-				$pull: { downloading: id } ,
-				$addToSet: { downloaded: id },
+				$pull: { downloading: { client: id } } ,
+				$addToSet: { downloaded: { client: id } },
 			},
 		)
 	}
@@ -63,7 +63,7 @@ export default class VersionReportsService implements IVersionReportsService {
 
 		await this.VersionReportsModel.findOneAndUpdate(
 			{ version: versionId },
-			{ $addToSet: { using: id } },
+			{ $addToSet: { using: { client: id } } },
 		)
 
 		await client.set({ version: versionId }).save()

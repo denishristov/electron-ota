@@ -1,18 +1,6 @@
 import { ISocketMediator, IClient } from '../util/mediator/interfaces'
-import { SystemType, EventType } from 'shared'
+import { SystemType, EventType, IAppsClientCount, IAppClientCount } from 'shared'
 import { AdminMediator } from '../util/symbols'
-
-interface IAppsClientCount {
-	[bundleId: string]: {
-		[systemType: string]: number,
-	}
-}
-
-interface IAppClientCount {
-	[versionName: string]: {
-		[systemType: string]: number,
-	}
-}
 
 export interface IClientCounterService {
 	getAppsClientsCount(): IAppsClientCount
@@ -59,8 +47,8 @@ export default class ClientCounterService implements IClientCounterService {
 		for (const systemType of Object.values(SystemType)) {
 			const mediator = this.mediators.get(`/${bundleId}/${systemType}`)
 
-			for (const socket of mediator.clients) {
-				const { versionName } = socket.handshake.query
+			for (const client of mediator.clients) {
+				const { versionName } = client.handshake.query
 
 				response[versionName] = response[versionName] || {}
 				response[versionName][systemType] = response[versionName][systemType]

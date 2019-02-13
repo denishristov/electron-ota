@@ -1,5 +1,5 @@
 // tslint:disable:max-classes-per-file
-import { TimestampedDocument, AuthenticatedRequest } from './Generic'
+import { TimestampedDocument, AuthenticatedRequest } from './generic'
 import { Token, StringSchema, Uri } from 'tsdv-joi/constraints/string'
 import { Required, Allow } from 'tsdv-joi/constraints/any'
 import { BooleanSchema } from 'tsdv-joi/constraints/boolean'

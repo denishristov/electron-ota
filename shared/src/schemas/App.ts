@@ -4,7 +4,7 @@ import { Nested, NestedArray } from 'tsdv-joi'
 import { Token, StringSchema, Uri } from 'tsdv-joi/constraints/string'
 import { Required, Allow, Strict } from 'tsdv-joi/constraints/any'
 import { NumberSchema } from 'tsdv-joi/constraints/number'
-import { AuthenticatedRequest, TimestampedDocument } from './Generic'
+import { AuthenticatedRequest, TimestampedDocument } from './generic'
 
 export class LatestVersionsModel {
 	@Allow(null)

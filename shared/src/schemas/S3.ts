@@ -1,7 +1,7 @@
 // tslint:disable:max-classes-per-file
 import { StringSchema, Uri } from 'tsdv-joi/constraints/string'
 import { Required, Allow } from 'tsdv-joi/constraints/any'
-import { AuthenticatedRequest } from './Generic'
+import { AuthenticatedRequest } from './generic'
 
 export class SignUploadUrlRequest extends AuthenticatedRequest {
 	@Required()
