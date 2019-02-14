@@ -56,7 +56,7 @@ export class CreateAppRequest extends AuthenticatedRequest {
 	public name: string
 
 	@Uri()
-	public pictureUrl: string
+	public pictureUrl?: string
 
 	@Required()
 	@StringSchema()
@@ -104,3 +104,9 @@ export class DeleteAppRequest extends AuthenticatedRequest {
 }
 
 export class DeleteAppResponse extends DeleteAppRequest {}
+
+export class GetAppCountersRequest extends AuthenticatedRequest {
+	@Required()
+	@StringSchema()
+	public bundleId: string
+}

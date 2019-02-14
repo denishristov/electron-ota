@@ -2,7 +2,7 @@ import { EventType } from 'shared'
 import { Newable } from '../types'
 import { EventEmitter } from 'events'
 
-export type Handler<Req = object, Res = object> = (request: Req) => Promise<Res | void>
+export type Handler<Req = object, Res = object> = (request: Req) => Res | Promise<Res | void>
 
 export type ConstructedHandler = (request: object, respond: (res: Error | object) => void) => void
 

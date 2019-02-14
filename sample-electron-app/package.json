@@ -33,7 +33,7 @@
     "watch.1.0.1": "rimraf dist && tsc -w -p tsconfig.1.0.1.json",
     "watch.1.1.0": "rimraf dist && tsc -w -p tsconfig.1.1.0.json",
     "lint": "tslint -c tslint.json -p tsconfig.json",
-    "start": "electron ."
+    "start": "electron ./src.1.0.0"
   },
   "devDependencies": {
     "@types/react": "^16.8.2",

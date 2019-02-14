@@ -1,10 +1,10 @@
-import { ISocketMediator, IClient } from '../util/mediator/interfaces'
-import { SystemType, EventType, IAppsClientCount, IAppClientCount } from 'shared'
+import { ISocketMediator, IClient,  } from '../util/mediator/interfaces'
+import { SystemType, EventType, IAppsClientCount, IAppClientCount, GetAppCountersRequest } from 'shared'
 import { AdminMediator } from '../util/symbols'
 
 export interface IClientCounterService {
 	getAppsClientsCount(): IAppsClientCount
-	getAppClientsCount(bundleId: string): IAppClientCount
+	getAppClientsCount({ bundleId }: GetAppCountersRequest): IAppClientCount
 	handleClientConnection(client: IClient): void
 	handleClientDisconnection(client: IClient): void
 }
@@ -41,7 +41,7 @@ export default class ClientCounterService implements IClientCounterService {
 	}
 
 	@bind
-	public getAppClientsCount(bundleId: string) {
+	public getAppClientsCount({ bundleId }: GetAppCountersRequest) {
 		const response: IAppClientCount = {}
 
 		for (const systemType of Object.values(SystemType)) {

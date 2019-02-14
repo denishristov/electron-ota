@@ -64,6 +64,11 @@ export default class VersionService implements IVersionService {
 	@bind
 	public async deleteVersion({ id, appId }: DeleteVersionRequest): Promise<DeleteVersionResponse> {
 		await this.VersionModel.findByIdAndRemove(id)
+
+		await this.AppModel.findByIdAndUpdate(appId, {
+			$pull: { versions: id },
+		})
+
 		return { id, appId }
 	}
 }

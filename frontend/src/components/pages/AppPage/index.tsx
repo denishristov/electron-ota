@@ -19,7 +19,10 @@ import Plus from '../../../img/Plus.svg'
 
 import styles from '../../../styles/AppPage.module.sass'
 import versionModalStyles from '../../../styles/VersionModal.module.sass'
+import versionStyles from '../../../styles/Version.module.sass'
+
 import { list } from '../../../util/functions'
+import Pushable from '../../generic/Pushable'
 
 interface IParams {
 	appId: string
@@ -55,6 +58,7 @@ export default class AppPage extends Component<RouteComponentProps<IParams>, ISt
 		if (this.app) {
 			this.app.fetchVersions()
 			this.app.fetchSimpleReports()
+			this.app.fetchAppLiveCount()
 		}
 
 		this.setState({ hasLoaded: true })
@@ -75,6 +79,7 @@ export default class AppPage extends Component<RouteComponentProps<IParams>, ISt
 			simpleReports,
 			pictureUrl,
 			latestAddedVersion,
+			clientCounters,
 		} = this.app
 
 		const {
@@ -87,39 +92,50 @@ export default class AppPage extends Component<RouteComponentProps<IParams>, ISt
 					<header>
 						<img src={pictureUrl} />
 						<h1>{name}</h1>
-						<Modal disableClose={isModalClosingDisabled}>
-							<Modal.OpenTrigger>
-								<Button color='blue' size='small'>
-									<SVG src={Plus} />
-									Add new version
-								</Button>
-							</Modal.OpenTrigger>
-							<Modal.Content
-								title='Add a new version'
-								className={list(
-									versionModalStyles.versionModal,
-									isModalClosingDisabled && versionModalStyles.disabled,
-								)}
-								component={VersionModal}
-								props={{
-									app: this.app,
-									previousVersionName: latestAddedVersion && latestAddedVersion.versionName,
-									toggleClosing: this.toggleClosing,
-								}}
-							/>
-						</Modal>
 					</header>
-					<Flex col grow m y>
-						<AppearAnimation items={allVersions}>
-							{(version) => (animation) => (
-								<Version
-									simpleReports={simpleReports}
-									version={version}
-									animation={animation}
-									history={this.props.history}
+					<Flex grow>
+						<Flex col m y className={styles.versionsContainer}>
+							<Modal disableClose={isModalClosingDisabled}>
+								<Pushable>
+									<div className={versionStyles.version}>
+										<Modal.OpenTrigger>
+											<Flex y list grow className={styles.newVersion}>
+												<SVG src={Plus} />
+												<h3>
+													Add new version
+												</h3>
+											</Flex>
+										</Modal.OpenTrigger>
+									</div>
+								</Pushable>
+								<Modal.Content
+									title='Add a new version'
+									className={list(
+										versionModalStyles.versionModal,
+										isModalClosingDisabled && versionModalStyles.disabled,
+									)}
+									component={VersionModal}
+									props={{
+										app: this.app,
+										previousVersionName: latestAddedVersion && latestAddedVersion.versionName,
+										toggleClosing: this.toggleClosing,
+									}}
 								/>
-							)}
-						</AppearAnimation>
+							</Modal>
+							<AppearAnimation items={allVersions}>
+								{(version) => (animation) => (
+									<Version
+										simpleReports={simpleReports}
+										version={version}
+										animation={animation}
+										liveCounters={clientCounters}
+										history={this.props.history}
+									/>
+								)}
+							</AppearAnimation>
+						</Flex>
+						<Flex col grow m y>
+						</Flex>
 					</Flex>
 				</div>
 			</Container>

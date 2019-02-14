@@ -100,7 +100,13 @@ export default class AppModal extends React.Component<{}, IState> {
 		const { name, picture, bundleId } = event.target.elements
 
 		const pictureFile = picture.files[0]
-		const { downloadUrl } = await this.uploadService.uploadPicture(pictureFile)
+		let downloadUrl
+
+		if (pictureFile) {
+			const upload = await this.uploadService.uploadPicture(pictureFile)
+
+			downloadUrl = upload.downloadUrl
+		}
 
 		this.appsStore.createApp({
 			bundleId: bundleId.value,

@@ -32,6 +32,7 @@ import {
 	RegisterKeyPathResponse,
 	AdminEditProfileRequest,
 	GetProfileResponse,
+	GetAppCountersRequest,
 } from 'shared'
 import { interfaces } from 'inversify'
 
@@ -42,6 +43,7 @@ import { IAdminsService } from '../services/AdminsService'
 import { IFileUploadService } from '../services/S3Service'
 import { IReleaseService } from '../services/ReleaseService'
 import { IVersionReportsService } from '../services/VersionReportsService'
+import { IClientCounterService } from '../services/ClientCounterService'
 
 import { IPreRespondHook, IPostRespondHook, ISocketMediator } from '../util/mediator/interfaces'
 import SocketMediator from '../util/mediator/SocketMediator'
@@ -58,6 +60,7 @@ export default function adminMediatorFactory({ container }: interfaces.Context):
 	const updateService = container.get<IReleaseService>(DI.Services.Update)
 	const registerCredentialsService = container.get<IRegisterCredentialsService>(DI.Services.RegisterCredentials)
 	const versionReportsService = container.get<IVersionReportsService>(DI.Services.VersionReports)
+	const clientCounterService = container.get<IClientCounterService>(DI.Services.ClientCounter)
 
 	const authHook = container.get<IPreRespondHook>(DI.Hooks.Auth)
 	const validationHook = container.get<IPreRespondHook>(DI.Hooks.Validation)
@@ -193,6 +196,16 @@ export default function adminMediatorFactory({ container }: interfaces.Context):
 			handler: versionReportsService.getVersionReports,
 			requestType: GetVersionReportsRequest,
 			responseType: GetVersionReportsResponse,
+		})
+		.use({
+			eventType: EventType.getAppsClientCount,
+			handler: clientCounterService.getAppsClientsCount,
+			requestType: AuthenticatedRequest,
+		})
+		.use({
+			eventType: EventType.getAppClientCount,
+			handler: clientCounterService.getAppClientsCount,
+			requestType: GetAppCountersRequest,
 		})
 		.pre(validationHook)
 		.pre(authHook)

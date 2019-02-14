@@ -23,7 +23,6 @@ class Update {
 	@StringSchema()
 	public hash: string
 
-	@Allow('')
 	@StringSchema()
 	public description?: string
 

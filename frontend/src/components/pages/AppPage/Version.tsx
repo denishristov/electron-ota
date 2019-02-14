@@ -1,9 +1,9 @@
 import React from 'react'
-import { VersionModel, SimpleVersionReportModel } from 'shared'
+import { VersionModel, SimpleVersionReportModel, ISystemTypeCount } from 'shared'
 import { observer } from 'mobx-react'
 import { ObservableMap, computed } from 'mobx'
 
-import { formatDate } from '../../../util/functions'
+import { formatDate, list } from '../../../util/functions'
 import { animated } from 'react-spring'
 
 import Flex from '../../generic/Flex'
@@ -18,6 +18,7 @@ interface IProps {
 	version: VersionModel
 	animation: React.CSSProperties
 	simpleReports: ObservableMap<string, SimpleVersionReportModel>
+	liveCounters: ObservableMap<string, ISystemTypeCount>
 	history: BrowserHistory
 }
 
@@ -48,6 +49,12 @@ export default class Version extends React.Component<IProps> {
 								/>
 								<Counter
 									className={styles.counter}
+									message='Connected'
+									icon={icons.User}
+									count={this.liveCount}
+								/>
+								{/* <Counter
+									className={styles.counter}
 									message='Downloading'
 									icon={icons.Downloading}
 									count={this.simpleReport.downloadingCount}
@@ -63,7 +70,7 @@ export default class Version extends React.Component<IProps> {
 									message='Errors'
 									icon={icons.ErrorIcon}
 									count={this.simpleReport.errorsCount}
-								/>
+								/> */}
 							</>
 						)}
 						<Flex list y mla>
@@ -105,5 +112,18 @@ export default class Version extends React.Component<IProps> {
 	@computed
 	private get simpleReport(): SimpleVersionReportModel | null {
 		return this.props.simpleReports.get(this.props.version.id) || null
+	}
+
+	@computed
+	private get liveCount(): number {
+		const { versionName } = this.props.version
+		const counter = this.props.liveCounters.get(versionName)
+
+		if (counter) {
+			const { Windows_RT, Darwin, Linux } = counter
+			return Windows_RT + Darwin + Linux
+		}
+
+		return 0
 	}
 }

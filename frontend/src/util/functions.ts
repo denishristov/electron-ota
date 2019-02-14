@@ -95,6 +95,6 @@ function returnArgument<T>(arg: T) {
 
 export function filterValues(object: object) {
 	return Object.entries(object)
-		.filter(([_, value]) => value !== null && value !== void 0)
+		.filter(([_, value]) => value !== null && value !== void 0 && value !== '')
 		.group(returnArgument)
 }

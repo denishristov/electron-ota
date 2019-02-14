@@ -142,7 +142,13 @@ export default class ProfileModal extends React.Component<{}> {
 			throw new Error('Passwords do not match')
 		}
 
-		const { downloadUrl } = await this.uploadService.uploadPicture(picture.files[0])
+		let downloadUrl
+		const avatar = picture.files[0]
+
+		if (avatar) {
+			const upload = await this.uploadService.uploadPicture(avatar)
+			downloadUrl = upload.downloadUrl
+		}
 
 		await this.api.emit(EventType.EditProfile, {
 			name: name.value,

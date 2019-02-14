@@ -14,6 +14,7 @@ import {
 	AppModel,
 	LatestVersionsModel,
 	ISystemTypeCount,
+	IAppClientCount,
 } from 'shared'
 import { IApi } from '../util/Api'
 import { Omit } from 'react-router'
@@ -42,13 +43,14 @@ export interface IApp {
 	versions: ObservableMap<string, VersionModel>
 	simpleReports: ObservableMap<string, SimpleVersionReportModel>
 	reports: ObservableMap<string, VersionReportModel>
-	clientCounters: ObservableMap<string, ObservableMap<string, ISystemTypeCount>>
+	clientCounters: ObservableMap<string, ISystemTypeCount>
 	allVersions: VersionModel[]
 	getVersion(id: string): VersionModel | null
 	fetchVersions(): Promise<void>
 	fetchSignedUploadVersionUrl(req: SignUploadUrlRequest): Promise<SignUploadUrlResponse>
 	fetchSimpleReports(): Promise<void>
 	fetchReports(versionId: string): Promise<void>
+	fetchAppLiveCount(): Promise<void>
 	createVersion(inputFields: ICreateVersionInput): void
 	updateVersion(inputFields: Omit<VersionEditModel, 'appId'>): void
 	deleteVersion(id: string): void
@@ -78,7 +80,7 @@ export default class App implements IApp {
 
 	public readonly reports = observable.map<string, VersionReportModel>({})
 
-	public readonly clientCounters = observable.map<string, ObservableMap<string, ISystemTypeCount>>({})
+	public readonly clientCounters = observable.map<string, ISystemTypeCount>({})
 
 	constructor(
 		{
@@ -155,5 +157,9 @@ export default class App implements IApp {
 		this.api.emit(EventType.DeleteVersion, { appId: this.id, id })
 	}
 
-	// public fetchApps
+	public async fetchAppLiveCount() {
+		const counters = await this.api.emit<IAppClientCount>(EventType.getAppClientCount, { bundleId: this.bundleId })
+		this.clientCounters.merge(counters)
+		console.log(counters)
+	}
 }

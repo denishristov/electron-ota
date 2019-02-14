@@ -404,60 +404,49 @@ export default class VersionModal extends Component<IProps, IState> {
 			return
 		}
 
-		if (this.state.isBase) {
-			app.createVersion({
-				versionName: versionName.value,
-				description: description.value,
-				isBase,
-				isCritical,
-				systems: {
-					Windows_RT: isWindows,
-					Darwin: isDarwin,
-					Linux: isLinux,
-				},
-			})
-		} else if (version.files) {
-			const versionFile = version.files[0]
+		const versionFile = version.files[0]
 
+		let downloadUrl
+		let hash
+
+		if (versionFile) {
 			addEventListener('beforeunload', preventClose)
 			toggleClosing && toggleClosing()
 
-			const {
-				upload,
-				downloadUrl,
-				onProgress,
-				cancelSource,
-			} = await this.uploadService.uploadVersion(versionName.value, this.props.app.bundleId, versionFile)
+			const upload = await this.uploadService.uploadVersion(versionName.value, this.props.app.bundleId, versionFile)
 
-			this.cancelTokenSource = cancelSource
-			onProgress((progress) => this.setState({ progress }))
+			this.cancelTokenSource = upload.cancelSource
+			upload.onProgress((progress) => this.setState({ progress }))
 
-			const [hash] = await Promise.all([
+			const [calculatedHash] = await Promise.all([
 				this.fileService.hashFile(versionFile),
-				upload,
+				upload.upload,
 			])
 
-			if (!hash) {
+			if (!calculatedHash) {
 				throw new Error('Error hashing file')
 			}
 
+			downloadUrl = upload.downloadUrl
+			hash = calculatedHash
+
 			removeEventListener('beforeunload', preventClose)
 			toggleClosing && toggleClosing()
-
-			app.createVersion({
-				versionName: versionName.value,
-				description: description.value,
-				downloadUrl,
-				hash,
-				isBase,
-				isCritical,
-				systems: {
-					Windows_RT: isWindows,
-					Darwin: isDarwin,
-					Linux: isLinux,
-				},
-			})
 		}
+
+		app.createVersion({
+			versionName: versionName.value,
+			description: description.value,
+			downloadUrl,
+			hash,
+			isBase,
+			isCritical,
+			systems: {
+				Windows_RT: isWindows,
+				Darwin: isDarwin,
+				Linux: isLinux,
+			},
+		})
 	}
 
 	private handleReleaseVersion(version: VersionModel) {

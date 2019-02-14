@@ -48,7 +48,6 @@ export class VersionModel extends TimestampedDocument {
 	@BooleanSchema()
 	public isBase: boolean
 
-	@Allow('')
 	@StringSchema()
 	public description?: string
 
@@ -136,7 +135,6 @@ export class CreateVersionRequest extends VersionRequest {
 	@Token()
 	public appId: string
 
-	@Allow('')
 	@StringSchema()
 	public description?: string
 
