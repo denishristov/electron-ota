@@ -1,4 +1,4 @@
-import ElectronUpdateServiceClient from 'electron-client'
+import ElectronUpdateServiceClient from 'electron-ota'
 
 declare global {
 	namespace NodeJS {
@@ -11,12 +11,12 @@ declare global {
 
 const isDevMode = /[\\/]electron[\\/]/u.test(process.execPath)
 
-isDevMode && (global.updateService = new ElectronUpdateServiceClient({
+!isDevMode && (global.updateService = new ElectronUpdateServiceClient({
 	bundleId: 'test-electron',
 	updateServerUrl: 'http://localhost:4000',
 	versionName: require('../package.json').version,
 }))
 
-if (isDevMode || !global.updateService.loadLatestUpdateSync()) {
+if (!isDevMode || !global.updateService.loadLatestUpdateSync()) {
 	import('./main')
 }

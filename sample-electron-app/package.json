@@ -44,7 +44,7 @@
     "typescript": "^3.2.2"
   },
   "dependencies": {
-    "electron-client": "0.0.0",
+    "electron-ota": "0.0.0",
     "react": "16.8.1",
     "react-dom": "16.8.1",
     "use-force-update": "1.0.2"
