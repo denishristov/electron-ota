@@ -12,6 +12,8 @@ export const Stores = {
 
 export const Factories = {
 	App: Symbol.for('App.Factory'),
+	CreateVersionStore: Symbol.for('CreateVersionStore.Factory'),
+	UpdateVersionStore: Symbol.for('UpdateVersionStore.Factory'),
 }
 
 export const Services = {

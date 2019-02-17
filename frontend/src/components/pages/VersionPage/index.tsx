@@ -6,7 +6,7 @@ import Flex from '../../generic/Flex'
 import { VersionModel, VersionReportModel, ClientModel, ErrorReport } from 'shared'
 import { RouteComponentProps, Redirect } from 'react-router'
 import { IAppsStore } from '../../../stores/AppsStore'
-import { computed } from 'mobx'
+import { computed, observable } from 'mobx'
 import { IApp } from '../../../stores/App'
 import Loading from '../../generic/Loading'
 import { observer } from 'mobx-react'
@@ -21,9 +21,11 @@ import Client from './Client'
 import ErrorMessage from './ErrorMessage'
 import icons from '../../../util/constants/icons'
 import Tip from '../../generic/Tip'
-import VersionModal from '../../modals/VersionModal'
+
 import Modal from '../../generic/Modal'
 import { IFileService } from '../../../services/FileService'
+import { UpdateVersionStoreFactory } from '../../../stores/factories/UpdateVersionStoreFactory'
+import UpdateVersionModal from './UpdateVersionModal'
 
 interface IParams {
 	appId: string
@@ -48,6 +50,9 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 
 	@DI.lazyInject(DI.Stores.Apps)
 	private readonly appsStore: IAppsStore
+
+	@DI.lazyInject(DI.Factories.UpdateVersionStore)
+	private readonly updateVersionStoreFactory: UpdateVersionStoreFactory
 
 	@computed
 	private get app(): IApp | null {
@@ -87,8 +92,12 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 			return <Loading />
 		}
 
-		if (!this.app || !this.version) {
+		if (!this.app) {
 			return <Redirect to='/apps' />
+		}
+
+		if (!this.version) {
+			return <Redirect to={`/apps/${this.app.id}`} />
 		}
 
 		const {
@@ -99,6 +108,7 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 			isCritical,
 			createdAt,
 			hash,
+			downloadUrl,
 		} = this.version
 
 		return (
@@ -125,10 +135,9 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 								<Modal.Content
 									title={`Edit ${versionName}`}
 									className={versionModalStyles.versionModal}
-									component={VersionModal}
+									component={UpdateVersionModal}
 									props={{
-										app: this.app,
-										version: this.version,
+										store: this.updateVersionStoreFactory(this.app, this.version),
 									}}
 								/>
 							</Modal>
@@ -170,11 +179,13 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 									)}
 								</Flex>
 							</Flex>
-							<Flex list m spread>
-								<Button color='white' size='small' onClick={this.handleDownload}>
-									<SVG src={icons.Download} />
-									Download
-								</Button>
+							<Flex list m x y>
+								{downloadUrl && (
+									<Button color='white' size='small' onClick={this.handleDownload}>
+										<SVG src={icons.Download} />
+										Download
+									</Button>
+								)}
 								<Button color='blue' size='small' onClick={this.handleRelease}>
 									<SVG src={icons.Upload} />
 									Release
@@ -211,6 +222,7 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 								</>
 							)}
 						</Flex>
+						{/* <Example /> */}
 					</Flex>
 				</div>
 			</Container>

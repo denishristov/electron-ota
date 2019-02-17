@@ -11,7 +11,7 @@ import Button from '../../generic/Button'
 import Container from '../../generic/Container'
 import Loading from '../../generic/Loading'
 import Modal from '../../generic/Modal'
-import VersionModal from '../../modals/VersionModal'
+import VersionModal from './CreateVersionModal'
 import AppearAnimation from '../../generic/AppearAnimation'
 import Flex from '../../generic/Flex'
 
@@ -23,6 +23,8 @@ import versionStyles from '../../../styles/Version.module.sass'
 
 import { list } from '../../../util/functions'
 import Pushable from '../../generic/Pushable'
+import { CreateVersionStoreFactory } from '../../../stores/factories/CreateVersionStoreFactory'
+import { ICreateVersionStore } from '../../../stores/CreateVersionStore'
 
 interface IParams {
 	appId: string
@@ -42,6 +44,9 @@ export default class AppPage extends Component<RouteComponentProps<IParams>, ISt
 
 	@DI.lazyInject(DI.Stores.Apps)
 	private readonly appsStore: IAppsStore
+
+	@DI.lazyInject(DI.Factories.CreateVersionStore)
+	private readonly createVersionStoreFactory: CreateVersionStoreFactory
 
 	@computed
 	private get app(): IApp | null {
@@ -116,8 +121,10 @@ export default class AppPage extends Component<RouteComponentProps<IParams>, ISt
 									)}
 									component={VersionModal}
 									props={{
-										app: this.app,
-										previousVersionName: latestAddedVersion && latestAddedVersion.versionName,
+										store: this.createVersionStoreFactory(
+											this.app,
+											latestAddedVersion && latestAddedVersion.versionName,
+										),
 										toggleClosing: this.toggleClosing,
 									}}
 								/>

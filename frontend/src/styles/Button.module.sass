@@ -26,6 +26,11 @@
 	background-image: linear-gradient(to top right, $background 0%, $background 20%, $background2 100%)
 	color: $color
 
+	&:disabled
+		cursor: not-allowed
+		pointer-events: none
+		background-image: linear-gradient(to top right, desaturate($background, 50%) 0%, desaturate($background, 50%) 20%, desaturate($background2, 50%) 100%)
+
 	svg, g, path
 		fill: $color
 

@@ -80,7 +80,7 @@ export default class AppService implements IAppService {
 	public async createApp(createRequest: CreateAppRequest): Promise<CreateAppResponse> {
 		const { AppModel } = this
 
-		const app = await new AppModel(createRequest)
+		const app = new AppModel(createRequest)
 		await app.save()
 
 		const { versions, ...rest } = app.toJSON()
