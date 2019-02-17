@@ -17,17 +17,26 @@ import {
 	CreateVersionResponse,
 	DeleteVersionResponse,
 	CreateAppRequest,
+	IAppsClientCount,
+	SystemType,
+	ISystemTypeCount,
 } from 'shared'
 import { IApi } from '../util/Api'
 import { IApp } from './App'
 import { AppFactory } from './factories/AppFactory'
 import { getDefaultSimpleStatistics } from '../util/functions'
+import { defaultSystemCounts } from '../util/constants/defaults'
+
+interface IClient {
+	versionName: string
+	systemType: SystemType
+	bundleId: string
+}
 
 export interface IAppsStore {
 	allApps: IApp[]
 	getApp(id: string): IApp | null
 	fetchApps(): Promise<void>
-	fetchUploadPictureUrl(req: SignUploadUrlRequest): Promise<SignUploadUrlResponse>
 	createApp(createAppRequest: CreateAppRequest): void
 	updateApp(updateAppRequest: UpdateAppRequest): void
 	deleteApp(deleteAppRequest: DeleteAppRequest): void
@@ -36,7 +45,14 @@ export interface IAppsStore {
 
 @DI.injectable()
 export default class AppsStore implements IAppsStore {
+
+	@computed
+	get allApps(): IApp[] {
+		return Array.from(this.apps.values())
+	}
 	private readonly apps: ObservableMap<string, IApp> = observable.map({})
+
+	private readonly liveCounters = observable.map<string, ISystemTypeCount>({})
 
 	constructor(
 		@DI.inject(DI.Api)
@@ -55,15 +71,12 @@ export default class AppsStore implements IAppsStore {
 			.on(EventType.UpdateDownloaded, this.handleDownloadedReport)
 			.on(EventType.UpdateUsing, this.handleUsingReport)
 			.on(EventType.UpdateError, this.handleErrorReport)
+			.on(EventType.ClientConnected, this.handleClientConnected)
+			.on(EventType.ClientDisconnected, this.handleClientDisconnected)
 	}
 
 	public getApp(id: string): IApp | null {
 		return this.apps.get(id) || null
-	}
-
-	@computed
-	get allApps(): IApp[] {
-		return Array.from(this.apps.values())
 	}
 
 	@action
@@ -73,103 +86,10 @@ export default class AppsStore implements IAppsStore {
 		this.apps.merge(apps.map(this.appFactory).group((app) => [app.id, app]))
 	}
 
-	public fetchUploadPictureUrl(req: SignUploadUrlRequest): Promise<SignUploadUrlResponse> {
-		return this.api.emit<SignUploadUrlResponse>(EventType.SignUploadPictureUrl, req)
-	}
-
-	@action.bound
-	public handleCreateApp(app: CreateAppResponse): void {
-		this.apps.set(app.id, this.appFactory(app))
-	}
-
-	@action.bound
-	public handleUpdateApp(updateAppResponse: UpdateAppResponse): void {
-		const existingApp = this.apps.get(updateAppResponse.id)
-		existingApp && Object.assign(existingApp, updateAppResponse)
-	}
-
-	@action.bound
-	public handleDeleteApp(deleteAppResponse: DeleteAppResponse): void {
-		this.apps.delete(deleteAppResponse.id)
-	}
-
-	@action.bound
-	public handleCreateVersion(version: CreateVersionResponse) {
-		const app = this.apps.get(version.appId)
-
-		if (app) {
-			app.versions.set(version.id, version)
-			app.simpleReports.set(version.id, getDefaultSimpleStatistics(version.id))
-		}
-	}
-
-	@action.bound
-	public handleUpdateVersion(response: UpdateVersionResponse) {
-		const app = this.apps.get(response.appId)
-		const existingVersion = app && app.versions.get(response.id)
-
-		if (existingVersion) {
-			Object.assign(existingVersion, response)
-		}
-	}
-
-	@action.bound
-	public handleDeleteVersion(response: DeleteVersionResponse) {
-		const app = this.apps.get(response.appId)
-		app && app.versions.delete(response.id)
-	}
-
-	@action.bound
-	public handleDownloadingReport({ appId, versionId }: ClientReportResponse) {
-		const app = this.getApp(appId)
-
-		if (app) {
-			const reports = app.simpleReports.get(versionId)
-
-			if (reports) {
-				reports.downloadingCount++
-			}
-		}
-	}
-
-	@action.bound
-	public handleDownloadedReport({ appId, versionId }: ClientReportResponse) {
-		const app = this.getApp(appId)
-
-		if (app) {
-			const reports = app.simpleReports.get(versionId)
-
-			if (reports) {
-				reports.downloadingCount--
-				reports.downloadedCount++
-			}
-		}
-	}
-
-	@action.bound
-	public handleUsingReport({ appId, versionId }: ClientReportResponse) {
-		const app = this.getApp(appId)
-
-		if (app) {
-			const reports = app.simpleReports.get(versionId)
-
-			if (reports) {
-				reports.usingCount++
-			}
-		}
-	}
-
-	@action.bound
-	public handleErrorReport({ appId, versionId }: ErrorReportResponse) {
-		const app = this.getApp(appId)
-
-		if (app) {
-			const reports = app.simpleReports.get(versionId)
-
-			if (reports) {
-				reports.errorsCount++
-			}
-		}
+	@action
+	public async fetchAppsLiveCount(): Promise<void> {
+		const counters = await this.api.emit<IAppsClientCount>(EventType.getAppsClientCount)
+		this.liveCounters.merge(counters)
 	}
 
 	public createApp(createAppRequest: CreateAppRequest): void {
@@ -186,5 +106,142 @@ export default class AppsStore implements IAppsStore {
 
 	public releaseUpdate(req: PublishVersionRequest): void {
 		this.api.emit<PublishVersionResponse>(EventType.ReleaseUpdate, req)
+	}
+
+	@action.bound
+	private handleCreateApp(app: CreateAppResponse): void {
+		this.apps.set(app.id, this.appFactory(app))
+	}
+
+	@action.bound
+	private handleUpdateApp(updateAppResponse: UpdateAppResponse): void {
+		const existingApp = this.apps.get(updateAppResponse.id)
+		existingApp && Object.assign(existingApp, updateAppResponse)
+	}
+
+	@action.bound
+	private handleDeleteApp(deleteAppResponse: DeleteAppResponse): void {
+		this.apps.delete(deleteAppResponse.id)
+	}
+
+	@action.bound
+	private handleCreateVersion(version: CreateVersionResponse) {
+		const app = this.apps.get(version.appId)
+
+		if (app) {
+			app.versions.set(version.id, version)
+			app.simpleReports.set(version.id, getDefaultSimpleStatistics(version.id))
+		}
+	}
+
+	@action.bound
+	private handleUpdateVersion(response: UpdateVersionResponse) {
+		const app = this.apps.get(response.appId)
+		const existingVersion = app && app.versions.get(response.id)
+
+		if (existingVersion) {
+			Object.assign(existingVersion, response)
+		}
+	}
+
+	@action.bound
+	private handleDeleteVersion(response: DeleteVersionResponse) {
+		const app = this.apps.get(response.appId)
+		app && app.versions.delete(response.id)
+	}
+
+	@action.bound
+	private handleDownloadingReport({ appId, versionId }: ClientReportResponse) {
+		const app = this.getApp(appId)
+
+		if (app) {
+			const reports = app.simpleReports.get(versionId)
+
+			if (reports) {
+				reports.downloadingCount++
+			}
+		}
+	}
+
+	@action.bound
+	private handleDownloadedReport({ appId, versionId }: ClientReportResponse) {
+		const app = this.getApp(appId)
+
+		if (app) {
+			const reports = app.simpleReports.get(versionId)
+
+			if (reports) {
+				reports.downloadingCount--
+				reports.downloadedCount++
+			}
+		}
+	}
+
+	@action.bound
+	private handleUsingReport({ appId, versionId }: ClientReportResponse) {
+		const app = this.getApp(appId)
+
+		if (app) {
+			const reports = app.simpleReports.get(versionId)
+
+			if (reports) {
+				reports.usingCount++
+			}
+		}
+	}
+
+	@action.bound
+	private handleErrorReport({ appId, versionId }: ErrorReportResponse) {
+		const app = this.getApp(appId)
+
+		if (app) {
+			const reports = app.simpleReports.get(versionId)
+
+			if (reports) {
+				reports.errorsCount++
+			}
+		}
+	}
+
+	@action.bound
+	private handleClientConnected({ bundleId, versionName, systemType }: IClient) {
+		if (!this.liveCounters.has(bundleId)) {
+			this.liveCounters.set(bundleId, { ...defaultSystemCounts })
+		}
+
+		++this.liveCounters.get(bundleId)![systemType]
+
+		const app = [...this.apps.values()].find((app) => app.bundleId === bundleId)
+
+		if (app) {
+			const { clientCounters } = app
+
+			if (!clientCounters.has(versionName)) {
+				clientCounters.set(versionName, { ...defaultSystemCounts })
+			}
+
+			++clientCounters.get(versionName)![systemType]
+		}
+	}
+
+	@action.bound
+	private handleClientDisconnected({ bundleId, versionName, systemType }: IClient) {
+		if (!this.liveCounters.has(bundleId)) {
+			this.liveCounters.set(bundleId, { ...defaultSystemCounts })
+		}
+
+		--this.liveCounters.get(bundleId)![systemType]
+
+		const app = [...this.apps.values()].find((app) => app.bundleId === bundleId)
+
+		if (app) {
+			const { clientCounters } = app
+
+			if (!clientCounters.has(versionName)) {
+				clientCounters.set(versionName, { ...defaultSystemCounts })
+			}
+
+			--clientCounters.get(versionName)![systemType]
+		}
 	}
 }

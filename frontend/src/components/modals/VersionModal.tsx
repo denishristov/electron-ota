@@ -404,7 +404,7 @@ export default class VersionModal extends Component<IProps, IState> {
 			return
 		}
 
-		const versionFile = version.files[0]
+		const versionFile = version && version.files[0]
 
 		let downloadUrl
 		let hash

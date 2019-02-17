@@ -14,6 +14,7 @@ export default class ClientMediatorManagerHook implements IPostRespondHook {
 		private readonly mediators: Map<string, ISocketMediator>,
 	) {}
 
+	@bind
 	public async handle(event: EventType, req: CreateAppRequest, app: CreateAppResponse) {
 		for (const systemType of ClientMediatorManagerHook.systemTypes) {
 			const mediator = this.clientMediatorFactory(app.bundleId, systemType)
@@ -21,9 +22,11 @@ export default class ClientMediatorManagerHook implements IPostRespondHook {
 			switch (event) {
 				case EventType.CreateApp:
 					this.mediators.set(mediator.name, mediator)
+					break
 
 				case EventType.DeleteApp:
 					this.mediators.delete(mediator.name)
+					break
 			}
 		}
 	}

@@ -1,4 +1,4 @@
-import { ISocketMediator, IClient,  } from '../util/mediator/interfaces'
+import { ISocketMediator, IClient  } from '../util/mediator/interfaces'
 import { SystemType, EventType, IAppsClientCount, IAppClientCount, GetAppCountersRequest } from 'shared'
 import { AdminMediator } from '../util/symbols'
 
@@ -8,6 +8,8 @@ export interface IClientCounterService {
 	handleClientConnection(client: IClient): void
 	handleClientDisconnection(client: IClient): void
 }
+
+const defaultSystemTypeCounters = Object.keys(SystemType).group((x) => [x, 0])
 
 @DI.injectable()
 export default class ClientCounterService implements IClientCounterService {
@@ -50,7 +52,7 @@ export default class ClientCounterService implements IClientCounterService {
 			for (const client of mediator.clients) {
 				const { versionName } = client.handshake.query
 
-				response[versionName] = response[versionName] || {}
+				response[versionName] = response[versionName] || { ... defaultSystemTypeCounters }
 				response[versionName][systemType] = response[versionName][systemType]
 					? ++response[versionName][systemType]
 					: 1
