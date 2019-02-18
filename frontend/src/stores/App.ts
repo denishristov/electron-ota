@@ -19,9 +19,11 @@ import {
 	GetSimpleVersionReportsRequest,
 	GetVersionReportsRequest,
 	GetAppCountersRequest,
-	UpdateVersionRequest, 
-	UpdateVersionResponse, 
+	UpdateVersionRequest,
+	UpdateVersionResponse,
 	DeleteVersionRequest,
+	PublishVersionRequest,
+	PublishVersionResponse,
 } from 'shared'
 import { IApi } from '../services/Api'
 import { Omit } from 'react-router'
@@ -35,6 +37,8 @@ interface ICreateVersionInput {
 	downloadUrl?: string
 	hash?: string
 	fileName?: string
+	isReleasing: boolean
+	password?: string
 	systems: {
 		[key in SystemType]: boolean
 	}
@@ -61,6 +65,7 @@ export interface IApp {
 	createVersion(inputFields: ICreateVersionInput): Promise<void>
 	updateVersion(inputFields: Omit<VersionEditModel, 'appId'>): Promise<void>
 	deleteVersion(id: string): Promise<void>
+	releaseUpdate(request: PublishVersionRequest): Promise<void>
 }
 
 export default class App implements IApp {
@@ -160,13 +165,17 @@ export default class App implements IApp {
 		this.reports.set(versionId, reports)
 	}
 
-	public async createVersion(inputFields: ICreateVersionInput) {
-		await this.api.fetch({
+	public async createVersion({ isReleasing, password, ...version }: ICreateVersionInput) {
+		const { id } = await this.api.fetch({
 			eventType: EventType.CreateVersion,
-			request: { appId: this.id, ...inputFields },
+			request: { appId: this.id, ...version },
 			requestType: CreateVersionRequest,
 			responseType: CreateVersionResponse,
 		})
+
+		if (isReleasing && password) {
+			this.releaseUpdate({ password, versionId: id })
+		}
 	}
 
 	public async updateVersion(inputFields: Omit<VersionEditModel, 'appId'>) {
@@ -186,13 +195,24 @@ export default class App implements IApp {
 		})
 	}
 
+	@action
 	public async fetchAppLiveCount() {
 		const counters = await this.api.fetch({
 			eventType: EventType.getAppClientCount,
 			request: { bundleId: this.bundleId },
 			requestType: GetAppCountersRequest,
 		})
-console.log(counters)
+
 		this.clientCounters.merge(counters)
+	}
+
+	@action
+	public async releaseUpdate(request: PublishVersionRequest): Promise<void> {
+		await this.api.fetch({
+			eventType: EventType.ReleaseUpdate,
+			request,
+			requestType: PublishVersionRequest,
+			responseType: PublishVersionResponse,
+		})
 	}
 }

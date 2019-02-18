@@ -1,23 +1,27 @@
 import React from 'react'
 import { ErrorReport } from 'shared'
 
-import Windows from '../../../img/Windows.svg'
-import Apple from '../../../img/Apple.svg'
-import Ubuntu from '../../../img/Ubuntu.svg'
-
 import styles from '../../../styles/VersionPage.module.sass'
 import Flex from '../../generic/Flex'
 import Pushable from '../../generic/Pushable'
 import Modal from '../../generic/Modal'
 import { observer } from 'mobx-react'
+import Button from '../../generic/Button'
+import icons from '../../../util/constants/icons'
 
-const icons = {
-	Darwin: Apple,
-	Windows_RT: Windows,
-	Linux: Ubuntu,
-}
-
-const ErrorModal = ({ errorMessage }: { errorMessage: string }) => <code>{errorMessage}</code>
+const ErrorModal = ({ errorMessage }: { errorMessage: string }) => (
+	<>
+		<code>{errorMessage}</code>
+		<footer>
+			<Modal.CloseTrigger>
+				<Button size='small' color='white' type='button'>
+					<SVG src={icons.Close} />
+					Cancel
+				</Button>
+			</Modal.CloseTrigger>
+		</footer>
+	</>
+)
 
 export default observer(function ErrorMessage({ client, errorMessage }: ErrorReport) {
 	return (

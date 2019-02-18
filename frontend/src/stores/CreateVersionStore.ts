@@ -59,7 +59,7 @@ export default class CreateVersionStore extends VersionModalStore implements ICr
 	}
 
 	@action.bound
-	public async handleSubmit({ versionName, description }: IVersionFormData) {
+	public async handleSubmit({ versionName, description, password }: IVersionFormData) {
 		const {
 			isReleasing,
 			isCritical,
@@ -109,6 +109,8 @@ export default class CreateVersionStore extends VersionModalStore implements ICr
 			isBase,
 			isCritical,
 			fileName,
+			isReleasing,
+			password,
 			systems: {
 				Windows_RT: isWindows,
 				Darwin: isDarwin,

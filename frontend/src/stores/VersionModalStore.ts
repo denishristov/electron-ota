@@ -11,7 +11,7 @@ type Toggles = {
 export interface IVersionFormData {
 	versionName: string
 	description: string
-	version?: File
+	password?: string
 }
 
 export interface IVersionModalStore extends Toggles {

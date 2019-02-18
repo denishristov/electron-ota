@@ -6,6 +6,7 @@ import { Nested } from 'tsdv-joi'
 import { SystemType } from '../enums/SystemType'
 import { Or } from 'tsdv-joi/constraints/object'
 import { AuthenticatedRequest } from './generic'
+import { AdminPublicModel } from './Admin'
 
 class Update {
 	@Required()
@@ -63,14 +64,20 @@ export class PublishVersionRequest extends AuthenticatedRequest {
 	@Required()
 	@Token()
 	public versionId: string
+
+	@Required()
+	@StringSchema()
+	public password: string
 }
 
 export class PublishVersionResponse {
 	@Required()
-	@BooleanSchema()
-	public isSuccessful: boolean
+	@Token()
+	public versionId: string
 
 	@Required()
 	@Token()
-	public versionId: string
+	public appId: string
+
+	public releasedBy: AdminPublicModel
 }

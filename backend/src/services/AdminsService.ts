@@ -25,9 +25,11 @@ export interface IAdminsService {
 	authenticate(req: AuthenticatedRequest): Promise<AdminAuthenticationResponse>
 	register(req: RegisterAdminRequest): Promise<RegisterAdminResponse>
 	getProfile(req: AuthenticatedRequest): Promise<AdminPublicModel>
+	getPublicProfile(id: string): Promise<AdminPublicModel>
 	editProfile(req: AdminEditProfileRequest): Promise<void>
 	deleteProfile(req: AuthenticatedRequest): Promise<void>
 	getPayloadFromToken(authToken: string): Promise<IJWTPayload>
+	validatePassword(id: string, password: string): Promise<boolean>
 }
 
 interface IJWTPayload {
@@ -54,7 +56,7 @@ export default class AdminsService implements IAdminsService {
 				.findOne(filterValues({ email, name }))
 				.select('password authTokens')
 
-			if (!await bcrypt.compare(password, user.password)) {
+			if (!await this.comparePasswords(password, user.password)) {
 				throw new Error('Invalid password')
 			}
 
@@ -144,7 +146,7 @@ export default class AdminsService implements IAdminsService {
 		}))
 
 		if (oldPassword && newPassword) {
-			if (!await bcrypt.compare(oldPassword, user.password)) {
+			if (!await this.comparePasswords(oldPassword, user.password)) {
 				throw new Error('Invalid password')
 			}
 
@@ -166,13 +168,29 @@ export default class AdminsService implements IAdminsService {
 	public async getProfile({ authToken }: AuthenticatedRequest) {
 		const { id } = await this.getPayloadFromToken(authToken)
 
+		return this.getPublicProfile(id)
+	}
+
+	public getPayloadFromToken(authToken: string): Promise<IJWTPayload> {
+		return jwt.verify(authToken, PASS_SECRET_KEY, { algorithms: ['HS256'] }) as Promise<IJWTPayload>
+	}
+
+	public async validatePassword(id: string, password: string) {
+		const { password: hashedPassword } = await this.AdminModel
+			.findById(id)
+			.select('password')
+
+		return await this.comparePasswords(password, hashedPassword)
+	}
+
+	public async getPublicProfile(id: string) {
 		const { name, pictureUrl, email } = await this.AdminModel.findById(id).select('name pictureUrl email')
 
 		return { name, pictureUrl, email }
 	}
 
-	public getPayloadFromToken(authToken: string): Promise<IJWTPayload> {
-		return jwt.verify(authToken, PASS_SECRET_KEY, { algorithms: ['HS256'] }) as Promise<IJWTPayload>
+	private comparePasswords(password: string, hashedPassword: string) {
+		return bcrypt.compare(password, hashedPassword)
 	}
 
 	private async generateTokenAndAddToAdmin(admin: InstanceType<Admin>): Promise<string> {

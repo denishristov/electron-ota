@@ -33,6 +33,7 @@ interface ICreateEvent extends FormEvent<HTMLFormElement> {
 		elements: {
 			description: HTMLTextAreaElement
 			versionName: HTMLInputElement
+			password: HTMLInputElement
 			version: HTMLInputElement & {
 				files: FileList,
 			},
@@ -138,6 +139,14 @@ export default class CreateVersionModal extends Component<IProps> {
 								onChange={toggles[ToggleNames.isBase]}
 								value={this.store.isBase}
 							/>
+							{this.store.isReleasing && (
+								<Input
+									label='password'
+									name='password'
+									type='password'
+									required={this.store.isReleasing}
+								/>
+							)}
 							{!this.store.isBase && (
 								<Dropzone
 									onDrop={handleDrop}
@@ -233,8 +242,8 @@ export default class CreateVersionModal extends Component<IProps> {
 
 		const {
 			versionName,
-			version,
 			description,
+			password,
 		} = event.target.elements
 
 		addEventListener('beforeunload', preventClose)
@@ -243,7 +252,7 @@ export default class CreateVersionModal extends Component<IProps> {
 		await this.store.handleSubmit({
 			versionName: versionName.value,
 			description: description.value,
-			version: version && version.files[0],
+			password: password && password.value,
 		})
 
 		removeEventListener('beforeunload', preventClose)

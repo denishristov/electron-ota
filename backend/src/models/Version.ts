@@ -29,7 +29,6 @@ export class Version extends Typegoose {
 	@prop({ required: true })
 	public isBase: boolean
 
-	@prop()
 	public hash: string
 
 	@prop({ required: true })

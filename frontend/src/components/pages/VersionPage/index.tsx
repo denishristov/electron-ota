@@ -26,6 +26,7 @@ import Modal from '../../generic/Modal'
 import { IFileService } from '../../../services/FileService'
 import { UpdateVersionStoreFactory } from '../../../stores/factories/UpdateVersionStoreFactory'
 import UpdateVersionModal from './UpdateVersionModal'
+import ReleaseModal from './ReleaseModal'
 
 interface IParams {
 	appId: string
@@ -38,6 +39,14 @@ const clientMapper = (client: ClientModel) => (
 const errorMapper = ({ client, errorMessage }: ErrorReport) => (
 	<ErrorMessage key={client.id} client={client} errorMessage={errorMessage} />
 )
+
+export interface IReleaseVersionEvent extends React.FormEvent<HTMLFormElement> {
+	target: EventTarget & {
+		elements: {
+			password: HTMLInputElement,
+		},
+	}
+}
 
 @observer
 export default class VersionPage extends React.Component<RouteComponentProps<IParams>> {
@@ -110,6 +119,7 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 			hash,
 			downloadUrl,
 			releasedBy,
+			isReleased,
 		} = this.version
 
 		return (
@@ -197,10 +207,25 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 										Download
 									</Button>
 								)}
-								<Button color='blue' size='small' onClick={this.handleRelease}>
-									<SVG src={icons.Upload} />
-									Release
-								</Button>
+								<Modal>
+									<Modal.OpenTrigger>
+										<Button
+											color='blue'
+											size='small'
+											disabled={isReleased}
+										>
+											<SVG src={icons.Upload} />
+											Release
+										</Button>
+									</Modal.OpenTrigger>
+									<Modal.Content
+										title={`Release ${versionName}`}
+										component={ReleaseModal}
+										props={{
+											onSubmit: this.handleRelease,
+										}}
+									/>
+								</Modal>
 							</Flex>
 						</Flex>
 						<Flex list x>
@@ -241,8 +266,16 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 	}
 
 	@bind
-	private handleRelease() {
-		this.version && this.appsStore.releaseUpdate({ versionId: this.version.id })}
+	private handleRelease(event: IReleaseVersionEvent) {
+		event.preventDefault()
+
+		if (this.version && this.app) {
+			this.app.releaseUpdate({
+				versionId: this.version.id,
+				password: event.target.elements.password.value,
+			})
+		}
+	}
 
 	@bind
 	private handleDownload() {

@@ -13,6 +13,8 @@ import { App } from '../models/App'
 import { VersionReports } from '../models/VersionReports'
 import { ModelType } from 'typegoose'
 import { IFileUploadService } from './S3Service'
+import { IAdminsService } from './AdminsService'
+import { IReleaseService } from './ReleaseService'
 
 export interface IVersionService {
 	getVersion({ id }: GetVersionRequest): Promise<VersionRequest>
@@ -42,16 +44,16 @@ export default class VersionService implements IVersionService {
 	}
 
 	@bind
-	public async createVersion(req: CreateVersionRequest): Promise<VersionModel> {
+	public async createVersion(versionData: CreateVersionRequest): Promise<VersionModel> {
 		const { VersionModel, VersionReportsModel } = this
 
-		const version = new VersionModel(req)
+		const version = new VersionModel(versionData)
 		await version.save()
 
 		const reports = new VersionReportsModel({ version })
 		await reports.save()
 
-		await this.AppModel.findByIdAndUpdate(req.appId, {
+		await this.AppModel.findByIdAndUpdate(versionData.appId, {
 			$push: { versions: version },
 		})
 

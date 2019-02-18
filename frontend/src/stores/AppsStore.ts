@@ -38,7 +38,6 @@ export interface IAppsStore {
 	createApp(createAppRequest: CreateAppRequest): void
 	updateApp(updateAppRequest: UpdateAppRequest): void
 	deleteApp(deleteAppRequest: DeleteAppRequest): void
-	releaseUpdate(req: PublishVersionRequest): void
 }
 
 @DI.injectable()
@@ -66,6 +65,7 @@ export default class AppsStore implements IAppsStore {
 			.on(EventType.UpdateError, this.handleErrorReport)
 			.on(EventType.ClientConnected, this.handleClientConnected)
 			.on(EventType.ClientDisconnected, this.handleClientDisconnected)
+			.on(EventType.ReleaseUpdate, this.handleVersionPublished)
 	}
 
 	@computed
@@ -121,15 +121,6 @@ export default class AppsStore implements IAppsStore {
 			request: deleteAppRequest,
 			requestType: DeleteAppRequest,
 			responseType: DeleteAppResponse,
-		})
-	}
-
-	public releaseUpdate(request: PublishVersionRequest): void {
-		this.api.fetch({
-			eventType: EventType.ReleaseUpdate,
-			request,
-			requestType: PublishVersionRequest,
-			responseType: PublishVersionResponse,
 		})
 	}
 
@@ -267,6 +258,20 @@ export default class AppsStore implements IAppsStore {
 			}
 
 			--clientCounters.get(versionName)![systemType]
+		}
+	}
+
+	@action.bound
+	private handleVersionPublished({ versionId, appId, releasedBy }: PublishVersionResponse) {
+		const app = this.apps.get(appId)
+
+		if (app) {
+			const version = app.versions.get(versionId)
+
+			if (version) {
+				version.isReleased = true
+				version.releasedBy = releasedBy
+			}
 		}
 	}
 }

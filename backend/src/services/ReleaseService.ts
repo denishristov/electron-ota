@@ -34,8 +34,16 @@ export default class ReleaseService implements IReleaseService {
 	) {}
 
 	@bind
-	public async releaseVersion({ versionId, authToken }: PublishVersionRequest): Promise<PublishVersionResponse> {
+	public async releaseVersion({
+		versionId,
+		authToken,
+		password,
+	}: PublishVersionRequest): Promise<PublishVersionResponse> {
 		const { id } = await this.adminService.getPayloadFromToken(authToken)
+
+		if (!await this.adminService.validatePassword(id, password)) {
+			throw new Error('Invalid password')
+		}
 
 		const version = await this.VersionModel.findById(versionId).select(`
 			systems
@@ -53,8 +61,9 @@ export default class ReleaseService implements IReleaseService {
 		await version.save()
 
 		return {
-			isSuccessful: true,
 			versionId,
+			appId: version.appId,
+			releasedBy: await this.adminService.getPublicProfile(id),
 		}
 	}
 
