@@ -63,7 +63,8 @@ export default class CreateVersionModal extends Component<IProps> {
 					<Flex grow>
 						<Flex col p list mr>
 							<Input
-								defaultValue={this.store.versionName}
+								value={this.store.versionName}
+								onChange={this.setVersionName}
 								name='versionName'
 								label='Name'
 								disabled={this.store.releaseType !== ReleaseType.Custom}
@@ -207,6 +208,11 @@ export default class CreateVersionModal extends Component<IProps> {
 				</form>
 			</Modal.CloseTrigger>
 		)
+	}
+
+	@bind
+	private setVersionName(event: ChangeEvent<HTMLInputElement>) {
+		this.store.versionName = event.target.value
 	}
 
 	@bind

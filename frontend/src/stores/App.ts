@@ -2,8 +2,6 @@ import { action, computed, observable, ObservableMap } from 'mobx'
 import {
 	EventType,
 	GetVersionsResponse,
-	SignUploadUrlRequest,
-	SignUploadUrlResponse,
 	VersionModel,
 	SystemType,
 	SimpleVersionReportModel,
@@ -15,8 +13,17 @@ import {
 	LatestVersionsModel,
 	ISystemTypeCount,
 	IAppClientCount,
+	GetVersionsRequest,
+	CreateVersionRequest,
+	CreateVersionResponse,
+	GetSimpleVersionReportsRequest,
+	GetVersionReportsRequest,
+	GetAppCountersRequest,
+	UpdateVersionRequest, 
+	UpdateVersionResponse, 
+	DeleteVersionRequest,
 } from 'shared'
-import { IApi } from '../util/Api'
+import { IApi } from '../services/Api'
 import { Omit } from 'react-router'
 import { byDateDesc } from '../util/functions'
 
@@ -27,6 +34,7 @@ interface ICreateVersionInput {
 	description: string
 	downloadUrl?: string
 	hash?: string
+	fileName?: string
 	systems: {
 		[key in SystemType]: boolean
 	}
@@ -47,13 +55,12 @@ export interface IApp {
 	allVersions: VersionModel[]
 	getVersion(id: string): VersionModel | null
 	fetchVersions(): Promise<void>
-	fetchSignedUploadVersionUrl(req: SignUploadUrlRequest): Promise<SignUploadUrlResponse>
 	fetchSimpleReports(): Promise<void>
 	fetchReports(versionId: string): Promise<void>
 	fetchAppLiveCount(): Promise<void>
-	createVersion(inputFields: ICreateVersionInput): void
-	updateVersion(inputFields: Omit<VersionEditModel, 'appId'>): void
-	deleteVersion(id: string): void
+	createVersion(inputFields: ICreateVersionInput): Promise<void>
+	updateVersion(inputFields: Omit<VersionEditModel, 'appId'>): Promise<void>
+	deleteVersion(id: string): Promise<void>
 }
 
 export default class App implements IApp {
@@ -117,22 +124,24 @@ export default class App implements IApp {
 
 	@action
 	public async fetchVersions() {
-		const { versions } = await this.api.emit<GetVersionsResponse>(EventType.GetVersions, { appId: this.id })
+		const { versions } = await this.api.fetch({
+			eventType: EventType.GetVersions,
+			request: { appId: this.id },
+			requestType: GetVersionsRequest,
+			responseType: GetVersionsResponse,
+		})
 
 		this.versions.merge(versions.group((version) => [version.id, version]))
 	}
 
 	@action
-	public async fetchSignedUploadVersionUrl(req: SignUploadUrlRequest) {
-		return await this.api.emit<SignUploadUrlResponse>(EventType.SignUploadVersionUrl, req)
-	}
-
-	@action
 	public async fetchSimpleReports() {
-		const { reports } = await this.api.emit<GetSimpleVersionReportsResponse>(
-			EventType.SimpleVersionReports,
-			{ appId: this.id },
-		)
+		const { reports } = await this.api.fetch({
+			eventType: EventType.SimpleVersionReports,
+			request: { appId: this.id },
+			requestType: GetSimpleVersionReportsRequest,
+			responseType: GetSimpleVersionReportsResponse,
+		})
 
 		const grouped = reports.group((report) => [report.version, report])
 
@@ -141,25 +150,49 @@ export default class App implements IApp {
 
 	@action
 	public async fetchReports(versionId: string) {
-		const reports = await this.api.emit<GetVersionReportsResponse>(EventType.VersionReports, { versionId })
+		const reports = await this.api.fetch({
+			eventType: EventType.VersionReports,
+			request: { versionId },
+			requestType: GetVersionReportsRequest,
+			responseType: GetVersionReportsResponse,
+		})
+
 		this.reports.set(versionId, reports)
 	}
 
-	public createVersion(inputFields: ICreateVersionInput) {
-		this.api.emit(EventType.CreateVersion, { appId: this.id, ...inputFields })
+	public async createVersion(inputFields: ICreateVersionInput) {
+		await this.api.fetch({
+			eventType: EventType.CreateVersion,
+			request: { appId: this.id, ...inputFields },
+			requestType: CreateVersionRequest,
+			responseType: CreateVersionResponse,
+		})
 	}
 
-	public updateVersion(inputFields: Omit<VersionEditModel, 'appId'>) {
-		this.api.emit(EventType.UpdateVersion, { appId: this.id, ...inputFields })
+	public async updateVersion(inputFields: Omit<VersionEditModel, 'appId'>) {
+		await this.api.fetch({
+			eventType: EventType.UpdateVersion,
+			request: { appId: this.id, ...inputFields },
+			requestType: UpdateVersionRequest,
+			responseType: UpdateVersionResponse,
+		})
 	}
 
-	public deleteVersion(id: string) {
-		this.api.emit(EventType.DeleteVersion, { appId: this.id, id })
+	public async deleteVersion(id: string) {
+		await this.api.fetch({
+			eventType: EventType.DeleteVersion,
+			request: { appId: this.id, id },
+			requestType: DeleteVersionRequest,
+		})
 	}
 
 	public async fetchAppLiveCount() {
-		const counters = await this.api.emit<IAppClientCount>(EventType.getAppClientCount, { bundleId: this.bundleId })
+		const counters = await this.api.fetch({
+			eventType: EventType.getAppClientCount,
+			request: { bundleId: this.bundleId },
+			requestType: GetAppCountersRequest,
+		})
+console.log(counters)
 		this.clientCounters.merge(counters)
-		console.log(counters)
 	}
 }

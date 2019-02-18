@@ -30,7 +30,7 @@ export default class CreateVersionStore extends VersionModalStore implements ICr
 	public releaseType = ReleaseType.Custom
 
 	public readonly releaseTypeSetters = Object.values(ReleaseType)
-		.group((releaseType) => [releaseType, () => this.releaseType = releaseType])
+		.group((releaseType) => [releaseType, this.setReleaseType.bind(this, releaseType)])
 
 	public cancelTokenSource: CancelTokenSource
 
@@ -76,9 +76,11 @@ export default class CreateVersionStore extends VersionModalStore implements ICr
 
 		let hash
 		let downloadUrl
+		let fileName
 
 		if (versionFile) {
-			const upload = await this.uploadService.uploadVersion(versionName, this.app.bundleId, versionFile)
+			fileName = `${this.app.bundleId}-${versionName}-${Date.now()}.asar`
+			const upload = await this.uploadService.uploadVersion(fileName, versionFile)
 
 			this.cancelTokenSource = upload.cancelSource
 
@@ -106,6 +108,7 @@ export default class CreateVersionStore extends VersionModalStore implements ICr
 			hash,
 			isBase,
 			isCritical,
+			fileName,
 			systems: {
 				Windows_RT: isWindows,
 				Darwin: isDarwin,
@@ -114,9 +117,12 @@ export default class CreateVersionStore extends VersionModalStore implements ICr
 		})
 	}
 
-	@action.bound
+	@action
 	public setReleaseType(releaseType: ReleaseType) {
+		this.releaseType = releaseType
+
 		if (releaseType !== ReleaseType.Custom && this.previousVersionName) {
+			// console.log(semver.inc(this.previousVersionName, releaseType))
 			this.versionName = semver.inc(this.previousVersionName, releaseType) || void 0
 		}
 	}

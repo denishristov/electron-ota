@@ -1,5 +1,5 @@
 import { observable, computed } from 'mobx'
-import { IApi } from '../util/Api'
+import { IApi } from '../services/Api'
 
 import { IUserStore } from './UserStore'
 import {
@@ -22,7 +22,7 @@ export default class RegisterStore implements IRegisterStore {
 	public path?: string
 
 	constructor(
-		@DI.inject(DI.Api)
+		@DI.inject(DI.Services.Api)
 		private readonly api: IApi,
 		@DI.inject(DI.Stores.User)
 		private readonly userStore: IUserStore,
@@ -33,8 +33,13 @@ export default class RegisterStore implements IRegisterStore {
 		return !this.path
 	}
 
-	public async registerAdmin(req: RegisterAdminRequest) {
-		const { isSuccessful, authToken } = await this.api.emit<RegisterAdminResponse>(EventType.RegisterAdmin, req)
+	public async registerAdmin(request: RegisterAdminRequest) {
+		const { isSuccessful, authToken } = await this.api.fetch({
+			eventType: EventType.RegisterAdmin,
+			request,
+			requestType: RegisterAdminRequest,
+			responseType: RegisterAdminResponse,
+		})
 
 		if (authToken) {
 			this.userStore.setAuthToken(authToken)
@@ -44,7 +49,11 @@ export default class RegisterStore implements IRegisterStore {
 	}
 
 	public async fetchKeyPath() {
-		const { path } = await this.api.emit<RegisterKeyPathResponse>(EventType.GetRegisterKeyPath)
+		const { path } = await this.api.fetch({
+			eventType: EventType.GetRegisterKeyPath,
+			responseType: RegisterKeyPathResponse,
+		})
+
 		this.path = path
 	}
 }

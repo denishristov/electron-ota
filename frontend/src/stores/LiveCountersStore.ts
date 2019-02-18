@@ -10,7 +10,7 @@
 // 	private readonly appsCounters = observable.map<string, ISystemTypeCount>({})
 
 // 	constructor(
-// 		@DI.inject(DI.Api)
+// 		@DI.inject(DI.Services.Api)
 // 		private readonly api: IApi,
 // 	) {}
 

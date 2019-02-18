@@ -1,6 +1,4 @@
 // tslint:disable:variable-name
-export const Api = Symbol.for('Api')
-
 export const Connection = Symbol.for('Connection')
 
 export const Stores = {
@@ -17,6 +15,7 @@ export const Factories = {
 }
 
 export const Services = {
+	Api: Symbol.for('Services.Api'),
 	File: Symbol.for('Services.File'),
 	Upload: Symbol.for('Services.Upload'),
 }

@@ -23,3 +23,7 @@ export interface ITimestampedDocument {
 	createdAt: string
 	updatedAt: string
 }
+
+export type Newable<T> = new(...args: any[]) => T
+
+export class Empty {}

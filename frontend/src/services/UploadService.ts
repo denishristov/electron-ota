@@ -1,7 +1,7 @@
-import { IApi } from '../util/Api'
+import { IApi } from './Api'
 import axios, { CancelToken, CancelTokenSource } from 'axios'
 import { noop } from '../util/functions'
-import { EventType, SignUploadUrlResponse } from 'shared'
+import { EventType, SignUploadUrlResponse, SignUploadUrlRequest } from 'shared'
 
 const { CancelToken } = axios
 
@@ -15,20 +15,18 @@ interface IFileUpload {
 }
 
 export interface IUploadService {
-	uploadVersion(versionName: string, bundleId: string, file: File): Promise<IFileUpload>
+	uploadVersion(name: string, file: File): Promise<IFileUpload>
 	uploadPicture(picture: File): Promise<IFileUpload>
 }
 
 @DI.injectable()
 export default class UploadService implements IUploadService {
 	constructor(
-		@DI.inject(DI.Api)
+		@DI.inject(DI.Services.Api)
 		private readonly api: IApi,
 	) {}
 
-	public uploadVersion(versionName: string, bundleId: string, file: File) {
-		const name = `${bundleId}-${versionName}-${Date.now()}.asar`
-
+	public uploadVersion(name: string, file: File) {
 		return this.uploadFile(EventType.SignUploadVersionUrl, file, name)
 	}
 
@@ -40,9 +38,14 @@ export default class UploadService implements IUploadService {
 		const {
 			signedRequest,
 			downloadUrl,
-		} = await this.api.emit<SignUploadUrlResponse>(eventType, {
-			name: name || file.name,
-			type: file.type,
+		} = await this.api.fetch({
+			eventType,
+			requestType: SignUploadUrlRequest,
+			responseType: SignUploadUrlResponse,
+			request: {
+				name: name || file.name,
+				type: file.type,
+			},
 		})
 
 		const cancelSource = CancelToken.source()

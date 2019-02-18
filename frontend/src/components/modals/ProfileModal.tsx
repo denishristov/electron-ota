@@ -8,13 +8,9 @@ import Button from '../generic/Button'
 
 import styles from '../../styles/AppsPage.module.sass'
 
-import { filterValues } from '../../util/functions'
-
 import icons from '../../util/constants/icons'
 import { IUserStore } from '../../stores/UserStore'
 import PictureUpload from '../generic/PictureUpload'
-import { IApi } from '../../util/Api'
-import { EventType } from 'shared'
 import { IFileService } from '../../services/FileService'
 import { IUploadService } from '../../services/UploadService'
 
@@ -38,9 +34,6 @@ export default class ProfileModal extends React.Component<{}> {
 	public readonly state = {
 		pictureSrc: '',
 	}
-
-	@DI.lazyInject(DI.Api)
-	private readonly api: IApi
 
 	@DI.lazyInject(DI.Stores.User)
 	private readonly userStore: IUserStore
@@ -105,7 +98,7 @@ export default class ProfileModal extends React.Component<{}> {
 								Cancel
 							</Button>
 						</Modal.CloseTrigger>
-						<Button size='small' color='red' type='button' onClick={this.deleteProfile}>
+						<Button size='small' color='red' type='button' onClick={this.userStore.deleteProfile}>
 							<SVG src={icons.Delete} />
 							Delete Profile
 						</Button>
@@ -117,12 +110,6 @@ export default class ProfileModal extends React.Component<{}> {
 				</form>
 			</Modal.CloseTrigger>
 		)
-	}
-
-	@bind
-	private async deleteProfile() {
-		await this.api.emit(EventType.DeleteProfile)
-		this.userStore.logout()
 	}
 
 	@bind
@@ -150,24 +137,19 @@ export default class ProfileModal extends React.Component<{}> {
 			downloadUrl = upload.downloadUrl
 		}
 
-		await this.api.emit(EventType.EditProfile, {
+		await this.userStore.editProfile({
 			name: name.value,
 			email: email.value,
 			oldPassword: oldPassword.value,
 			newPassword: newPassword.value,
 			pictureUrl: downloadUrl,
 		})
-
-		Object.assign(this.userStore.profile, filterValues({
-			name: name.value,
-			email: email.value,
-			pictureUrl: downloadUrl,
-		}))
 	}
 
 	@bind
 	private async handleSelectPicture([pictureFile]: File[]) {
 		const pictureSrc = await this.fileService.getSourceFromFile(pictureFile)
+
 		this.setState({ pictureSrc })
 	}
 }

@@ -16,6 +16,9 @@ export class Version extends Typegoose {
 	@prop()
 	public downloadUrl?: string
 
+	@prop()
+	public fileName?: string
+
 	@prop({ required: true })
 	public isCritical: boolean
 
@@ -25,7 +28,7 @@ export class Version extends Typegoose {
 	@prop({ required: true })
 	public isBase: boolean
 
-	@prop({ unique: true, sparse: true })
+	@prop()
 	public hash: string
 
 	@prop({ required: true })

@@ -4,21 +4,21 @@ import io from 'socket.io-client'
 
 import { SERVER_URI } from '.'
 
-import Api, { IApi } from '../util/Api'
+import Api, { IApi } from '../services/Api'
 
 import AppsStore, { IAppsStore } from '../stores/AppsStore'
 import UserStore, { IUserStore } from '../stores/UserStore'
 import RegisterStore, { IRegisterStore } from '../stores/RegisterStore'
-
-import appFactory, { AppFactory } from '../stores/factories/AppFactory'
 
 import FileService, { IFileService } from '../services/FileService'
 import UploadService, { IUploadService } from '../services/UploadService'
 
 import { createBrowserHistory } from 'history'
 import { BrowserHistory } from '../util/types'
+
+import appFactory, { AppFactory } from '../stores/factories/AppFactory'
 import createVersionStoreFactory, { CreateVersionStoreFactory } from '../stores/factories/CreateVersionStoreFactory'
-import updateVersionStoreFactory, { UpdateVersionStoreFactory } from '../stores/factories/UpdateVersionStoreFactory';
+import updateVersionStoreFactory, { UpdateVersionStoreFactory } from '../stores/factories/UpdateVersionStoreFactory'
 
 const container = new Container()
 
@@ -28,7 +28,7 @@ DI.lazyInject = lazyInject
 container.bind(DI.Connection)
 	.toConstantValue(io(SERVER_URI))
 
-container.bind<IApi>(DI.Api)
+container.bind<IApi>(DI.Services.Api)
 	.to(Api)
 	.inSingletonScope()
 

@@ -5,8 +5,6 @@ import {
 	DeleteAppRequest,
 	DeleteAppResponse,
 	GetAppsResponse,
-	SignUploadUrlRequest,
-	SignUploadUrlResponse,
 	UpdateAppRequest,
 	UpdateAppResponse,
 	UpdateVersionResponse,
@@ -17,11 +15,11 @@ import {
 	CreateVersionResponse,
 	DeleteVersionResponse,
 	CreateAppRequest,
-	IAppsClientCount,
 	SystemType,
 	ISystemTypeCount,
+	AuthenticatedRequest,
 } from 'shared'
-import { IApi } from '../util/Api'
+import { IApi } from '../services/Api'
 import { IApp } from './App'
 import { AppFactory } from './factories/AppFactory'
 import { getDefaultSimpleStatistics } from '../util/functions'
@@ -55,7 +53,7 @@ export default class AppsStore implements IAppsStore {
 	private readonly liveCounters = observable.map<string, ISystemTypeCount>({})
 
 	constructor(
-		@DI.inject(DI.Api)
+		@DI.inject(DI.Services.Api)
 		private readonly api: IApi,
 		@DI.inject(DI.Factories.App)
 		private readonly appFactory: AppFactory,
@@ -81,31 +79,58 @@ export default class AppsStore implements IAppsStore {
 
 	@action
 	public async fetchApps(): Promise<void> {
-		const { apps } = await this.api.emit<GetAppsResponse>(EventType.GetApps)
+		const { apps } = await this.api.fetch({
+			eventType: EventType.GetApps,
+			requestType: AuthenticatedRequest,
+			responseType: GetAppsResponse,
+		})
 
 		this.apps.merge(apps.map(this.appFactory).group((app) => [app.id, app]))
 	}
 
 	@action
 	public async fetchAppsLiveCount(): Promise<void> {
-		const counters = await this.api.emit<IAppsClientCount>(EventType.getAppsClientCount)
+		const counters = await this.api.fetch({
+			eventType: EventType.getAppsClientCount,
+		})
+
 		this.liveCounters.merge(counters)
 	}
 
 	public createApp(createAppRequest: CreateAppRequest): void {
-		this.api.emit<CreateAppResponse>(EventType.CreateApp, createAppRequest)
+		this.api.fetch({
+			eventType: EventType.CreateApp,
+			request: createAppRequest,
+			requestType: CreateAppRequest,
+			responseType: CreateAppResponse,
+		})
 	}
 
 	public updateApp(updateAppRequest: UpdateAppRequest): void {
-		this.api.emit<UpdateAppResponse>(EventType.UpdateApp, updateAppRequest)
+		this.api.fetch({
+			eventType: EventType.UpdateApp,
+			request: updateAppRequest,
+			requestType: UpdateAppRequest,
+			responseType: UpdateAppResponse,
+		})
 	}
 
 	public deleteApp(deleteAppRequest: DeleteAppRequest): void {
-		this.api.emit<DeleteAppResponse>(EventType.DeleteApp, deleteAppRequest)
+		this.api.fetch({
+			eventType: EventType.DeleteApp,
+			request: deleteAppRequest,
+			requestType: DeleteAppRequest,
+			responseType: DeleteAppResponse,
+		})
 	}
 
-	public releaseUpdate(req: PublishVersionRequest): void {
-		this.api.emit<PublishVersionResponse>(EventType.ReleaseUpdate, req)
+	public releaseUpdate(request: PublishVersionRequest): void {
+		this.api.fetch({
+			eventType: EventType.ReleaseUpdate,
+			request,
+			requestType: PublishVersionRequest,
+			responseType: PublishVersionResponse,
+		})
 	}
 
 	@action.bound

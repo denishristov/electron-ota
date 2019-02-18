@@ -11,7 +11,8 @@ import {
 import { Version } from '../models/Version'
 import { App } from '../models/App'
 import { VersionReports } from '../models/VersionReports'
-import { ModelType, InstanceType } from 'typegoose'
+import { ModelType } from 'typegoose'
+import { IFileUploadService } from './S3Service'
 
 export interface IVersionService {
 	getVersion({ id }: GetVersionRequest): Promise<VersionRequest>
@@ -29,6 +30,8 @@ export default class VersionService implements IVersionService {
 		private readonly AppModel: ModelType<App>,
 		@DI.inject(DI.Models.VersionReports)
 		private readonly VersionReportsModel: ModelType<VersionReports>,
+		@DI.inject(DI.Services.FileUpload)
+		private readonly fileService: IFileUploadService,
 	) {}
 
 	@bind
@@ -63,11 +66,17 @@ export default class VersionService implements IVersionService {
 
 	@bind
 	public async deleteVersion({ id, appId }: DeleteVersionRequest): Promise<DeleteVersionResponse> {
-		await this.VersionModel.findByIdAndRemove(id)
+		const version = await this.VersionModel.findById(id).select('fileName')
+
+		if (version.fileName) {
+			await this.fileService.deleteVersion(version.fileName)
+		}
 
 		await this.AppModel.findByIdAndUpdate(appId, {
 			$pull: { versions: id },
 		})
+
+		await version.remove()
 
 		return { id, appId }
 	}

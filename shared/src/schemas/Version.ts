@@ -57,6 +57,9 @@ export class VersionModel extends TimestampedDocument {
 	@Required()
 	@Nested()
 	public systems: SystemSupport
+
+	@StringSchema()
+	public fileName?: string
 }
 
 export class VersionEditModel {
@@ -139,11 +142,14 @@ export class CreateVersionRequest extends VersionRequest {
 	public description?: string
 
 	@StringSchema()
-	public hash: string
+	public hash?: string
 
 	@Required()
 	@Nested()
 	public systems: SystemSupport
+
+	@StringSchema()
+	public fileName?: string
 }
 
 export class CreateVersionResponse extends VersionModel {}
