@@ -13,6 +13,7 @@ export default class AuthHook implements IPreRespondHook {
 		EventType.GetProfile,
 		EventType.EditProfile,
 		EventType.DeleteProfile,
+		EventType.ReleaseUpdate,
 	])
 
 	constructor(

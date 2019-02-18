@@ -4,6 +4,7 @@ import { Token, StringSchema, Uri } from 'tsdv-joi/constraints/string'
 import { Required, Allow } from 'tsdv-joi/constraints/any'
 import { BooleanSchema } from 'tsdv-joi/constraints/boolean'
 import { Nested, NestedArray } from 'tsdv-joi'
+import { AdminPublicModel } from './Admin'
 
 class SystemSupport {
 	@Required()
@@ -60,6 +61,9 @@ export class VersionModel extends TimestampedDocument {
 
 	@StringSchema()
 	public fileName?: string
+
+	@Nested()
+	public releasedBy?: AdminPublicModel
 }
 
 export class VersionEditModel {

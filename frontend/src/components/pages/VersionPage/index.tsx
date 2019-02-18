@@ -109,6 +109,7 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 			createdAt,
 			hash,
 			downloadUrl,
+			releasedBy,
 		} = this.version
 
 		return (
@@ -179,6 +180,16 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 									)}
 								</Flex>
 							</Flex>
+							{releasedBy && (
+								<Flex spread>
+									<Flex col list>
+										<h3>Released by</h3>
+										<label>{releasedBy.name}</label>
+										<label>{releasedBy.email}</label>
+									</Flex>
+									{releasedBy.pictureUrl && <img src={releasedBy.pictureUrl} />}
+								</Flex>
+							)}
 							<Flex list m x y>
 								{downloadUrl && (
 									<Button color='white' size='small' onClick={this.handleDownload}>

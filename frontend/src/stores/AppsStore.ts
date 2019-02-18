@@ -43,11 +43,6 @@ export interface IAppsStore {
 
 @DI.injectable()
 export default class AppsStore implements IAppsStore {
-
-	@computed
-	get allApps(): IApp[] {
-		return Array.from(this.apps.values())
-	}
 	private readonly apps: ObservableMap<string, IApp> = observable.map({})
 
 	private readonly liveCounters = observable.map<string, ISystemTypeCount>({})
@@ -71,6 +66,11 @@ export default class AppsStore implements IAppsStore {
 			.on(EventType.UpdateError, this.handleErrorReport)
 			.on(EventType.ClientConnected, this.handleClientConnected)
 			.on(EventType.ClientDisconnected, this.handleClientDisconnected)
+	}
+
+	@computed
+	get allApps(): IApp[] {
+		return Array.from(this.apps.values())
 	}
 
 	public getApp(id: string): IApp | null {

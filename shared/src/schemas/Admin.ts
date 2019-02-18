@@ -6,6 +6,13 @@ import { AuthenticatedRequest } from './generic'
 
 export const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,64}$/
 
+export class AdminPublicModel {
+	public name: string
+
+	public email: string
+
+	public pictureUrl: string
+}
 export class AdminLoginRequest {
 	@Email()
 	@Max(256)
@@ -84,13 +91,5 @@ export class AdminEditProfileRequest extends AuthenticatedRequest {
 	public newPassword?: string
 
 	@Uri()
-	public pictureUrl?: string
-}
-
-export class GetProfileResponse {
-	public name: string
-
-	public email: string
-
 	public pictureUrl?: string
 }

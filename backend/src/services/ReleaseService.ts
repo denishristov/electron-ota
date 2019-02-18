@@ -10,6 +10,8 @@ import semver from 'semver'
 import { Version } from '../models/Version'
 import { ModelType } from 'typegoose'
 import { IAppService } from './AppService'
+import { IAdminsService } from './AdminsService'
+import { ObjectID } from 'bson'
 
 export interface IReleaseService {
 	checkForUpdate(req: CheckForUpdateRequest): Promise<CheckForUpdateResponse>
@@ -27,10 +29,14 @@ export default class ReleaseService implements IReleaseService {
 		private readonly appService: IAppService,
 		@DI.inject(DI.Models.Version)
 		private readonly VersionModel: ModelType<Version>,
+		@DI.inject(DI.Services.Admin)
+		private readonly adminService: IAdminsService,
 	) {}
 
 	@bind
-	public async releaseVersion({ versionId }: PublishVersionRequest): Promise<PublishVersionResponse> {
+	public async releaseVersion({ versionId, authToken }: PublishVersionRequest): Promise<PublishVersionResponse> {
+		const { id } = await this.adminService.getPayloadFromToken(authToken)
+
 		const version = await this.VersionModel.findById(versionId).select(`
 			systems
 			appId
@@ -42,6 +48,8 @@ export default class ReleaseService implements IReleaseService {
 		}
 
 		version.isReleased = true
+		version.releasedBy = new ObjectID(id)
+
 		await version.save()
 
 		return {

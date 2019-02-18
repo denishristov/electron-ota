@@ -15,7 +15,7 @@ import {
 	RegisterAdminRequest,
 	RegisterAdminResponse,
 	AdminEditProfileRequest,
-	GetProfileResponse,
+	AdminPublicModel,
 } from 'shared'
 import { filterValues } from '../util/functions'
 
@@ -24,9 +24,10 @@ export interface IAdminsService {
 	logout(req: AuthenticatedRequest): Promise<void>
 	authenticate(req: AuthenticatedRequest): Promise<AdminAuthenticationResponse>
 	register(req: RegisterAdminRequest): Promise<RegisterAdminResponse>
-	getProfile(req: AuthenticatedRequest): Promise<GetProfileResponse>
+	getProfile(req: AuthenticatedRequest): Promise<AdminPublicModel>
 	editProfile(req: AdminEditProfileRequest): Promise<void>
 	deleteProfile(req: AuthenticatedRequest): Promise<void>
+	getPayloadFromToken(authToken: string): Promise<IJWTPayload>
 }
 
 interface IJWTPayload {
@@ -170,6 +171,10 @@ export default class AdminsService implements IAdminsService {
 		return { name, pictureUrl, email }
 	}
 
+	public getPayloadFromToken(authToken: string): Promise<IJWTPayload> {
+		return jwt.verify(authToken, PASS_SECRET_KEY, { algorithms: ['HS256'] }) as Promise<IJWTPayload>
+	}
+
 	private async generateTokenAndAddToAdmin(admin: InstanceType<Admin>): Promise<string> {
 		const token = await this.generateToken(admin.id)
 
@@ -196,9 +201,5 @@ export default class AdminsService implements IAdminsService {
 
 	private async hashPassword(password: string): Promise<string> {
 		return bcrypt.hash(password, await bcrypt.genSalt(10))
-	}
-
-	private getPayloadFromToken(authToken: string): Promise<IJWTPayload> {
-		return jwt.verify(authToken, PASS_SECRET_KEY, { algorithms: ['HS256'] }) as Promise<IJWTPayload>
 	}
 }

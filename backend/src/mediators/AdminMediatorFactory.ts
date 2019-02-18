@@ -31,7 +31,7 @@ import {
 	RegisterAdminResponse,
 	RegisterKeyPathResponse,
 	AdminEditProfileRequest,
-	GetProfileResponse,
+	AdminPublicModel,
 	GetAppCountersRequest,
 } from 'shared'
 import { interfaces } from 'inversify'
@@ -95,7 +95,7 @@ export default function adminMediatorFactory({ container }: interfaces.Context):
 			eventType: EventType.GetProfile,
 			handler: adminService.getProfile,
 			requestType: AuthenticatedRequest,
-			responseType: GetProfileResponse,
+			responseType: AdminPublicModel,
 		})
 		.use({
 			eventType: EventType.EditProfile,

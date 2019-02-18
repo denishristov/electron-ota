@@ -2,6 +2,7 @@ import { IApi } from './Api'
 import axios, { CancelToken, CancelTokenSource } from 'axios'
 import { noop } from '../util/functions'
 import { EventType, SignUploadUrlResponse, SignUploadUrlRequest } from 'shared'
+import { fileExtensionRegex } from '../util/constants/regex'
 
 const { CancelToken } = axios
 
@@ -31,7 +32,10 @@ export default class UploadService implements IUploadService {
 	}
 
 	public uploadPicture(picture: File) {
-		return this.uploadFile(EventType.SignUploadPictureUrl, picture)
+		const match = picture.name.match(fileExtensionRegex)
+		const name = match ? `${Date.now()}.${match[0]}` : picture.name
+
+		return this.uploadFile(EventType.SignUploadPictureUrl, picture, name)
 	}
 
 	private async uploadFile(eventType: EventType, file: File, name?: string) {

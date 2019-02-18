@@ -134,6 +134,9 @@ export default class ProfileModal extends React.Component<{}> {
 
 		if (avatar) {
 			const upload = await this.uploadService.uploadPicture(avatar)
+
+			await upload.upload
+
 			downloadUrl = upload.downloadUrl
 		}
 

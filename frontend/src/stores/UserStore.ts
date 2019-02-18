@@ -5,7 +5,7 @@ import {
 	EventType,
 	AdminAuthenticationResponse,
 	AdminLoginResponse,
-	GetProfileResponse,
+	AdminPublicModel,
 	AdminLoginRequest,
 	AuthenticatedRequest,
 	AdminEditProfileRequest,
@@ -82,7 +82,7 @@ class UserStore implements IUserStore {
 
 			const profile = await this.api.fetch({
 				eventType: EventType.GetProfile,
-				responseType: GetProfileResponse,
+				responseType: AdminPublicModel,
 			})
 
 			Object.assign(this.profile, profile)
@@ -143,7 +143,7 @@ class UserStore implements IUserStore {
 			if (isAuthenticated) {
 				const profile = await this.api.fetch({
 					eventType: EventType.GetProfile,
-					responseType: GetProfileResponse,
+					responseType: AdminPublicModel,
 				})
 				Object.assign(this.profile, profile)
 			}

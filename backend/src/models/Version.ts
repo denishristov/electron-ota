@@ -1,6 +1,7 @@
 
 import { index, prop, Typegoose } from 'typegoose'
 import { SupportSystemTypes } from './SupportSystemTypes'
+import { Admin } from './Admin'
 
 @index({ versionName: 1, app: 1 }, { unique: true })
 export class Version extends Typegoose {
@@ -39,4 +40,7 @@ export class Version extends Typegoose {
 
 	@prop({ required: true })
 	public systems: SupportSystemTypes
+
+	@prop({ ref: Admin })
+	public releasedBy?: Ref<Admin>
 }

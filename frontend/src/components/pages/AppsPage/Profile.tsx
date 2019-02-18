@@ -13,9 +13,11 @@ import Modal from '../../generic/Modal'
 import Pushable from '../../generic/Pushable'
 import { OpenTrigger, TriggerContext } from '../../contexts/ModalContext'
 import ProfileModal from '../../modals/ProfileModal'
+import { observer } from 'mobx-react'
 
 const ID = 'profile'
 
+@observer
 export default class Profile extends Component {
 	@DI.lazyInject(DI.Stores.User)
 	private readonly userStore: IUserStore

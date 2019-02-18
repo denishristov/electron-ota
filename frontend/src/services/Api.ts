@@ -45,27 +45,27 @@ export default class Api implements IApi {
 			try {
 				_request = Object.assign(new (requestType || Empty)(), filterValues(request || {}))
 				_request = await this.applyPreHooks(_request)
+
+				const timeout = setTimeout(() => reject({ eventType, request, message: 'timeout' }), 1000 * 10)
+
+				this.connection.emit(eventType, _request, (data: Res) => {
+					const response = responseType ? Object.assign(new (responseType)(), data) : data
+
+					clearTimeout(timeout)
+
+					if (isError(response)) {
+						this.logError(eventType, _request || {}, response)
+						reject(response)
+					} else {
+						this.logRequest(eventType, _request || {}, response)
+						resolve(response)
+					}
+				})
 			} catch (error) {
 				this.logError(eventType, _request, error)
 				reject(error)
 				return
 			}
-
-			const timeout = setTimeout(() => reject({ eventType, request, message: 'timeout' }), 1000 * 10)
-
-			this.connection.emit(eventType, _request, (data: Res) => {
-				const response = responseType ? Object.assign(new (responseType)(), data) : data
-
-				clearTimeout(timeout)
-
-				if (isError(response)) {
-					this.logError(eventType, _request || {}, response)
-					reject(response)
-				} else {
-					this.logRequest(eventType, _request || {}, response)
-					resolve(response)
-				}
-			})
 		})
 	}
 
