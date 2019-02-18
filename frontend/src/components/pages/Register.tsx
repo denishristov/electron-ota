@@ -10,9 +10,16 @@ import Container from '../generic/Container'
 import styles from '../../styles/LoginPage.module.sass'
 import Loading from '../generic/Loading'
 import Flex from '../generic/Flex'
+import { passwordRegex } from 'shared'
 
+const errors = {
+	passwordMatch: 'Your passwords do not match, please make sure they are the same.',
+}
+
+const passRegex = passwordRegex.toString().substring(1, passwordRegex.toString().length - 2)
 interface IState {
 	isRegistered: boolean
+	errorMessage: string
 }
 
 interface IRegisterFormEvent extends FormEvent<HTMLFormElement> {
@@ -31,6 +38,7 @@ interface IRegisterFormEvent extends FormEvent<HTMLFormElement> {
 export default class Register extends React.Component<{}, IState> {
 	public readonly state = {
 		isRegistered: false,
+		errorMessage: '',
 	}
 
 	@DI.lazyInject(DI.Stores.Register)
@@ -62,30 +70,48 @@ export default class Register extends React.Component<{}, IState> {
 						<code className={styles.keyPath} onClick={this.handleCopyCommand}>
 							{this.command}
 						</code>
+						{this.state.errorMessage && (
+							<div className={styles.error}>
+								{this.state.errorMessage}
+							</div>
+						)}
 						<Input
 							label='key'
-							type='password'
+							type='key'
 							name='key'
+							required
 						/>
 						<Input
 							type='email'
 							name='email'
 							label='Email'
+							required
 						/>
 						<Input
 							name='name'
 							label='Username'
+							minLength={4}
+							required
 						/>
 						<Input
 							type='password'
 							name='password1'
 							label='Password'
+							pattern={passRegex}
+							required
 						/>
 						<Input
 							type='password'
 							name='password2'
 							label='Confirm password'
+							pattern={passRegex}
+							required
 						/>
+						<p>
+							Your password should contain at least 1 uppercase letter,
+							1 lowercase letter, a numeric digit and should be
+							at least 8 characters minimum.
+						</p>
 						<Button color='blue' type='submit'>
 							Submit
 						</Button>
@@ -112,6 +138,8 @@ export default class Register extends React.Component<{}, IState> {
 			if (isRegistered) {
 				this.setState({ isRegistered })
 			}
+		} else {
+			this.setState({ errorMessage: errors.passwordMatch })
 		}
 	}
 

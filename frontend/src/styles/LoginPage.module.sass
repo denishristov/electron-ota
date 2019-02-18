@@ -43,3 +43,16 @@
 	> span > *:last-child
 		margin-top: $spacing
 
+.error
+	// position: fixed
+	padding: $spacing
+	background-color: transparentize($red, 0.92)
+	border-radius: 10px
+	margin: 0 -1 * $spacing $spacing
+	color: $red
+
+	~ div
+		input[type="password"]
+			background-color: transparentize($red, 0.92)
+
+

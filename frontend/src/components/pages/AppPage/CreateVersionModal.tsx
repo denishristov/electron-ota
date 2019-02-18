@@ -67,6 +67,7 @@ export default class CreateVersionModal extends Component<IProps> {
 								onChange={this.setVersionName}
 								name='versionName'
 								label='Name'
+								required
 								disabled={this.store.releaseType !== ReleaseType.Custom}
 							/>
 							{previousVersionName && (
@@ -144,6 +145,7 @@ export default class CreateVersionModal extends Component<IProps> {
 									accept='.asar'
 									messages={uploadMessages}
 									className={styles.dropzone}
+									required
 								>
 									{this.store.versionFile && (
 										<>

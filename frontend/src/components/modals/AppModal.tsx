@@ -72,8 +72,8 @@ export default class AppModal extends React.Component<{}, IState> {
 						</Flex>
 						<Flex ml mr />
 						<Flex m col list>
-							<Input name='name' label='Name' />
-							<Input name='bundleId' label='Bundle ID' />
+							<Input name='name' label='Name' required />
+							<Input name='bundleId' label='Bundle ID' required />
 						</Flex>
 					</Flex>
 					<footer>

@@ -73,6 +73,7 @@ input:focus
 		@include transition(background-color)
 		fill: $accent
 
+
 input:placeholder-shown 
 	~ .label
 		transform: translateY((54px - $spacing) / 2 + 1.5 * $spacing)
@@ -94,3 +95,16 @@ input:placeholder-shown
 	input:placeholder-shown
 		~ .label
 			transform: translateY(0px)
+
+input:placeholder-shown 
+	~ .required
+		@include dot($blue)
+		position: absolute
+		right: 0px
+		bottom: 24px
+
+	~ .icon ~ .required
+		right: 28px
+
+input[type="key"]
+	-webkit-text-security: disc

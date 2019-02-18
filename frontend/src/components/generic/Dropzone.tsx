@@ -11,13 +11,14 @@ interface IProps extends Omit<DivProps, 'onDrop'> {
 	onDrop?: DropFilesEventHandler
 	name?: string
 	accept?: string
+	required?: boolean
 	messages?: {
 		active: string,
 		notActive: string,
 	}
 }
 
-export default function Dropzone({ messages, children, accept, name, onDrop, className, ...props }: IProps) {
+export default function Dropzone({ messages, children, accept, required, name, onDrop, className, ...props }: IProps) {
 	return (
 		<ReactDropzone multiple={false} accept={accept} name={name} onDrop={onDrop}>
 			{({ getRootProps, getInputProps, isDragActive }) => {
@@ -32,7 +33,8 @@ export default function Dropzone({ messages, children, accept, name, onDrop, cla
 							{children || (messages && (isDragActive
 								? messages.active
 								: messages.notActive
-								))}
+							))}
+							{required && !children && <div className={styles.required} />}
 						</div>
 					</Pushable>
 				)
