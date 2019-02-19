@@ -12,36 +12,16 @@ import { IApp } from '../../../stores/App'
 import Pushable from '../../generic/Pushable'
 import icons from '../../../util/constants/icons'
 import { formatDate } from '../../../util/functions'
-import { Placeholder } from '../../../util/constants/defaults'
-import Modal from '../../generic/Modal'
-import AppModal from '../../modals/AppModal'
+import { colors } from '../../../util/constants/styles'
 
 interface IProps extends IAnimatable {
-	app: IApp | Placeholder
+	app: IApp
 	history: BrowserHistory
 }
 
 @observer
 export default class App extends Component<IProps> {
 	public render() {
-		if (this.props.app instanceof Placeholder) {
-			return (
-				<Pushable>
-					<animated.div className={styles.appTile} style={this.props.animation}>
-						<Modal>
-							<Modal.OpenTrigger>
-								<Flex grow y x list className={styles.placeholder}>
-									<SVG src={icons.Plus} />
-									<h4>Add a new app</h4>
-								</Flex>
-							</Modal.OpenTrigger>
-							<Modal.Content title='Add a new app' component={AppModal} />
-						</Modal>
-					</animated.div>
-				</Pushable>
-			)
-		}
-
 		const {
 			name,
 			bundleId,
@@ -49,6 +29,7 @@ export default class App extends Component<IProps> {
 			latestVersions,
 			versionsCount,
 			versions,
+			color,
 		} = this.props.app
 
 		return (
@@ -58,11 +39,9 @@ export default class App extends Component<IProps> {
 					onClick={this.goToApp}
 					style={this.props.animation}
 				>
-				<Flex y list mb>
-					<img src={pictureUrl} />
-					{/* <Flex className={styles.header}> */}
+				<Flex y list mb style={{ backgroundColor: color || colors.accent }}>
+					{pictureUrl && <img src={pictureUrl} />}
 					<h3>{name}</h3>
-					{/* </Flex> */}
 				</Flex>
 					<Flex list col>
 						<Flex y list>

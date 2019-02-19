@@ -27,10 +27,10 @@
 		display: flex
 		border-bottom: 1px solid $accent
 		align-items: flex-end
-		margin: $spacing $spacing * 2 0
+		padding: $spacing * 3 $spacing * 2 0
 
 		h1
-			margin: $spacing * 2 auto $spacing / 2 0
+			margin: $spacing * 2 auto $spacing 0
 
 		button
 			margin: 0 0 $spacing / 2 $spacing
@@ -40,13 +40,13 @@
 				height: $spacing
 				margin-right: $spacing / 2
 
-		img
+		img, svg
 			@include glowing-shadow($dark-accent)
 			border-radius: 50%
 			width: $spacing * 4
 			height: $spacing * 4
 			margin-right: $spacing
-			margin-bottom: $spacing / 2
+			margin-bottom: $spacing
 
 @mixin shadow($color)
 	box-shadow: 0 0 20px 0 transparentize($color, 0.76)
@@ -64,7 +64,6 @@
 	@include shadow($accent)
 	box-shadow: none
 
-
 @mixin dot($color)
 	@include glowing-shadow($color)
 	$size: $spacing / 2
@@ -73,3 +72,57 @@
 	background-color: $color
 	border-radius: 4px
 	margin-right: 4px
+
+@mixin gradient($color)
+	$color1: transparentize($color, 0.7)
+	$color2: transparentize(adjust-hue($color, 32%), 0.7)
+
+	background-size: auto 200%
+	background-position: 0 100%
+	background-image: linear-gradient(to top right, $color1 0%, $color1 20%, $color2 100%)
+	color: darken($color, 20%)
+
+	&:focus, &:hover
+		background-position: 0 0
+		color: darken(adjust-hue($color, 32%), 20%)
+
+@mixin outline-button($color)
+	@include shadow($color)
+	@include transition(box-shadow, background-color, color, transform)
+	background-color: transparent
+	border: 1px solid $color
+	color: darken($color, 20%)
+
+	svg, g, path
+		fill: $color
+
+	&:focus, &:hover
+		background-color: $color
+		color: white
+
+		svg, g, path
+			fill: white
+
+
+@mixin color-button($background, $background2, $color)
+	@include shadow($background2)
+	background-size: auto 200%
+	background-position: 0 100%
+	background-image: linear-gradient(to top right, $background 0%, $background 20%, $background2 100%)
+	color: $color
+
+	&:disabled
+		cursor: not-allowed
+		background-image: linear-gradient(to top right, desaturate($background, 50%) 0%, desaturate($background, 10%) 20%, desaturate($background2, 10%) 100%)
+
+	svg, g, path
+		fill: $color
+
+	&:focus, &:hover
+		background-position: 0 0
+
+@mixin light-button($background, $color) 
+	@include color-button($background,  darken($background, 8%), $color)
+
+@mixin dark-button($background, $color) 
+	@include color-button($background, adjust-hue($background, 25%), $color)

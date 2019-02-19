@@ -19,6 +19,11 @@ import { BrowserHistory } from '../util/types'
 import appFactory, { AppFactory } from '../stores/factories/AppFactory'
 import createVersionStoreFactory, { CreateVersionStoreFactory } from '../stores/factories/CreateVersionStoreFactory'
 import updateVersionStoreFactory, { UpdateVersionStoreFactory } from '../stores/factories/UpdateVersionStoreFactory'
+import { IAppModalStore } from '../stores/AppModalStore'
+import CreateAppStore, { ICreateAppStore } from '../stores/CreateAppStore'
+import { IUpdateAppStore } from '../stores/UpdateAppStore'
+import UpdateAppStore from '../stores/UpdateAppStore'
+import AppModalStore from '../stores/AppModalStore'
 
 const container = new Container()
 
@@ -43,6 +48,18 @@ container.bind<IAppsStore>(DI.Stores.Apps)
 container.bind<IRegisterStore>(DI.Stores.Register)
 	.to(RegisterStore)
 	.inSingletonScope()
+
+container.bind<IAppModalStore>(DI.Stores.AppModal)
+	.to(AppModalStore)
+	.inSingletonScope()
+
+container.bind<ICreateAppStore>(DI.Stores.CreateApp)
+	.to(CreateAppStore)
+	.inTransientScope()
+
+container.bind<IUpdateAppStore>(DI.Stores.UpdateApp)
+	.to(UpdateAppStore)
+	.inTransientScope()
 
 container.bind<BrowserHistory>(DI.BrowserHistory)
 	.toConstantValue(createBrowserHistory())

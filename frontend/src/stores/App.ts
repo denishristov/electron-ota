@@ -28,6 +28,7 @@ import {
 import { IApi } from '../services/Api'
 import { Omit } from 'react-router'
 import { byDateDesc } from '../util/functions'
+import { MemoryCache } from 'ts-method-cache'
 
 interface ICreateVersionInput {
 	versionName: string
@@ -49,6 +50,7 @@ export interface IApp {
 	name: string
 	pictureUrl?: string
 	bundleId: string
+	color: string
 	latestVersions?: LatestVersionsModel
 	versionsCount: number
 	latestAddedVersion: VersionModel | null
@@ -86,6 +88,9 @@ export default class App implements IApp {
 	@observable
 	public versionsCount: number
 
+	@observable
+	public color: string
+
 	public readonly versions = observable.map<string, VersionModel>({})
 
 	public readonly simpleReports = observable.map<string, SimpleVersionReportModel>({})
@@ -102,6 +107,7 @@ export default class App implements IApp {
 			bundleId,
 			latestVersions,
 			versions,
+			color,
 		}: AppModel,
 		private readonly api: IApi,
 	) {
@@ -111,6 +117,7 @@ export default class App implements IApp {
 		this.bundleId = bundleId
 		this.latestVersions = latestVersions
 		this.versionsCount = versions
+		this.color = color
 	}
 
 	public getVersion(id: string): VersionModel | null {
@@ -128,6 +135,7 @@ export default class App implements IApp {
 	}
 
 	@action
+	@MemoryCache()
 	public async fetchVersions() {
 		const { versions } = await this.api.fetch({
 			eventType: EventType.GetVersions,
@@ -140,6 +148,7 @@ export default class App implements IApp {
 	}
 
 	@action
+	@MemoryCache()
 	public async fetchSimpleReports() {
 		const { reports } = await this.api.fetch({
 			eventType: EventType.SimpleVersionReports,
@@ -154,6 +163,7 @@ export default class App implements IApp {
 	}
 
 	@action
+	@MemoryCache()
 	public async fetchReports(versionId: string) {
 		const reports = await this.api.fetch({
 			eventType: EventType.VersionReports,
@@ -163,6 +173,18 @@ export default class App implements IApp {
 		})
 
 		this.reports.set(versionId, reports)
+	}
+
+	@action
+	@MemoryCache()
+	public async fetchAppLiveCount() {
+		const counters = await this.api.fetch({
+			eventType: EventType.getAppClientCount,
+			request: { bundleId: this.bundleId },
+			requestType: GetAppCountersRequest,
+		})
+
+		this.clientCounters.merge(counters)
 	}
 
 	public async createVersion({ isReleasing, password, ...version }: ICreateVersionInput) {
@@ -193,17 +215,6 @@ export default class App implements IApp {
 			request: { appId: this.id, id },
 			requestType: DeleteVersionRequest,
 		})
-	}
-
-	@action
-	public async fetchAppLiveCount() {
-		const counters = await this.api.fetch({
-			eventType: EventType.getAppClientCount,
-			request: { bundleId: this.bundleId },
-			requestType: GetAppCountersRequest,
-		})
-
-		this.clientCounters.merge(counters)
 	}
 
 	@action

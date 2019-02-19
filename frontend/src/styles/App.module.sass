@@ -8,11 +8,16 @@
 	padding: $spacing
 	border-radius: $default-border-radius
 	background: white
-	border: 1px solid #f1f2f2
 	cursor: pointer
 	position: relative
-	background-color: $entry-bg
 	border-radius: $spacing
+	overflow: hidden
+
+	> span:first-child
+		margin: -16px
+		margin-bottom: 16px
+		padding: 8px 16px
+		border-radius: 16px 16px 0 0
 
 	svg
 		width: $spacing
@@ -28,19 +33,17 @@
 	img
 		@include glowing-shadow($dark-accent)
 		@include transition(box-shadow)
-		width: $spacing * 4
-		height: $spacing * 4
+		width: $spacing * 3
+		height: $spacing * 3
 		flex-grow: 0
 		object-fit: cover
 		border-radius: 50%
-		// position: absolute
-		// top: -1.5 * $spacing
-		// right: $spacing
+		background-color: $entry-bg
 
 	h3
 		@include text-overflow
 		margin: $spacing * .5 0
-		font-size: 2.2rem
+		font-size: 2rem
 		font-weight: 400
 		color: $text
 
@@ -54,12 +57,3 @@
 		padding-left: $spacing
 		background-color: #f2f2f2
 		border-radius: 10px 10px 0 0
-
-.placeholder
-	height: 100%
-	flex-grow: 1
-	color: $dark-accent
-
-	svg
-		width: $spacing * 1.5
-		height: $spacing * 1.5

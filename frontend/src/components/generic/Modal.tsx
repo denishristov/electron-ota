@@ -1,6 +1,6 @@
 import React from 'react'
 import { createPortal } from 'react-dom'
-import { Spring, animated } from 'react-spring'
+import { Spring, animated, config } from 'react-spring'
 
 import styles from '../../styles/Modal.module.sass'
 
@@ -18,7 +18,7 @@ interface IContentProps<T = {}> extends Exclude<DivProps, 'children'> {
 	title?: string
 	className?: string
 	component: React.ComponentClass<T> | React.FunctionComponent<T>
-	props?: T
+	props: T
 }
 
 interface IModalProps extends Pick<DivProps, 'children'> {
@@ -41,7 +41,7 @@ function Content<T>({ component: Component, props, title, className }: IContentP
 							reverse={isClosing}
 							force={isClosing}
 							onRest={_close}
-							config={animationConfig}
+							config={config.stiff}
 							{...modalBackgroundAnimations}
 						>
 							{(style) =>
@@ -64,17 +64,19 @@ function Content<T>({ component: Component, props, title, className }: IContentP
 												style={style}
 												onClick={stopPropagation}
 											>
-												<header className={styles.spread}>
-													<h2>{title}</h2>
-													{/* <Pushable>
-														<SVG
-															src={Close}
-															className={styles.close}
-															onClick={close}
-														/>
-													</Pushable> */}
-												</header>
-												<Component {...props || {} as T} />
+												{title && (
+													<header className={styles.spread}>
+														<h2>{title}</h2>
+														{/* <Pushable>
+															<SVG
+																src={Close}
+																className={styles.close}
+																onClick={close}
+															/>
+														</Pushable> */}
+													</header>
+												)}
+												<Component {...props} />
 											</animated.div>
 										}
 									</Spring>

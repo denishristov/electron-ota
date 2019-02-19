@@ -24,7 +24,6 @@ export class AdminLoginRequest {
 
 	@Required()
 	@Max(256)
-	@Regex(passwordRegex)
 	public password: string
 }
 

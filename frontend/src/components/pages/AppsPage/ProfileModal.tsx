@@ -1,18 +1,18 @@
 import React, { FormEvent } from 'react'
 import { observer } from 'mobx-react'
 
-import Modal from '../generic/Modal'
-import Flex from '../generic/Flex'
-import Input from '../generic/Input'
-import Button from '../generic/Button'
+import Modal from '../../generic/Modal'
+import Flex from '../../generic/Flex'
+import Input from '../../generic/Input'
+import Button from '../../generic/Button'
 
-import styles from '../../styles/AppsPage.module.sass'
+import styles from '../../../styles/AppsPage.module.sass'
 
-import icons from '../../util/constants/icons'
-import { IUserStore } from '../../stores/UserStore'
-import PictureUpload from '../generic/PictureUpload'
-import { IFileService } from '../../services/FileService'
-import { IUploadService } from '../../services/UploadService'
+import icons from '../../../util/constants/icons'
+import { IUserStore } from '../../../stores/UserStore'
+import PictureUpload from '../../generic/PictureUpload'
+import { IFileService } from '../../../services/FileService'
+import { IUploadService } from '../../../services/UploadService'
 
 interface IEditProfileEvent extends FormEvent<HTMLFormElement> {
 	target: EventTarget & {

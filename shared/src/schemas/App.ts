@@ -43,6 +43,10 @@ export class AppModel extends TimestampedDocument {
 	@Required()
 	@NumberSchema()
 	public versions: number
+
+	@Required()
+	@StringSchema()
+	public color: string
 }
 
 export class GetAppsResponse {
@@ -61,6 +65,10 @@ export class CreateAppRequest extends AuthenticatedRequest {
 	@Required()
 	@StringSchema()
 	public bundleId: string
+
+	@Required()
+	@StringSchema()
+	public color: string
 }
 
 export class CreateAppResponse extends AppModel {}
@@ -77,9 +85,7 @@ export class UpdateAppRequest extends AuthenticatedRequest {
 	public pictureUrl?: string
 
 	@StringSchema()
-	public bundleId?: string
-
-	// public latestVersion?: string
+	public color?: string
 }
 
 export class UpdateAppResponse {
@@ -94,7 +100,7 @@ export class UpdateAppResponse {
 	public pictureUrl?: string
 
 	@StringSchema()
-	public bundleId?: string
+	public color?: string
 }
 
 export class DeleteAppRequest extends AuthenticatedRequest {

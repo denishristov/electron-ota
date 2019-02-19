@@ -3,29 +3,31 @@ import React, { Component } from 'react'
 import icons from '../../../util/constants/icons'
 import styles from '../../../styles/AppsPage.module.sass'
 import Flex from '../../generic/Flex'
-import '../../../styles/Menu.sass'
 
 import { Menu, Item, Separator, Submenu, MenuProvider } from 'react-contexify'
-import 'react-contexify/dist/ReactContexify.min.css'
 
 import { IUserStore } from '../../../stores/UserStore'
 import Modal from '../../generic/Modal'
 import Pushable from '../../generic/Pushable'
-import { OpenTrigger, TriggerContext } from '../../contexts/ModalContext'
-import ProfileModal from '../../modals/ProfileModal'
+import { TriggerContext } from '../../contexts/ModalContext'
+import ProfileModal from './ProfileModal'
 import { observer } from 'mobx-react'
 
 const ID = 'profile'
 
+interface IProps {
+	goHome(): void
+}
+
 @observer
-export default class Profile extends Component {
+export default class Profile extends Component<IProps> {
 	@DI.lazyInject(DI.Stores.User)
 	private readonly userStore: IUserStore
 
 	public render() {
-		const { profile } = this.userStore
+		const { profile, isAuthenticated } = this.userStore
 
-		return Boolean(profile) && (
+		return Boolean(profile) && isAuthenticated && (
 			<>
 				<MenuProvider id={ID} event='onClick'>
 					<div>
@@ -44,6 +46,7 @@ export default class Profile extends Component {
 					<Modal.Content
 						title='Edit profile'
 						component={ProfileModal}
+						props={{}}
 					/>
 					<TriggerContext.Consumer>
 						{({ open }) => (
@@ -52,7 +55,9 @@ export default class Profile extends Component {
 								animation='menu-animation'
 								theme='menu-theme'
 							>
+								<Item onClick={this.props.goHome}>Home</Item>
 								<Item onClick={open}>Edit Profile</Item>
+								<Separator />
 								<Item onClick={this.userStore.logout}>Logout</Item>
 							</Menu>
 						)}

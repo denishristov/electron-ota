@@ -98,3 +98,13 @@ export function filterValues(object: object) {
 		.filter(([_, value]) => value !== null && value !== void 0 && value !== '')
 		.group(returnArgument)
 }
+
+export function rangedArray(length: number) {
+	const array = []
+
+	for (let i = 0; i < length; ++i) {
+		array.push(i)
+	}
+
+	return array
+}

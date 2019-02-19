@@ -11,6 +11,9 @@ export class App extends Typegoose {
 	@prop({ unique: true, required: true })
 	public bundleId: string
 
+	@prop({ required: true })
+	public color: string
+
 	@arrayProp({ itemsRef: Version })
 	public versions: Array<Ref<Version>>
 }

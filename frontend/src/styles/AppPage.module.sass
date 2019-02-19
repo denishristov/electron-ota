@@ -11,11 +11,18 @@
 .app-page-container
 	@include container
 
-.versions-container
-	@include glowing-shadow($dark-accent)
+.versions-tile
+	@include glowing-shadow($accent)
 	background-color: white
 	border-radius: $spacing
-	padding: $spacing * 2 $spacing * 2 $spacing * 2 $spacing * 8
+	padding-left: $spacing * 7
+
+	label
+		font-size: 1rem
+	
+	svg
+		width: $icon-size
+		height: $icon-size
 
 .new-version
 	color: $dark-accent

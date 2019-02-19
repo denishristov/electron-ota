@@ -24,6 +24,7 @@ import { IApp } from './App'
 import { AppFactory } from './factories/AppFactory'
 import { getDefaultSimpleStatistics } from '../util/functions'
 import { defaultSystemCounts } from '../util/constants/defaults'
+import { MemoryCache } from 'ts-method-cache'
 
 interface IClient {
 	versionName: string
@@ -78,6 +79,7 @@ export default class AppsStore implements IAppsStore {
 	}
 
 	@action
+	@MemoryCache()
 	public async fetchApps(): Promise<void> {
 		const { apps } = await this.api.fetch({
 			eventType: EventType.GetApps,
@@ -89,6 +91,7 @@ export default class AppsStore implements IAppsStore {
 	}
 
 	@action
+	@MemoryCache()
 	public async fetchAppsLiveCount(): Promise<void> {
 		const counters = await this.api.fetch({
 			eventType: EventType.getAppsClientCount,

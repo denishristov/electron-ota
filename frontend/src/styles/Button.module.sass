@@ -1,47 +1,5 @@
 @import './mixins'
 @import './variables'
-
-@mixin outline-button($color)
-	@include shadow($color)
-	@include transition(box-shadow, background-color, color, transform)
-	background-color: transparent
-	border: 1px solid $color
-	color: $color
-
-	svg, g, path
-		fill: $color
-
-	&:focus, &:hover
-		background-color: $color
-		color: white
-
-		svg, g, path
-			fill: white
-
-
-@mixin color-button($background, $background2, $color)
-	@include shadow($background2)
-	background-size: auto 200%
-	background-position: 0 100%
-	background-image: linear-gradient(to top right, $background 0%, $background 20%, $background2 100%)
-	color: $color
-
-	&:disabled
-		cursor: not-allowed
-		// pointer-events: none
-		background-image: linear-gradient(to top right, desaturate($background, 50%) 0%, desaturate($background, 50%) 20%, desaturate($background2, 50%) 100%)
-
-	svg, g, path
-		fill: $color
-
-	&:focus, &:hover
-		background-position: 0 0
-
-@mixin light-button($background, $color) 
-	@include color-button($background,  darken($background, 8%), $color)
-
-@mixin dark-button($background, $color) 
-	@include color-button($background, adjust-hue($background, 25%), $color)
 	
 button
 	@include ease(box-shadow, background-color, transform, background-position)

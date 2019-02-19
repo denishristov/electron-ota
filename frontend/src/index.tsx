@@ -14,6 +14,10 @@ import { AuthProvider } from './components/contexts/AuthProvider'
 import { BrowserHistory } from './util/types'
 import App from './components/App'
 
+import './index.sass'
+import './styles/Menu.sass'
+import 'react-contexify/dist/ReactContexify.min.css'
+
 configure({
 	computedRequiresReaction: true,
 	enforceActions: 'always',

@@ -1,7 +1,8 @@
-import { observable, computed } from 'mobx'
+import { observable, computed, action } from 'mobx'
 import { IApi } from '../services/Api'
 
 import { IUserStore } from './UserStore'
+import { MemoryCache } from 'ts-method-cache'
 import {
 	EventType,
 	RegisterAdminRequest,
@@ -33,6 +34,7 @@ export default class RegisterStore implements IRegisterStore {
 		return !this.path
 	}
 
+	@action
 	public async registerAdmin(request: RegisterAdminRequest) {
 		const { isSuccessful, authToken } = await this.api.fetch({
 			eventType: EventType.RegisterAdmin,
@@ -48,6 +50,8 @@ export default class RegisterStore implements IRegisterStore {
 		return isSuccessful
 	}
 
+	@action
+	@MemoryCache()
 	public async fetchKeyPath() {
 		const { path } = await this.api.fetch({
 			eventType: EventType.GetRegisterKeyPath,

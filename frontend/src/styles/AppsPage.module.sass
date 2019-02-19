@@ -15,8 +15,12 @@
 
 .profile
 	@include transition(transform)
-	margin-bottom: $spacing / 2
-	
+	position: absolute
+	top: 74px
+	right: $spacing * 2
+	z-index: 1
+	cursor: pointer
+
 	h5
 		font-size: 1.6rem
 		margin: 0 $spacing 0 0
@@ -24,17 +28,46 @@
 		font-weight: 400
 		color: $text
 
-	span
-		svg, img
-			width: $spacing * 2
-			height: $spacing * 2
-			padding:  $spacing / 4
-			background-color: $entry-bg
-			box-shadow: $rest-shadow
-			border-radius: 50%
+	img, svg
+		@include glowing-shadow($dark-accent)
+		border-radius: 50%
+		width: $spacing * 4
+		height: $spacing * 4
+		margin-right: $spacing
 
-	g, path
-		fill: $accent
+		g, path
+			fill: $accent
 
 .password-row
 	max-width: 300px
+
+.color
+	@include entry-shadow
+	@include transition(box-shadow)
+	width: $spacing * 2
+	height: $spacing * 2
+	border-radius: 50%
+
+	svg
+		width: $spacing * 2
+		height: $spacing * 2
+		fill: $entry-bg
+
+.placeholder
+	@include entry-shadow
+	@include gradient($blue)
+	@include ease(background, box-shadow, transform, color)
+	margin: $spacing * 2 $spacing
+	border-radius: $spacing
+	cursor: pointer
+
+	> span
+		height: 100%
+
+	h4
+		font-size: 1.6rem
+		font-weight: 400
+
+	svg
+		width: $spacing * 1.5
+		height: $spacing * 1.5
