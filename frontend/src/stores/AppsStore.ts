@@ -1,4 +1,4 @@
-import { action, computed, observable, ObservableMap } from 'mobx'
+import { action, computed, observable, ObservableMap, keys } from 'mobx'
 import {
 	EventType,
 	CreateAppResponse,
@@ -273,6 +273,12 @@ export default class AppsStore implements IAppsStore {
 			if (version) {
 				version.isReleased = true
 				version.releasedBy = releasedBy
+
+				if (app.latestVersions) {
+					for (const key of Object.keys(version.systems)) {
+						app.latestVersions[key] = version
+					}
+				}
 			}
 		}
 	}

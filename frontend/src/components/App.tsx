@@ -23,7 +23,7 @@ function App({ location, history }: RouteComponentProps<{}, StaticContext, {}>) 
 				native
 				keys={getPathName}
 				items={location}
-				config={config.stiff}
+				config={config.default}
 				{...history.action === 'POP'
 					? pageAnimations.POP
 					: pageAnimations.PUSH

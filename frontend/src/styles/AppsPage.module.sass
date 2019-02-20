@@ -42,16 +42,19 @@
 	max-width: 300px
 
 .color
-	@include entry-shadow
+	@include glowing-shadow($accent)
 	@include transition(box-shadow)
 	width: $spacing * 2
 	height: $spacing * 2
 	border-radius: 50%
 
+	&:hover
+		@include glowing-shadow($dark-accent)
+
 	svg
 		width: $spacing * 2
 		height: $spacing * 2
-		fill: $entry-bg
+		fill: $text
 
 .placeholder
 	@include entry-shadow

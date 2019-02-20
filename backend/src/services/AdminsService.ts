@@ -150,7 +150,7 @@ export default class AdminsService implements IAdminsService {
 				throw new Error('Invalid password')
 			}
 
-			user.authTokens = []
+			user.authTokens = [authToken]
 			user.password = await this.hashPassword(newPassword)
 
 			await user.save()

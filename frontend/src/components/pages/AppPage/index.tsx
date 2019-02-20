@@ -32,6 +32,7 @@ import { TriggerContext } from '../../contexts/ModalContext'
 import ConfirmDeleteModal from '../../generic/ConfirmDeleteModal'
 import { defaultSystemCounts } from '../../../util/constants/defaults'
 import PieChart from '../../generic/PieChart'
+import Button from '../../generic/Button'
 
 const ID = 'edit_app'
 interface IParams {
@@ -129,13 +130,20 @@ export default class AppPage extends Component<RouteComponentProps<IParams>, ISt
 						{pictureUrl && <img src={pictureUrl} />}
 						<h1>{name}</h1>
 					</header>
-					<Flex grow>
+					<Flex grow x>
 						<Flex col m p className={styles.versionsTile}>
-							<Flex list col m>
+							<Flex list col>
 								<Flex y list>
 									<label>Bundle ID</label>
 									<label className={utilStyles.dark}>{bundleId}</label>
 								</Flex>
+								<MenuProvider id={ID} event='onClick' style={{ margin: 0 }}>
+									<div>
+										<Pushable>
+											<SVG src={icons.Dots} className={styles.dots} />
+										</Pushable>
+									</div>
+								</MenuProvider>
 								<Flex y list>
 									<label>Versions added</label>
 									<label className={utilStyles.dark}>{versions.size || versionsCount}</label>
@@ -144,22 +152,14 @@ export default class AppPage extends Component<RouteComponentProps<IParams>, ISt
 								{latestVersions && Object.entries(latestVersions)
 									.map(([systemType, version]) => version && (
 										<Flex y list key={systemType}>
+											<SVG src={icons[systemType]} />
 											<label className={utilStyles.dark}>
 												{version.versionName}
 											</label>
-											<SVG src={icons[systemType]} />
 											<label>{formatDate(new Date(version.createdAt))}</label>
 										</Flex>
 									))
 								}
-								<label>Versions</label>
-								<MenuProvider id={ID} event='onClick'>
-									<div>
-										<Pushable>
-											<SVG src={icons.Dots} className={styles.menu} />
-										</Pushable>
-									</div>
-								</MenuProvider>
 								<ConfirmDeleteModal name={name} onDelete={this.handleDeleteApp}>
 								{(openDelete) => (
 									<Modal>
@@ -227,7 +227,7 @@ export default class AppPage extends Component<RouteComponentProps<IParams>, ISt
 								</AppearAnimation>
 							</Flex>
 						</Flex>
-						<Flex col list m grow>
+						<Flex col list m>
 							<PieChart
 								data={this.liveCountPieData}
 								title='Live count data'

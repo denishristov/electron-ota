@@ -11,13 +11,13 @@ export const colors = {
 		darkAccent: '#9a9a9a',
 	},
 	data: {
-		red: '#f96868',
-		orange: '#ffb76b',
-		yellow: '#ffe677',
-		green: '#54f18e',
-		blue: '#5DB6EA',
-		purple: '#bda2ef',
-		pink: '#F6C0D0',
+		green: '#84fab0',
+		blue: '#8fd3f4',
+		red: '#f9748f',
+		yellow: '#ffecd2',
+		orange: '#fad0c4',
+		pink: '#ffd1ff',
+		purple: '#e0c3fc',
 	},
 }
 

@@ -15,6 +15,7 @@ import styles from '../../../styles/AppsPage.module.sass'
 import icons from '../../../util/constants/icons'
 import Pushable from '../../generic/Pushable'
 import Flex from '../../generic/Flex'
+import Button from '../../generic/Button'
 
 @observer
 export default class AppsContainer extends Component<RouteComponentProps> {
@@ -39,6 +40,21 @@ export default class AppsContainer extends Component<RouteComponentProps> {
 				<div className={styles.appsPageContainer}>
 					<header>
 						<h1>Apps</h1>
+						<Modal>
+							<Modal.OpenTrigger>
+								<div>
+									<Button color='white' size='small'>
+										<SVG src={icons.Plus} />
+										Add app
+									</Button>
+								</div>
+							</Modal.OpenTrigger>
+							<Modal.Content
+								title='Add a new app'
+								component={AppModal}
+								props={{}}
+							/>
+						</Modal>
 					</header>
 					<div className={styles.appsContainer}>
 					<AppearAnimation items={allApps}>
@@ -51,23 +67,10 @@ export default class AppsContainer extends Component<RouteComponentProps> {
 								/>
 							)}
 						</AppearAnimation>
-					<Pushable>
+					{/* <Pushable>
 						<div className={styles.placeholder}>
-							<Modal>
-								<Modal.OpenTrigger>
-									<Flex grow y x list>
-										<SVG src={icons.Plus} />
-										<h4>Add a new app</h4>
-									</Flex>
-								</Modal.OpenTrigger>
-								<Modal.Content
-									title='Add a new app'
-									component={AppModal}
-									props={{}}
-								/>
-							</Modal>
 						</div>
-					</Pushable>
+					</Pushable> */}
 					</div>
 				</div>
 			</Container>

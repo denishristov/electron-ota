@@ -12,7 +12,8 @@ const { RadialChart, GradientDefs } = require('react-vis')
 interface IProps {
 	data?: Array<{
 		label: string
-		angle: number,
+		angle: number
+		gradientLabel: string,
 	}>
 	title: string
 }
@@ -26,16 +27,9 @@ const labelsStyle = {
 	fontSize: 16,
 }
 
-const margins = {
-	left: 160,
-	right: 160,
-	top: 160,
-	bottom: 160,
-}
-
 export default observer(function PieChart({ data, title }: IProps) {
 	return (
-		<Flex p col list className={styles.darkTile}>
+		<Flex p m col list className={styles.darkTile}>
 			<h3>{title}</h3>
 			{data && Boolean(data.length)
 				? (
@@ -43,11 +37,11 @@ export default observer(function PieChart({ data, title }: IProps) {
 						<RadialChart
 							animation
 							showLabels
+							labelsRadiusMultiplier={0.9}
 							colorType='literal'
 							colorDomain={[0, 100]}
 							colorRange={[0, 10]}
 							getColor={getColor}
-							margin={margins}
 							labelsStyle={labelsStyle}
 							data={data}
 							width={300}
@@ -69,10 +63,13 @@ export default observer(function PieChart({ data, title }: IProps) {
 							</GradientDefs>
 						</RadialChart>
 						<Flex col x list>
-							{data.map(({ label, angle }) => (
-								<Flex list y key={label}>
-									<h4>{label}</h4>
-									<label>{angle}</label>
+							{data.map((d) => (
+								<Flex list y key={d.label}>
+									<svg className={styles.legend}>
+										<circle cx={8} cy={8} r={8} stroke={getColor(d)} fill={getColor(d)} />
+									</svg>
+									<h4>{d.label}</h4>
+									<label>{d.angle}</label>
 								</Flex>
 							))}
 						</Flex>

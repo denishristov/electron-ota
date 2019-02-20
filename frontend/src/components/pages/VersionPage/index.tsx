@@ -122,10 +122,14 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 			isReleased,
 		} = this.version
 
+		const {
+			color,
+		} = this.app
+
 		return (
 			<Container>
 				<div className={styles.container}>
-					<header>
+					<header style={{ backgroundColor: color }}>
 						<img src={this.app.pictureUrl} />
 						<h1>{`${this.app.name} v${versionName}`}</h1>
 					</header>

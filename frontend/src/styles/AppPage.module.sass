@@ -12,17 +12,33 @@
 	@include container
 
 .versions-tile
-	@include glowing-shadow($accent)
-	background-color: white
-	border-radius: $spacing
 	padding-left: $spacing * 7
 
-	label
-		font-size: 1rem
+	> span:first-child
+		@include glowing-shadow($accent)
+		position: relative
+		background-color: white
+		border-radius: $spacing
+		padding: $spacing
+		margin-bottom: $spacing * 2
+
+		label
+			font-size: 0.9rem
 	
-	svg
-		width: $icon-size
-		height: $icon-size
+		svg
+			width: $icon-size
+			height: $icon-size
+
+		.dots
+			position: absolute
+			top: $spacing
+			right: 10px
+			width: $spacing
+			height: $spacing
+			transform: rotate(90deg)
+
+			g, path, svg
+				fill: $dark-accent
 
 .new-version
 	color: $dark-accent

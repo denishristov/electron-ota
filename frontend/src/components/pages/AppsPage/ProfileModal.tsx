@@ -88,7 +88,7 @@ export default class ProfileModal extends React.Component<{}> {
 								type='password'
 								label='Confirm Password'
 							/>
-							<p>Changing your password will remove all saved authentication tokens.</p>
+							<p>Changing your password will sign you out on all your other devices.</p>
 						</Flex>
 					</Flex>
 					<footer>
@@ -98,13 +98,9 @@ export default class ProfileModal extends React.Component<{}> {
 								Cancel
 							</Button>
 						</Modal.CloseTrigger>
-						<Button size='small' color='red' type='button' onClick={this.userStore.deleteProfile}>
-							<SVG src={icons.Delete} />
-							Delete Profile
-						</Button>
 						<Button size='small' color='blue' type='submit'>
-							<SVG src={icons.Edit} />
-							Submit
+							<SVG src={icons.Success} />
+							Save
 						</Button>
 					</footer>
 				</form>

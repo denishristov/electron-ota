@@ -6,7 +6,7 @@ import styles from '../../styles/Modal.module.sass'
 
 import Close from '../../img/Close.svg'
 
-import { stopPropagation, list } from '../../util/functions'
+import { stopPropagation, list, stopEvent } from '../../util/functions'
 import { modalBackgroundAnimations, modalContentAnimations } from '../../util/constants/animations'
 
 import Pushable from './Pushable'
@@ -49,7 +49,6 @@ function Content<T>({ component: Component, props, title, className }: IContentP
 									className={styles.modalContainer}
 									onClick={close}
 									style={style}
-									onScroll={stopPropagation}
 								>
 									<Spring
 										native
@@ -111,11 +110,19 @@ export default class Modal extends React.Component<IModalProps, IState> {
 		if (!this.props.disableClose) {
 			this.setState({ isClosing: true })
 		}
+
+		requestAnimationFrame(() => {
+			document.body.style.overflow = 'unset'
+		})
 	}
 
 	@bind
 	public open() {
 		this.setState({ isOpened: true })
+
+		requestAnimationFrame(() => {
+			document.body.style.overflow = 'hidden'
+		})
 	}
 
 	public render() {

@@ -23,6 +23,7 @@
 	flex-grow: 1
 	min-height: 100vh
 	position: relative
+	overflow: hidden
 
 	header
 		display: flex
@@ -30,24 +31,24 @@
 		align-items: flex-end
 		padding: $spacing * 3 $spacing * 2 0
 
-		h1
-			margin: $spacing * 2 auto $spacing 0
-
-		button
-			margin: 0 0 $spacing / 2 $spacing
-
-			span
-				width: $spacing
-				height: $spacing
-				margin-right: $spacing / 2
-
-		img, svg
+		img
 			@include glowing-shadow($dark-accent)
 			border-radius: 50%
 			width: $spacing * 4
 			height: $spacing * 4
 			margin-right: $spacing
 			margin-bottom: $spacing
+
+		h1
+			margin: $spacing * 2 0 $spacing 0
+
+		button
+			margin: 0 0 $spacing $spacing * 2
+
+			span
+				width: $spacing
+				height: $spacing
+				margin-right: $spacing / 2
 
 @mixin shadow($color)
 	box-shadow: 0 0 20px 0 transparentize($color, 0.76)
@@ -98,6 +99,7 @@
 		fill: $color
 
 	&:focus, &:hover
+		@include glowing-shadow($color)
 		background-color: $color
 		color: white
 
@@ -106,7 +108,7 @@
 
 
 @mixin color-button($background, $background2, $color)
-	@include shadow($background2)
+	@include shadow($background)
 	background-size: auto 200%
 	background-position: 0 100%
 	background-image: linear-gradient(to top right, $background 0%, $background 20%, $background2 100%)
@@ -120,10 +122,11 @@
 		fill: $color
 
 	&:focus, &:hover
+		@include glowing-shadow($background)
 		background-position: 0 0
 
 @mixin light-button($background, $color) 
 	@include color-button($background,  darken($background, 8%), $color)
 
 @mixin dark-button($background, $color) 
-	@include color-button($background, adjust-hue($background, 25%), $color)
+	@include color-button($background, adjust-hue($background, 24%), $color)

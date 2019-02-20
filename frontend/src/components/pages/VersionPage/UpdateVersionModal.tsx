@@ -89,7 +89,7 @@ export default class UpdateVersionModal extends Component<IProps> {
 									Delete
 								</Button>
 							</Modal.CloseTrigger>
-							<Button size='small' color='green' type='submit'>
+							<Button size='small' color='blue' type='submit'>
 								<SVG src={icons.Success} />
 								Save
 							</Button>

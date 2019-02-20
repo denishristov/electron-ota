@@ -51,7 +51,7 @@ container.bind<IRegisterStore>(DI.Stores.Register)
 
 container.bind<IAppModalStore>(DI.Stores.AppModal)
 	.to(AppModalStore)
-	.inSingletonScope()
+	.inTransientScope()
 
 container.bind<ICreateAppStore>(DI.Stores.CreateApp)
 	.to(CreateAppStore)

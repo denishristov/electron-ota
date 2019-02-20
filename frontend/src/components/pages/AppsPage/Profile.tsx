@@ -12,6 +12,7 @@ import Pushable from '../../generic/Pushable'
 import { TriggerContext } from '../../contexts/ModalContext'
 import ProfileModal from './ProfileModal'
 import { observer } from 'mobx-react'
+import ConfirmDeleteModal from '../../generic/ConfirmDeleteModal'
 
 const ID = 'profile'
 
@@ -47,18 +48,24 @@ export default class Profile extends Component<IProps> {
 						props={{}}
 					/>
 					<TriggerContext.Consumer>
-						{({ open }) => (
-							<Menu
-								id={ID}
-								animation='menu-animation'
-								theme='menu-theme'
-							>
-								<Item onClick={this.props.goHome}>Home</Item>
-								<Item onClick={open}>Edit Profile</Item>
-								<Separator />
-								<Item onClick={this.userStore.logout}>Logout</Item>
-							</Menu>
-						)}
+					{({ open }) => (
+						<ConfirmDeleteModal name='your profile' onDelete={this.userStore.deleteProfile}>
+							{(openDelete) => (
+								<Menu
+									id={ID}
+									animation='menu-animation'
+									theme='menu-theme'
+								>
+									<Item onClick={this.props.goHome}>Home</Item>
+									<Separator />
+									<Item onClick={open}>Edit Profile</Item>
+									<Item onClick={openDelete}>Delete Profile</Item>
+									<Separator />
+									<Item onClick={this.userStore.logout}>Logout</Item>
+								</Menu>
+							)}
+						</ConfirmDeleteModal>
+					)}
 					</TriggerContext.Consumer>
 				</Modal>
 			</>

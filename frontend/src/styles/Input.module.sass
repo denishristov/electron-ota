@@ -49,6 +49,9 @@ input
 		display: absolute
 		right: $spacing
 
+	.label label
+		@include transition(color)
+
 input:focus 
 	~ .bar
 		background-color: $dark-accent
@@ -57,6 +60,9 @@ input:focus
 		~ .icon
 			svg, g, path
 				fill: $dark-accent
+
+	~ .label
+		color: $text
 		
 .icon
 	position: absolute
@@ -76,7 +82,7 @@ input:focus
 
 input:placeholder-shown 
 	~ .label
-		transform: translateY((54px - $spacing) / 2 + 1.5 * $spacing)
+		// transform: translateY((54px - $spacing) / 2 + 1.5 * $spacing)
 
 .label
 	@include text-overflow
