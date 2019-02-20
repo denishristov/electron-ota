@@ -10277,7 +10277,7 @@ react-timeseries-charts@0.15.5:
     react-hot-loader "4.1.2"
     underscore "^1.8.3"
 
-react-vis@1.11.6:
+react-vis@^1.11.6:
   version "1.11.6"
   resolved "https://registry.yarnpkg.com/react-vis/-/react-vis-1.11.6.tgz#4616968ac6dfbd95491d778e70ad26956fd2fdab"
   integrity sha512-MHlk4LSnhkiHUoiHbf+Lk4mp7QkFPiamhU5BiJdS4JtzfIY8ZWsZcV229quBq8EHeqFcwUyq1ooa3kJ/znJ+4A==
@@ -12163,11 +12163,6 @@ ts-loader@^5.3.2:
     loader-utils "^1.0.2"
     micromatch "^3.1.4"
     semver "^5.0.1"
-
-ts-method-cache@3.2.1:
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/ts-method-cache/-/ts-method-cache-3.2.1.tgz#55e98c49f56c526517b1d48a04995b5869c5a7d0"
-  integrity sha512-MJ+P7Pbfs0HrzTC7ktyp+MByGyHF2ASACzC1v1giwrthlHWPWlG1gc5yu138O+piDLtPs1mbY/t3zYtwoPHvFA==
 
 ts-node-dev@^1.0.0-pre.32:
   version "1.0.0-pre.32"

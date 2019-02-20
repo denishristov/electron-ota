@@ -20,3 +20,10 @@ label.dark
 	width: 100vw
 	height: 100vh
 	overflow: hidden
+
+.dark-tile
+	@include glowing-shadow($accent)
+	@include transition(box-shadow)
+	background-image: linear-gradient(60deg, #29323c 0%, #485563 100%)
+	color: $accent
+	border-radius: 16px

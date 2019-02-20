@@ -12,8 +12,8 @@ export default function Switch({ onChange, value }: IProps) {
 		<ReactSwitch
 			onChange={onChange}
 			checked={value}
-			onColor={colors.green}
-			offColor={colors.accent}
+			onColor={colors.data.green}
+			offColor={colors.ui.accent}
 			checkedIcon={false}
 			uncheckedIcon={false}
 			boxShadow={shadows.rest}

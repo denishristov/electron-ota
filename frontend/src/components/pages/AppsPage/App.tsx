@@ -39,7 +39,7 @@ export default class App extends Component<IProps> {
 					onClick={this.goToApp}
 					style={this.props.animation}
 				>
-				<Flex y list mb style={{ backgroundColor: color || colors.accent }}>
+				<Flex y list mb style={{ backgroundColor: color || colors.ui.accent }}>
 					{pictureUrl && <img src={pictureUrl} />}
 					<h3>{name}</h3>
 				</Flex>

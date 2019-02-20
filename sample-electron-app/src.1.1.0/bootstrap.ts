@@ -9,7 +9,7 @@ declare global {
 	}
 }
 
-const isDevMode = /[\\/]electron[\\/]/u.test(process.execPath)
+const isDevMode = false
 
 !isDevMode && (global.updateService = new ElectronUpdateServiceClient({
 	bundleId: 'test-electron',

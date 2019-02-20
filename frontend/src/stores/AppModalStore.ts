@@ -13,12 +13,12 @@ export interface IAppModalStore {
 @DI.injectable()
 export default class AppModalStore implements IAppModalStore {
 	@observable
-	public color = colors.accent
+	public color = colors.ui.accent
 
 	@observable
 	public pictureSrc?: string
 
-	public readonly colorSetters = Object.values(colors)
+	public readonly colorSetters = Object.values(colors.data)
 		.group((color) => [color, action(() => {
 			this.color = color
 		})])

@@ -30,6 +30,8 @@ import { MenuProvider, Menu, Item, Separator } from 'react-contexify'
 import UpdateAppModal from './UpdateAppModal'
 import { TriggerContext } from '../../contexts/ModalContext'
 import ConfirmDeleteModal from '../../generic/ConfirmDeleteModal'
+import { defaultSystemCounts } from '../../../util/constants/defaults'
+import PieChart from '../../generic/PieChart'
 
 const ID = 'edit_app'
 interface IParams {
@@ -43,6 +45,30 @@ interface IState {
 
 @observer
 export default class AppPage extends Component<RouteComponentProps<IParams>, IState> {
+
+	@computed
+	private get app(): IApp | null {
+		const app = this.appsStore.getApp(this.props.match.params.appId)
+
+		return app
+	}
+
+	@computed
+	private get liveCountPieData() {
+		if (this.app) {
+			const data = Object.entries({ ...defaultSystemCounts }).group((x) => x)
+
+			for (const { Darwin, Linux, Windows_RT } of [...this.app.clientCounters.values()]) {
+				data.Darwin += Darwin
+				data.Linux += Linux
+				data.Windows_RT += Windows_RT
+			}
+
+			return Object.entries(data)
+				.map(([label, angle]) => ({ angle, label, gradientLabel: label }))
+				.filter(({ angle }) => angle)
+		}
+	}
 	public readonly state = {
 		hasLoaded: false,
 		isModalClosingDisabled: false,
@@ -53,13 +79,6 @@ export default class AppPage extends Component<RouteComponentProps<IParams>, ISt
 
 	@DI.lazyInject(DI.Factories.CreateVersionStore)
 	private readonly createVersionStoreFactory: CreateVersionStoreFactory
-
-	@computed
-	private get app(): IApp | null {
-		const app = this.appsStore.getApp(this.props.match.params.appId)
-
-		return app
-	}
 
 	public async componentDidMount() {
 		if (!this.appsStore.allApps.length) {
@@ -103,10 +122,6 @@ export default class AppPage extends Component<RouteComponentProps<IParams>, ISt
 			isModalClosingDisabled,
 		} = this.state
 
-		const deleteApp = () => {
-			this.appsStore.deleteApp({ id })
-		}
-
 		return (
 			<Container>
 				<div className={styles.appPageContainer}>
@@ -145,13 +160,13 @@ export default class AppPage extends Component<RouteComponentProps<IParams>, ISt
 										</Pushable>
 									</div>
 								</MenuProvider>
-								<ConfirmDeleteModal name={name} onDelete={deleteApp}>
+								<ConfirmDeleteModal name={name} onDelete={this.handleDeleteApp}>
 								{(openDelete) => (
 									<Modal>
 										<Modal.Content
 											title={`Edit ${name}`}
 											component={UpdateAppModal}
-											props={{ id, pictureSrc: pictureUrl }}
+											props={{ id, pictureSrc: pictureUrl, name }}
 										/>
 										<TriggerContext.Consumer>
 											{({ open }) => (
@@ -212,12 +227,24 @@ export default class AppPage extends Component<RouteComponentProps<IParams>, ISt
 								</AppearAnimation>
 							</Flex>
 						</Flex>
-						<Flex col grow m y>
+						<Flex col list m grow>
+							<PieChart
+								data={this.liveCountPieData}
+								title='Live count data'
+							/>
 						</Flex>
 					</Flex>
 				</div>
 			</Container>
 		)
+	}
+
+	@bind
+	private handleDeleteApp() {
+		if (this.app) {
+			const { id } = this.app
+			this.appsStore.deleteApp({ id })
+		}
 	}
 
 	@bind

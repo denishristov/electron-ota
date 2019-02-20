@@ -30,17 +30,15 @@ export default class Profile extends Component<IProps> {
 		return Boolean(profile) && isAuthenticated && (
 			<>
 				<MenuProvider id={ID} event='onClick'>
-					<div>
-						<Pushable>
-							<Flex y list className={styles.profile}>
-								<h5>{profile.name}</h5>
-								{profile.pictureUrl
-									? <img src={profile.pictureUrl} />
-									: <SVG src={icons.User} />
-								}
-							</Flex>
-						</Pushable>
-					</div>
+					<Pushable>
+						<Flex y list className={styles.profile}>
+							<h5>{profile.name}</h5>
+							{profile.pictureUrl
+								? <img src={profile.pictureUrl} />
+								: <SVG src={icons.User} />
+							}
+						</Flex>
+					</Pushable>
 				</MenuProvider>
 				<Modal>
 					<Modal.Content

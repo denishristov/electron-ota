@@ -12,7 +12,6 @@ import {
 	AppModel,
 	LatestVersionsModel,
 	ISystemTypeCount,
-	IAppClientCount,
 	GetVersionsRequest,
 	CreateVersionRequest,
 	CreateVersionResponse,
@@ -27,8 +26,7 @@ import {
 } from 'shared'
 import { IApi } from '../services/Api'
 import { Omit } from 'react-router'
-import { byDateDesc } from '../util/functions'
-import { MemoryCache } from 'ts-method-cache'
+import { byDateDesc, memoize } from '../util/functions'
 
 interface ICreateVersionInput {
 	versionName: string
@@ -134,8 +132,8 @@ export default class App implements IApp {
 		return [...this.versions.values()].sort(byDateDesc)
 	}
 
+	@memoize
 	@action
-	@MemoryCache()
 	public async fetchVersions() {
 		const { versions } = await this.api.fetch({
 			eventType: EventType.GetVersions,
@@ -147,8 +145,8 @@ export default class App implements IApp {
 		this.versions.merge(versions.group((version) => [version.id, version]))
 	}
 
+	@memoize
 	@action
-	@MemoryCache()
 	public async fetchSimpleReports() {
 		const { reports } = await this.api.fetch({
 			eventType: EventType.SimpleVersionReports,
@@ -162,8 +160,8 @@ export default class App implements IApp {
 		this.simpleReports.merge(grouped)
 	}
 
+	@memoize
 	@action
-	@MemoryCache()
 	public async fetchReports(versionId: string) {
 		const reports = await this.api.fetch({
 			eventType: EventType.VersionReports,
@@ -175,8 +173,8 @@ export default class App implements IApp {
 		this.reports.set(versionId, reports)
 	}
 
+	@memoize
 	@action
-	@MemoryCache()
 	public async fetchAppLiveCount() {
 		const counters = await this.api.fetch({
 			eventType: EventType.getAppClientCount,
@@ -217,7 +215,6 @@ export default class App implements IApp {
 		})
 	}
 
-	@action
 	public async releaseUpdate(request: PublishVersionRequest): Promise<void> {
 		await this.api.fetch({
 			eventType: EventType.ReleaseUpdate,

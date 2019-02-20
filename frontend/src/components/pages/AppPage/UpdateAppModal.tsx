@@ -22,6 +22,7 @@ interface IEditAppEvent extends FormEvent<HTMLFormElement> {
 interface IProps {
 	id: string
 	pictureSrc?: string
+	name: string
 }
 
 @observer
@@ -58,12 +59,11 @@ export default class UpdateAppModal extends Component<IProps> {
 						</Flex>
 						<Flex ml mr />
 						<Flex m col list>
-							<Input name='name' label='Name' />
+							<Input defaultValue={this.props.name} name='name' label='Name' />
 							<label>Color</label>
 							<Flex list col>
 								<Flex list>
-									{Object.values(colors)
-										.slice(0, -1)
+									{Object.values(colors.data)
 										.map((backgroundColor) => (
 											<div
 												key={backgroundColor}

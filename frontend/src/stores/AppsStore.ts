@@ -22,9 +22,8 @@ import {
 import { IApi } from '../services/Api'
 import { IApp } from './App'
 import { AppFactory } from './factories/AppFactory'
-import { getDefaultSimpleStatistics } from '../util/functions'
+import { getDefaultSimpleStatistics, memoize } from '../util/functions'
 import { defaultSystemCounts } from '../util/constants/defaults'
-import { MemoryCache } from 'ts-method-cache'
 
 interface IClient {
 	versionName: string
@@ -78,8 +77,8 @@ export default class AppsStore implements IAppsStore {
 		return this.apps.get(id) || null
 	}
 
+	@memoize
 	@action
-	@MemoryCache()
 	public async fetchApps(): Promise<void> {
 		const { apps } = await this.api.fetch({
 			eventType: EventType.GetApps,
@@ -90,8 +89,8 @@ export default class AppsStore implements IAppsStore {
 		this.apps.merge(apps.map(this.appFactory).group((app) => [app.id, app]))
 	}
 
+	@memoize
 	@action
-	@MemoryCache()
 	public async fetchAppsLiveCount(): Promise<void> {
 		const counters = await this.api.fetch({
 			eventType: EventType.getAppsClientCount,

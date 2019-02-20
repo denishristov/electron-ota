@@ -54,8 +54,7 @@ export default class CreateAppModal extends React.Component {
 							<label>Color</label>
 							<Flex list col>
 								<Flex list>
-									{Object.values(colors)
-										.slice(0, -1)
+									{Object.values(colors.data)
 										.map((backgroundColor) => (
 											<div
 												key={backgroundColor}

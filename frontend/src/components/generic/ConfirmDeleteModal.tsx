@@ -25,10 +25,12 @@ function Content({ onDelete, name }: IContentProps) {
 					</Button>
 				</Modal.CloseTrigger>
 				<Modal.CloseTrigger>
-					<Button size='small' color='red' type='button' onClick={onDelete}>
-						<SVG src={icons.Delete} />
-						Confirm
-					</Button>
+					<div>
+						<Button size='small' color='red' type='button' onClick={onDelete}>
+							<SVG src={icons.Delete} />
+							Confirm
+						</Button>
+					</div>
 				</Modal.CloseTrigger>
 			</footer>
 		</>

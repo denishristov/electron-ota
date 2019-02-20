@@ -58,7 +58,7 @@ export default class CreateVersionStore extends VersionModalStore implements ICr
 		return typeof this.progress === 'number'
 	}
 
-	@action.bound
+	@action
 	public async handleSubmit({ versionName, description, password }: IVersionFormData) {
 		const {
 			isReleasing,
