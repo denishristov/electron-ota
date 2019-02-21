@@ -4,11 +4,7 @@
     "compose": "docker-compose up -d --build"
   },
   "workspaces": [
-    "backend",
-    "frontend",
-    "shared",
-    "electron-client",
-    "sample-electron-app"
+    "packages/*"
   ],
   "devDependencies": {
     "tslint": "^5.12.1",

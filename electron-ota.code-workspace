@@ -1,19 +1,19 @@
 {
 	"folders": [
 		{
-			"path": "backend",
+			"path": "packages/backend",
 		},
 		{
-			"path": "frontend",
+			"path": "packages/frontend",
 		},
 		{
-			"path": "shared",
+			"path": "packages/shared",
 		},
 		{
-			"path": "electron-client",
+			"path": "packages/electron-client",
 		},
 		{
-			"path": "sample-electron-app",
+			"path": "packages/sample-electron-app",
 		},
 	],
 	"settings": {
