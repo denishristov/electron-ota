@@ -3,20 +3,22 @@ import * as path from 'path'
 
 let mainWindow: Electron.BrowserWindow
 
-global.updateService.checkForUpdate()
+if (!global.isDevMode) {
+	global.updateService.checkForUpdate()
 
-global.updateService.on('update', () => {
-	dialog.showMessageBox({
-		buttons: ['Reload', 'Not now'] ,
-		message: 'A new update is available',
-		type: 'question',
-	}, (index) => {
-		if (index === 0) {
-			app.relaunch()
-			app.exit()
-		}
+	global.updateService.on('update', () => {
+		dialog.showMessageBox({
+			buttons: ['Reload', 'Not now'] ,
+			message: 'A new update is available',
+			type: 'question',
+		}, (index) => {
+			if (index === 0) {
+				app.relaunch()
+				app.exit()
+			}
+		})
 	})
-})
+}
 
 function createWindow() {
 	mainWindow = new BrowserWindow({
