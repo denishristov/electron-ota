@@ -8,16 +8,14 @@ import {
 	UpdateAppRequest,
 	UpdateAppResponse,
 	UpdateVersionResponse,
-	PublishVersionRequest,
 	PublishVersionResponse,
-	ClientReportResponse,
-	ErrorReportResponse,
 	CreateVersionResponse,
 	DeleteVersionResponse,
 	CreateAppRequest,
 	SystemType,
 	ISystemTypeCount,
 	AuthenticatedRequest,
+	ReportModelResponse,
 } from 'shared'
 import { IApi } from '../services/Api'
 import { IApp } from './App'
@@ -169,54 +167,79 @@ export default class AppsStore implements IAppsStore {
 	}
 
 	@action.bound
-	private handleDownloadingReport({ appId, versionId }: ClientReportResponse) {
+	private handleDownloadingReport({ versionId, appId, ...report }: ReportModelResponse) {
 		const app = this.getApp(appId)
 
 		if (app) {
-			const reports = app.simpleReports.get(versionId)
+			const simpleReports = app.simpleReports.get(versionId)
+
+			if (simpleReports) {
+				simpleReports.downloadingCount++
+			}
+
+			const reports = app.reports.get(versionId)
 
 			if (reports) {
-				reports.downloadingCount++
+				reports.downloading.push(report)
 			}
 		}
 	}
 
 	@action.bound
-	private handleDownloadedReport({ appId, versionId }: ClientReportResponse) {
+	private handleDownloadedReport({ versionId, appId, ...report }: ReportModelResponse) {
 		const app = this.getApp(appId)
 
 		if (app) {
-			const reports = app.simpleReports.get(versionId)
+			const simpleReports = app.simpleReports.get(versionId)
+
+			if (simpleReports) {
+				simpleReports.downloadingCount--
+				simpleReports.downloadedCount++
+			}
+
+			const reports = app.reports.get(versionId)
 
 			if (reports) {
-				reports.downloadingCount--
-				reports.downloadedCount++
+				reports.downloaded.push(report)
+				console.log(reports)
 			}
 		}
 	}
 
 	@action.bound
-	private handleUsingReport({ appId, versionId }: ClientReportResponse) {
+	private handleUsingReport({ versionId, appId, ...report }: ReportModelResponse) {
 		const app = this.getApp(appId)
 
 		if (app) {
-			const reports = app.simpleReports.get(versionId)
+			const simpleReports = app.simpleReports.get(versionId)
+
+			if (simpleReports) {
+				simpleReports.usingCount++
+			}
+
+			const reports = app.reports.get(versionId)
 
 			if (reports) {
-				reports.usingCount++
+				reports.using.push(report)
 			}
 		}
 	}
 
 	@action.bound
-	private handleErrorReport({ appId, versionId }: ErrorReportResponse) {
+	private handleErrorReport({ versionId, appId, ...report }: ReportModelResponse) {
 		const app = this.getApp(appId)
 
 		if (app) {
-			const reports = app.simpleReports.get(versionId)
+			const simpleReports = app.simpleReports.get(versionId)
+
+			if (simpleReports) {
+				simpleReports.errorsCount++
+			}
+
+			const reports = app.reports.get(versionId)
 
 			if (reports) {
-				reports.errorsCount++
+				reports.errorMessages.push(report)
 			}
 		}
 	}

@@ -170,7 +170,7 @@ export default class App implements IApp {
 			responseType: GetVersionReportsResponse,
 		})
 
-		this.reports.set(versionId, reports)
+		this.reports.set(versionId, { ...reports })
 	}
 
 	@memoize

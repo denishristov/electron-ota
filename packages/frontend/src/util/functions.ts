@@ -120,27 +120,25 @@ export function memoize(target: any, propertyName: string, descriptor: TypedProp
 	}
 }
 
-let counter = 0
+let memoizedCounter = 0
 
 function getNewFunction(originalFunction: () => void) {
-	const identifier = ++counter
+	const identifier = ++memoizedCounter
 
 	return function(this: any, ...args: any[]) {
-		const propName = `__memoized_value_${identifier}`
-		let returnedValue: any
+		const argumentsKey = args.map((x) => typeof x === 'object' ? JSON.stringify(x) : `${x}`).join('_')
 
-		if (this.hasOwnProperty(propName)) {
-			returnedValue = this[propName]
-		} else {
-			returnedValue = originalFunction.apply(this, args as any)
+		const propName = `__memoized_${originalFunction.name}_${identifier}_${argumentsKey}`
+
+		if (!this.hasOwnProperty(propName)) {
 			Object.defineProperty(this, propName, {
 				configurable: false,
 				enumerable: false,
 				writable: false,
-				value: returnedValue,
+				value: originalFunction.apply(this, args as any),
 			})
 		}
 
-		return returnedValue
+		return this[propName]
 	}
 }

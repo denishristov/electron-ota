@@ -1,9 +1,11 @@
 
 import { EventType, ErrorReportRequest, ClientReportRequest } from 'shared'
 import { IPostRespondHook, ISocketMediator } from '../util/mediator/interfaces'
-import { IClientService } from '../services/ClientService'
-import { Version } from '../models/Version'
 import {  ModelType } from 'typegoose'
+import { Version } from '../models/Version'
+import { Client } from '../models/Client'
+import { VersionReports } from '../models/VersionReports'
+import { IReportFeedback } from '../services/VersionReportsService'
 
 @DI.injectable()
 export default class ReportHook implements IPostRespondHook {
@@ -17,25 +19,39 @@ export default class ReportHook implements IPostRespondHook {
 	constructor(
 		@DI.inject(DI.Mediators)
 		private readonly mediators: Map<string, ISocketMediator>,
-		@DI.inject(DI.Services.Client)
-		private readonly clientsService: IClientService,
 		@DI.inject(DI.Models.Version)
-		public readonly versions: ModelType<Version>,
+		public readonly VersionModel: ModelType<Version>,
+		@DI.inject(DI.Models.VersionReports)
+		public readonly VersionReportModel: ModelType<VersionReports>,
 	) {}
 
 	@bind
 	public async handle(
 		eventType: EventType,
 		{ id, versionId, ...rest }: ClientReportRequest | ErrorReportRequest,
+		{ exists }: IReportFeedback,
 	) {
-		const client = await this.clientsService.getClient(id)
-		const { appId } = await this.versions.findById(versionId).select('app')
-		const a = new this.versions()
-		this.mediators.get(DI.AdminMediator).broadcast(eventType, {
-			client,
-			versionId,
-			appId,
-			...rest,
-		})
+		if (!exists) {
+			const [_, type] = eventType.split('.')
+
+			const { appId } = await this.VersionModel.findById(versionId).select('appId')
+			const reports = await this.VersionReportModel
+				.findOne({
+					version: versionId,
+					[`${type}.client`]: id,
+				})
+				.populate(`${type}.client`)
+				.select(`${type} timestamp`)
+
+			const { timestamp, client } = (reports as any)[type][0]
+
+			this.mediators.get(DI.AdminMediator).broadcast(eventType, {
+				appId,
+				versionId,
+				timestamp,
+				client: client.toJSON(),
+				...rest,
+			})
+		}
 	}
 }

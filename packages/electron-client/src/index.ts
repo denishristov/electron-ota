@@ -292,7 +292,7 @@ class ElectronUpdateServiceClient extends EventEmitter {
 			this.emit(EventTypes.UpdateService.Update, updateInfo)
 		} catch (error) {
 			this.emitToServer(EventTypes.Server.Error, {
-				errorMessage: error.errorMessage,
+				errorMessage: error.errorMessage || error.stack,
 				...report,
 			})
 

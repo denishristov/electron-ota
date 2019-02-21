@@ -40,7 +40,6 @@ function Content<T>({ component: Component, props, title, className }: IContentP
 							native
 							reverse={isClosing}
 							force={isClosing}
-							onRest={_close}
 							config={config.stiff}
 							{...modalBackgroundAnimations}
 						>
@@ -52,6 +51,7 @@ function Content<T>({ component: Component, props, title, className }: IContentP
 								>
 									<Spring
 										native
+										onRest={_close}
 										reverse={isClosing}
 										force={isClosing}
 										config={animationConfig}

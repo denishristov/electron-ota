@@ -3,7 +3,7 @@ import Flex from '../../generic/Flex'
 import styles from '../../../styles/VersionPage.module.sass'
 import { observer } from 'mobx-react'
 import Report from './Report'
-import { Report as ReportModel } from 'shared'
+import { ReportModel } from 'shared'
 
 interface IProps {
 	reports: ReportModel[]

@@ -92,9 +92,6 @@ container.bind<ModelType<VersionReports>>(DI.Models.VersionReports)
 container.bind<ModelType<Client>>(DI.Models.Client)
 	.toConstantValue(new Client().getModelForClass(Client, defaultSchemaOptions))
 
-container.bind<ModelType<Report>>(DI.Models.Report)
-	.toConstantValue(new Report().getModelForClass(Report, defaultSchemaOptions))
-
 container.bind<IPreRespondHook>(DI.Hooks.Auth)
 	.to(AuthHook)
 	.inSingletonScope()

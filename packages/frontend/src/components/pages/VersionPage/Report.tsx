@@ -1,5 +1,5 @@
 import React from 'react'
-import { Report } from 'shared'
+import { ReportModel } from 'shared'
 
 import styles from '../../../styles/VersionPage.module.sass'
 import Flex from '../../generic/Flex'
@@ -24,7 +24,7 @@ const ErrorModal = ({ errorMessage }: { errorMessage?: string }) => (
 	</>
 )
 
-export default observer(function Report({ client, errorMessage }: Report) {
+export default observer(function Report({ client, errorMessage }: ReportModel) {
 	return (
 		<Modal>
 			<Modal.OpenTrigger>
