@@ -1,0 +1,49 @@
+{
+    "version": "2",
+    "services": {
+        "database": {
+            "container_name": "electron-ota-database",
+            "image": "mongo:4.1.8",
+            "command": "mongod --logpath=/var/log/mongodb/mongodb.log",
+            "environment": {
+                "MONGO_INITDB_DATABASE": "electron-ota",
+                "MONGO_DATA_DIR": "/data/db"
+            },
+            "volumes": [
+                "./db:/data/db"
+            ]
+        },
+        "backend": {
+            "container_name": "electron-ota-backend",
+            "build": {
+                "context": ".",
+                "dockerfile": "backend.Dockerfile"
+            },
+            "restart": "always",
+            "command": "yarn workspace backend start",
+            "environment": {
+                "MONGODB_URI_LOCAL": "mongodb://database:27017/electron-ota"
+            },
+            "ports": [
+                "5600:4000"
+            ],
+            "links": [
+                "database"
+            ]
+        },
+        "frontend": {
+            "container_name": "electron-ota-frontend",
+            "build": {
+                "context": ".",
+                "dockerfile": "frontend.Dockerfile",
+                "args": {
+                    "serverUrl": "localhost:5600"
+                }
+            },
+            "command": "nginx -g \"daemon off;\"",
+            "ports": [
+                "5500:80"
+            ]
+        }
+    }
+}

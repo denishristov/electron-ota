@@ -1,5 +1,8 @@
 {
   "private": true,
+  "scripts": {
+    "compose": "docker-compose up -d --build"
+  },
   "workspaces": [
     "backend",
     "frontend",
