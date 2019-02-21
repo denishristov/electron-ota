@@ -11,6 +11,7 @@ import { Client } from '../models/Client'
 import { VersionReports } from '../models/VersionReports'
 import { App } from '../models/App'
 import { ModelType } from 'typegoose'
+import { Report } from '../models/Report'
 
 export interface IVersionReportsService {
 	downloadingUpdate(req: ClientReportRequest): Promise<void>
@@ -32,24 +33,33 @@ export default class VersionReportsService implements IVersionReportsService {
 		private readonly VersionReportsModel: ModelType<VersionReports>,
 		@DI.inject(DI.Models.App)
 		private readonly AppModel: ModelType<App>,
+		@DI.inject(DI.Models.Report)
+		private readonly ReportModel: ModelType<Report>,
 	) {}
 
 	@bind
 	public async downloadingUpdate({ id, versionId }: ClientReportRequest) {
+		const { ReportModel } = this
+
+		const report = new ReportModel({ client: id })
+		await report.save()
+
 		await this.VersionReportsModel.findOneAndUpdate(
 			{ version: versionId },
-			{ $addToSet: { downloading: { client: id } } },
+			{ $addToSet: { downloading: report } },
 		)
 	}
 
 	@bind
 	public async downloadedUpdate({ id, versionId }: ClientReportRequest) {
+		const { ReportModel } = this
+
+		const report = new ReportModel({ client: id })
+		await report.save()
+
 		await this.VersionReportsModel.findOneAndUpdate(
 			{ version: versionId },
-			{
-				$pull: { downloading: { client: id } } ,
-				$addToSet: { downloaded: { client: id } },
-			},
+			{ $addToSet: { downloaded: report } },
 		)
 	}
 
@@ -61,9 +71,14 @@ export default class VersionReportsService implements IVersionReportsService {
 			return
 		}
 
+		const { ReportModel } = this
+
+		const report = new ReportModel({ client: id })
+		await report.save()
+
 		await this.VersionReportsModel.findOneAndUpdate(
 			{ version: versionId },
-			{ $addToSet: { using: { client: id } } },
+			{ $addToSet: { using: report } },
 		)
 
 		await client.set({ version: versionId }).save()
@@ -71,9 +86,14 @@ export default class VersionReportsService implements IVersionReportsService {
 
 	@bind
 	public async error({ id, versionId, errorMessage }: ErrorReportRequest) {
+		const { ReportModel } = this
+
+		const report = new ReportModel({ client: id, errorMessage })
+		await report.save()
+
 		await this.VersionReportsModel.findOneAndUpdate(
 			{ version: versionId },
-			{ $push: { errorMessages: { client: id, errorMessage } } },
+			{ $push: { errorMessages: report } },
 		)
 	}
 
@@ -100,11 +120,38 @@ export default class VersionReportsService implements IVersionReportsService {
 	public async getVersionReports({ versionId: version }: GetVersionReportsRequest): Promise<GetVersionReportsResponse> {
 		const reports = await this.VersionReportsModel
 			.findOne({ version })
-			.populate(VersionReportsService.fields)
-			.select(VersionReportsService.fields)
+			.populate(
+				VersionReportsService.fields
+				.split(' ')
+				.map((key) => ({
+					path: key,
+					populate: {
+						path: 'client',
+					},
+				}),
+			))
 
 		const { id, ...rest } = reports.toJSON()
 
 		return { ...rest, version }
+	}
+
+	@bind
+	public async getReportsGroupedByHour(versionId: string) {
+		const da = await this.VersionReportsModel.aggregate([
+			{
+				$group: {
+					_id: {
+						$toDate: {
+							$subtract: [
+								{ $toLong: '$created_at' },
+								{ $mod: [ { $toLong: '$created_at' }, 1000 * 60 * 60 ] },
+							],
+						},
+			 		},
+					count: { $sum: 1 },
+				},
+			},
+		])
 	}
 }

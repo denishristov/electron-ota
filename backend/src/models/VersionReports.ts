@@ -4,17 +4,17 @@ import { Version } from './Version'
 import { Report } from './Report'
 
 export class VersionReports extends Typegoose {
-	@arrayProp({ itemsRef: Client })
-	public downloading: Array<Ref<Client>> = []
+	@arrayProp({ itemsRef: Report })
+	public downloading: Array<Ref<Report>> = []
 
-	@arrayProp({ itemsRef: Client })
-	public downloaded: Array<Ref<Client>> = []
+	@arrayProp({ itemsRef: Report })
+	public downloaded: Array<Ref<Report>> = []
 
-	@arrayProp({ itemsRef: Client })
-	public using: Array<Ref<Client>> = []
+	@arrayProp({ itemsRef: Report })
+	public using: Array<Ref<Report>> = []
 
 	@arrayProp({ items: Report })
-	public errorMessages: Report[] = []
+	public errorMessages: Array<Ref<Report>> = []
 
 	@prop({ ref: Version, required: true })
 	public version: Ref<Version>

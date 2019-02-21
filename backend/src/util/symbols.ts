@@ -17,6 +17,7 @@ export const Models = {
 	Update: Symbol.for('Update.Model'),
 	VersionReports: Symbol.for('UpdateReports.Model'),
 	Client: Symbol.for('Client.Model'),
+	Report: Symbol.for('Report.Model'),
 }
 
 export const Hooks = {

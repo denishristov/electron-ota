@@ -9,6 +9,7 @@ export const colors = {
 	ui: {
 		accent: '#dedede',
 		darkAccent: '#9a9a9a',
+		text: '#29323c',
 	},
 	data: {
 		green: '#84fab0',

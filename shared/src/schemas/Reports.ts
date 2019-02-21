@@ -40,32 +40,32 @@ export class GetSimpleVersionReportsResponse {
 	public reports: SimpleVersionReportModel[]
 }
 
-export class ErrorReport {
+export class Report {
 	@Required()
 	@Nested()
 	public client: ClientModel
 
 	@Required()
 	@StringSchema()
-	public errorMessage: string
+	public errorMessage?: string
 }
 
 export class VersionReportModel {
 	@Required()
 	@NestedArray(ClientModel)
-	public downloading: ClientModel[]
+	public downloading: Report[]
 
 	@Required()
 	@NestedArray(ClientModel)
-	public downloaded: ClientModel[]
+	public downloaded: Report[]
 
 	@Required()
 	@NestedArray(ClientModel)
-	public using: ClientModel[]
+	public using: Report[]
 
 	@Required()
-	@NestedArray(ErrorReport)
-	public errorMessages: ErrorReport[]
+	@NestedArray(Report)
+	public errorMessages: Report[]
 
 	@Required()
 	@Token()

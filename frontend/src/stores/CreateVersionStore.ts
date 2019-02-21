@@ -124,7 +124,6 @@ export default class CreateVersionStore extends VersionModalStore implements ICr
 		this.releaseType = releaseType
 
 		if (releaseType !== ReleaseType.Custom && this.previousVersionName) {
-			// console.log(semver.inc(this.previousVersionName, releaseType))
 			this.versionName = semver.inc(this.previousVersionName, releaseType) || void 0
 		}
 	}
@@ -133,10 +132,4 @@ export default class CreateVersionStore extends VersionModalStore implements ICr
 	public handleDrop([version]: File[]) {
 		this.versionFile = version
 	}
-
-	// private handleReleaseVersion(version: VersionModel) {
-	// 	// this.props.appsStore.emitPublishVersion({
-	// 	// 	versionId: version.id,
-	// 	// })
-	// }
 }

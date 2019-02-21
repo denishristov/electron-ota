@@ -35,6 +35,7 @@ import { defaultSchemaOptions } from '../models/util'
 import { ModelType } from 'typegoose'
 
 import socketioConfig from './socketioConfig'
+import { Report } from '../models/Report'
 
 const container = new Container()
 
@@ -90,6 +91,9 @@ container.bind<ModelType<VersionReports>>(DI.Models.VersionReports)
 
 container.bind<ModelType<Client>>(DI.Models.Client)
 	.toConstantValue(new Client().getModelForClass(Client, defaultSchemaOptions))
+
+container.bind<ModelType<Report>>(DI.Models.Report)
+	.toConstantValue(new Report().getModelForClass(Report, defaultSchemaOptions))
 
 container.bind<IPreRespondHook>(DI.Hooks.Auth)
 	.to(AuthHook)

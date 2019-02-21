@@ -4,7 +4,6 @@ import { StringSchema, Token, Uri } from 'tsdv-joi/constraints/string'
 import { BooleanSchema } from 'tsdv-joi/constraints/boolean'
 import { Nested } from 'tsdv-joi'
 import { SystemType } from '../enums/SystemType'
-import { Or } from 'tsdv-joi/constraints/object'
 import { AuthenticatedRequest } from './generic'
 import { AdminPublicModel } from './Admin'
 
@@ -29,6 +28,8 @@ class Update {
 
 	@Uri()
 	public downloadUrl: string
+
+	public versionId: string
 }
 
 export class CheckForUpdateRequest {

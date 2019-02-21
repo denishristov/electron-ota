@@ -81,6 +81,7 @@ export default class ReleaseService implements IReleaseService {
 				downloadUrl,
 				hash,
 				versionName,
+				id: versionId,
 			} = latestVersion
 
 			return {
@@ -92,6 +93,7 @@ export default class ReleaseService implements IReleaseService {
 					downloadUrl,
 					hash,
 					versionName,
+					versionId,
 				},
 			}
 		}

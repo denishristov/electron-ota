@@ -1,5 +1,5 @@
 import React from 'react'
-import { ErrorReport } from 'shared'
+import { Report } from 'shared'
 
 import styles from '../../../styles/VersionPage.module.sass'
 import Flex from '../../generic/Flex'
@@ -8,8 +8,9 @@ import Modal from '../../generic/Modal'
 import { observer } from 'mobx-react'
 import Button from '../../generic/Button'
 import icons from '../../../util/constants/icons'
+import Client from './Client'
 
-const ErrorModal = ({ errorMessage }: { errorMessage: string }) => (
+const ErrorModal = ({ errorMessage }: { errorMessage?: string }) => (
 	<>
 		<code>{errorMessage}</code>
 		<footer>
@@ -23,29 +24,24 @@ const ErrorModal = ({ errorMessage }: { errorMessage: string }) => (
 	</>
 )
 
-export default observer(function ErrorMessage({ client, errorMessage }: ErrorReport) {
+export default observer(function Report({ client, errorMessage }: Report) {
 	return (
 		<Modal>
 			<Modal.OpenTrigger>
 				<div>
 					<Pushable>
-						<Flex y p className={styles.client}>
-							<Flex y grow>
-								<h5>{client.username}</h5>
-								<label>{client.osRelease}</label>
-								<SVG src={icons[client.systemType]} />
-							</Flex>
-							<h6>{errorMessage}</h6>
-						</Flex>
+						<Client client={client} />
 					</Pushable>
 				</div>
 			</Modal.OpenTrigger>
-			<Modal.Content
-				title='Error'
-				className={styles.errorModal}
-				component={ErrorModal}
-				props={{ errorMessage }}
-			/>
+			{errorMessage && (
+				<Modal.Content
+					title='Error'
+					className={styles.errorModal}
+					component={ErrorModal}
+					props={{ errorMessage }}
+				/>
+			)}
 		</Modal>
 	)
 })

@@ -1,5 +1,6 @@
 import { Document } from 'mongoose'
 import mongoose from 'mongoose'
+import { Typegoose } from 'typegoose'
 
 export interface ITimestampedDocument {
 	createdAt: string

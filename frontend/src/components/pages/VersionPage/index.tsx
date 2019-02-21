@@ -3,7 +3,7 @@ import Container from '../../generic/Container'
 
 import Button from '../../generic/Button'
 import Flex from '../../generic/Flex'
-import { VersionModel, VersionReportModel, ClientModel, ErrorReport } from 'shared'
+import { VersionModel, VersionReportModel, ClientModel, Report } from 'shared'
 import { RouteComponentProps, Redirect } from 'react-router'
 import { IAppsStore } from '../../../stores/AppsStore'
 import { computed, observable } from 'mobx'
@@ -18,7 +18,7 @@ import versionModalStyles from '../../../styles/VersionModal.module.sass'
 
 import ClientRow from './ClientRow'
 import Client from './Client'
-import ErrorMessage from './ErrorMessage'
+import ErrorMessage from './Report'
 import icons from '../../../util/constants/icons'
 import Tip from '../../generic/Tip'
 
@@ -32,13 +32,6 @@ interface IParams {
 	appId: string
 	versionId: string
 }
-
-const clientMapper = (client: ClientModel) => (
-	<Client key={client.id} client={client} />
-)
-const errorMapper = ({ client, errorMessage }: ErrorReport) => (
-	<ErrorMessage key={client.id} client={client} errorMessage={errorMessage} />
-)
 
 export interface IReleaseVersionEvent extends React.FormEvent<HTMLFormElement> {
 	target: EventTarget & {
@@ -238,26 +231,22 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 									<ClientRow
 										icon={icons.Success}
 										title='Using'
-										clients={this.reports.using}
-										mapper={clientMapper}
+										reports={this.reports.using}
 									/>
 									<ClientRow
 										icon={icons.Downloading}
 										title='Downloading'
-										clients={this.reports.downloading}
-										mapper={clientMapper}
+										reports={this.reports.downloading}
 									/>
 									<ClientRow
 										icon={icons.Downloaded}
 										title='Downloaded'
-										clients={this.reports.downloaded}
-										mapper={clientMapper}
+										reports={this.reports.downloaded}
 									/>
 									<ClientRow
 										icon={icons.ErrorIcon}
-										clients={this.reports.errorMessages}
+										reports={this.reports.errorMessages}
 										title='Errors'
-										mapper={errorMapper}
 									/>
 								</>
 							)}

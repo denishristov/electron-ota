@@ -77,7 +77,9 @@ export default class CreateVersionModal extends Component<IProps> {
 									<Flex list fill className={styles.releaseTypes}>
 										{Object.values(ReleaseType).map((name) => (
 											<Pushable key={name}>
-												<div
+												<Flex
+													x
+													y
 													className={list(
 														styles.releaseButton,
 														this.store.releaseType === name
@@ -86,7 +88,7 @@ export default class CreateVersionModal extends Component<IProps> {
 													onClick={releaseTypeSetters[name]}
 												>
 													{name}
-												</div>
+												</Flex>
 											</Pushable>
 										))}
 									</Flex>

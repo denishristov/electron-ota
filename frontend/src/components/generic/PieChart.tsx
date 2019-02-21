@@ -23,7 +23,7 @@ function getColor(d: { gradientLabel: string }) {
 }
 
 const labelsStyle = {
-	fill: colors.ui.accent,
+	fill: colors.ui.text,
 	fontSize: 16,
 }
 
@@ -37,7 +37,7 @@ export default observer(function PieChart({ data, title }: IProps) {
 						<RadialChart
 							animation
 							showLabels
-							labelsRadiusMultiplier={0.9}
+							labelsRadiusMultiplier={0.82}
 							colorType='literal'
 							colorDomain={[0, 100]}
 							colorRange={[0, 10]}

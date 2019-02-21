@@ -16,7 +16,7 @@
 .profile
 	@include transition(transform)
 	position: absolute
-	top: 74px
+	top: 86px
 	right: $spacing * 2
 	z-index: 1
 	cursor: pointer
@@ -29,14 +29,7 @@
 		color: $text
 
 	img, svg
-		@include glowing-shadow($dark-accent)
-		border-radius: 50%
-		width: $spacing * 4
-		height: $spacing * 4
-		margin-right: $spacing
-
-		g, path
-			fill: $accent
+		@include avatar
 
 .password-row
 	max-width: 300px

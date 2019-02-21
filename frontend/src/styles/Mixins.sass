@@ -32,11 +32,9 @@
 		padding: $spacing * 3 $spacing * 2 0
 
 		img
-			@include glowing-shadow($dark-accent)
-			border-radius: 50%
+			@include avatar
 			width: $spacing * 4
 			height: $spacing * 4
-			margin-right: $spacing
 			margin-bottom: $spacing
 
 		h1
@@ -130,3 +128,13 @@
 
 @mixin dark-button($background, $color) 
 	@include color-button($background, adjust-hue($background, 24%), $color)
+
+@mixin avatar
+	@include glowing-shadow($dark-accent)
+	border-radius: 50%
+	width: 40px
+	height: 40px
+	margin-right: $spacing
+
+	g, path
+		fill: $accent
