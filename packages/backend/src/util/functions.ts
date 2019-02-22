@@ -32,3 +32,7 @@ export function filterValues(object: object) {
 		.filter(([_, value]) => value !== null && value !== void 0)
 		.group(([key, value]) => [key, value])
 }
+
+export function randomInteger(min: number, max: number) {
+	return Math.floor(Math.random() * (max - min) ) + min
+}

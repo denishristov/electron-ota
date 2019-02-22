@@ -67,7 +67,7 @@ export default class AppPage extends Component<RouteComponentProps<IParams>, ISt
 	}
 
 	@computed
-	private get liveCountPieData() {
+	private get liveClientsPieData() {
 		if (this.app) {
 			const data = Object.entries({ ...defaultSystemCounts }).group((x) => x)
 
@@ -88,19 +88,63 @@ export default class AppPage extends Component<RouteComponentProps<IParams>, ISt
 	}
 
 	@computed
-	private get usingReportsData() {
+	private get appUsingPieData() {
 		if (this.app) {
-			const data: IBarChartSystemTypeData = Object.keys(SystemType).group((x) => [x, []])
+			const data = Object.entries({ ...defaultSystemCounts }).group((x) => x)
+
+			for (const { Darwin, Linux, Windows_RT } of [...this.app.usingReports.values()]) {
+				data.Darwin += Darwin
+				data.Linux += Linux
+				data.Windows_RT += Windows_RT
+			}
+
+			return Object.entries(data)
+				.map(([label, angle]) => ({
+					angle,
+					label: SystemTypeDisplay[label],
+					gradientLabel: label,
+				}))
+				.filter(({ angle }) => angle)
+		}
+	}
+
+	@computed
+	private get usingReportsBarData() {
+		if (this.app) {
+			const data: IBarChartSystemTypeData = Object.values(SystemType).group((x) => [x, []])
 
 			for (const [versionName, systemTypeReports] of [...this.app.usingReports.entries()]) {
 				for (const systemType of Object.keys(SystemType)) {
-					const y = systemTypeReports[systemType]
+					const x = systemTypeReports[systemType]
 
-					y && data[systemType].push({ x: versionName, y })
+					x && data[systemType].push({
+						x,
+						y: versionName,
+					})
 				}
 			}
 
-			return data
+			return Object.entries(data).filter(([_, data]) => data.length).group((x) => x)
+		}
+	}
+
+	@computed
+	private get liveClientsBarData() {
+		if (this.app) {
+			const data: IBarChartSystemTypeData = Object.values(SystemType).group((x) => [x, []])
+
+			for (const [versionName, systemTypeReports] of [...this.app.clientCounters.entries()]) {
+				for (const systemType of Object.keys(SystemType)) {
+					const x = systemTypeReports[systemType]
+
+					x && data[systemType].push({
+						x,
+						y: versionName,
+					})
+				}
+			}
+
+			return Object.entries(data).filter(([_, data]) => data.length).group((x) => x)
 		}
 	}
 
@@ -253,12 +297,20 @@ export default class AppPage extends Component<RouteComponentProps<IParams>, ISt
 						</Flex>
 						<Flex col list m>
 							<PieChart
-								data={this.liveCountPieData}
 								title='Connected clients per system type'
+								data={this.liveClientsPieData}
+							/>
+							<BarChart
+								title="Connected clients' version per system type"
+								data={this.liveClientsBarData}
+							/>
+							<PieChart
+								title="Clients' per system type"
+								data={this.appUsingPieData}
 							/>
 							<BarChart
 								title="Clients' version per system type"
-								data={this.usingReportsData}
+								data={this.usingReportsBarData}
 							/>
 						</Flex>
 					</Flex>

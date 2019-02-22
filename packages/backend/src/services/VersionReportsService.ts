@@ -17,6 +17,7 @@ import { App } from '../models/App'
 import { ModelType, InstanceType } from 'typegoose'
 import { Report } from '../models/Report'
 import { ObjectID } from 'bson'
+import { randomInteger } from '../util/functions';
 
 export interface IVersionReportsService {
 	downloadingUpdate(req: ClientReportRequest): Promise<IReportFeedback>
@@ -145,7 +146,7 @@ export default class VersionReportsService implements IVersionReportsService {
 			.populate('using.client version')
 
 		const result = reports.group(({ using, version }) => {
-			const systemTypeReports = Object.keys(SystemType).group((systemType) => [systemType, 0])
+			const systemTypeReports = Object.values(SystemType).group((systemType) => [systemType, 0])
 
 			for (const report of using) {
 				++systemTypeReports[(report.client as InstanceType<Client>).systemType]

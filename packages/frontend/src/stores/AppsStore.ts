@@ -201,7 +201,6 @@ export default class AppsStore implements IAppsStore {
 
 			if (reports) {
 				reports.downloaded.push(report)
-				console.log(reports)
 			}
 		}
 	}

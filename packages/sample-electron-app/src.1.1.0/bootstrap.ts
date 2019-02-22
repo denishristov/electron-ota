@@ -10,7 +10,7 @@ declare global {
 	}
 }
 
-global.isDevMode = /[\\/]electron[\\/]/u.test(process.execPath)
+global.isDevMode = false
 
 !global.isDevMode && (global.updateService = new ElectronUpdateServiceClient({
 	bundleId: 'test-electron',

@@ -5,7 +5,7 @@ import Flex from './Flex'
 import { colors } from '../../util/constants/styles'
 
 import styles from '../../styles/util.module.sass'
-import { getColor } from '../../util/functions';
+import { getColor } from '../../util/functions'
 
 // tslint:disable-next-line:no-var-requires
 const { RadialChart, GradientDefs } = require('react-vis')
@@ -28,12 +28,13 @@ const colorDomain = [0, 100]
 const colorRange = [0, 10]
 
 export default observer(function PieChart({ data, title }: IProps) {
-	return (
+	const total = data && data.reduce((sum, { angle }) => sum + angle, 0)
+
+	return Boolean(total) && data ? (
 		<Flex p m col list className={styles.darkTile}>
 			<h3>{title}</h3>
-			{data && Boolean(data.length)
-				? (
-					<Flex list x>
+				<Flex list x>
+					{Boolean(total) && (
 						<RadialChart
 							animation
 							showLabels
@@ -62,27 +63,26 @@ export default observer(function PieChart({ data, title }: IProps) {
 								</linearGradient>
 							</GradientDefs>
 						</RadialChart>
-						<Flex col x list>
-							{data.map((d) => (
-								<Flex list y key={d.label}>
-									<svg className={styles.legend}>
-										<circle cx={8} cy={8} r={8} stroke={getColor(d)} fill={getColor(d)} />
-									</svg>
-									<h4>{d.label}</h4>
-									<Flex grow />
-									<label>{d.angle}</label>
-								</Flex>
-							))}
-							<Flex pt list y className={styles.total}>
+					)}
+					<Flex col x list>
+						{data.map((d) => (
+							<Flex list y key={d.label}>
+								<svg className={styles.legend}>
+									<circle cx={8} cy={8} r={8} stroke={getColor(d)} fill={getColor(d)} />
+								</svg>
+								<h4>{d.label}</h4>
 								<Flex grow />
-								<h4>Total</h4>
-								<label>{data.reduce((sum, { angle }) => sum + angle, 0)}</label>
+								<label>{d.angle}</label>
 							</Flex>
+						))}
+						<Flex pt list y className={styles.total}>
+							<Flex grow />
+							<h4>Total</h4>
+							<label>{total}</label>
 						</Flex>
 					</Flex>
-				)
-				: <p>No data</p>
-			}
+				</Flex>
 		</Flex>
 	)
+	: null
 })
