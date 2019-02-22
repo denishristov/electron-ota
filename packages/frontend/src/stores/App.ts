@@ -23,6 +23,8 @@ import {
 	DeleteVersionRequest,
 	PublishVersionRequest,
 	PublishVersionResponse,
+	GetAppUsingReportsRequest,
+	GetAppUsingReportsResponse,
 } from 'shared'
 import { IApi } from '../services/Api'
 import { Omit } from 'react-router'
@@ -56,12 +58,14 @@ export interface IApp {
 	simpleReports: ObservableMap<string, SimpleVersionReportModel>
 	reports: ObservableMap<string, VersionReportModel>
 	clientCounters: ObservableMap<string, ISystemTypeCount>
+	usingReports: ObservableMap<string, ISystemTypeCount>
 	allVersions: VersionModel[]
 	getVersion(id: string): VersionModel | null
 	fetchVersions(): Promise<void>
 	fetchSimpleReports(): Promise<void>
 	fetchReports(versionId: string): Promise<void>
 	fetchAppLiveCount(): Promise<void>
+	fetchAppUsingReports(): Promise<void>
 	createVersion(inputFields: ICreateVersionInput): Promise<void>
 	updateVersion(inputFields: Omit<VersionEditModel, 'appId'>): Promise<void>
 	deleteVersion(id: string): Promise<void>
@@ -96,6 +100,8 @@ export default class App implements IApp {
 	public readonly reports = observable.map<string, VersionReportModel>({})
 
 	public readonly clientCounters = observable.map<string, ISystemTypeCount>({})
+
+	public readonly usingReports = observable.map<string, ISystemTypeCount>({})
 
 	constructor(
 		{
@@ -183,6 +189,19 @@ export default class App implements IApp {
 		})
 
 		this.clientCounters.merge(counters)
+	}
+
+	@memoize
+	@action
+	public async fetchAppUsingReports() {
+		const { reports } = await this.api.fetch({
+			eventType: EventType.AppUsingReports,
+			request: { appId: this.id },
+			requestType: GetAppUsingReportsRequest,
+			responseType: GetAppUsingReportsResponse,
+		})
+
+		this.usingReports.merge(reports)
 	}
 
 	public async createVersion({ isReleasing, password, ...version }: ICreateVersionInput) {

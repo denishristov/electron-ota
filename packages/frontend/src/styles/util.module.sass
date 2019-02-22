@@ -22,7 +22,7 @@ label.dark
 	overflow: hidden
 
 .dark-tile
-	@include glowing-shadow($accent)
+	@include glowing-shadow($dark-accent)
 	@include transition(box-shadow)
 	background-image: linear-gradient(60deg, #29323c 0%, #485563 100%)
 	color: $accent
@@ -44,3 +44,6 @@ label.dark
 	width: $spacing
 	height: $spacing
 	border-radius: 50%
+
+.total
+	border-top: 1px solid $dark-accent

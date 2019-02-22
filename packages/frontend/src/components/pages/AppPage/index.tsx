@@ -33,6 +33,8 @@ import ConfirmDeleteModal from '../../generic/ConfirmDeleteModal'
 import { defaultSystemCounts } from '../../../util/constants/defaults'
 import PieChart from '../../generic/PieChart'
 import Button from '../../generic/Button'
+import BarChart, { IBarChartSystemTypeData } from '../../generic/BarChart'
+import { SystemType, SystemTypeDisplay } from 'shared'
 
 const ID = 'edit_app'
 interface IParams {
@@ -46,6 +48,16 @@ interface IState {
 
 @observer
 export default class AppPage extends Component<RouteComponentProps<IParams>, IState> {
+	public readonly state = {
+		hasLoaded: false,
+		isModalClosingDisabled: false,
+	}
+
+	@DI.lazyInject(DI.Stores.Apps)
+	private readonly appsStore: IAppsStore
+
+	@DI.lazyInject(DI.Factories.CreateVersionStore)
+	private readonly createVersionStoreFactory: CreateVersionStoreFactory
 
 	@computed
 	private get app(): IApp | null {
@@ -66,20 +78,31 @@ export default class AppPage extends Component<RouteComponentProps<IParams>, ISt
 			}
 
 			return Object.entries(data)
-				.map(([label, angle]) => ({ angle, label, gradientLabel: label }))
+				.map(([label, angle]) => ({
+					angle,
+					label: SystemTypeDisplay[label],
+					gradientLabel: label,
+				}))
 				.filter(({ angle }) => angle)
 		}
 	}
-	public readonly state = {
-		hasLoaded: false,
-		isModalClosingDisabled: false,
+
+	@computed
+	private get usingReportsData() {
+		if (this.app) {
+			const data: IBarChartSystemTypeData = Object.keys(SystemType).group((x) => [x, []])
+
+			for (const [versionName, systemTypeReports] of [...this.app.usingReports.entries()]) {
+				for (const systemType of Object.keys(SystemType)) {
+					const y = systemTypeReports[systemType]
+
+					y && data[systemType].push({ x: versionName, y })
+				}
+			}
+
+			return data
+		}
 	}
-
-	@DI.lazyInject(DI.Stores.Apps)
-	private readonly appsStore: IAppsStore
-
-	@DI.lazyInject(DI.Factories.CreateVersionStore)
-	private readonly createVersionStoreFactory: CreateVersionStoreFactory
 
 	public async componentDidMount() {
 		if (!this.appsStore.allApps.length) {
@@ -90,6 +113,7 @@ export default class AppPage extends Component<RouteComponentProps<IParams>, ISt
 			this.app.fetchVersions()
 			this.app.fetchSimpleReports()
 			this.app.fetchAppLiveCount()
+			this.app.fetchAppUsingReports()
 		}
 
 		this.setState({ hasLoaded: true })
@@ -230,7 +254,11 @@ export default class AppPage extends Component<RouteComponentProps<IParams>, ISt
 						<Flex col list m>
 							<PieChart
 								data={this.liveCountPieData}
-								title='Live count data'
+								title='Connected clients per system type'
+							/>
+							<BarChart
+								title="Clients' version per system type"
+								data={this.usingReportsData}
 							/>
 						</Flex>
 					</Flex>

@@ -142,3 +142,7 @@ function getNewFunction(originalFunction: () => void) {
 		return this[propName]
 	}
 }
+
+export function getColor(d: { gradientLabel: string }) {
+	return `url(#${d.gradientLabel})`
+}

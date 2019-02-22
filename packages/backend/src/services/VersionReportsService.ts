@@ -5,12 +5,16 @@ import {
 	GetSimpleVersionReportsResponse,
 	GetVersionReportsRequest,
 	GetVersionReportsResponse,
+	SystemType,
+	ClientModel,
+	GetAppUsingReportsRequest,
+	GetAppUsingReportsResponse,
 } from 'shared'
 import { Version } from '../models/Version'
 import { Client } from '../models/Client'
 import { VersionReports } from '../models/VersionReports'
 import { App } from '../models/App'
-import { ModelType } from 'typegoose'
+import { ModelType, InstanceType } from 'typegoose'
 import { Report } from '../models/Report'
 import { ObjectID } from 'bson'
 
@@ -21,6 +25,7 @@ export interface IVersionReportsService {
 	error(req: ErrorReportRequest): Promise<IReportFeedback>
 	getSimpleVersionReports(req: GetSimpleVersionReportsRequest): Promise<GetSimpleVersionReportsResponse>
 	getVersionReports(req: GetVersionReportsRequest): Promise<GetVersionReportsResponse>
+	getAppUsingReports({ appId }: GetAppUsingReportsRequest): Promise<GetAppUsingReportsResponse>
 }
 
 export interface IReportFeedback {
@@ -44,7 +49,7 @@ export default class VersionReportsService implements IVersionReportsService {
 		@DI.inject(DI.Models.App)
 		private readonly AppModel: ModelType<App>,
 	) {
-		this.getAppUsingReports('5c66bc65781c7c4e2d980b89').then(console.log)
+		// this.getAppUsingReports('5c66bc65781c7c4e2d980b89').then(console.log)
 	}
 
 	@bind
@@ -128,18 +133,28 @@ export default class VersionReportsService implements IVersionReportsService {
 		return { ...rest, version }
 	}
 
-	public async getAppUsingReports(appId: string) {
+	@bind
+	public async getAppUsingReports({ appId }: GetAppUsingReportsRequest) {
 		const { versions } = await this.AppModel
 			.findById(appId)
 			.select('versions')
-			.sort({ ['versions.createdAt']: 1 })
 
 		const reports = await this.VersionReportsModel
 			.find({ version: { $in: versions } })
-			.select('using version')
-			.populate('using.client')
+			.select('using version.versionName')
+			.populate('using.client version')
 
-		return { reports }
+		const result = reports.group(({ using, version }) => {
+			const systemTypeReports = Object.keys(SystemType).group((systemType) => [systemType, 0])
+
+			for (const report of using) {
+				++systemTypeReports[(report.client as InstanceType<Client>).systemType]
+			}
+
+			return [(version as InstanceType<Version>).versionName, systemTypeReports]
+		})
+
+		return { reports: result }
 	}
 
 	@bind

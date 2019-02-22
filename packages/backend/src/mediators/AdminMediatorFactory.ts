@@ -33,6 +33,8 @@ import {
 	AdminEditProfileRequest,
 	AdminPublicModel,
 	GetAppCountersRequest,
+	GetAppUsingReportsRequest,
+	GetAppUsingReportsResponse,
 } from 'shared'
 import { interfaces } from 'inversify'
 
@@ -206,6 +208,12 @@ export default function adminMediatorFactory({ container }: interfaces.Context):
 			eventType: EventType.getAppClientCount,
 			handler: clientCounterService.getAppClientsCount,
 			requestType: GetAppCountersRequest,
+		})
+		.use({
+			eventType: EventType.AppUsingReports,
+			handler: versionReportsService.getAppUsingReports,
+			requestType: GetAppUsingReportsRequest,
+			responseType: GetAppUsingReportsResponse,
 		})
 		.pre(validationHook)
 		.pre(authHook)

@@ -89,3 +89,23 @@ export class GetVersionReportsRequest extends AuthenticatedRequest {
 }
 
 export class GetVersionReportsResponse extends VersionReportModel {}
+
+export class GetAppUsingReportsRequest extends AuthenticatedRequest {
+	@Required()
+	@StringSchema()
+	public appId: string
+}
+
+export class GetAppUsingReportsResponse {
+	public reports: { [version: string]: { [systemType: string]: number }}
+}
+
+export class GetVersionGroupedReportsRequest {
+	@Required()
+	@StringSchema()
+	public versionId: string
+}
+
+export class GetVersionGroupedReportsResponse {
+	public reports: { [type: string]: {}}
+}

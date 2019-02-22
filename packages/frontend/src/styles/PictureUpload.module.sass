@@ -17,6 +17,7 @@
 	align-items: center
 	cursor: pointer
 	object-fit: cover
+	border: 2px solid transparent
 
 	svg
 		@include transition(fill, color)
@@ -27,6 +28,9 @@
 	&:hover
 		svg 
 			fill: darken($text, 15%)
+
+img.upload-icon
+	border: 2px solid $accent
 
 .upload-label
 	margin-bottom: $spacing / 2

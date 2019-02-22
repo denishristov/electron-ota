@@ -12,13 +12,13 @@ export const colors = {
 		text: '#29323c',
 	},
 	data: {
+		red: '#ff9696',
+		pink: '#ffbad7',
+		orange: '#ffc7a0',
+		yellow: '#ffecd2',
 		green: '#84fab0',
 		blue: '#8fd3f4',
-		red: '#f9748f',
-		yellow: '#ffecd2',
-		orange: '#fad0c4',
-		pink: '#ffd1ff',
-		purple: '#e0c3fc',
+		purple: '#bbaaff',
 	},
 }
 

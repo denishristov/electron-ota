@@ -23,6 +23,8 @@ export enum EventType {
 
 	SimpleVersionReports = 'version.reports.simple',
 	VersionReports = 'version.reports',
+	AppUsingReports = 'app.using.simple',
+	VersionGroupedReports = 'version.reports.grouped',
 
 	SignUploadVersionUrl = 's3.sign.upload.versions',
 	SignUploadPictureUrl = 's3.sign.upload.pictures',
