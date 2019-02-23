@@ -1,5 +1,6 @@
 @import './mixins'
 @import './variables'
+@import './animations'
 
 .pushed
 	transform: scale(0.96)
@@ -50,3 +51,27 @@ label.dark
 
 .total
 	border-top: 1px solid $dark-accent
+
+.hint
+	@include appear
+	background-color: $entry-bg
+	box-shadow: $popover-shadow
+	border-radius: 10px
+	padding: 4px
+
+	span:first-child
+		margin-bottom: 4px
+
+.hint.reverse
+	@include disappear
+
+.dots
+	position: absolute
+	top: $spacing
+	right: 10px
+	width: $spacing
+	height: $spacing
+	transform: rotate(90deg)
+
+	g, path, svg
+		fill: $dark-accent

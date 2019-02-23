@@ -22,7 +22,7 @@ import utilStyles from '../../../styles/util.module.sass'
 import versionModalStyles from '../../../styles/VersionModal.module.sass'
 import versionStyles from '../../../styles/Version.module.sass'
 
-import { list, formatDate } from '../../../util/functions'
+import { list, formatDate, returnArgument } from '../../../util/functions'
 import Pushable from '../../generic/Pushable'
 import { CreateVersionStoreFactory } from '../../../stores/factories/CreateVersionStoreFactory'
 import icons from '../../../util/constants/icons'
@@ -69,7 +69,7 @@ export default class AppPage extends Component<RouteComponentProps<IParams>, ISt
 	@computed
 	private get liveClientsPieData() {
 		if (this.app) {
-			const data = Object.entries({ ...defaultSystemCounts }).group((x) => x)
+			const data = Object.entries({ ...defaultSystemCounts }).group(returnArgument)
 
 			for (const { Darwin, Linux, Windows_RT } of [...this.app.clientCounters.values()]) {
 				data.Darwin += Darwin
@@ -90,7 +90,7 @@ export default class AppPage extends Component<RouteComponentProps<IParams>, ISt
 	@computed
 	private get appUsingPieData() {
 		if (this.app) {
-			const data = Object.entries({ ...defaultSystemCounts }).group((x) => x)
+			const data = Object.entries({ ...defaultSystemCounts }).group(returnArgument)
 
 			for (const { Darwin, Linux, Windows_RT } of [...this.app.usingReports.values()]) {
 				data.Darwin += Darwin
@@ -124,7 +124,7 @@ export default class AppPage extends Component<RouteComponentProps<IParams>, ISt
 				}
 			}
 
-			return Object.entries(data).filter(([_, data]) => data.length).group((x) => x)
+			return Object.entries(data).filter(([_, data]) => data.length).group(returnArgument)
 		}
 	}
 
@@ -144,7 +144,7 @@ export default class AppPage extends Component<RouteComponentProps<IParams>, ISt
 				}
 			}
 
-			return Object.entries(data).filter(([_, data]) => data.length).group((x) => x)
+			return Object.entries(data).filter(([_, data]) => data.length).group(returnArgument)
 		}
 	}
 
@@ -208,7 +208,7 @@ export default class AppPage extends Component<RouteComponentProps<IParams>, ISt
 								<MenuProvider id={ID} event='onClick' style={{ margin: 0 }}>
 									<div>
 										<Pushable>
-											<SVG src={icons.Dots} className={styles.dots} />
+											<SVG src={icons.Dots} className={utilStyles.dots} />
 										</Pushable>
 									</div>
 								</MenuProvider>
@@ -295,23 +295,27 @@ export default class AppPage extends Component<RouteComponentProps<IParams>, ISt
 								</AppearAnimation>
 							</Flex>
 						</Flex>
-						<Flex col list m>
-							<PieChart
-								title='Connected clients per system type'
-								data={this.liveClientsPieData}
-							/>
-							<BarChart
-								title="Connected clients' version per system type"
-								data={this.liveClientsBarData}
-							/>
-							<PieChart
-								title="Clients' per system type"
-								data={this.appUsingPieData}
-							/>
-							<BarChart
-								title="Clients' version per system type"
-								data={this.usingReportsBarData}
-							/>
+						<Flex m className={styles.appReports}>
+							<Flex col list>
+								<PieChart
+									title='Connected clients per system type'
+									data={this.liveClientsPieData}
+								/>
+								<BarChart
+									title="Connected clients' version per system type"
+									data={this.liveClientsBarData}
+								/>
+							</Flex>
+							<Flex col list>
+								<PieChart
+									title="Clients' per system type"
+									data={this.appUsingPieData}
+								/>
+								<BarChart
+									title="Clients' version per system type"
+									data={this.usingReportsBarData}
+								/>
+							</Flex>
 						</Flex>
 					</Flex>
 				</div>

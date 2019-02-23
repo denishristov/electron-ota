@@ -83,12 +83,6 @@ export default class UpdateVersionModal extends Component<IProps> {
 								Cancel
 							</Button>
 							</Modal.CloseTrigger>
-								<Modal.CloseTrigger>
-								<Button size='small' color='red' type='button' onClick={this.props.store.handleDelete}>
-									<SVG src={icons.Delete} />
-									Delete
-								</Button>
-							</Modal.CloseTrigger>
 							<Button size='small' color='blue' type='submit'>
 								<SVG src={icons.Success} />
 								Save

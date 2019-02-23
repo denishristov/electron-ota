@@ -1,3 +1,16 @@
+import { interfaces } from 'inversify'
+
+import { IVersionService } from '../services/VersionService'
+import { IAppService } from '../services/AppService'
+import { IRegisterCredentialsService } from '../services/RegisterCredentialsService'
+import { IAdminsService } from '../services/AdminsService'
+import { IFileUploadService } from '../services/S3Service'
+import { IReleaseService } from '../services/ReleaseService'
+import { IVersionReportsService } from '../services/VersionReportsService'
+import { IClientCounterService } from '../services/ClientCounterService'
+
+import { IPreRespondHook, IPostRespondHook, ISocketMediator } from '../util/mediator/interfaces'
+import SocketMediator from '../util/mediator/SocketMediator'
 import {
 	EventType,
 	AuthenticatedRequest,
@@ -35,20 +48,9 @@ import {
 	GetAppCountersRequest,
 	GetAppUsingReportsRequest,
 	GetAppUsingReportsResponse,
+	GetVersionGroupedReportsRequest,
+	GetVersionGroupedReportsResponse,
 } from 'shared'
-import { interfaces } from 'inversify'
-
-import { IVersionService } from '../services/VersionService'
-import { IAppService } from '../services/AppService'
-import { IRegisterCredentialsService } from '../services/RegisterCredentialsService'
-import { IAdminsService } from '../services/AdminsService'
-import { IFileUploadService } from '../services/S3Service'
-import { IReleaseService } from '../services/ReleaseService'
-import { IVersionReportsService } from '../services/VersionReportsService'
-import { IClientCounterService } from '../services/ClientCounterService'
-
-import { IPreRespondHook, IPostRespondHook, ISocketMediator } from '../util/mediator/interfaces'
-import SocketMediator from '../util/mediator/SocketMediator'
 
 export type AdminMediatorFactory = () => ISocketMediator
 
@@ -200,12 +202,12 @@ export default function adminMediatorFactory({ container }: interfaces.Context):
 			responseType: GetVersionReportsResponse,
 		})
 		.use({
-			eventType: EventType.getAppsClientCount,
+			eventType: EventType.AppsClientCount,
 			handler: clientCounterService.getAppsClientsCount,
 			requestType: AuthenticatedRequest,
 		})
 		.use({
-			eventType: EventType.getAppClientCount,
+			eventType: EventType.AppClientCount,
 			handler: clientCounterService.getAppClientsCount,
 			requestType: GetAppCountersRequest,
 		})
@@ -214,6 +216,12 @@ export default function adminMediatorFactory({ container }: interfaces.Context):
 			handler: versionReportsService.getAppUsingReports,
 			requestType: GetAppUsingReportsRequest,
 			responseType: GetAppUsingReportsResponse,
+		})
+		.use({
+			eventType: EventType.VersionGroupedReports,
+			handler: versionReportsService.getVersionGroupedReports,
+			requestType: GetVersionGroupedReportsRequest,
+			responseType: GetVersionGroupedReportsResponse,
 		})
 		.pre(validationHook)
 		.pre(authHook)

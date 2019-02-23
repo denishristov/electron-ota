@@ -89,7 +89,7 @@ export function byDateDesc(a: ITimestampedDocument, b: ITimestampedDocument) {
 	return +new Date(b.createdAt) - +new Date(a.createdAt)
 }
 
-function returnArgument<T>(arg: T) {
+export function returnArgument<T>(arg: T) {
 	return arg
 }
 

@@ -1,5 +1,6 @@
 import crypto from 'crypto'
 import { ITimestampedDocument } from '../models/util'
+import { ITimestampedObject } from './types';
 
 export function wait(ms: number) {
 	return new Promise((resolve) => setTimeout(resolve, ms))
@@ -35,4 +36,8 @@ export function filterValues(object: object) {
 
 export function randomInteger(min: number, max: number) {
 	return Math.floor(Math.random() * (max - min) ) + min
+}
+
+export function toUTCString({ year, month, day, hour }: ITimestampedObject): string {
+	return new Date(Date.UTC(year, month - 1, day, hour)).toUTCString()
 }

@@ -25,6 +25,9 @@ import {
 	PublishVersionResponse,
 	GetAppUsingReportsRequest,
 	GetAppUsingReportsResponse,
+	GetVersionGroupedReportsRequest,
+	GetVersionGroupedReportsResponse,
+	IGroupedReportsModel,
 } from 'shared'
 import { IApi } from '../services/Api'
 import { Omit } from 'react-router'
@@ -59,6 +62,7 @@ export interface IApp {
 	reports: ObservableMap<string, VersionReportModel>
 	clientCounters: ObservableMap<string, ISystemTypeCount>
 	usingReports: ObservableMap<string, ISystemTypeCount>
+	groupedReports: ObservableMap<string, IGroupedReportsModel>
 	allVersions: VersionModel[]
 	getVersion(id: string): VersionModel | null
 	fetchVersions(): Promise<void>
@@ -66,6 +70,7 @@ export interface IApp {
 	fetchReports(versionId: string): Promise<void>
 	fetchAppLiveCount(): Promise<void>
 	fetchAppUsingReports(): Promise<void>
+	fetchVersionGroupedReports(versionId: string): Promise<void>
 	createVersion(inputFields: ICreateVersionInput): Promise<void>
 	updateVersion(inputFields: Omit<VersionEditModel, 'appId'>): Promise<void>
 	deleteVersion(id: string): Promise<void>
@@ -102,6 +107,8 @@ export default class App implements IApp {
 	public readonly clientCounters = observable.map<string, ISystemTypeCount>({})
 
 	public readonly usingReports = observable.map<string, ISystemTypeCount>({})
+
+	public readonly groupedReports = observable.map<string, IGroupedReportsModel>({})
 
 	constructor(
 		{
@@ -168,22 +175,9 @@ export default class App implements IApp {
 
 	@memoize
 	@action
-	public async fetchReports(versionId: string) {
-		const reports = await this.api.fetch({
-			eventType: EventType.VersionReports,
-			request: { versionId },
-			requestType: GetVersionReportsRequest,
-			responseType: GetVersionReportsResponse,
-		})
-
-		this.reports.set(versionId, { ...reports })
-	}
-
-	@memoize
-	@action
 	public async fetchAppLiveCount() {
 		const counters = await this.api.fetch({
-			eventType: EventType.getAppClientCount,
+			eventType: EventType.AppClientCount,
 			request: { bundleId: this.bundleId },
 			requestType: GetAppCountersRequest,
 		})
@@ -202,6 +196,32 @@ export default class App implements IApp {
 		})
 
 		this.usingReports.merge(reports)
+	}
+
+	@memoize
+	@action
+	public async fetchReports(versionId: string) {
+		const reports = await this.api.fetch({
+			eventType: EventType.VersionReports,
+			request: { versionId },
+			requestType: GetVersionReportsRequest,
+			responseType: GetVersionReportsResponse,
+		})
+
+		this.reports.set(versionId, { ...reports })
+	}
+
+	@memoize
+	@action
+	public async fetchVersionGroupedReports(versionId: string) {
+		const { reports } = await this.api.fetch({
+			eventType: EventType.VersionGroupedReports,
+			request: { versionId },
+			requestType: GetVersionGroupedReportsRequest,
+			responseType: GetVersionGroupedReportsResponse,
+		})
+
+		this.groupedReports.set(versionId, { ...reports })
 	}
 
 	public async createVersion({ isReleasing, password, ...version }: ICreateVersionInput) {

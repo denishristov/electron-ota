@@ -3,7 +3,7 @@ type Pair<V> = [string, V]
 declare global {
 	interface Array<T> {
 		toMap<K, V>(cb: (el: T) => ReadonlyArray<[K, V]>): Map<K, V>
-		group<K, V>(cb: (el: T) => Pair<V>): { [key: string]: V }
+		group<K, V>(cb: (el: T, index?: number) => Pair<V>): { [key: string]: V }
 	}
 }
 
@@ -14,11 +14,12 @@ Object.defineProperties(Array.prototype, {
 		},
 	},
 	group: {
-		value<T, V>(this: T[], cb: (el: T) => Pair<V>): { [key: string]: V } {
-			return Array.prototype.map.call(this, cb).reduce((map: any, [key, val]: any[]) => {
-				map[key] = val
-				return map
-			}, {})
+		value<T, V>(this: T[], cb: (el: T, index?: number) => Pair<V>): { [key: string]: V } {
+			return Array.prototype.map.call(this, cb)
+				.reduce((map: any, [key, val]: any[]) => {
+					map[key] = val
+					return map
+				}, {})
 		},
 	},
 })

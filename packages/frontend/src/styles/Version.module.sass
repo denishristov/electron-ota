@@ -17,7 +17,7 @@ $version-width: 800px
 	@include transition(background-color, box-shadow, transform)
 	@include entry-shadow
 	// min-width: $version-width
-	width: 400px
+	width: 426px
 	border: 2px solid $accent
 	height: $spacing * 2.5
 	border-radius: $spacing * 1.25
@@ -76,11 +76,15 @@ $version-width: 800px
 	font-size: 0.76rem
 	padding-bottom: 58px
 	z-index: -1
-	
-@media screen and (max-width: $version-width + 4 * $spacing)
-	.version
-		min-width: calc(100vw - 4 * #{$spacing})
 
-@media screen and (max-width: 800px)
-	.counter
+
+
+@media screen and (max-width: $break-small)
+	.date
 		display: none
+
+	.version
+		width: 320px
+
+		h3
+			min-width: $spacing * 2

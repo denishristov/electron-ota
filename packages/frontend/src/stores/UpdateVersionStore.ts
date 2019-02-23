@@ -8,7 +8,6 @@ import { IVersionModalStore } from './VersionModalStore'
 
 export interface IUpdateVersionStore extends IVersionModalStore {
 	description?: string
-	handleDelete(): void
 }
 
 export default class UpdateVersionStore extends VersionModalStore implements IUpdateVersionStore {
@@ -57,10 +56,5 @@ export default class UpdateVersionStore extends VersionModalStore implements IUp
 				Linux: isLinux,
 			},
 		})
-	}
-
-	@action.bound
-	public handleDelete() {
-		this.app.deleteVersion(this.version.id)
 	}
 }

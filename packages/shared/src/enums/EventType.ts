@@ -23,7 +23,7 @@ export enum EventType {
 
 	SimpleVersionReports = 'version.reports.simple',
 	VersionReports = 'version.reports',
-	AppUsingReports = 'app.using.simple',
+	AppUsingReports = 'app.reports.using',
 	VersionGroupedReports = 'version.reports.grouped',
 
 	SignUploadVersionUrl = 's3.sign.upload.versions',
@@ -45,6 +45,6 @@ export enum EventType {
 	ClientConnected = 'client.connected',
 	ClientDisconnected = 'client.disconnected',
 
-	getAppsClientCount = 'livecount.apps',
-	getAppClientCount = 'livecount.app',
+	AppsClientCount = 'clients.apps',
+	AppClientCount = 'clients.app',
 }

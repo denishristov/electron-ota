@@ -91,3 +91,18 @@
 
 .pr 
 	padding-right: $spacing
+
+@media screen and (max-width: $break-small)
+	.list-y
+		> *
+			margin-bottom: $spacing / 1.5
+
+			&:last-child
+				margin-bottom: 0px
+
+	.list-x
+		> *
+			margin-right: $spacing / 1.5
+
+			&:last-child
+				margin-right: 0px

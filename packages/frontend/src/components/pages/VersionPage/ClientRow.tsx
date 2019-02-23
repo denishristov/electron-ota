@@ -12,7 +12,7 @@ interface IProps {
 }
 
 export default observer(function ClientRow({ reports, title, icon }: IProps) {
-	return (
+	return reports && reports.length ? (
 		<Flex col list m p className={styles.reportColumn}>
 			<Flex pb spread>
 				<Flex>
@@ -24,4 +24,5 @@ export default observer(function ClientRow({ reports, title, icon }: IProps) {
 			{reports.map((report) => <Report key={report.client.id} {...report} />)}
 		</Flex>
 	)
+	: null
 })

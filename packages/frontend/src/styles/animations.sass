@@ -4,7 +4,10 @@
 	animation: moving-gradient infinite 2s ease
 
 @mixin appear
-	animation: appear .24s $cubic-breezer 1
+	animation: appear .24s $cubic-breezer 1 forwards
+
+@mixin disappear
+	animation: disappear .24s $cubic-breezer 1 forwards
 
 @keyframes moving-gradient
 	0% 
@@ -22,3 +25,12 @@
 	100%
 		opacity: 1
 		transform: scale(1) translateY(0px)
+
+@keyframes disappear
+	0%
+		opacity: 1
+		transform: scale(1) translateY(0px)
+
+	100%
+		opacity: 0
+		transform: scale(.9) translateY(8px)

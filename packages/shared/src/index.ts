@@ -11,4 +11,6 @@ export * from './schemas/S3'
 export * from './schemas/Update'
 export * from './schemas/Client'
 export * from './schemas/Reports'
+
 export * from './interfaces/AppClientCount'
+export * from './interfaces/GroupedReports'

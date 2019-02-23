@@ -91,7 +91,7 @@ export default class AppsStore implements IAppsStore {
 	@action
 	public async fetchAppsLiveCount(): Promise<void> {
 		const counters = await this.api.fetch({
-			eventType: EventType.getAppsClientCount,
+			eventType: EventType.AppsClientCount,
 		})
 
 		this.liveCounters.merge(counters)

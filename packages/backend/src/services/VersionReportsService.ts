@@ -9,6 +9,9 @@ import {
 	ClientModel,
 	GetAppUsingReportsRequest,
 	GetAppUsingReportsResponse,
+	GetVersionGroupedReportsRequest,
+	GetVersionGroupedReportsResponse,
+	IGroupedReportModel,
 } from 'shared'
 import { Version } from '../models/Version'
 import { Client } from '../models/Client'
@@ -17,7 +20,8 @@ import { App } from '../models/App'
 import { ModelType, InstanceType } from 'typegoose'
 import { Report } from '../models/Report'
 import { ObjectID } from 'bson'
-import { randomInteger } from '../util/functions';
+import { randomInteger, toUTCString } from '../util/functions'
+import { ITimestampedObject } from '../util/types'
 
 export interface IVersionReportsService {
 	downloadingUpdate(req: ClientReportRequest): Promise<IReportFeedback>
@@ -27,6 +31,7 @@ export interface IVersionReportsService {
 	getSimpleVersionReports(req: GetSimpleVersionReportsRequest): Promise<GetSimpleVersionReportsResponse>
 	getVersionReports(req: GetVersionReportsRequest): Promise<GetVersionReportsResponse>
 	getAppUsingReports({ appId }: GetAppUsingReportsRequest): Promise<GetAppUsingReportsResponse>
+	getVersionGroupedReports({ versionId }: GetVersionGroupedReportsRequest): Promise<GetVersionGroupedReportsResponse>
 }
 
 export interface IReportFeedback {
@@ -159,20 +164,27 @@ export default class VersionReportsService implements IVersionReportsService {
 	}
 
 	@bind
-	public async getVersionReportsGroupedByHour(versionId: string) {
-		const promises = await Promise.all(
-			VersionReportsService.fields
-				.map((field) => this.getReportsGroupedByHour(versionId, field)),
-		)
+	public async getVersionGroupedReports({ versionId }: GetVersionGroupedReportsRequest) {
+		const { fields } = VersionReportsService
 
-		const reports = VersionReportsService.fields
-			.map((field, i) => [field, promises[i]])
-			.group(([x, y]: [string, Array<{}>]) => ([x, y]))
+		const promises = await Promise.all(fields.map((field) => this.getReportsGroupedByHour(versionId, field)))
+
+		const reports = fields.group((field, i) => {
+			const mapped = promises[i].map(({ _id, count }) => ({
+				timestamp: toUTCString(_id),
+				count,
+			}))
+
+			return [field, mapped]
+		})
 
 		return { reports }
 	}
 
-	private async getReportsGroupedByHour(versionId: string, field: string) {
+	private async getReportsGroupedByHour(
+		versionId: string,
+		field: string,
+	): Promise<Array<{ _id: ITimestampedObject, count: number }>> {
 		const $field = `$${field}`
 		const $timestamp = `${$field}.timestamp`
 

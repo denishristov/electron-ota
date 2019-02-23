@@ -13,6 +13,7 @@
 
 .versions-tile
 	padding-left: $spacing
+	margin-left: 98px
 
 	> span:first-child
 		@include glowing-shadow($accent)
@@ -29,19 +30,16 @@
 			width: $icon-size
 			height: $icon-size
 
-		.dots
-			position: absolute
-			top: $spacing
-			right: 10px
-			width: $spacing
-			height: $spacing
-			transform: rotate(90deg)
-
-			g, path, svg
-				fill: $dark-accent
-
 .new-version
 	color: $dark-accent
 
 	h3
 		margin: 0
+
+@media screen and (max-width: 1650px)
+	.app-reports
+		flex-flow: column wrap
+
+@media screen and (max-width: 1146px)
+	.versions-tile
+		margin-left: 16px
