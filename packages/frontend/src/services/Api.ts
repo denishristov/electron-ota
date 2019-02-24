@@ -68,8 +68,6 @@ export default class Api implements IApi {
 			}
 		})
 
-		promise.catch(console.error)
-
 		return promise
 	}
 

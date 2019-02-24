@@ -9,19 +9,22 @@ interface IProps {
 	reports: ReportModel[]
 	title: string
 	icon: string
+	color: string
 }
 
-export default observer(function ClientRow({ reports, title, icon }: IProps) {
+export default observer(function ClientRow({ reports, title, icon, color }: IProps) {
 	return reports && reports.length ? (
-		<Flex col list m p className={styles.reportColumn}>
-			<Flex pb spread>
+		<Flex col className={styles.reportColumn}>
+			<Flex p spread style={{ backgroundColor: color }}>
 				<Flex>
 					<h3>{title}</h3>
 					<SVG src={icon} />
 				</Flex>
 				<h4>{reports.length}</h4>
 			</Flex>
-			{reports.map((report) => <Report key={report.client.id} {...report} />)}
+			<Flex list p col>
+				{reports.map((report) => <Report key={report.client.id} {...report} />)}
+			</Flex>
 		</Flex>
 	)
 	: null

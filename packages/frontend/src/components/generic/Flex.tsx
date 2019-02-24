@@ -13,6 +13,7 @@ interface IProps extends DivProps {
 	m?: boolean
 	p?: boolean
 	list?: boolean
+	list2?: boolean
 	grow?: boolean
 	mta?: boolean
 	mt?: boolean
@@ -42,6 +43,7 @@ export default React.memo(function Flex({
 	p,
 	col,
 	list,
+	list2,
 	grow,
 	mta,
 	mt,
@@ -70,6 +72,7 @@ export default React.memo(function Flex({
 		m && styles.margin,
 		p && styles.padding,
 		list && (col ? styles.listY : styles.listX),
+		list2 && (col ? styles.listY2 : styles.listX2),
 		grow && styles.grow,
 		mta && styles.mta,
 		mt && styles.mt,

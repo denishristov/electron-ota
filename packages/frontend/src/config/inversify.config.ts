@@ -8,7 +8,6 @@ import Api, { IApi } from '../services/Api'
 
 import AppsStore, { IAppsStore } from '../stores/AppsStore'
 import UserStore, { IUserStore } from '../stores/UserStore'
-import RegisterStore, { IRegisterStore } from '../stores/RegisterStore'
 
 import FileService, { IFileService } from '../services/FileService'
 import UploadService, { IUploadService } from '../services/UploadService'
@@ -45,10 +44,6 @@ container.bind<IAppsStore>(DI.Stores.Apps)
 	.to(AppsStore)
 	.inSingletonScope()
 
-container.bind<IRegisterStore>(DI.Stores.Register)
-	.to(RegisterStore)
-	.inSingletonScope()
-
 container.bind<IAppModalStore>(DI.Stores.AppModal)
 	.to(AppModalStore)
 	.inTransientScope()
@@ -62,7 +57,28 @@ container.bind<IUpdateAppStore>(DI.Stores.UpdateApp)
 	.inTransientScope()
 
 container.bind<BrowserHistory>(DI.BrowserHistory)
-	.toConstantValue(createBrowserHistory())
+	.toDynamicValue(() => {
+		const history = createBrowserHistory()
+		const prevLocation = {
+			pathname: '',
+			hash: '',
+		}
+
+		history.listen((location) => {
+			const pathChanged = prevLocation.pathname !== location.pathname
+			const hashChanged = prevLocation.hash !== location.hash
+
+			if (pathChanged || hashChanged) {
+				window.scrollTo(0, 0)
+			}
+
+			prevLocation.pathname = location.pathname
+			prevLocation.hash = location.hash
+		})
+
+		return history
+	})
+	.inSingletonScope()
 
 container.bind<IFileService>(DI.Services.File)
 	.to(FileService)

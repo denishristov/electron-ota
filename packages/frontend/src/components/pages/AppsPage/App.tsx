@@ -52,14 +52,18 @@ export default class App extends Component<IProps> {
 							<label>Versions added </label>
 							<label className={utilStyles.dark}>{versions.size || versionsCount}</label>
 						</Flex>
-						<label>Latest versions</label>
-						{latestVersions && Object.entries(latestVersions).map(([systemType, version]) => version && (
-							<Flex y list key={systemType}>
-								<label className={utilStyles.dark}>{version.versionName}</label>
-								<SVG src={icons[systemType]} />
-								<label>{formatDate(new Date(version.createdAt))}</label>
-							</Flex>
-						))}
+						{latestVersions && (
+							<>
+								<label>Latest versions</label>
+								{Object.entries(latestVersions).map(([systemType, version]) => version && (
+									<Flex y list key={systemType}>
+										<label className={utilStyles.dark}>{version.versionName}</label>
+										<SVG src={icons[systemType]} />
+										<label>{formatDate(new Date(version.createdAt))}</label>
+									</Flex>
+								))}
+							</>
+						)}
 					</Flex>
 				</animated.div>
 			</Pushable>

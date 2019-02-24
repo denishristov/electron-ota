@@ -23,7 +23,7 @@ interface IDataPoint {
 }
 
 interface IProps {
-	data: IDataPoint[]
+	data?: IDataPoint[]
 	title: string
 	color: string
 }
@@ -34,12 +34,9 @@ interface IState {
 }
 
 function formatDate(date: Date) {
-	const options = {
-		day: '2-digit',
-		hour: '2-digit',
-	}
+	const options = { hour: 'numeric', minute: 'numeric' }
 
-	return date.toLocaleDateString('en-US', options)
+	return date.toLocaleDateString('en-US', options).split(', ')[1]
 }
 
 const labelsStyle = {
@@ -72,7 +69,7 @@ export default class AreaChart extends React.Component<IProps, IState> {
 
 	@bind
 	public handleNearestX(_: null, { index }: { index: number}) {
-		this.setState({ crosshairValues: [this.props.data[index]], isHovered: true  })
+		this.setState({ crosshairValues: [this.props.data![index]], isHovered: true  })
 	}
 
 	public render() {
@@ -83,9 +80,8 @@ export default class AreaChart extends React.Component<IProps, IState> {
 		return data && data.length ? (
 			<Flex p m col list className={styles.darkTile}>
 				<h3>{title}</h3>
-				<Flex list x>
+				<Flex list x onMouseOut={this.handleMouseLeave}>
 					<XYPlot
-						onMouseLeave={this.handleMouseLeave}
 						width={600}
 						height={300}
 						xType='time'
@@ -113,7 +109,7 @@ export default class AreaChart extends React.Component<IProps, IState> {
 							stroke='transparent'
 							color={`url(#${this.colorKey})`}
 						/>
-						{isHovered && (
+						{hovered && (
 							<Crosshair
 								values={this.state.crosshairValues}
 								styles={lineStyles}

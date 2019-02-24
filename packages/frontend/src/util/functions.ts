@@ -67,10 +67,6 @@ export function formatDate(date: Date) {
 // tslint:disable-next-line:no-empty
 export function noop() {}
 
-export function getPathName(location: RouteProps['location']) {
-	return location ? location.pathname : 'key'
-}
-
 export function isError(data: any) {
 	return Boolean(data) && (data.details || data.stack)
 }
@@ -145,4 +141,8 @@ function getNewFunction(originalFunction: () => void) {
 
 export function getColor(d: { gradientLabel: string }) {
 	return `url(#${d.gradientLabel})`
+}
+
+export function isDifferenceLongerThanHour(a: Date, b: Date) {
+	return Math.abs(+a - +b) > (1000 * 60 * 60)
 }

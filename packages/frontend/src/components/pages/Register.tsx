@@ -1,6 +1,5 @@
 import React, { FormEvent } from 'react'
 import { observer } from 'mobx-react'
-import { IRegisterStore } from '../../stores/RegisterStore'
 import { Redirect } from 'react-router'
 import { copyToClipboard } from '../../util/functions'
 import Input from '../generic/Input'
@@ -11,6 +10,7 @@ import styles from '../../styles/LoginPage.module.sass'
 import Loading from '../generic/Loading'
 import Flex from '../generic/Flex'
 import { passwordRegex } from 'shared'
+import { IUserStore } from '../../stores/UserStore';
 
 const errors = {
 	passwordMatch: 'Your passwords do not match, please make sure they are the same.',
@@ -41,35 +41,23 @@ export default class Register extends React.Component<{}, IState> {
 		errorMessage: '',
 	}
 
-	@DI.lazyInject(DI.Stores.Register)
-	private readonly registerStore: IRegisterStore
-
-	private get command() {
-		return `cat ${this.registerStore.path}`
-	}
-
-	public componentDidMount() {
-		this.registerStore.fetchKeyPath()
-	}
+	@DI.lazyInject(DI.Stores.User)
+	private readonly userStore: IUserStore
 
 	public render() {
 		if (this.state.isRegistered) {
 			return <Redirect to='/apps' />
 		}
 
-		if (this.registerStore.isLoading) {
+		if (this.userStore.isLoading) {
 			return <Loading />
 		}
 
 		return (
 			<Container className={styles.container}>
-				<form onSubmit={this.handleRegister}>
+				<form onSubmit={this.handleRegister} className={styles.form}>
 					<Flex col list>
 						<h1>Sign up</h1>
-						<label>Key path</label>
-						<code className={styles.keyPath} onClick={this.handleCopyCommand}>
-							{this.command}
-						</code>
 						{this.state.errorMessage && (
 							<div className={styles.error}>
 								{this.state.errorMessage}
@@ -128,7 +116,7 @@ export default class Register extends React.Component<{}, IState> {
 		const { name, password1, password2, email, key } = event.target.elements
 
 		if (password1.value === password2.value) {
-			const isRegistered = await this.registerStore.registerAdmin({
+			const isRegistered = await this.userStore.register({
 				name: name.value,
 				email: email.value,
 				password: password1.value,
@@ -141,10 +129,5 @@ export default class Register extends React.Component<{}, IState> {
 		} else {
 			this.setState({ errorMessage: errors.passwordMatch })
 		}
-	}
-
-	@bind
-	private handleCopyCommand() {
-		copyToClipboard(this.command)
 	}
 }

@@ -9,8 +9,10 @@ import {
 	AdminLoginRequest,
 	AuthenticatedRequest,
 	AdminEditProfileRequest,
+	RegisterAdminRequest,
+	RegisterAdminResponse,
  } from 'shared'
-import { filterValues } from '../util/functions'
+import { filterValues, memoize } from '../util/functions'
 import ValidationHook from '../util/ValidationHook'
 
 export interface IUserStore {
@@ -19,9 +21,9 @@ export interface IUserStore {
 	isAuthenticated: boolean | null
 	login(req: AdminLoginRequest): Promise<boolean>
 	logout(): void
+	register(request: RegisterAdminRequest): Promise<boolean>
 	deleteProfile(): Promise<void>
 	editProfile(request: AdminEditProfileRequest): Promise<void>
-	setAuthToken(authToken: string): void
 }
 
 interface IProfile {
@@ -59,12 +61,6 @@ class UserStore implements IUserStore {
 		return !this.profile.name && Boolean(this.authToken) && this.isAuthenticated === null
 	}
 
-	public setAuthToken(authToken: string) {
-		this.authToken = authToken
-		this.isAuthenticated = true
-		Cookies.set('authToken', authToken)
-	}
-
 	@action.bound
 	public async login(request: AdminLoginRequest): Promise<boolean> {
 		const {
@@ -95,12 +91,29 @@ class UserStore implements IUserStore {
 
 	@action.bound
 	public logout() {
+		this.api.fetch({ eventType: EventType.Logout })
+
 		this.isAuthenticated = null
 		this.authToken = null
 
-		this.api.fetch({ eventType: EventType.Logout })
-
 		Cookies.remove('authToken')
+	}
+
+	@action
+	public async register(request: RegisterAdminRequest) {
+		const { isSuccessful, authToken } = await this.api.fetch({
+			eventType: EventType.RegisterAdmin,
+			request,
+			requestType: RegisterAdminRequest,
+			responseType: RegisterAdminResponse,
+		})
+
+		if (authToken) {
+			this.setAuthToken(authToken)
+			this.fetchProfile()
+		}
+
+		return isSuccessful
 	}
 
 	@action.bound
@@ -141,13 +154,20 @@ class UserStore implements IUserStore {
 			this.isAuthenticated = isAuthenticated
 
 			if (isAuthenticated) {
-				const profile = await this.api.fetch({
-					eventType: EventType.GetProfile,
-					responseType: AdminPublicModel,
-				})
-				Object.assign(this.profile, profile)
+				this.fetchProfile()
 			}
 		}
+	}
+
+	@memoize
+	@action
+	private async fetchProfile() {
+		const profile = await this.api.fetch({
+			eventType: EventType.GetProfile,
+			responseType: AdminPublicModel,
+		})
+
+		Object.assign(this.profile, profile)
 	}
 
 	@bind
@@ -155,6 +175,12 @@ class UserStore implements IUserStore {
 		return this.authToken
 			? Object.assign(data, { authToken: this.authToken })
 			: data
+	}
+
+	private setAuthToken(authToken: string) {
+		this.authToken = authToken
+		this.isAuthenticated = true
+		Cookies.set('authToken', authToken)
 	}
 }
 

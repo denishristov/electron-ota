@@ -4,7 +4,11 @@ import { Animated, IAnimationProps } from '../contexts/AnimationContext'
 
 import styles from '../../styles/Container.module.sass'
 
-export default function Container({ className, ...props }: IAnimationProps) {
+interface IProps extends IAnimationProps {
+	showLoading?: boolean
+}
+
+export default function Container({ className, ...props }: IProps) {
 	return (
 		<Animated
 			className={list(styles.containerPage, className)}

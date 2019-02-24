@@ -208,7 +208,7 @@ export default class App implements IApp {
 			responseType: GetVersionReportsResponse,
 		})
 
-		this.reports.set(versionId, { ...reports })
+		this.reports.set(versionId, observable(reports))
 	}
 
 	@memoize
@@ -221,7 +221,7 @@ export default class App implements IApp {
 			responseType: GetVersionGroupedReportsResponse,
 		})
 
-		this.groupedReports.set(versionId, { ...reports })
+		this.groupedReports.set(versionId, observable(reports))
 	}
 
 	public async createVersion({ isReleasing, password, ...version }: ICreateVersionInput) {

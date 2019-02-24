@@ -2,16 +2,27 @@ import React from 'react'
 import { animated } from 'react-spring'
 import { DivProps } from '../../util/types'
 import { Omit } from 'typelevel-ts'
+import LoadingContainer from '../generic/LoadingContainer'
 
-export interface IAnimationProps extends Omit<DivProps, 'ref'> {}
+export interface IAnimationProps extends Omit<DivProps, 'ref'> {
+	showLoading?: boolean
+}
 
-const AnimationContext = React.createContext<React.CSSProperties>({})
+interface IContext {
+	animation: React.CSSProperties
+	isResting: boolean
+}
 
-export function Animated({ style, ...props }: IAnimationProps) {
+const AnimationContext = React.createContext<IContext>({ animation: {}, isResting: false })
+
+export function Animated({ style, showLoading, ...props }: IAnimationProps) {
 	return (
 		<AnimationContext.Consumer>
-			{(animation) => (
-				<animated.div style={{ ...style, ...animation }} {...props} />
+			{({ animation, isResting }) => (
+				<>
+					<animated.div style={style ? { ...style, ...animation } : animation} {...props} />
+					{showLoading && !isResting && <LoadingContainer />}
+				</>
 			)}
 		</AnimationContext.Consumer>
 	)

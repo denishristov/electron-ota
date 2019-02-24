@@ -8,7 +8,7 @@
 	.apps-container
 		display: grid
 		grid-template-columns: repeat(auto-fill, $spacing * 2 * 12)
-		// grid-auto-rows: $spacing * 2 * 9
+		grid-auto-rows: $spacing * 6 + 246px
 		margin: $spacing
 		justify-content: center
 		align-content: center
@@ -22,14 +22,21 @@
 	cursor: pointer
 
 	h5
-		font-size: 1.6rem
+		font-size: 1.4rem
 		margin: 0 $spacing 0 0
 		text-transform: capitalize
 		font-weight: 400
-		color: $text
+		color: $light-text
 
 	img, svg
 		@include avatar
+
+	svg
+		margin: 0
+		background-color: $entry-bg
+
+		g, path
+			fill: $accent
 
 .password-row
 	max-width: 300px

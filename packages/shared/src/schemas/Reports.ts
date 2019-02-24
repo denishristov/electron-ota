@@ -50,6 +50,8 @@ export class ReportModel {
 	@Required()
 	@StringSchema()
 	public errorMessage?: string
+
+	public timestamp: string
 }
 
 export class ReportModelResponse {
@@ -60,6 +62,8 @@ export class ReportModelResponse {
 	public appId: string
 
 	public versionId: string
+
+	public timestamp: string
 }
 
 export class VersionReportModel {

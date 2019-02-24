@@ -4,41 +4,48 @@
 .container
 	@include container
 
-	h3, h4, h5
-		margin: 0px
-
 .report-column
 	@include transition(box-shadow)
 	@include entry-shadow
 	border-radius: $default-border-radius
-	width: $spacing * 12
+	width: $spacing * 15
 	background-color: $entry-bg
 	max-height: 338px
-	overflow: auto
+	overflow: hidden
 	flex-flow: column
+	color: $dark-text
 
 	> span:first-child
 		border-bottom: 1px solid $accent
 		min-height: 20px
 
+		svg:first-of-type 
+			g, path
+				fill: $dark-text
+
+	> span:last-child
+		flex-flow: column
+		flex-grow: 1
+		overflow: scroll
+
 	h3
 		font-size: 1rem
+		margin: 0
 
 	h4
-		color: $dark-accent
+		color: $dark-text
+
+	h3, h4, h5
+		margin: 0
 
 	h6
 		@include text-overflow
 		margin: $spacing / 2 0 0
-		color: $dark-accent
-
+		
 	svg
 		margin-left: $spacing / 2
 		width: 20px
 		height: 20px
-
-	svg, g, path
-		fill: $dark-accent
 		
 
 .client
@@ -50,9 +57,10 @@
 	&:hover
 		background-color: $entry-hover-bg
 
-	label
-		margin-right: auto
-		margin-left: $spacing
+	> span > span
+		label
+			margin-right: auto
+			margin-left: $spacing
 
 .error-modal
 	max-width: 60vw
@@ -65,6 +73,9 @@
 	min-width: $spacing * 10 * 2
 	max-width: $spacing * 10 * 3
 	position: relative
+
+	label
+		font-size: 0.9rem
 
 	svg
 		width: 20px

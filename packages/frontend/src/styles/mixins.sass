@@ -116,6 +116,9 @@
 		cursor: not-allowed
 		background-image: linear-gradient(to top right, desaturate($background, 50%) 0%, desaturate($background, 50%) 20%, desaturate($background2, 50%) 100%)
 
+		&:hover
+			box-shadow: none
+
 	svg, g, path
 		fill: $color
 
@@ -135,6 +138,7 @@
 	width: 40px
 	height: 40px
 	margin-right: $spacing
+	object-fit: cover
 
 	g, path
 		fill: $accent

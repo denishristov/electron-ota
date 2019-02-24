@@ -20,8 +20,9 @@ import {
 import { IApi } from '../services/Api'
 import { IApp } from './App'
 import { AppFactory } from './factories/AppFactory'
-import { getDefaultSimpleStatistics, memoize } from '../util/functions'
+import { getDefaultSimpleStatistics, memoize, isDifferenceLongerThanHour } from '../util/functions'
 import { defaultSystemCounts } from '../util/constants/defaults'
+import { IGroupedReportsModel, IGroupedReportModel } from '../../../shared/dist/interfaces/GroupedReports'
 
 interface IClient {
 	versionName: string
@@ -68,7 +69,7 @@ export default class AppsStore implements IAppsStore {
 
 	@computed
 	get allApps(): IApp[] {
-		return Array.from(this.apps.values())
+		return Array.from(this.apps.values()) || []
 	}
 
 	public getApp(id: string): IApp | null {
@@ -182,6 +183,10 @@ export default class AppsStore implements IAppsStore {
 			if (reports) {
 				reports.downloading.push(report)
 			}
+
+			const groupedReports = app.groupedReports.get(versionId)
+
+			this.updateGroupedReports(report.timestamp, groupedReports && groupedReports.downloading)
 		}
 	}
 
@@ -202,6 +207,10 @@ export default class AppsStore implements IAppsStore {
 			if (reports) {
 				reports.downloaded.push(report)
 			}
+
+			const groupedReports = app.groupedReports.get(versionId)
+
+			this.updateGroupedReports(report.timestamp, groupedReports && groupedReports.downloaded)
 		}
 	}
 
@@ -221,6 +230,20 @@ export default class AppsStore implements IAppsStore {
 			if (reports) {
 				reports.using.push(report)
 			}
+
+			const version = app.getVersion(versionId)
+
+			if (version) {
+				const usingReports = app.usingReports.get(version.versionName)
+
+				if (usingReports) {
+					++usingReports[report.client.systemType]
+				}
+			}
+
+			const groupedReports = app.groupedReports.get(versionId)
+
+			this.updateGroupedReports(report.timestamp, groupedReports && groupedReports.using)
 		}
 	}
 
@@ -240,6 +263,10 @@ export default class AppsStore implements IAppsStore {
 			if (reports) {
 				reports.errorMessages.push(report)
 			}
+
+			const groupedReports = app.groupedReports.get(versionId)
+
+			this.updateGroupedReports(report.timestamp, groupedReports && groupedReports.errorMessages)
 		}
 	}
 
@@ -301,6 +328,21 @@ export default class AppsStore implements IAppsStore {
 						app.latestVersions[key] = version
 					}
 				}
+			}
+		}
+	}
+
+	@action
+	private updateGroupedReports(timestamp: string, groupedReports?: IGroupedReportModel[]) {
+		if (groupedReports) {
+			const date = new Date(timestamp)
+			const lastReport = groupedReports[groupedReports.length - 1]
+			const lastDate = lastReport && new Date(lastReport.timestamp)
+
+			if (lastDate && !isDifferenceLongerThanHour(date, lastDate)) {
+				++lastReport.count
+			} else {
+				groupedReports.push({ timestamp, count: 1 })
 			}
 		}
 	}
