@@ -62,7 +62,6 @@ export default function adminMediatorFactory({ container }: interfaces.Context):
 	const versionService = container.get<IVersionService>(DI.Services.Version)
 	const fileUploadService = container.get<IFileUploadService>(DI.Services.FileUpload)
 	const updateService = container.get<IReleaseService>(DI.Services.Update)
-	const registerCredentialsService = container.get<IRegisterCredentialsService>(DI.Services.RegisterCredentials)
 	const versionReportsService = container.get<IVersionReportsService>(DI.Services.VersionReports)
 	const clientCounterService = container.get<IClientCounterService>(DI.Services.ClientCounter)
 
@@ -111,11 +110,11 @@ export default function adminMediatorFactory({ container }: interfaces.Context):
 			handler: adminService.deleteProfile,
 			requestType: AuthenticatedRequest,
 		})
-		.use({
-			eventType: EventType.GetRegisterKeyPath,
-			handler: registerCredentialsService.getCredentialsKeyPath,
-			responseType: RegisterKeyPathResponse,
-		})
+		// .use({
+		// 	eventType: EventType.GetRegisterKeyPath,
+		// 	handler: registerCredentialsService.getCredentialsKeyPath,
+		// 	responseType: RegisterKeyPathResponse,
+		// })
 		.use({
 			eventType: EventType.GetApps,
 			handler: appService.getAllApps,

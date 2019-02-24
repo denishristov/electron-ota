@@ -20,6 +20,8 @@ export const PORT = process.env.PORT || 4000
 
 export const PASS_SECRET_KEY = process.env.PASS_SECRET_KEY
 
+export const REGISTER_KEY = process.env.REGISTER_KEY
+
 export const AWS_CREDENTIALS = {
 	accessKeyId: process.env.AWS_ACCESS_KEY_ID,
 	secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,

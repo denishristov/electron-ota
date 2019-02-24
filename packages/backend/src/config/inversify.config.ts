@@ -35,7 +35,7 @@ import { defaultSchemaOptions } from '../models/util'
 import { ModelType } from 'typegoose'
 
 import socketioConfig from './socketioConfig'
-import { Report } from '../models/Report'
+import { REGISTER_KEY } from './index'
 
 const container = new Container()
 
@@ -58,8 +58,7 @@ container.bind<IFileUploadService>(DI.Services.FileUpload)
 	.toConstantValue(new S3Service(S3_CONFIG))
 
 container.bind<IRegisterCredentialsService>(DI.Services.RegisterCredentials)
-	.to(RegisterCredentialsService)
-	.inSingletonScope()
+	.toConstantValue(new RegisterCredentialsService(REGISTER_KEY))
 
 container.bind<IReleaseService>(DI.Services.Update)
 	.to(ReleaseService)

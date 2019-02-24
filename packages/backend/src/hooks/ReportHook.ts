@@ -40,8 +40,8 @@ export default class ReportHook implements IPostRespondHook {
 					version: versionId,
 					[`${type}.client`]: id,
 				})
-				.populate(`${type}.client`)
 				.select(`${type} timestamp`)
+				.populate(`${type}.client`)
 
 			const { timestamp, client } = (reports as any)[type][0]
 
