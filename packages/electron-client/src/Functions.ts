@@ -2,6 +2,7 @@ import fs from 'fs'
 import util from 'util'
 import crypto from 'crypto'
 import io from 'socket.io-client'
+import { IUpdateServiceOptions } from './Interfaces'
 
 export const exists = util.promisify(fs.exists)
 export const readdir = util.promisify(fs.readdir)
@@ -31,13 +32,28 @@ export function uuid(): string {
 	return crypto.randomBytes(32).toString('base64')
 }
 
-export async function connect(uri: string, query: string): Promise<SocketIOClient.Socket> {
+export async function buildConnectionAsync(uri: string, query: string): Promise<SocketIOClient.Socket> {
 	await Promise.resolve()
 	return io(uri, { query })
 }
 
-export function getVersion(): string | null {
+function getVersion(): string | null {
 	const packageJSON = JSON.parse(fs.readFileSync('package.json', 'utf8'))
 
 	return (Boolean(packageJSON) && packageJSON.version) || null
+}
+
+export function normalizeOptions(options: IUpdateServiceOptions): IUpdateServiceOptions {
+	return {
+		...options,
+		checkHashAfterDownload: options.checkHashAfterDownload === void 0
+			? true
+			: options.checkHashAfterDownload,
+		checkHashBeforeLoad: Boolean(options.checkHashBeforeLoad),
+		versionName: this.options.versionName || getVersion(),
+		retryTimeout: options.retryTimeout || 1000 * 60,
+		checkForUpdateOnConnect: options.checkForUpdateOnConnect === void 0
+			? true
+			: options.checkHashAfterDownload,
+	}
 }

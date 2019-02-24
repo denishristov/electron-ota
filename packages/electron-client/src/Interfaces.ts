@@ -1,3 +1,5 @@
+import { EventEmitter } from 'electron'
+
 export interface IUpdateServiceOptions {
 	bundleId: string
 	updateServerUrl: string
@@ -5,6 +7,8 @@ export interface IUpdateServiceOptions {
 	userDataPath?: string
 	checkHashAfterDownload?: boolean
 	checkHashBeforeLoad?: boolean
+	retryTimeout?: number
+	checkForUpdateOnConnect?: boolean
 }
 
 export interface IUpdateResponse extends INewUpdate {
@@ -32,4 +36,10 @@ export interface IUpdateInfo extends IUpdate {
 
 export interface IRegistrationResponse {
 	id: string
+}
+
+export interface IUpdateService {
+	loadLatestUpdate(): Promise<any>
+	loadLatestUpdateSync(): any
+	checkForUpdate(): Promise<boolean>
 }
