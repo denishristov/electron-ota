@@ -14,7 +14,7 @@ interface IProps {
 
 export default observer(function Client({ client, timestamp }: IProps) {
 	return (
-		<Flex y p spread className={styles.client}>
+		<Flex p spread className={styles.client}>
 			<Flex col list>
 				<Flex>
  					<h5>{client.username}</h5>

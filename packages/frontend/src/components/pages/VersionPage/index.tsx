@@ -19,7 +19,6 @@ import utilStyles from '../../../styles/util.module.sass'
 
 import ClientRow from './ClientRow'
 import icons from '../../../util/constants/icons'
-import Tip from '../../generic/Tip'
 
 import Modal from '../../generic/Modal'
 import { IFileService } from '../../../services/FileService'
@@ -31,7 +30,6 @@ import { colors } from '../../../util/constants/styles'
 import { MenuProvider, Menu, Item } from 'react-contexify'
 import Pushable from '../../generic/Pushable'
 import ConfirmDeleteModal from '../../generic/ConfirmDeleteModal'
-import UpdateAppModal from '../AppPage/UpdateAppModal'
 import { TriggerContext } from '../../contexts/ModalContext'
 import PieChart from '../../generic/PieChart'
 
@@ -207,8 +205,8 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 						<img src={this.app.pictureUrl} />
 						<h1>{`${this.app.name} v${versionName}`}</h1>
 					</header>
-					<Flex m x col>
-						<Flex x>
+					<Flex m x className={styles.tilesContainer}>
+						<Flex col list>
 							<Flex col m p list className={styles.details}>
 								<MenuProvider id={ID} event='onClick' style={{ margin: 0 }}>
 									<div>
@@ -329,48 +327,46 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 									</Modal>
 								</Flex>
 							</Flex>
-							{this.reports && (
-								<Flex list2 p>
-									<ClientRow
-										icon={icons.Success}
-										title='Using'
-										reports={this.reports.using}
-										color={colors.data.blue}
-									/>
-									<ClientRow
-										icon={icons.Downloading}
-										title='Downloading'
-										reports={this.reports.downloading}
-										color={colors.data.purple}
-									/>
-									<ClientRow
-										icon={icons.Downloaded}
-										title='Downloaded'
-										reports={this.reports.downloaded}
-										color={colors.data.green}
-									/>
-									<ClientRow
-										icon={icons.ErrorIcon}
-										reports={this.reports.errorMessages}
-										title='Errors'
-										color={colors.data.red}
-									/>
-								</Flex>
-							)}
-						</Flex>
-						{(this.hasReports || hasPieData)
+								<PieChart
+									title='Clients connected on this version per system type'
+									data={this.connectedPieData}
+								/>
+								<PieChart
+									title='Clients using this version per system type'
+									data={this.usingPieDate}
+								/>
+							</Flex>
+						{(this.hasReports || this.reports)
 							? (
-								<Flex x grow>
-									<Flex list col>
-										<PieChart
-											title='Clients connected on this version per system type'
-											data={this.connectedPieData}
-										/>
-										<PieChart
-											title='Clients using this version per system type'
-											data={this.usingPieDate}
-										/>
-									</Flex>
+								<Flex grow col>
+									{this.reports && (
+										<Flex list2 m>
+											<ClientRow
+												icon={icons.Success}
+												title='Using'
+												reports={this.reports.using}
+												color={colors.data.blue}
+											/>
+											<ClientRow
+												icon={icons.Downloading}
+												title='Downloading'
+												reports={this.reports.downloading}
+												color={colors.data.purple}
+											/>
+											<ClientRow
+												icon={icons.Downloaded}
+												title='Downloaded'
+												reports={this.reports.downloaded}
+												color={colors.data.green}
+											/>
+											<ClientRow
+												icon={icons.ErrorIcon}
+												reports={this.reports.errorMessages}
+												title='Errors'
+												color={colors.data.red}
+											/>
+										</Flex>
+									)}
 									{(this.groupedReports && this.hasReports) && (
 										<Flex list x={!hasPieData} col={hasPieData}>
 											<AreaChart

@@ -4,13 +4,17 @@
 .container
 	@include container
 
+.tiles-container
+	margin: $spacing 6vw
+	flex-flow: nowrap
+
 .report-column
 	@include transition(box-shadow)
 	@include entry-shadow
 	border-radius: $default-border-radius
-	width: $spacing * 15
+	min-width: 196px
 	background-color: $entry-bg
-	max-height: 338px
+	max-height: 40vh
 	overflow: hidden
 	flex-flow: column
 	color: $dark-text
@@ -50,8 +54,8 @@
 
 .client
 	@include transition(box-shadow, background-color)
-	@include entry-shadow
-	border-radius: $default-border-radius
+	// @include entry-shadow
+	// border-radius: $default-border-radius
 	background-color: $entry-bg
 	
 	&:hover

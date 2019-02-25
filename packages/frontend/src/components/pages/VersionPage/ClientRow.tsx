@@ -13,8 +13,8 @@ interface IProps {
 }
 
 export default observer(function ClientRow({ reports, title, icon, color }: IProps) {
-	return reports && reports.length ? (
-		<Flex col className={styles.reportColumn}>
+	return reports ? (
+		<Flex col grow className={styles.reportColumn}>
 			<Flex p spread style={{ backgroundColor: color }}>
 				<Flex>
 					<h3>{title}</h3>
@@ -22,7 +22,7 @@ export default observer(function ClientRow({ reports, title, icon, color }: IPro
 				</Flex>
 				<h4>{reports.length}</h4>
 			</Flex>
-			<Flex list p col>
+			<Flex col>
 				{reports.map((report) => <Report key={report.client.id} {...report} />)}
 			</Flex>
 		</Flex>

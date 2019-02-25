@@ -6,7 +6,7 @@ import { colors } from '../../util/constants/styles'
 import { list, formatDate as formatDateFull } from '../../util/functions'
 
 const {
-	XYPlot,
+	FlexibleWidthXYPlot,
 	XAxis,
 	YAxis,
 	VerticalGridLines,
@@ -81,8 +81,8 @@ export default class AreaChart extends React.Component<IProps, IState> {
 			<Flex p m col list className={styles.darkTile}>
 				<h3>{title}</h3>
 				<Flex list x onMouseOut={this.handleMouseLeave}>
-					<XYPlot
-						width={600}
+					<FlexibleWidthXYPlot
+						// width={600}
 						height={300}
 						xType='time'
 					>
@@ -126,7 +126,7 @@ export default class AreaChart extends React.Component<IProps, IState> {
 								</Flex>
 							</Crosshair>
 						)}
-					</XYPlot>
+					</FlexibleWidthXYPlot>
 				</Flex>
 			</Flex>
 		)
