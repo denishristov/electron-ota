@@ -45,13 +45,15 @@
 	> span > *:last-child
 		margin-top: $spacing
 
+.login-form
+	max-width: 402px - 4 * $spacing
+
 .error
-	// position: fixed
 	padding: $spacing
 	background-color: transparentize($red, 0.92)
 	border-radius: 10px
 	margin: 0 -1 * $spacing $spacing
-	color: $red
+	color: darken($red, 8%)
 
 	~ div
 		input[type="password"]

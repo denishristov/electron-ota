@@ -4,7 +4,7 @@ import React, { FormEvent } from 'react'
 import { IUserStore } from '../../stores/UserStore'
 
 import Input from '../generic/Input'
-import { isEmail } from '../../util/functions'
+import { isEmail, list } from '../../util/functions'
 import Button from '../generic/Button'
 import {  RouteComponentProps, Redirect } from 'react-router'
 import Flex from '../generic/Flex'
@@ -24,8 +24,18 @@ interface ILoginFormEvent extends FormEvent<HTMLFormElement> {
 	}
 }
 
+interface IState {
+	errorMessage: string
+}
+
+const unsuccessfulLoginMessage = 'You have entered an invalid username/email or password.'
+
 @observer
-export default class Login extends React.Component<RouteComponentProps> {
+export default class Login extends React.Component<RouteComponentProps, IState> {
+	public state = {
+		errorMessage: '',
+	}
+
 	@DI.lazyInject(DI.Stores.User)
 	private readonly userStore: IUserStore
 
@@ -39,11 +49,14 @@ export default class Login extends React.Component<RouteComponentProps> {
 				{this.userStore.isLoading
 					? <Loading />
 					: (
-						<form onSubmit={this.handleSubmit} className={styles.form}>
+						<form
+							onSubmit={this.handleSubmit}
+							className={list(styles.form, styles.loginForm)}
+						>
 							<Flex col list>
 								<h1>Sign in</h1>
 								<Input
-									label='Username'
+									label='Username or Email'
 									name='nameOrEmail'
 									required
 									icon={icons.User}
@@ -55,6 +68,11 @@ export default class Login extends React.Component<RouteComponentProps> {
 									icon={icons.Key}
 									required
 								/>
+								{this.state.errorMessage && (
+									<div className={styles.error}>
+										{this.state.errorMessage}
+									</div>
+								)}
 								<Flex list spread>
 									<Button color='white' type='button' onClick={this.goToSetup}>
 										Sign up
@@ -80,13 +98,22 @@ export default class Login extends React.Component<RouteComponentProps> {
 		const { value: input } = nameOrEmail
 		const inputIsEmail = isEmail(input)
 
-		const isSuccessful = await this.userStore.login({
-			name: inputIsEmail ? void 0 : input,
-			email: inputIsEmail ? input : void 0,
-			password: password.value,
-		})
+		try {
+			const isSuccessful = await this.userStore.login({
+				name: inputIsEmail ? void 0 : input,
+				email: inputIsEmail ? input : void 0,
+				password: password.value,
+			})
 
-		isSuccessful && this.props.history.push('/apps')
+			// This will be removed some day, I promise
+			if (!isSuccessful) {
+				throw new Error()
+			}
+
+			isSuccessful && this.props.history.push('/apps')
+		} catch {
+			this.setState({ errorMessage: unsuccessfulLoginMessage })
+		}
 	}
 
 	@bind

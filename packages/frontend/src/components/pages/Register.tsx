@@ -10,7 +10,7 @@ import styles from '../../styles/LoginPage.module.sass'
 import Loading from '../generic/Loading'
 import Flex from '../generic/Flex'
 import { passwordRegex } from 'shared'
-import { IUserStore } from '../../stores/UserStore';
+import { IUserStore } from '../../stores/UserStore'
 
 const errors = {
 	passwordMatch: 'Your passwords do not match, please make sure they are the same.',

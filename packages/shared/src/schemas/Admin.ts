@@ -15,15 +15,11 @@ export class AdminPublicModel {
 }
 export class AdminLoginRequest {
 	@Email()
-	@Max(256)
 	public email?: string
 
-	@Min(4)
-	@Max(256)
 	public name?: string
 
 	@Required()
-	@Max(256)
 	public password: string
 }
 

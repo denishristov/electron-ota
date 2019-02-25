@@ -203,7 +203,9 @@ export default class AppPage extends Component<RouteComponentProps<IParams>, ISt
 							<Flex list col>
 								<Flex y list>
 									<label>Bundle ID</label>
-									<label className={utilStyles.dark}>{bundleId}</label>
+									<label className={utilStyles.dark}>
+										{bundleId}
+									</label>
 								</Flex>
 								<MenuProvider id={ID} event='onClick' style={{ margin: 0 }}>
 									<div>
@@ -214,7 +216,9 @@ export default class AppPage extends Component<RouteComponentProps<IParams>, ISt
 								</MenuProvider>
 								<Flex y list>
 									<label>Versions added</label>
-									<label className={utilStyles.dark}>{versions.size || versionsCount}</label>
+									<label className={utilStyles.dark}>
+										{versions.size || versionsCount}
+									</label>
 								</Flex>
 								<label>Latest versions</label>
 								{latestVersions && Object.entries(latestVersions)

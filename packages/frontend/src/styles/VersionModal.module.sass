@@ -31,7 +31,7 @@
         
 .release-button
 	@include transition(transform, box-shadow, color, background-color)
-	@include entry-shadow
+	box-shadow: $rest-shadow
 	border-radius: 4px
 	border: 1px solid $dark-accent
 	color: $dark-accent
@@ -41,7 +41,8 @@
 	user-select: none
 
 	&-selected
-		background-color: $dark-accent
+		background-color: $blue
+		border-color: darken($blue, 16%)
 		color: white
 	
 .os-row
