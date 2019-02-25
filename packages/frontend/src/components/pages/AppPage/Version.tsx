@@ -13,6 +13,8 @@ import styles from '../../../styles/Version.module.sass'
 import Pushable from '../../generic/Pushable'
 import { BrowserHistory } from '../../../util/types'
 import icons from '../../../util/constants/icons'
+import Tip from '../../generic/Tip';
+import { colors } from '../../../util/constants/styles';
 
 interface IProps {
 	version: VersionModel
@@ -42,59 +44,53 @@ export default class Version extends React.Component<IProps> {
 						{this.simpleReport && (
 							<>
 								<Counter
-									className={styles.counter}
-									message='Using'
-									icon={icons.Success}
-									count={this.simpleReport.usingCount}
-								/>
-								<Counter
-									className={styles.counter}
 									message='Connected'
 									icon={icons.User}
 									count={this.liveCount}
+									color={colors.data.orange}
 								/>
-								{/* <Counter
-									className={styles.counter}
+								<Counter
+									message='Using'
+									icon={icons.Success}
+									count={this.simpleReport.usingCount}
+									color={colors.data.blue}
+								/>
+								<Counter
 									message='Downloading'
 									icon={icons.Downloading}
 									count={this.simpleReport.downloadingCount}
+									color={colors.data.purple}
 								/>
 								<Counter
-									className={styles.counter}
 									message='Downloaded'
 									icon={icons.Downloaded}
 									count={this.simpleReport.downloadedCount}
+									color={colors.data.green}
 								/>
 								<Counter
-									className={styles.counter}
 									message='Errors'
 									icon={icons.ErrorIcon}
 									count={this.simpleReport.errorsCount}
-								/> */}
+									color={colors.data.red}
+								/>
 							</>
 						)}
-						<Flex list y mla>
-							{version && (
+						<Flex y mla>
+							{version.isBase && (
+								<Tip message='Base release'>
+									<div className={styles.base} />
+								</Tip>
+							)}
+							{version.isCritical && (
+								<Tip message='Critical release'>
+									<div className={styles.critical} />
+								</Tip>
+							)}
+							{version.systems && (
 								<>
-									{version.isBase && (
-										<Flex y>
-											<div className={styles.base} />
-											<label>Base</label>
-										</Flex>
-									)}
-									{version.isCritical && (
-										<Flex y>
-											<div className={styles.critical} />
-											<label>Critical</label>
-										</Flex>
-									)}
-									{version.systems && (
-										<>
-											{version.systems.Darwin && <SVG src={icons.Darwin} />}
-											{version.systems.Linux && <SVG src={icons.Linux} />}
-											{version.systems.Windows_RT && <SVG src={icons.Windows_RT} />}
-										</>
-									)}
+									{version.systems.Darwin && <SVG src={icons.Darwin} />}
+									{version.systems.Linux && <SVG src={icons.Linux} />}
+									{version.systems.Windows_RT && <SVG src={icons.Windows_RT} />}
 								</>
 							)}
 						</Flex>

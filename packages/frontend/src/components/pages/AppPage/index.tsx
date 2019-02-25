@@ -260,7 +260,7 @@ export default class AppPage extends Component<RouteComponentProps<IParams>, ISt
 												<Flex y list grow className={styles.newVersion}>
 													<SVG src={Plus} />
 													<h3>
-														Add new version
+														Add a new version
 													</h3>
 												</Flex>
 											</Modal.OpenTrigger>

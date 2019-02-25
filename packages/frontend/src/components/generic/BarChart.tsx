@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import Flex from './Flex'
 
 const {
-	XYPlot,
+	FlexibleWidthXYPlot,
 	XAxis,
 	YAxis,
 	VerticalGridLines,
@@ -20,7 +20,7 @@ import { observer } from 'mobx-react'
 import { SystemTypeDisplay } from 'shared'
 import { list } from '../../util/functions'
 import { computed } from 'mobx'
-import AnimationContext from '../contexts/AnimationContext';
+import AnimationContext from '../contexts/AnimationContext'
 
 interface IDataPoint {
 	x: number
@@ -51,6 +51,8 @@ const labelsStyle = {
 		fontSize: 16,
 	},
 }
+
+const margin = { left: 44 }
 
 @observer
 export default class BarChart extends React.Component<IProps, IState> {
@@ -84,44 +86,47 @@ export default class BarChart extends React.Component<IProps, IState> {
 				{({ isResting }) => isResting && (
 					<Flex p m col list className={styles.darkTile}>
 						<h3>{title}</h3>
-						<Flex list x>
-							<XYPlot
-								animation
-								width={300}
-								height={480}
-								stackBy='x'
-								yType='ordinal'
-							>
-								<VerticalGridLines />
-								<HorizontalGridLines />
-								<XAxis animation tickLabelAngle={-45} tickFormat={round} style={labelsStyle} />
-								<YAxis animation style={labelsStyle} />
-								{Object.entries(data).map(([systemType, data]) => (
-									<HorizontalBarSeries
-										animation={!isHovered}
-										key={systemType}
-										stroke='transparent'
-										fill={`url(#${systemType})`}
-										data={data}
-										onValueMouseOver={this.handleOver}
-										onValueMouseOut={this.handleOut}
-									/>
-								))}
-								{dataPoint && (
-									<Hint value={dataPoint}>
-										<Flex col className={list(styles.hint, !isHovered && styles.reverse)}>
-										<Flex list>
-											<label className={styles.dark}>Version name</label>
-											<label>{dataPoint.y}</label>
-										</Flex>
-										<Flex list>
-											<label className={styles.dark}>Clients</label>
-											<label>{dataPoint.x}</label>
-										</Flex>
-										</Flex>
-									</Hint>
-								)}
-							</XYPlot>
+						<Flex list col x>
+							<Flex>
+								<FlexibleWidthXYPlot
+									animation
+									// width={300}
+									margin={margin}
+									height={480}
+									stackBy='x'
+									yType='ordinal'
+								>
+									<VerticalGridLines />
+									<HorizontalGridLines />
+									<XAxis animation tickFormat={round} style={labelsStyle} />
+									<YAxis animation style={labelsStyle} tickLabelAngle={-45} />
+									{Object.entries(data).map(([systemType, data]) => (
+										<HorizontalBarSeries
+											animation={!isHovered}
+											key={systemType}
+											stroke='transparent'
+											fill={`url(#${systemType})`}
+											data={data}
+											onValueMouseOver={this.handleOver}
+											onValueMouseOut={this.handleOut}
+										/>
+									))}
+									{dataPoint && (
+										<Hint value={dataPoint}>
+											<Flex col className={list(styles.hint, !isHovered && styles.reverse)}>
+											<Flex list>
+												<label className={styles.dark}>Version name</label>
+												<label>{dataPoint.y}</label>
+											</Flex>
+											<Flex list>
+												<label className={styles.dark}>Clients</label>
+												<label>{dataPoint.x}</label>
+											</Flex>
+											</Flex>
+										</Hint>
+									)}
+								</FlexibleWidthXYPlot>
+							</Flex>
 							<Flex col x list>
 								{Object.entries(data).map(([systemType, data]) => (
 									<Flex list y key={systemType}>

@@ -1,6 +1,9 @@
 @import './variables'
 @import './mixins'
 
+.app-page-container
+	@include container
+
 .version-container
 	flex-grow: 1
 	flex-flow: column
@@ -8,12 +11,19 @@
 	align-items: center
 	margin: $spacing
 
-.app-page-container
-	@include container
+.new-version
+	color: $light-text
+
+	g, path
+		fill: $light-text
+
+	h3
+		margin: 0
 
 .versions-tile
 	padding-left: $spacing
 	margin-left: 98px
+	margin-right: 0px
 
 	> span:first-child
 		@include glowing-shadow($dark-accent)
@@ -25,16 +35,9 @@
 
 		label
 			font-size: 0.9rem
-	
 		svg
 			width: $icon-size
 			height: $icon-size
-
-.new-version
-	color: $dark-accent
-
-	h3
-		margin: 0
 
 @media screen and (max-width: 1650px)
 	.app-reports

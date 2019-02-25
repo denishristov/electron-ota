@@ -17,7 +17,7 @@ import versionStyles from '../../../styles/Version.module.sass'
 import versionModalStyles from '../../../styles/VersionModal.module.sass'
 import utilStyles from '../../../styles/util.module.sass'
 
-import ClientRow from './ClientRow'
+import ClientColumn from './ClientColumn'
 import icons from '../../../util/constants/icons'
 
 import Modal from '../../generic/Modal'
@@ -341,25 +341,25 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 								<Flex grow col className={styles.timeReports}>
 									{this.reports && (
 										<div className={styles.clientColumnsContainers}>
-											<ClientRow
+											<ClientColumn
 												icon={icons.Success}
 												title='Using'
 												reports={this.reports.using}
 												color={colors.data.blue}
 											/>
-											<ClientRow
+											<ClientColumn
 												icon={icons.Downloading}
 												title='Downloading'
 												reports={this.reports.downloading}
 												color={colors.data.purple}
 											/>
-											<ClientRow
+											<ClientColumn
 												icon={icons.Downloaded}
 												title='Downloaded'
 												reports={this.reports.downloaded}
 												color={colors.data.green}
 											/>
-											<ClientRow
+											<ClientColumn
 												icon={icons.ErrorIcon}
 												reports={this.reports.errorMessages}
 												title='Errors'

@@ -12,7 +12,7 @@ interface IProps {
 	color: string
 }
 
-export default observer(function ClientRow({ reports, title, icon, color }: IProps) {
+export default observer(function ClientColumn({ reports, title, icon, color }: IProps) {
 	return reports ? (
 		<Flex col grow className={styles.reportColumn}>
 			<Flex p spread style={{ backgroundColor: color }}>

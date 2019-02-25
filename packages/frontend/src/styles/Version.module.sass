@@ -16,9 +16,8 @@ $version-width: 800px
 .version
 	@include transition(background-color, box-shadow, transform)
 	@include entry-shadow
-	// min-width: $version-width
-	width: 426px
-	border: 2px solid $accent
+	width: 500px
+	// border: 2px solid $accent
 	height: $spacing * 2.5
 	border-radius: $spacing * 1.25
 	background: $entry-bg
@@ -28,32 +27,41 @@ $version-width: 800px
 	cursor: pointer
 
 	h3
-		min-width: $spacing * 4
+		margin: 0 16px 0 0
 
 	h4
 		font-weight: 400
 		min-width: $spacing * 6
 
-	h3, h4, h5
+	h4, h5
 		margin: 0
 
 	&:hover
 		background-color: $entry-hover-bg
+		border-color: transparent
 
 	span
 		svg
-			width: 20px
-			height:  20px
+			width: 18px
+			height: 18px
+
+	> span:not(:first-child):last-child
+		> span
+			margin-left: 10px
 
 	.counter
 		h5
 			margin-left: $spacing / 2
-			color: $light-text
+			color: $text
 			font-weight: 400
 			font-size: 0.96rem
+		
+		> span
+			border-radius: 50%
 
 		svg, g, path
-			fill: $dark-accent
+			fill: $text
+			margin: 4px
 
 
 .base

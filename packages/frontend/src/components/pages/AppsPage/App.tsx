@@ -34,38 +34,40 @@ export default class App extends Component<IProps> {
 
 		return (
 			<Pushable>
-				<animated.div
-					className={styles.appTile}
-					onClick={this.goToApp}
-					style={this.props.animation}
-				>
-				<Flex y list mb style={{ backgroundColor: color || colors.ui.accent }}>
-					{pictureUrl && <img src={pictureUrl} />}
-					<h3>{name}</h3>
-				</Flex>
-					<Flex list col>
-						<Flex y list>
-							<label>Bundle ID</label>
-							<label className={utilStyles.dark}>{bundleId}</label>
+				<div className={styles.container}>
+					<animated.div
+						onClick={this.goToApp}
+						style={this.props.animation}
+						className={styles.appTile}
+					>
+						<Flex y list mb style={{ backgroundColor: color || colors.ui.accent }}>
+							{pictureUrl && <img src={pictureUrl} />}
+							<h3>{name}</h3>
 						</Flex>
-						<Flex y list>
-							<label>Versions added </label>
-							<label className={utilStyles.dark}>{versions.size || versionsCount}</label>
+						<Flex list col>
+							<Flex y list>
+								<label>Bundle ID</label>
+								<label className={utilStyles.dark}>{bundleId}</label>
+							</Flex>
+							<Flex y list>
+								<label>Versions added </label>
+								<label className={utilStyles.dark}>{versions.size || versionsCount}</label>
+							</Flex>
+							{latestVersions && (
+								<>
+									<label>Latest versions</label>
+									{Object.entries(latestVersions).map(([systemType, version]) => version && (
+										<Flex y list key={systemType}>
+											<label className={utilStyles.dark}>{version.versionName}</label>
+											<SVG src={icons[systemType]} />
+											<label>{formatDate(new Date(version.createdAt))}</label>
+										</Flex>
+									))}
+								</>
+							)}
 						</Flex>
-						{latestVersions && (
-							<>
-								<label>Latest versions</label>
-								{Object.entries(latestVersions).map(([systemType, version]) => version && (
-									<Flex y list key={systemType}>
-										<label className={utilStyles.dark}>{version.versionName}</label>
-										<SVG src={icons[systemType]} />
-										<label>{formatDate(new Date(version.createdAt))}</label>
-									</Flex>
-								))}
-							</>
-						)}
-					</Flex>
-				</animated.div>
+					</animated.div>
+				</div>
 			</Pushable>
 		)
 	}
