@@ -30,7 +30,7 @@ export default class App extends React.Component<RouteComponentProps, IState> {
 
 	public render() {
 		const { isResting } = this.state
-		
+
 		return (
 			<>
 				<div className={styles.background} />

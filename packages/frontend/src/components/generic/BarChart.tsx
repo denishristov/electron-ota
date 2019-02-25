@@ -20,6 +20,7 @@ import { observer } from 'mobx-react'
 import { SystemTypeDisplay } from 'shared'
 import { list } from '../../util/functions'
 import { computed } from 'mobx'
+import AnimationContext from '../contexts/AnimationContext';
 
 interface IDataPoint {
 	x: number
@@ -79,73 +80,77 @@ export default class BarChart extends React.Component<IProps, IState> {
 		const { dataPoint, isHovered } = this.state
 
 		return Boolean(this.total) && data ? (
-			<Flex p m col list className={styles.darkTile}>
-				<h3>{title}</h3>
-				<Flex list x>
-					<XYPlot
-						animation
-						width={300}
-						height={480}
-						stackBy='x'
-						yType='ordinal'
-					>
-						<VerticalGridLines />
-						<HorizontalGridLines />
-						<XAxis animation tickLabelAngle={-45} tickFormat={round} style={labelsStyle} />
-						<YAxis animation style={labelsStyle} />
-						{Object.entries(data).map(([systemType, data]) => (
-							<HorizontalBarSeries
-								animation={!isHovered}
-								key={systemType}
-								stroke='transparent'
-								fill={`url(#${systemType})`}
-								data={data}
-								onValueMouseOver={this.handleOver}
-								onValueMouseOut={this.handleOut}
-							/>
-						))}
-						{dataPoint && (
-							<Hint value={dataPoint}>
-								<Flex col className={list(styles.hint, !isHovered && styles.reverse)}>
-								<Flex list>
-									<label className={styles.dark}>Version name</label>
-									<label>{dataPoint.y}</label>
-								</Flex>
-								<Flex list>
-									<label className={styles.dark}>Clients</label>
-									<label>{dataPoint.x}</label>
-								</Flex>
-								</Flex>
-							</Hint>
-						)}
-					</XYPlot>
-					<Flex col x list>
-						{Object.entries(data).map(([systemType, data]) => (
-							<Flex list y key={systemType}>
-								<svg className={styles.legend}>
-									<circle
-										cx={8}
-										cy={8}
-										r={8}
-										stroke={`url(#${systemType})`}
+			<AnimationContext.Consumer>
+				{({ isResting }) => isResting && (
+					<Flex p m col list className={styles.darkTile}>
+						<h3>{title}</h3>
+						<Flex list x>
+							<XYPlot
+								animation
+								width={300}
+								height={480}
+								stackBy='x'
+								yType='ordinal'
+							>
+								<VerticalGridLines />
+								<HorizontalGridLines />
+								<XAxis animation tickLabelAngle={-45} tickFormat={round} style={labelsStyle} />
+								<YAxis animation style={labelsStyle} />
+								{Object.entries(data).map(([systemType, data]) => (
+									<HorizontalBarSeries
+										animation={!isHovered}
+										key={systemType}
+										stroke='transparent'
 										fill={`url(#${systemType})`}
+										data={data}
+										onValueMouseOver={this.handleOver}
+										onValueMouseOut={this.handleOut}
 									/>
-								</svg>
-								<h4>{SystemTypeDisplay[systemType]}</h4>
-								<Flex grow />
-								<label>{data.reduce((sum, { x }) => sum + x, 0)}</label>
+								))}
+								{dataPoint && (
+									<Hint value={dataPoint}>
+										<Flex col className={list(styles.hint, !isHovered && styles.reverse)}>
+										<Flex list>
+											<label className={styles.dark}>Version name</label>
+											<label>{dataPoint.y}</label>
+										</Flex>
+										<Flex list>
+											<label className={styles.dark}>Clients</label>
+											<label>{dataPoint.x}</label>
+										</Flex>
+										</Flex>
+									</Hint>
+								)}
+							</XYPlot>
+							<Flex col x list>
+								{Object.entries(data).map(([systemType, data]) => (
+									<Flex list y key={systemType}>
+										<svg className={styles.legend}>
+											<circle
+												cx={8}
+												cy={8}
+												r={8}
+												stroke={`url(#${systemType})`}
+												fill={`url(#${systemType})`}
+											/>
+										</svg>
+										<h4>{SystemTypeDisplay[systemType]}</h4>
+										<Flex grow />
+										<label>{data.reduce((sum, { x }) => sum + x, 0)}</label>
+									</Flex>
+								))}
+								<Flex pt list y className={styles.total}>
+									<Flex grow />
+									<h4>Total</h4>
+									<label>
+										{this.total}
+									</label>
+								</Flex>
 							</Flex>
-						))}
-						<Flex pt list y className={styles.total}>
-							<Flex grow />
-							<h4>Total</h4>
-							<label>
-								{this.total}
-							</label>
 						</Flex>
 					</Flex>
-				</Flex>
-			</Flex>
+			)}
+			</AnimationContext.Consumer>
 		)
 		: null
 	}

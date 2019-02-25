@@ -338,9 +338,9 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 							</Flex>
 						{(this.hasReports || this.reports)
 							? (
-								<Flex grow col>
+								<Flex grow col className={styles.timeReports}>
 									{this.reports && (
-										<Flex list2 m>
+										<div className={styles.clientColumnsContainers}>
 											<ClientRow
 												icon={icons.Success}
 												title='Using'
@@ -365,10 +365,10 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 												title='Errors'
 												color={colors.data.red}
 											/>
-										</Flex>
+										</div>
 									)}
 									{(this.groupedReports && this.hasReports) && (
-										<Flex list x={!hasPieData} col={hasPieData}>
+										<Flex list col>
 											<AreaChart
 												title='Clients downloading time reports'
 												data={this.groupedReports.downloading}

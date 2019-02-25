@@ -55,10 +55,10 @@
 		box-shadow: 0 5px 12px transparentize($color, 0.92), 0 1px 4px transparentize($color, 0.91), 0 -5px 15px -1px transparentize($color, 0.9), inset 0 0 20px -3px transparentize($color, 0.9)
 
 @mixin entry-shadow
-	@include shadow($accent)
+	@include glowing-shadow($accent)
 
 	&:hover, &:focus
-		@include glowing-shadow($accent)
+		@include glowing-shadow($dark-accent)
 
 @mixin focus-shadow
 	@include shadow($accent)

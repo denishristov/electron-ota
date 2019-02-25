@@ -5,12 +5,21 @@
 	@include container
 
 .tiles-container
-	margin: $spacing 6vw
-	flex-flow: nowrap
+	margin: $spacing auto
+
+.time-reports
+	max-width: 50vw
+
+.client-columns-containers
+	display: grid
+	grid-template-columns: repeat(auto-fit, minmax(196px, 1fr))
+	grid-gap: $spacing
+	margin: 16px
+	height: 40vh
 
 .report-column
 	@include transition(box-shadow)
-	@include entry-shadow
+	@include glowing-shadow($dark-accent)
 	border-radius: $default-border-radius
 	min-width: 196px
 	background-color: $entry-bg
@@ -54,8 +63,6 @@
 
 .client
 	@include transition(box-shadow, background-color)
-	// @include entry-shadow
-	// border-radius: $default-border-radius
 	background-color: $entry-bg
 	
 	&:hover
@@ -71,7 +78,7 @@
 
 .details
 	@include transition(box-shadow)
-	@include entry-shadow
+	@include glowing-shadow($shadow-color)
 	border-radius: $default-border-radius
 	background-color: $entry-bg
 	min-width: $spacing * 10 * 2
