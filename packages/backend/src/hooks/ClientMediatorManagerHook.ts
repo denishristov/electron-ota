@@ -2,6 +2,10 @@ import { EventType, CreateAppRequest, CreateAppResponse, SystemType } from 'shar
 import { IPostRespondHook, ISocketMediator } from '../util/mediator/interfaces'
 import { ClientsMediatorFactory } from '../mediators/ClientsMediatorFactory'
 
+export interface IClientMediatorManagerHook extends IPostRespondHook {
+	handle(event: EventType, req: CreateAppRequest, app: CreateAppResponse): Promise<void>
+}
+
 @DI.injectable()
 export default class ClientMediatorManagerHook implements IPostRespondHook {
 	private static readonly systemTypes = Object.keys(SystemType) as SystemType[]

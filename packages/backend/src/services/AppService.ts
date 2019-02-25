@@ -15,7 +15,6 @@ import { App } from '../models/App'
 import { Version } from '../models/Version'
 import { ModelType, InstanceType } from 'typegoose'
 import { rangedArray } from '../util/functions'
-import { Admin } from '../models/Admin'
 
 export interface IAppService {
 	getAllBundleIds(): Promise<string[]>
@@ -32,8 +31,6 @@ export default class AppService implements IAppService {
 	constructor(
 		@DI.inject(DI.Models.App)
 		private readonly AppModel: ModelType<App>,
-		@DI.inject(DI.Models.Admin)
-		private readonly AdminModel: ModelType<Admin>,
 	) {}
 
 	public async getAllBundleIds(): Promise<string[]> {

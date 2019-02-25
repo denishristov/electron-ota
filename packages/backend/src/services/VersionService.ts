@@ -1,23 +1,19 @@
 import {
-	GetVersionRequest,
 	CreateVersionRequest,
 	DeleteVersionRequest,
 	DeleteVersionResponse,
 	UpdateVersionRequest,
 	UpdateVersionResponse,
-	VersionRequest,
 	VersionModel,
 } from 'shared'
-import { Version } from '../models/Version'
-import { App } from '../models/App'
-import { VersionReports } from '../models/VersionReports'
 import { ModelType } from 'typegoose'
+
+import { App } from '../models/App'
+import { Version } from '../models/Version'
+import { VersionReports } from '../models/VersionReports'
 import { IFileUploadService } from './S3Service'
-import { IAdminsService } from './AdminsService'
-import { IReleaseService } from './ReleaseService'
 
 export interface IVersionService {
-	getVersion({ id }: GetVersionRequest): Promise<VersionRequest>
 	createVersion(createRequest: CreateVersionRequest): Promise<VersionModel>
 	updateVersion(updateRequest: UpdateVersionRequest): Promise<UpdateVersionResponse>
 	deleteVersion({ id }: DeleteVersionRequest): Promise<DeleteVersionResponse>
@@ -35,13 +31,6 @@ export default class VersionService implements IVersionService {
 		@DI.inject(DI.Services.FileUpload)
 		private readonly fileService: IFileUploadService,
 	) {}
-
-	@bind
-	public async getVersion({ id }: GetVersionRequest): Promise<VersionRequest> {
-		const version = await this.VersionModel.findById(id)
-
-		return version.toJSON()
-	}
 
 	@bind
 	public async createVersion(versionData: CreateVersionRequest): Promise<VersionModel> {

@@ -5,8 +5,12 @@ import { Version } from '../models/Version'
 import { ModelType } from 'typegoose'
 import { App } from '../models/App'
 
+export interface IReleaseUpdateHook extends IPostRespondHook {
+	handle(eventType: EventType, req: PublishVersionRequest, res: PublishVersionResponse): Promise<void>
+}
+
 @DI.injectable()
-export default class ReleaseUpdateHook implements IPostRespondHook {
+export default class ReleaseUpdateHook implements IReleaseUpdateHook {
 	public eventTypes = new Set([EventType.ReleaseUpdate])
 
 	constructor(

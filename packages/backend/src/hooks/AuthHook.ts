@@ -2,8 +2,12 @@ import { EventType, AuthenticatedRequest } from 'shared'
 import { IAdminsService } from '../services/AdminsService'
 import { IPreRespondHook } from '../util/mediator/interfaces'
 
+export interface IAuthHook extends IPreRespondHook {
+	handle(eventType: EventType, data: AuthenticatedRequest): Promise<object>
+}
+
 @DI.injectable()
-export default class AuthHook implements IPreRespondHook {
+export default class AuthHook implements IAuthHook {
 	public exceptions = new Set([
 		EventType.Login,
 		EventType.Logout,
@@ -22,7 +26,7 @@ export default class AuthHook implements IPreRespondHook {
 	) {}
 
 	@bind
-	public async handle(_: EventType, data: AuthenticatedRequest) {
+	public async handle(eventType: EventType, data: AuthenticatedRequest) {
 		const { isAuthenticated } = await this.userService.authenticate(data)
 
 		if (isAuthenticated) {

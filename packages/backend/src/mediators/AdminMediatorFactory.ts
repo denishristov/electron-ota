@@ -2,15 +2,20 @@ import { interfaces } from 'inversify'
 
 import { IVersionService } from '../services/VersionService'
 import { IAppService } from '../services/AppService'
-import { IRegisterCredentialsService } from '../services/RegisterCredentialsService'
 import { IAdminsService } from '../services/AdminsService'
 import { IFileUploadService } from '../services/S3Service'
 import { IReleaseService } from '../services/ReleaseService'
 import { IVersionReportsService } from '../services/VersionReportsService'
 import { IClientCounterService } from '../services/ClientCounterService'
 
-import { IPreRespondHook, IPostRespondHook, ISocketMediator } from '../util/mediator/interfaces'
+import { IAuthHook } from '../hooks/AuthHook'
+import { IValidationHook } from '../hooks/ValidationHook'
+import { IClientMediatorManagerHook } from '../hooks/ClientMediatorManagerHook'
+import { IReleaseUpdateHook } from '../hooks/ReleaseUpdateHook'
+
+import { ISocketMediator } from '../util/mediator/interfaces'
 import SocketMediator from '../util/mediator/SocketMediator'
+
 import {
 	EventType,
 	AuthenticatedRequest,
@@ -42,7 +47,6 @@ import {
 	GetVersionReportsRequest,
 	GetVersionReportsResponse,
 	RegisterAdminResponse,
-	RegisterKeyPathResponse,
 	AdminEditProfileRequest,
 	AdminPublicModel,
 	GetAppCountersRequest,
@@ -65,10 +69,10 @@ export default function adminMediatorFactory({ container }: interfaces.Context):
 	const versionReportsService = container.get<IVersionReportsService>(DI.Services.VersionReports)
 	const clientCounterService = container.get<IClientCounterService>(DI.Services.ClientCounter)
 
-	const authHook = container.get<IPreRespondHook>(DI.Hooks.Auth)
-	const validationHook = container.get<IPreRespondHook>(DI.Hooks.Validation)
-	const clientMediatorManagerHook = container.get<IPostRespondHook>(DI.Hooks.ClientMediatorManager)
-	const releaseUpdateHook = container.get<IPostRespondHook>(DI.Hooks.ReleaseUpdate)
+	const authHook = container.get<IAuthHook>(DI.Hooks.Auth)
+	const validationHook = container.get<IValidationHook>(DI.Hooks.Validation)
+	const clientMediatorManagerHook = container.get<IClientMediatorManagerHook>(DI.Hooks.ClientMediatorManager)
+	const releaseUpdateHook = container.get<IReleaseUpdateHook>(DI.Hooks.ReleaseUpdate)
 
 	return () => new SocketMediator(server.of(DI.AdminMediator))
 		.use({
@@ -110,11 +114,6 @@ export default function adminMediatorFactory({ container }: interfaces.Context):
 			handler: adminService.deleteProfile,
 			requestType: AuthenticatedRequest,
 		})
-		// .use({
-		// 	eventType: EventType.GetRegisterKeyPath,
-		// 	handler: registerCredentialsService.getCredentialsKeyPath,
-		// 	responseType: RegisterKeyPathResponse,
-		// })
 		.use({
 			eventType: EventType.GetApps,
 			handler: appService.getAllApps,

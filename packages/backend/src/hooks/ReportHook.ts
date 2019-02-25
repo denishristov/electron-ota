@@ -3,12 +3,19 @@ import { EventType, ErrorReportRequest, ClientReportRequest } from 'shared'
 import { IPostRespondHook, ISocketMediator } from '../util/mediator/interfaces'
 import {  ModelType } from 'typegoose'
 import { Version } from '../models/Version'
-import { Client } from '../models/Client'
 import { VersionReports } from '../models/VersionReports'
 import { IReportFeedback } from '../services/VersionReportsService'
 
+export interface IReportHook extends IPostRespondHook {
+	handle(
+		eventType: EventType,
+		req: ClientReportRequest | ErrorReportRequest,
+		res: IReportFeedback,
+	): Promise<void>
+}
+
 @DI.injectable()
-export default class ReportHook implements IPostRespondHook {
+export default class ReportHook implements IReportHook {
 	public eventTypes = new Set([
 		EventType.UpdateDownloading,
 		EventType.UpdateDownloaded,

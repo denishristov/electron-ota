@@ -1,37 +1,35 @@
+import { ObjectID } from 'bson'
 import {
 	ClientReportRequest,
 	ErrorReportRequest,
+	GetAppUsingReportsRequest,
+	GetAppUsingReportsResponse,
 	GetSimpleVersionReportsRequest,
 	GetSimpleVersionReportsResponse,
+	GetVersionGroupedReportsRequest,
+	GetVersionGroupedReportsResponse,
 	GetVersionReportsRequest,
 	GetVersionReportsResponse,
 	SystemType,
-	ClientModel,
-	GetAppUsingReportsRequest,
-	GetAppUsingReportsResponse,
-	GetVersionGroupedReportsRequest,
-	GetVersionGroupedReportsResponse,
-	IGroupedReportModel,
 } from 'shared'
-import { Version } from '../models/Version'
-import { Client } from '../models/Client'
-import { VersionReports } from '../models/VersionReports'
+import { InstanceType, ModelType } from 'typegoose'
+
 import { App } from '../models/App'
-import { ModelType, InstanceType } from 'typegoose'
-import { Report } from '../models/Report'
-import { ObjectID } from 'bson'
-import { randomInteger, toUTCString } from '../util/functions'
+import { Client } from '../models/Client'
+import { Version } from '../models/Version'
+import { VersionReports } from '../models/VersionReports'
+import { toUTCString } from '../util/functions'
 import { ITimestampedObject } from '../util/types'
 
 export interface IVersionReportsService {
 	downloadingUpdate(req: ClientReportRequest): Promise<IReportFeedback>
 	downloadedUpdate(req: ClientReportRequest): Promise<IReportFeedback>
 	usingUpdate(req: ClientReportRequest): Promise<IReportFeedback>
-	error(req: ErrorReportRequest): Promise<IReportFeedback>
+	errorOnUpdate(req: ErrorReportRequest): Promise<IReportFeedback>
 	getSimpleVersionReports(req: GetSimpleVersionReportsRequest): Promise<GetSimpleVersionReportsResponse>
 	getVersionReports(req: GetVersionReportsRequest): Promise<GetVersionReportsResponse>
-	getAppUsingReports({ appId }: GetAppUsingReportsRequest): Promise<GetAppUsingReportsResponse>
-	getVersionGroupedReports({ versionId }: GetVersionGroupedReportsRequest): Promise<GetVersionGroupedReportsResponse>
+	getAppUsingReports(req: GetAppUsingReportsRequest): Promise<GetAppUsingReportsResponse>
+	getVersionGroupedReports(req: GetVersionGroupedReportsRequest): Promise<GetVersionGroupedReportsResponse>
 }
 
 export interface IReportFeedback {
@@ -97,7 +95,7 @@ export default class VersionReportsService implements IVersionReportsService {
 	}
 
 	@bind
-	public async error({ id, versionId, errorMessage }: ErrorReportRequest) {
+	public async errorOnUpdate({ id, versionId, errorMessage }: ErrorReportRequest) {
 		const report = await this.VersionReportsModel.findOneAndUpdate(
 			{ 'version': versionId, 'errorMessages.client': { $ne: new ObjectID(id) } },
 			{ $push: { errorMessages: { client: id, errorMessage } } },

@@ -1,12 +1,15 @@
 import { interfaces } from 'inversify'
 
-import { ISocketMediator, IPostRespondHook, IPreRespondHook, MediatorEvent } from '../util/mediator/interfaces'
+import { ISocketMediator, MediatorEvent } from '../util/mediator/interfaces'
 import SocketMediator from '../util/mediator/SocketMediator'
 
 import { IReleaseService } from '../services/ReleaseService'
 import { IClientService } from '../services/ClientService'
 import { IVersionReportsService } from '../services/VersionReportsService'
 import { IClientCounterService } from '../services/ClientCounterService'
+
+import { IReportHook } from '../hooks/ReportHook'
+import { IValidationHook } from '../hooks/ValidationHook'
 
 import {
 	CheckForUpdateRequest,
@@ -29,8 +32,8 @@ export default function clientsMediatorFactory({ container }: interfaces.Context
 	const reportsService = container.get<IVersionReportsService>(DI.Services.VersionReports)
 	const clientCounterService = container.get<IClientCounterService>(DI.Services.ClientCounter)
 
-	const validationHook = container.get<IPreRespondHook>(DI.Hooks.Validation)
-	const reportHook = container.get<IPostRespondHook>(DI.Hooks.Report)
+	const validationHook = container.get<IValidationHook>(DI.Hooks.Validation)
+	const reportHook = container.get<IReportHook>(DI.Hooks.Report)
 
 	return (bundleId: string, systemType: SystemType) => {
 		const namespaceName = `/${bundleId}/${systemType}`
@@ -65,7 +68,7 @@ export default function clientsMediatorFactory({ container }: interfaces.Context
 			})
 			.use({
 				eventType: EventType.UpdateError,
-				handler: reportsService.error,
+				handler: reportsService.errorOnUpdate,
 				requestType: ErrorReportRequest,
 			})
 			.pre(validationHook)
