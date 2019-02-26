@@ -29,13 +29,16 @@ interface IUpdateEvent extends FormEvent<HTMLFormElement> {
 @observer
 export default class UpdateVersionModal extends Component<IProps> {
 	public render() {
+		const { versionModalStore } = this.props.store
+		const { toggles } = versionModalStore
+
 		return (
 			<Modal.CloseTrigger>
 				<form onSubmit={this.handleSubmit}>
 					<Flex grow>
 						<Flex col p list mr>
 							<Input
-								defaultValue={this.props.store.versionName}
+								defaultValue={versionModalStore.versionName}
 								name='versionName'
 								label='Name'
 							/>
@@ -53,27 +56,27 @@ export default class UpdateVersionModal extends Component<IProps> {
 							<ToggleRow
 								label='macOS'
 								icon={icons.Darwin}
-								onChange={this.props.store.toggles[ToggleNames.isDarwin]}
-								value={this.props.store.isDarwin}
+								onChange={toggles[ToggleNames.isDarwin]}
+								value={versionModalStore.isDarwin}
 							/>
 							<ToggleRow
 								label='Linux'
 								icon={icons.Linux}
-								onChange={this.props.store.toggles[ToggleNames.isLinux]}
-								value={this.props.store.isLinux}
+								onChange={toggles[ToggleNames.isLinux]}
+								value={versionModalStore.isLinux}
 							/>
 							<ToggleRow
 								label='Windows'
 								icon={icons.Windows_RT}
-								onChange={this.props.store.toggles[ToggleNames.isWindows]}
-								value={this.props.store.isWindows}
+								onChange={toggles[ToggleNames.isWindows]}
+								value={versionModalStore.isWindows}
 							/>
 							<label>Release Options</label>
 							<ToggleRow
 								spread
 								label='Critical'
-								onChange={this.props.store.toggles[ToggleNames.isCritical]}
-								value={this.props.store.isCritical}
+								onChange={toggles[ToggleNames.isCritical]}
+								value={versionModalStore.isCritical}
 								color='red'
 								message={messages.critical}
 							/>
@@ -105,7 +108,7 @@ export default class UpdateVersionModal extends Component<IProps> {
 			description,
 		} = event.target.elements
 
-		await this.props.store.handleSubmit({
+		await this.props.store.handleUpdate({
 			versionName: versionName.value,
 			description: description.value,
 		})

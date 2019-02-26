@@ -23,6 +23,7 @@ import CreateAppStore, { ICreateAppStore } from '../stores/CreateAppStore'
 import { IUpdateAppStore } from '../stores/UpdateAppStore'
 import UpdateAppStore from '../stores/UpdateAppStore'
 import AppModalStore from '../stores/AppModalStore'
+import VersionModalStore, { IVersionModalStore } from '../stores/VersionModalStore'
 
 const container = new Container()
 
@@ -31,30 +32,6 @@ DI.lazyInject = lazyInject
 
 container.bind(DI.Connection)
 	.toConstantValue(io(SERVER_URI))
-
-container.bind<IApi>(DI.Services.Api)
-	.to(Api)
-	.inSingletonScope()
-
-container.bind<IUserStore>(DI.Stores.User)
-	.to(UserStore)
-	.inSingletonScope()
-
-container.bind<IAppsStore>(DI.Stores.Apps)
-	.to(AppsStore)
-	.inSingletonScope()
-
-container.bind<IAppModalStore>(DI.Stores.AppModal)
-	.to(AppModalStore)
-	.inTransientScope()
-
-container.bind<ICreateAppStore>(DI.Stores.CreateApp)
-	.to(CreateAppStore)
-	.inTransientScope()
-
-container.bind<IUpdateAppStore>(DI.Stores.UpdateApp)
-	.to(UpdateAppStore)
-	.inTransientScope()
 
 container.bind<BrowserHistory>(DI.BrowserHistory)
 	.toDynamicValue(() => {
@@ -80,6 +57,34 @@ container.bind<BrowserHistory>(DI.BrowserHistory)
 	})
 	.inSingletonScope()
 
+container.bind<IApi>(DI.Services.Api)
+	.to(Api)
+	.inSingletonScope()
+
+container.bind<IUserStore>(DI.Stores.User)
+	.to(UserStore)
+	.inSingletonScope()
+
+container.bind<IAppsStore>(DI.Stores.Apps)
+	.to(AppsStore)
+	.inSingletonScope()
+
+container.bind<IAppModalStore>(DI.Stores.AppModal)
+	.to(AppModalStore)
+	.inTransientScope()
+
+container.bind<ICreateAppStore>(DI.Stores.CreateApp)
+	.to(CreateAppStore)
+	.inTransientScope()
+
+container.bind<IUpdateAppStore>(DI.Stores.UpdateApp)
+	.to(UpdateAppStore)
+	.inTransientScope()
+
+container.bind<IVersionModalStore>(DI.Stores.VersionModal)
+	.to(VersionModalStore)
+	.inTransientScope()
+
 container.bind<IFileService>(DI.Services.File)
 	.to(FileService)
 	.inSingletonScope()
@@ -96,5 +101,6 @@ container.bind<CreateVersionStoreFactory>(DI.Factories.CreateVersionStore)
 
 container.bind<UpdateVersionStoreFactory>(DI.Factories.UpdateVersionStore)
 	.toFactory(updateVersionStoreFactory)
+
 
 export default container

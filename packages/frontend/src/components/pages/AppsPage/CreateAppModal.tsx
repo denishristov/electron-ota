@@ -11,7 +11,6 @@ import styles from '../../../styles/AppsPage.module.sass'
 import icons from '../../../util/constants/icons'
 import PictureUpload from '../../generic/PictureUpload'
 import { colors } from '../../../util/constants/styles'
-import { IAppModalStore } from '../../../stores/AppModalStore'
 import { ICreateAppStore } from '../../../stores/CreateAppStore'
 
 interface ICreateAppEvent extends FormEvent<HTMLFormElement> {

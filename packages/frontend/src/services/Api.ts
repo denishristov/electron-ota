@@ -49,16 +49,16 @@ export default class Api implements IApi {
 				const timeout = setTimeout(() => reject({ eventType, request, message: 'timeout' }), 1000 * 10)
 
 				this.connection.emit(eventType, _request, (data: Res) => {
-					// const response = responseType ? Object.assign(new (responseType)(), data) : data
+					const typedResponse = responseType ? Object.assign(new (responseType)(), data) : data
 					const response = data
 
 					clearTimeout(timeout)
 
 					if (isError(response)) {
-						this.logError(eventType, _request || {}, response)
+						this.logError(eventType, _request || {}, typedResponse)
 						reject(response)
 					} else {
-						this.logRequest(eventType, _request || {}, response)
+						this.logRequest(eventType, _request || {}, typedResponse)
 						resolve(response)
 					}
 				})

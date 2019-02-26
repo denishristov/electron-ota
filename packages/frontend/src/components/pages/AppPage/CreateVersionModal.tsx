@@ -56,9 +56,11 @@ export default class CreateVersionModal extends Component<IProps> {
 			previousVersionName,
 			isUploading,
 			releaseTypeSetters,
-			toggles,
+			versionModalStore,
 			handleDrop,
 		} = this.store
+
+		const { toggles } = versionModalStore
 
 		return (
 			<Modal.CloseTrigger>
@@ -66,7 +68,7 @@ export default class CreateVersionModal extends Component<IProps> {
 					<Flex grow>
 						<Flex col p list mr>
 							<Input
-								value={this.store.versionName}
+								value={versionModalStore.versionName}
 								onChange={this.setVersionName}
 								name='versionName'
 								label='Name'
@@ -110,26 +112,26 @@ export default class CreateVersionModal extends Component<IProps> {
 								label='macOS'
 								icon={icons.Darwin}
 								onChange={toggles[ToggleNames.isDarwin]}
-								value={this.store.isDarwin}
+								value={versionModalStore.isDarwin}
 							/>
 							<ToggleRow
 								label='Linux'
 								icon={icons.Linux}
 								onChange={toggles[ToggleNames.isLinux]}
-								value={this.store.isLinux}
+								value={versionModalStore.isLinux}
 							/>
 							<ToggleRow
 								label='Windows'
 								icon={icons.Windows_RT}
 								onChange={toggles[ToggleNames.isWindows]}
-								value={this.store.isWindows}
+								value={versionModalStore.isWindows}
 							/>
 							<label>Release Options</label>
 							<ToggleRow
 								spread
 								label='Critical'
 								onChange={toggles[ToggleNames.isCritical]}
-								value={this.store.isCritical}
+								value={versionModalStore.isCritical}
 								color='red'
 								message={messages.critical}
 							/>
@@ -137,7 +139,7 @@ export default class CreateVersionModal extends Component<IProps> {
 								spread
 								label='Base'
 								onChange={toggles[ToggleNames.isBase]}
-								value={this.store.isBase}
+								value={versionModalStore.isBase}
 								color='orange'
 								message={messages.base}
 							/>
@@ -145,19 +147,19 @@ export default class CreateVersionModal extends Component<IProps> {
 								spread
 								label='Immediately'
 								onChange={toggles[ToggleNames.isReleasing]}
-								value={this.store.isReleasing}
+								value={versionModalStore.isReleasing}
 								color='green'
 								message={messages.immediately}
 							/>
-							{this.store.isReleasing && (
+							{versionModalStore.isReleasing && (
 								<Input
 									label='password'
 									name='password'
 									type='password'
-									required={this.store.isReleasing}
+									required={versionModalStore.isReleasing}
 								/>
 							)}
-							{!this.store.isBase && (
+							{!versionModalStore.isBase && (
 								<Dropzone
 									onDrop={handleDrop}
 									name='version'
@@ -233,7 +235,7 @@ export default class CreateVersionModal extends Component<IProps> {
 
 	@bind
 	private setVersionName(event: ChangeEvent<HTMLInputElement>) {
-		this.store.versionName = event.target.value
+		this.store.versionModalStore.versionName = event.target.value
 	}
 
 	@bind
@@ -259,7 +261,7 @@ export default class CreateVersionModal extends Component<IProps> {
 		addEventListener('beforeunload', preventClose)
 		toggleClosing()
 
-		await this.store.handleSubmit({
+		await this.store.handleCreate({
 			versionName: versionName.value,
 			description: description.value,
 			password: password && password.value,

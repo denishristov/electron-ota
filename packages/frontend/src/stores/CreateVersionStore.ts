@@ -1,4 +1,4 @@
-import VersionModalStore, { IVersionFormData } from './VersionModalStore'
+import { IVersionFormData, IVersionModalStore } from './VersionModalStore'
 import { observable, computed, action } from 'mobx'
 import { ReleaseType } from '../util/enums'
 import { IFileService } from '../services/FileService'
@@ -7,7 +7,8 @@ import { IApp } from './App'
 import semver from 'semver'
 import { CancelTokenSource } from 'axios'
 
-export interface ICreateVersionStore extends VersionModalStore {
+export interface ICreateVersionStore  {
+	versionModalStore: IVersionModalStore
 	isUploading: boolean
 	isValid: boolean
 	versionFile?: File
@@ -17,9 +18,10 @@ export interface ICreateVersionStore extends VersionModalStore {
 	releaseTypeSetters: { [x: string]: () => void }
 	cancelTokenSource?: CancelTokenSource
 	handleDrop(files: File[]): void
+	handleCreate({ versionName, description, password }: IVersionFormData): Promise<void>
 }
 
-export default class CreateVersionStore extends VersionModalStore implements ICreateVersionStore {
+export default class CreateVersionStore implements ICreateVersionStore {
 	@observable
 	public versionFile?: File
 
@@ -35,22 +37,23 @@ export default class CreateVersionStore extends VersionModalStore implements ICr
 	public cancelTokenSource: CancelTokenSource
 
 	constructor(
-		fileService: IFileService,
-		uploadService: IUploadService,
-		app: IApp,
+		private readonly fileService: IFileService,
+		private readonly uploadService: IUploadService,
+		private readonly app: IApp,
+		public readonly versionModalStore: IVersionModalStore,
 		public readonly previousVersionName: string | null,
 	) {
-		super(fileService, uploadService, app)
-
 		if (previousVersionName) {
-			this.versionName = semver.inc(previousVersionName, ReleaseType.Patch) || void 0
+			this.versionModalStore.versionName = semver.inc(previousVersionName, ReleaseType.Patch) || void 0
 			this.releaseType = ReleaseType.Patch
 		}
 	}
 
 	@computed
 	get isValid() {
-		return Boolean(this.versionName && (this.isBase || this.versionFile))
+		return Boolean(
+			this.versionModalStore.versionName && (this.versionModalStore.isBase || this.versionFile)
+		)
 	}
 
 	@computed
@@ -59,7 +62,7 @@ export default class CreateVersionStore extends VersionModalStore implements ICr
 	}
 
 	@action
-	public async handleSubmit({ versionName, description, password }: IVersionFormData) {
+	public async handleCreate({ versionName, description, password }: IVersionFormData) {
 		const {
 			isReleasing,
 			isCritical,
@@ -67,9 +70,10 @@ export default class CreateVersionStore extends VersionModalStore implements ICr
 			isWindows,
 			isDarwin,
 			isLinux,
-			versionFile,
-		} = this
+		} = this.versionModalStore
 
+		const { versionFile } = this
+		
 		if (!versionFile && !isBase) {
 			throw new Error('Version file not supplied')
 		}
@@ -124,7 +128,7 @@ export default class CreateVersionStore extends VersionModalStore implements ICr
 		this.releaseType = releaseType
 
 		if (releaseType !== ReleaseType.Custom && this.previousVersionName) {
-			this.versionName = semver.inc(this.previousVersionName, releaseType) || void 0
+			this.versionModalStore.versionName = semver.inc(this.previousVersionName, releaseType) || void 0
 		}
 	}
 
