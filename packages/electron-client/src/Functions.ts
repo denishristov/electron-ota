@@ -3,6 +3,7 @@ import util from 'util'
 import crypto from 'crypto'
 import io from 'socket.io-client'
 import { IUpdateServiceOptions } from './Interfaces'
+import { app } from 'electron'
 
 export const exists = util.promisify(fs.exists)
 export const readdir = util.promisify(fs.readdir)
@@ -46,6 +47,7 @@ function getVersion(): string | null {
 export function normalizeOptions(options: IUpdateServiceOptions): IUpdateServiceOptions {
 	return {
 		...options,
+		userDataPath: options.userDataPath || app.getPath('userData'),
 		checkHashAfterDownload: options.checkHashAfterDownload === void 0
 			? true
 			: options.checkHashAfterDownload,

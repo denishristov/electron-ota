@@ -6,7 +6,6 @@ import { EventEmitter } from 'events'
 import download from 'download'
 import semver from 'semver'
 import Store from 'electron-store'
-import { app } from 'electron'
 
 import { Server, UpdateService } from './enums'
 
@@ -17,6 +16,7 @@ import {
 	IUpdateServiceOptions,
 	IRegistrationResponse,
 	IUpdateService,
+	ISession,
 } from './interfaces'
 
 import {
@@ -39,19 +39,19 @@ declare global {
 }
 
 // tslint:disable-next-line:interface-name
-declare interface ElectronUpdateServiceClient {
+declare interface ElectronClientUpdateService {
 	on(event: 'update', listener: (info: IUpdateInfo) => void): this
 	on(event: 'error', listener: (error: Error) => void): this
 }
 
-class ElectronUpdateServiceClient extends EventEmitter implements IUpdateService {
+class ElectronClientUpdateService extends EventEmitter implements IUpdateService {
 	private static readonly EMIT_TIMEOUT = 1000 * 60
 
 	private readonly updateDirPath: string
 
-	private readonly downloadsStore = new Store({ name: 'updater' })
+	private readonly downloadsStore = new Store<IUpdateInfo>({ name: 'updater' })
 
-	private readonly sessionStore = new Store({ name: 'session' })
+	private readonly sessionStore = new Store<ISession>({ name: 'session' })
 
 	private readonly options: IUpdateServiceOptions
 
@@ -62,7 +62,7 @@ class ElectronUpdateServiceClient extends EventEmitter implements IUpdateService
 
 		this.options = normalizeOptions(options)
 
-		this.updateDirPath = path.join(options.userDataPath || app.getPath('userData'), 'updates')
+		this.updateDirPath = path.join(options.userDataPath, 'updates')
 
 		if (!this.options.versionName) {
 			throw new Error('Version name was not provided and is missing from package.json.')
@@ -241,7 +241,7 @@ class ElectronUpdateServiceClient extends EventEmitter implements IUpdateService
 	private async downloadUpdate(args: INewUpdate) {
 		const { downloadUrl, ...update } = args
 
-		const filename = `${update.versionName}.asar`
+		const filename = `${Date.now()}.asar`
 		const filePath = path.join(this.updateDirPath, filename)
 
 		const updateInfo = {
@@ -250,14 +250,17 @@ class ElectronUpdateServiceClient extends EventEmitter implements IUpdateService
 			...update,
 		}
 
-		if (
-			semver.gt(this.options.versionName, update.versionName)
-			|| this.downloadsStore.has(`${args.versionName}.asar`)
-		) {
+		if (semver.gt(this.options.versionName, update.versionName)) {
 			return
 		}
 
-		if (!downloadUrl) {
+		for (const version of Object.values(this.downloadsStore.store)) {
+			if (semver.gt(version.versionName, update.versionName)) {
+				return
+			}
+		}
+
+		if (update.isBase) {
 			this.emit(UpdateService.Update, updateInfo)
 		}
 
@@ -265,10 +268,14 @@ class ElectronUpdateServiceClient extends EventEmitter implements IUpdateService
 			id: this.clientId,
 			versionId: update.versionId,
 		}
-
-		this.emitToServer(Server.Downloading, report)
-
+		
 		try {
+			if (!downloadUrl) {
+				throw new Error("DownloadUrl not present.")
+			}
+
+			this.emitToServer(Server.Downloading, report)
+
 			process.noAsar = true
 
 			await download(downloadUrl, this.updateDirPath, { filename })
@@ -308,7 +315,7 @@ class ElectronUpdateServiceClient extends EventEmitter implements IUpdateService
 			this.connectionPromise.then((connection) => {
 				const timeout = setTimeout(
 					() => reject(eventType + ' timeout'),
-					ElectronUpdateServiceClient.EMIT_TIMEOUT,
+					ElectronClientUpdateService.EMIT_TIMEOUT,
 				)
 
 				connection.emit(eventType, data, (response: object) => {
@@ -320,4 +327,4 @@ class ElectronUpdateServiceClient extends EventEmitter implements IUpdateService
 	}
 }
 
-export default ElectronUpdateServiceClient
+export default ElectronClientUpdateService

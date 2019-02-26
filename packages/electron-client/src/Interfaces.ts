@@ -1,4 +1,4 @@
-import { EventEmitter } from 'electron'
+import { EventEmitter } from "events"
 
 export interface IUpdateServiceOptions {
 	bundleId: string
@@ -38,8 +38,12 @@ export interface IRegistrationResponse {
 	id: string
 }
 
-export interface IUpdateService {
+export interface IUpdateService extends EventEmitter {
+	checkForUpdate(): Promise<boolean>
 	loadLatestUpdate(): Promise<any>
 	loadLatestUpdateSync(): any
-	checkForUpdate(): Promise<boolean>
+}
+
+export interface ISession {
+	id: string
 }
