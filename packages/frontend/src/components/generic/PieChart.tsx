@@ -6,7 +6,7 @@ import { colors } from '../../util/constants/styles'
 
 import styles from '../../styles/util.module.sass'
 import { getColor } from '../../util/functions'
-import AnimationContext from '../contexts/AnimationContext';
+import AnimationContext from '../contexts/AnimationContext'
 
 // tslint:disable-next-line:no-var-requires
 const { RadialChart, GradientDefs } = require('react-vis')

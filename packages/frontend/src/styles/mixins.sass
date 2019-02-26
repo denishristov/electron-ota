@@ -12,7 +12,6 @@
 	transition-duration: .32s
 	transition-timing-function: $cubic-breezer
 	transition-property: $properties
-	// will-change: $properties
 
 @mixin ease($properties...)
 	transition-duration: .32s
@@ -88,22 +87,26 @@
 		color: darken(adjust-hue($color, 32%), 20%)
 
 @mixin outline-button($color)
+	$darker: darken($color, 24%)
+	$alternate: darken($color, 32%)
+
 	@include shadow($color)
-	@include transition(box-shadow, background-color, color, transform)
+	@include ease(box-shadow, background-color, color, transform, border-color)
 	background-color: transparent
 	border: 1px solid $color
-	color: darken($color, 20%)
+	color: $darker
 
 	svg, g, path
-		fill: $color
+		fill: $darker
 
 	&:focus, &:hover
 		@include glowing-shadow($color)
-		background-color: $color
-		color: white
+		background-color: lighten($color, 8%)
+		border-color: $darker
+		color: $alternate
 
 		svg, g, path
-			fill: white
+			fill: $alternate
 
 
 @mixin color-button($background, $background2, $color)
@@ -127,19 +130,21 @@
 		@include glowing-shadow($background)
 		background-position: 0 0
 
-@mixin light-button($background, $color) 
-	@include color-button($background,  darken($background, 8%), $color)
-
-@mixin dark-button($background, $color) 
-	@include color-button($background, adjust-hue($background, 24%), $color)
+@mixin dark-button($background) 
+	@include color-button($background, adjust-hue($background, 24%), white)
 
 @mixin avatar
-	// @include glowing-shadow($light-text)
 	border-radius: 50%
 	width: 40px
 	height: 40px
 	margin-right: $spacing
 	object-fit: cover
+	box-shadow: $rest-shadow
 
 	g, path
 		fill: $accent
+
+@mixin toggleColor($color)
+	@include dot($color)
+	margin-left: -$spacing
+	margin-right: $spacing / 2

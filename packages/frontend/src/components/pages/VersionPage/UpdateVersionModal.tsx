@@ -11,6 +11,7 @@ import icons from '../../../util/constants/icons'
 import { ToggleNames } from '../../../util/enums'
 import ToggleRow from '../../generic/ToggleRow'
 import { IUpdateVersionStore } from '../../../stores/UpdateVersionStore'
+import { messages } from '../../../util/constants/defaults'
 
 interface IProps {
 	store: IUpdateVersionStore
@@ -73,6 +74,8 @@ export default class UpdateVersionModal extends Component<IProps> {
 								label='Critical'
 								onChange={this.props.store.toggles[ToggleNames.isCritical]}
 								value={this.props.store.isCritical}
+								color='red'
+								message={messages.critical}
 							/>
 						</Flex>
 					</Flex>

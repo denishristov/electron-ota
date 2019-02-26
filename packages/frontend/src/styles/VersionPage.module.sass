@@ -77,7 +77,7 @@
 
 .details
 	@include transition(box-shadow)
-	@include glowing-shadow($dark-accent)
+	@include glowing-shadow(lighten($dark-accent, 10%))
 	border-radius: $default-border-radius
 	background-color: $entry-bg
 	min-width: $spacing * 10 * 2

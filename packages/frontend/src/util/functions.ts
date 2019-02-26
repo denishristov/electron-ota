@@ -146,3 +146,7 @@ export function getColor(d: { gradientLabel: string }) {
 export function isDifferenceLongerThanHour(a: Date, b: Date) {
 	return Math.abs(+a - +b) > (1000 * 60 * 60)
 }
+
+export function naturalNumber(num: number) {
+	return (num % 1 === 0 && num >= 0) ? num : void 0
+}

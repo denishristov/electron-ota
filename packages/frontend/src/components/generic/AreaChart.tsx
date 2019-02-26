@@ -3,8 +3,8 @@ import { observer } from 'mobx-react'
 import Flex from './Flex'
 import styles from '../../styles/util.module.sass'
 import { colors } from '../../util/constants/styles'
-import { list, formatDate as formatDateFull } from '../../util/functions'
-import AnimationContext from '../contexts/AnimationContext';
+import { list, formatDate as formatDateFull, naturalNumber } from '../../util/functions'
+import AnimationContext from '../contexts/AnimationContext'
 
 const {
 	FlexibleWidthXYPlot,
@@ -103,7 +103,7 @@ export default class AreaChart extends React.Component<IProps, IState> {
 									tickFormat={formatDate}
 									style={labelsStyle}
 								/>
-								<YAxis animation style={labelsStyle} />
+								<YAxis animation style={labelsStyle} tickFormat={naturalNumber} />
 								<AreaSeries
 									animation
 									onNearestX={this.handleNearestX}

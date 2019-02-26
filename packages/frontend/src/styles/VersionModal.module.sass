@@ -50,8 +50,10 @@
 		margin-right: $spacing
 
 	label
-		margin-right: auto
 		text-transform: none
+
+	> div:last-child
+		margin-left: auto
 
 .switch-row
 	min-width: $spacing * 16
@@ -89,3 +91,20 @@
 	label
 		min-width: $spacing * 2.5
 
+.help
+	border-radius: 50%
+	width: $spacing
+	height: $spacing
+	background-color: $accent
+	color: $dark-accent
+	margin-left: $spacing
+	font-size: 12px
+
+.red
+	@include toggleColor($red)
+
+.orange
+	@include toggleColor($orange)
+
+.green
+	@include toggleColor($green)

@@ -18,6 +18,8 @@ import { ReleaseType, ToggleNames } from '../../../util/enums'
 import { ICreateVersionStore } from '../../../stores/CreateVersionStore'
 import ToggleRow from '../../generic/ToggleRow'
 
+import { messages } from '../../../util/constants/defaults'
+
 const uploadMessages = {
 	active: 'Drop here',
 	notActive: 'Drop a package or click to upload',
@@ -125,21 +127,27 @@ export default class CreateVersionModal extends Component<IProps> {
 							<label>Release Options</label>
 							<ToggleRow
 								spread
-								label='Immediately'
-								onChange={toggles[ToggleNames.isReleasing]}
-								value={this.store.isReleasing}
-							/>
-							<ToggleRow
-								spread
 								label='Critical'
 								onChange={toggles[ToggleNames.isCritical]}
 								value={this.store.isCritical}
+								color='red'
+								message={messages.critical}
 							/>
 							<ToggleRow
 								spread
 								label='Base'
 								onChange={toggles[ToggleNames.isBase]}
 								value={this.store.isBase}
+								color='orange'
+								message={messages.base}
+							/>
+							<ToggleRow
+								spread
+								label='Immediately'
+								onChange={toggles[ToggleNames.isReleasing]}
+								value={this.store.isReleasing}
+								color='green'
+								message={messages.immediately}
 							/>
 							{this.store.isReleasing && (
 								<Input

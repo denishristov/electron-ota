@@ -18,7 +18,7 @@ import { colors } from '../../util/constants/styles'
 import styles from '../../styles/util.module.sass'
 import { observer } from 'mobx-react'
 import { SystemTypeDisplay } from 'shared'
-import { list } from '../../util/functions'
+import { list, naturalNumber } from '../../util/functions'
 import { computed } from 'mobx'
 import AnimationContext from '../contexts/AnimationContext'
 
@@ -39,10 +39,6 @@ interface IProps {
 interface IState {
 	dataPoint: IDataPoint | null
 	isHovered: boolean
-}
-
-function round(num: number) {
-	return num % 1 === 0 ? num : void 0
 }
 
 const labelsStyle = {
@@ -90,15 +86,15 @@ export default class BarChart extends React.Component<IProps, IState> {
 							<Flex>
 								<FlexibleWidthXYPlot
 									animation
-									// width={300}
+									// width={442}
 									margin={margin}
-									height={480}
+									height={600}
 									stackBy='x'
 									yType='ordinal'
 								>
 									<VerticalGridLines />
 									<HorizontalGridLines />
-									<XAxis animation tickFormat={round} style={labelsStyle} />
+									<XAxis animation tickFormat={naturalNumber} style={labelsStyle} />
 									<YAxis animation style={labelsStyle} tickLabelAngle={-45} />
 									{Object.entries(data).map(([systemType, data]) => (
 										<HorizontalBarSeries

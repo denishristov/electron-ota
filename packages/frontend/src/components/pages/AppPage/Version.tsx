@@ -13,8 +13,8 @@ import styles from '../../../styles/Version.module.sass'
 import Pushable from '../../generic/Pushable'
 import { BrowserHistory } from '../../../util/types'
 import icons from '../../../util/constants/icons'
-import Tip from '../../generic/Tip';
-import { colors } from '../../../util/constants/styles';
+import Tip from '../../generic/Tip'
+import { colors } from '../../../util/constants/styles'
 
 interface IProps {
 	version: VersionModel
@@ -76,14 +76,19 @@ export default class Version extends React.Component<IProps> {
 							</>
 						)}
 						<Flex y mla>
+							{version.isCritical && (
+								<Tip message='Critical release'>
+									<div className={styles.critical} />
+								</Tip>
+							)}
 							{version.isBase && (
 								<Tip message='Base release'>
 									<div className={styles.base} />
 								</Tip>
 							)}
-							{version.isCritical && (
-								<Tip message='Critical release'>
-									<div className={styles.critical} />
+							{version.isReleased && (
+								<Tip message='Released'>
+									<div className={styles.released} />
 								</Tip>
 							)}
 							{version.systems && (

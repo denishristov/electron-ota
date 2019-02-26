@@ -69,13 +69,16 @@ $version-width: 800px
 .critical
 	@include dot($red)
 
+.released
+	@include dot($green)
+
 .date
 	$width: $spacing * 7
 	height: 12px
 	width: $width
 	position: absolute
 	left: -$width
-	top: 24px
+	top: 13px
 	border-right: 2px solid $accent
 	text-transform: uppercase
 	color: $light-text
@@ -83,8 +86,6 @@ $version-width: 800px
 	font-size: 0.76rem
 	padding-bottom: 58px
 	z-index: -1
-
-
 
 @media screen and (max-width: $break-small)
 	.date
