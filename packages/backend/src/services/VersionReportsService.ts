@@ -22,18 +22,14 @@ import { toUTCString } from '../util/functions'
 import { ITimestampedObject } from '../util/types'
 
 export interface IVersionReportsService {
-	downloadingUpdate(req: ClientReportRequest): Promise<IReportFeedback>
-	downloadedUpdate(req: ClientReportRequest): Promise<IReportFeedback>
-	usingUpdate(req: ClientReportRequest): Promise<IReportFeedback>
-	errorOnUpdate(req: ErrorReportRequest): Promise<IReportFeedback>
+	downloadingUpdate(req: ClientReportRequest): Promise<void>
+	downloadedUpdate(req: ClientReportRequest): Promise<void>
+	usingUpdate(req: ClientReportRequest): Promise<void>
+	errorOnUpdate(req: ErrorReportRequest): Promise<void>
 	getSimpleVersionReports(req: GetSimpleVersionReportsRequest): Promise<GetSimpleVersionReportsResponse>
 	getVersionReports(req: GetVersionReportsRequest): Promise<GetVersionReportsResponse>
 	getAppUsingReports(req: GetAppUsingReportsRequest): Promise<GetAppUsingReportsResponse>
 	getVersionGroupedReports(req: GetVersionGroupedReportsRequest): Promise<GetVersionGroupedReportsResponse>
-}
-
-export interface IReportFeedback {
-	exists: boolean
 }
 
 @DI.injectable()
@@ -52,9 +48,7 @@ export default class VersionReportsService implements IVersionReportsService {
 		private readonly VersionReportsModel: ModelType<VersionReports>,
 		@DI.inject(DI.Models.App)
 		private readonly AppModel: ModelType<App>,
-	) {
-		// this.getAppUsingReports('5c66bc65781c7c4e2d980b89').then(console.log)
-	}
+	) {}
 
 	@bind
 	public async downloadingUpdate({ id, versionId }: ClientReportRequest) {
@@ -63,7 +57,9 @@ export default class VersionReportsService implements IVersionReportsService {
 			{ $push: { downloading: { client: id } } },
 		)
 
-		return { exists: !report }
+		if (!report) {
+			throw new Error('Report for this type and client already exists')
+		}
 	}
 
 	@bind
@@ -73,15 +69,17 @@ export default class VersionReportsService implements IVersionReportsService {
 			{ $push: { downloaded: { client: id } } },
 		)
 
-		return { exists: !report }
+		if (!report) {
+			throw new Error('Report for this type and client already exists')
+		}
 	}
 
 	@bind
 	public async usingUpdate({ id, versionId }: ClientReportRequest) {
 		const client = await this.ClientModel.findById(id).select('version')
 
-		if (client.version && client.version.toString() === versionId) {
-			return
+		if (!client.version || client.version.toString() !== versionId) {
+			await client.set({ version: versionId }).save()
 		}
 
 		const report = await this.VersionReportsModel.findOneAndUpdate(
@@ -89,9 +87,9 @@ export default class VersionReportsService implements IVersionReportsService {
 			{ $push: { using: { client: id } } },
 		)
 
-		await client.set({ version: versionId }).save()
-
-		return { exists: !report }
+		if (!report) {
+			throw new Error('Report for this type and client already exists')
+		}
 	}
 
 	@bind
@@ -101,7 +99,9 @@ export default class VersionReportsService implements IVersionReportsService {
 			{ $push: { errorMessages: { client: id, errorMessage } } },
 		)
 
-		return { exists: !report }
+		if (!report) {
+			throw new Error('Report for this type and client already exists')
+		}
 	}
 
 	@bind

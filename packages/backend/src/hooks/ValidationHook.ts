@@ -12,7 +12,7 @@ export default class ValidationHook implements IValidationHook {
 	private readonly validator = new Validator()
 
 	@bind
-	public async handle(_: EventType, req: object) {
+	public async handle(eventType: EventType, req: object) {
 		return await this.validator.validate(req)
 	}
 }

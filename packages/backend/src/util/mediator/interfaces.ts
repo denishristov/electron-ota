@@ -40,6 +40,7 @@ export interface ISocketMediator extends EventEmitter {
 	use<Req extends object, Res extends object>(handler: IRequestHandler<Req, Res>): this
 	subscribe(client: IClient): void
 	unsubscribe(client: IClient): void
+	dispose(): void
 	pre(hook: IPreRespondHook): this
 	post(hook: IPostRespondHook): this
 	broadcast(eventType: EventType, data: object, predicate?: ClientPredicate, count?: number): void

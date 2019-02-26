@@ -18,3 +18,5 @@ export class VersionReports extends Typegoose {
 	@prop({ ref: Version, required: true, unique: true })
 	public version: Ref<Version>
 }
+
+export type ReportType = 'downloading' | 'downloaded' | 'using' | 'errorMessages'

@@ -19,7 +19,7 @@ import { Client } from '../models/Client'
 import AuthHook from '../hooks/AuthHook'
 import ReportHook from '../hooks/ReportHook'
 import ReleaseUpdateHook from '../hooks/ReleaseUpdateHook'
-import ClientMediatorManagerHook from '../hooks/ClientMediatorManagerHook'
+import CreateClientMediatorHook from '../hooks/DeleteClientMediatorHook'
 import ValidationHook from '../hooks/ValidationHook'
 
 import socketio from 'socket.io'
@@ -36,6 +36,7 @@ import { ModelType } from 'typegoose'
 
 import socketioConfig from './socketioConfig'
 import { REGISTER_KEY } from './index'
+import DeleteClientMediatorHook from '../hooks/DeleteClientMediatorHook'
 
 const container = new Container()
 
@@ -95,8 +96,16 @@ container.bind<IPreRespondHook>(DI.Hooks.Auth)
 	.to(AuthHook)
 	.inSingletonScope()
 
-container.bind<IPostRespondHook>(DI.Hooks.ClientMediatorManager)
-	.to(ClientMediatorManagerHook)
+container.bind<IPreRespondHook>(DI.Hooks.Validation)
+	.to(ValidationHook)
+	.inSingletonScope()
+
+container.bind<IPostRespondHook>(DI.Hooks.CreateClientMediator)
+	.to(CreateClientMediatorHook)
+	.inSingletonScope()
+
+container.bind<IPostRespondHook>(DI.Hooks.DeleteClientMediator)
+	.to(DeleteClientMediatorHook)
 	.inSingletonScope()
 
 container.bind<IPostRespondHook>(DI.Hooks.Report)
@@ -105,10 +114,6 @@ container.bind<IPostRespondHook>(DI.Hooks.Report)
 
 container.bind<IPostRespondHook>(DI.Hooks.ReleaseUpdate)
 	.to(ReleaseUpdateHook)
-	.inSingletonScope()
-
-container.bind<IPreRespondHook>(DI.Hooks.Validation)
-	.to(ValidationHook)
 	.inSingletonScope()
 
 container.bind<ClientsMediatorFactory>(DI.Factories.ClientsMediator)

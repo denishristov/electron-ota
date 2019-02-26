@@ -64,6 +64,14 @@ export default class SocketMediator extends EventEmitter implements ISocketMedia
 		return client.leave(this.roomId)
 	}
 
+	public dispose() {
+		for (const client of this.clients) {
+			client.leave(this.roomId)
+		}
+
+		this.namespace.removeAllListeners()
+	}
+
 	public pre(hook: IPreRespondHook) {
 		this.preRespondHooks.push(hook)
 
@@ -121,7 +129,11 @@ export default class SocketMediator extends EventEmitter implements ISocketMedia
 				continue
 			}
 
-			handle(eventType, req, res)
+			try {
+				handle(eventType, req, res)
+			} catch (error) {
+				this.logError(eventType, req, error)
+			}
 		}
 	}
 

@@ -10,7 +10,8 @@ import { IClientCounterService } from '../services/ClientCounterService'
 
 import { IAuthHook } from '../hooks/AuthHook'
 import { IValidationHook } from '../hooks/ValidationHook'
-import { IClientMediatorManagerHook } from '../hooks/ClientMediatorManagerHook'
+import { IDeleteClientMediatorHook } from '../hooks/DeleteClientMediatorHook'
+import { ICreateClientMediatorHook } from '../hooks/CreateClientMediatorHook'
 import { IReleaseUpdateHook } from '../hooks/ReleaseUpdateHook'
 
 import { ISocketMediator } from '../util/mediator/interfaces'
@@ -71,7 +72,9 @@ export default function adminMediatorFactory({ container }: interfaces.Context):
 
 	const authHook = container.get<IAuthHook>(DI.Hooks.Auth)
 	const validationHook = container.get<IValidationHook>(DI.Hooks.Validation)
-	const clientMediatorManagerHook = container.get<IClientMediatorManagerHook>(DI.Hooks.ClientMediatorManager)
+
+	const createMediatorHook = container.get<ICreateClientMediatorHook>(DI.Hooks.CreateClientMediator)
+	const deleteMediatorHook = container.get<IDeleteClientMediatorHook>(DI.Hooks.DeleteClientMediator)
 	const releaseUpdateHook = container.get<IReleaseUpdateHook>(DI.Hooks.ReleaseUpdate)
 
 	return () => new SocketMediator(server.of(DI.AdminMediator))
@@ -223,6 +226,7 @@ export default function adminMediatorFactory({ container }: interfaces.Context):
 		})
 		.pre(validationHook)
 		.pre(authHook)
-		.post(clientMediatorManagerHook)
+		.post(createMediatorHook)
+		.post(deleteMediatorHook)
 		.post(releaseUpdateHook)
 }
