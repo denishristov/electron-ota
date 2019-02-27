@@ -44,15 +44,19 @@ export default class CreateVersionStore implements ICreateVersionStore {
 		public readonly previousVersionName: string | null,
 	) {
 		if (previousVersionName) {
-			this.versionModalStore.versionName = semver.inc(previousVersionName, ReleaseType.Patch) || void 0
-			this.releaseType = ReleaseType.Patch
+			const newName = semver.inc(previousVersionName, ReleaseType.Patch) || void 0
+
+			if (newName) {
+				this.versionModalStore.versionName = newName
+				this.releaseType = ReleaseType.Patch
+			}
 		}
 	}
 
 	@computed
 	get isValid() {
 		return Boolean(
-			this.versionModalStore.versionName && (this.versionModalStore.isBase || this.versionFile)
+			this.versionModalStore.versionName && (this.versionModalStore.isBase || this.versionFile),
 		)
 	}
 
@@ -73,7 +77,7 @@ export default class CreateVersionStore implements ICreateVersionStore {
 		} = this.versionModalStore
 
 		const { versionFile } = this
-		
+
 		if (!versionFile && !isBase) {
 			throw new Error('Version file not supplied')
 		}
@@ -128,7 +132,10 @@ export default class CreateVersionStore implements ICreateVersionStore {
 		this.releaseType = releaseType
 
 		if (releaseType !== ReleaseType.Custom && this.previousVersionName) {
-			this.versionModalStore.versionName = semver.inc(this.previousVersionName, releaseType) || void 0
+			const newName = semver.inc(this.previousVersionName, releaseType) || void 0
+			if (newName) {
+				this.versionModalStore.versionName = newName
+			}
 		}
 	}
 

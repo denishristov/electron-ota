@@ -13,8 +13,6 @@ import AppModal from './CreateAppModal'
 import styles from '../../../styles/AppsPage.module.sass'
 
 import icons from '../../../util/constants/icons'
-import Pushable from '../../generic/Pushable'
-import Flex from '../../generic/Flex'
 import Button from '../../generic/Button'
 
 @observer

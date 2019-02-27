@@ -33,7 +33,7 @@ import { IApi } from '../services/Api'
 import { Omit } from 'react-router'
 import { byDateDesc, memoize } from '../util/functions'
 
-interface ICreateVersionInput {
+interface ICreateVersionData {
 	versionName: string
 	isCritical: boolean
 	isBase: boolean
@@ -47,6 +47,8 @@ interface ICreateVersionInput {
 		[key in SystemType]: boolean
 	}
 }
+
+type IUpdateVersionData = Omit<VersionEditModel, 'appId'>
 
 export interface IApp {
 	id: string
@@ -71,8 +73,8 @@ export interface IApp {
 	fetchAppLiveCount(): Promise<void>
 	fetchAppUsingReports(): Promise<void>
 	fetchVersionGroupedReports(versionId: string): Promise<void>
-	createVersion(inputFields: ICreateVersionInput): Promise<void>
-	updateVersion(inputFields: Omit<VersionEditModel, 'appId'>): Promise<void>
+	createVersion(inputFields: ICreateVersionData): Promise<void>
+	updateVersion(inputFields: IUpdateVersionData): Promise<void>
 	deleteVersion(id: string): Promise<void>
 	releaseUpdate(request: PublishVersionRequest): Promise<void>
 }
@@ -224,7 +226,7 @@ export default class App implements IApp {
 		this.groupedReports.set(versionId, observable(reports))
 	}
 
-	public async createVersion({ isReleasing, password, ...version }: ICreateVersionInput) {
+	public async createVersion({ isReleasing, password, ...version }: ICreateVersionData) {
 		const { id } = await this.api.fetch({
 			eventType: EventType.CreateVersion,
 			request: { appId: this.id, ...version },

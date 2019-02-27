@@ -11,15 +11,16 @@ export type CreateVersionStoreFactory = (app: IApp, previousVersionName: string 
 export default function createVersionStoreFactory({ container }: interfaces.Context): CreateVersionStoreFactory {
 	const fileService = container.get<IFileService>(DI.Services.File)
 	const uploadService = container.get<IUploadService>(DI.Services.Upload)
-	const versionModal = container.get<IVersionModalStore>(DI.Stores.VersionModal)
 
 	return (app: IApp, previousVersionName: string | null) => {
+		const versionModal = container.get<IVersionModalStore>(DI.Stores.VersionModal)
+
 		return new CreateVersionStore(
-			fileService, 
-			uploadService, 
-			app, 
+			fileService,
+			uploadService,
+			app,
 			versionModal,
-			previousVersionName
+			previousVersionName,
 		)
 	}
 }

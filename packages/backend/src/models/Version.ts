@@ -3,7 +3,7 @@ import { index, prop, Typegoose } from 'typegoose'
 import { SupportSystemTypes } from './SupportSystemTypes'
 import { Admin } from './Admin'
 
-@index({ versionName: 1, app: 1 }, { unique: true })
+@index({ versionName: 1, appId: 1 }, { unique: true })
 export class Version extends Typegoose {
 	public id: string
 

@@ -1,25 +1,29 @@
 import { observable, action } from 'mobx'
 import { ToggleNames } from '../util/enums'
 
-type Toggles = {
-	[name in ToggleNames]: boolean
-}
-
 export interface IVersionFormData {
 	versionName: string
 	description: string
 	password?: string
 }
 
+type Toggle = () => void
+
+type Toggles = {
+	[name in ToggleNames]: boolean
+}
+
 export interface IVersionModalStore extends Toggles {
-	versionName?: string
-	toggles: { [x: string]: () => void }
+	versionName: string
+	toggles: {
+		[toggleName: string]: Toggle,
+	}
 }
 
 @DI.injectable()
 export default class VersionModalStore implements IVersionModalStore {
 	@observable
-	public versionName?: string
+	public versionName: string = ''
 
 	@observable
 	public isCritical: boolean = false

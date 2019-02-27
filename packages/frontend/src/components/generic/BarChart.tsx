@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import Flex from './Flex'
 
 const {
-	FlexibleWidthXYPlot,
+	XYPlot,
 	XAxis,
 	YAxis,
 	VerticalGridLines,
@@ -84,9 +84,9 @@ export default class BarChart extends React.Component<IProps, IState> {
 						<h3>{title}</h3>
 						<Flex list col x>
 							<Flex>
-								<FlexibleWidthXYPlot
+								<XYPlot
 									animation
-									// width={442}
+									width={442}
 									margin={margin}
 									height={600}
 									stackBy='x'
@@ -121,7 +121,7 @@ export default class BarChart extends React.Component<IProps, IState> {
 											</Flex>
 										</Hint>
 									)}
-								</FlexibleWidthXYPlot>
+								</XYPlot>
 							</Flex>
 							<Flex col x list>
 								{Object.entries(data).map(([systemType, data]) => (

@@ -150,3 +150,7 @@ export function isDifferenceLongerThanHour(a: Date, b: Date) {
 export function naturalNumber(num: number) {
 	return (num % 1 === 0 && num >= 0) ? num : void 0
 }
+
+export function randomInteger(min: number, max: number) {
+	return Math.floor(Math.random() * (max - min) ) + min
+}
