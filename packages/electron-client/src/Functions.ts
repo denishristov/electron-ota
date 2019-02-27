@@ -2,7 +2,7 @@ import fs from 'fs'
 import util from 'util'
 import crypto from 'crypto'
 import io from 'socket.io-client'
-import { IUpdateServiceOptions } from './Interfaces'
+import { IUpdateServiceOptions } from './interfaces'
 import { app } from 'electron'
 
 export const exists = util.promisify(fs.exists)
