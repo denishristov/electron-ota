@@ -16,7 +16,7 @@ const trail = 2 ** 5
 export default function AppearAnimation<T extends IEntry>({ children, items }: IProps<T>) {
 	return children && (
 		<AnimationContext.Consumer>
-			{({ isResting }) => isResting && (
+			{({ isResting }) => (
 				<Transition
 					native
 					unique
@@ -24,6 +24,7 @@ export default function AppearAnimation<T extends IEntry>({ children, items }: I
 					keys={getId}
 					items={items}
 					trail={trail}
+					initial={null}
 					{...versionsTransitions}
 				>
 					{(item) => (animation) => children(item)(animation)}

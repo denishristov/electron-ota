@@ -45,16 +45,17 @@ form
 	flex-flow: column
 	min-width: 300px
 	max-width: 800px
+	
+h1, h2, h3, h4, h5, h6
+	font-weight: 400
 
 h1
-	font-weight: 400
 	font-size: 3em
 	line-height: 46px
 	user-select: none
 
 h2
 	line-height: 40px
-	font-weight: 400
 	font-size: 2.2rem
 	user-select: none
 
@@ -68,7 +69,7 @@ textarea
 	@include transition(background-color, box-shadow)
 	border: 0
 	resize: none
-	border: 1px solid brighten($accent, 5%)
+	border: 1px solid $accent
 	border-radius: 10px
 	font-size: 0.86rem
 	padding: 16px

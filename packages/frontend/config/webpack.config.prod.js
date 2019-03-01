@@ -68,7 +68,7 @@ const getStyleLoaders = (cssOptions, preProcessor) => {
     },
     {
       loader: require.resolve('css-loader'),
-      options: cssOptions,
+      options: {...cssOptions, camelCase: 'dashesOnly'},
     },
     {
       // Options for PostCSS as we reference these options twice

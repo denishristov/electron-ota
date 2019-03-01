@@ -2,7 +2,7 @@ export const pageAnimations = {
 	PUSH: {
 		from: {
 			opacity: 0,
-			transform: 'translateY(32px)',
+			transform: 'translateY(16px)',
 		},
 		enter: {
 			opacity: 1,
@@ -10,14 +10,14 @@ export const pageAnimations = {
 		},
 		leave: {
 			opacity: 0,
-			transform: 'translateY(-32px)',
+			transform: 'translateY(-8px)',
 			pointerEvents: 'none',
 		},
 	},
 	POP: {
 		from: {
 			opacity: 0,
-			transform: 'translateY(-32px)',
+			transform: 'translateY(-8px)',
 		},
 		enter: {
 			opacity: 1,
@@ -25,7 +25,7 @@ export const pageAnimations = {
 		},
 		leave: {
 			opacity: 0,
-			transform: 'translateY(32px)',
+			transform: 'translateY(8px)',
 			pointerEvents: 'none',
 		},
 	},
@@ -49,7 +49,7 @@ export const versionsTransitions = {
 
 export const modalContentAnimations: { from: React.CSSProperties, to: React.CSSProperties } = {
 	from: {
-		transform: 'scale(0.92) translateY(-32%)',
+		transform: 'scale(0.94) translateY(16%)',
 		pointerEvents: 'none',
 	},
 	to: {
