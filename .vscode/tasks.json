@@ -1,0 +1,26 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"script": "backend-watch-ts",
+			"isBackground": true,
+			"problemMatcher": "$tsc-watch",
+		},
+		{
+			"type": "npm",
+			"script": "frontend-start",
+			"isBackground": true,
+			"problemMatcher": {
+				"pattern": {
+					"regexp": "",
+				},
+				"background": {
+					"activeOnStart": true,
+					"beginsPattern": "^Starting the development server\\.\\.\\.",
+					"endsPattern": "^Compiled successfully!",
+				},
+			},
+		},
+	]
+}

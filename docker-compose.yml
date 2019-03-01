@@ -4,9 +4,8 @@
         "database": {
             "container_name": "electron-ota-database",
             "image": "mongo:4.1.8",
-            "command": "mongod --logpath=/var/log/mongodb/mongodb.log",
+            "command": "mongod --logpath=/data/db/mongodb.log",
             "environment": {
-                "MONGO_INITDB_DATABASE": "electron-ota",
                 "MONGO_DATA_DIR": "/data/db"
             },
             "volumes": [
@@ -40,7 +39,7 @@
                 "context": ".",
                 "dockerfile": "frontend.Dockerfile",
                 "args": {
-                    "serverUrl": "localhost:5600"
+                    "serverUrl": "localhost:5600/admins"
                 }
             },
             "command": "nginx -g \"daemon off;\"",
