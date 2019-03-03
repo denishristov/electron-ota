@@ -110,7 +110,7 @@ export default class AdminsService implements IAdminsService {
 	public async register({ name, email, password, key }: RegisterAdminRequest): Promise<RegisterAdminResponse> {
 		const firstAdmin = await this.AdminModel.find().limit(1)
 
-		if (firstAdmin || !this.credentialsService.verify(key)) {
+		if (firstAdmin.length || !this.credentialsService.verify(key)) {
 			return {
 				isSuccessful: false,
 			}
