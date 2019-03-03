@@ -3,3 +3,16 @@ node_modules
 
 **/build
 **/dist
+
+.vscode
+db
+electron-ota.code-workspace
+*.Dockerfile
+.env
+docker.env
+.git
+.gitignore
+tslint.json
+*.log
+build.sh
+docker-compose.yml

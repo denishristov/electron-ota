@@ -24,7 +24,7 @@
                 "docker.env"
             ],
             "environment": {
-                "MONGODB_URI_LOCAL": "mongodb://database:27017/electron-ota"
+                "MONGODB_URI": "mongodb://database:27017/electron-ota"
             },
             "ports": [
                 "5600:4000"
