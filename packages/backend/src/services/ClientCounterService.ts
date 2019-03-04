@@ -10,10 +10,10 @@ export interface IClientCounterService {
 }
 
 const defaultSystemTypeCounters = Object.keys(SystemType).group((x) => [x, 0])
+const clientMediatorRegex = /\/([\w\.-]+)\/(\w+)/
 
 @DI.injectable()
 export default class ClientCounterService implements IClientCounterService {
-	private static readonly clientMediatorRegex = /\/([\w-]+)\/(\w+)/
 
 	public readonly handleClientConnection = this.createClientHandler(EventType.ClientConnected)
 
@@ -29,7 +29,7 @@ export default class ClientCounterService implements IClientCounterService {
 		const response: IAppsClientCount = {}
 
 		for (const [name, mediator] of this.mediators.entries()) {
-			const match = name.match(ClientCounterService.clientMediatorRegex)
+			const match = name.match(clientMediatorRegex)
 
 			if (match) {
 				const [_, bundleId, systemType] = match
@@ -65,7 +65,7 @@ export default class ClientCounterService implements IClientCounterService {
 	private createClientHandler(eventType: EventType) {
 		return (client: IClient) => {
 			const { versionName } = client.handshake.query
-			const [_, bundleId, systemType] = client.nsp.name.match(ClientCounterService.clientMediatorRegex)
+			const [_, bundleId, systemType] = client.nsp.name.match(clientMediatorRegex)
 
 			this.mediators.get(AdminMediator).broadcast(eventType, {
 				bundleId,
