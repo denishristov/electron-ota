@@ -18,6 +18,6 @@ global.isDevMode = /[\\/]electron[\\/]/u.test(process.execPath)
 	versionName: require('../package.json').version,
 }))
 
-if (!global.isDevMode || !global.updateService.loadLatestUpdateSync()) {
+if (global.isDevMode || !global.updateService.loadLatestUpdateSync()) {
 	import('./main')
 }
