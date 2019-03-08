@@ -52,7 +52,7 @@ export function normalizeOptions(options: IUpdateServiceOptions): IUpdateService
 			? true
 			: options.checkHashAfterDownload,
 		checkHashBeforeLoad: Boolean(options.checkHashBeforeLoad),
-		versionName: this.options.versionName || getVersion(),
+		versionName: options.versionName || getVersion(),
 		retryTimeout: options.retryTimeout || 1000 * 60,
 		checkForUpdateOnConnect: options.checkForUpdateOnConnect === void 0
 			? true

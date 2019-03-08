@@ -68,8 +68,8 @@ class ElectronClientUpdateService extends EventEmitter implements IUpdateService
 			throw new Error('Version name was not provided and is missing from package.json.')
 		}
 
-		const query = `versionName=${options.versionName}`
-		const uri = `${options.updateServerUrl}/${options.bundleId}/${os.type()}`
+		const query = `versionName=${this.options.versionName}`
+		const uri = `${this.options.updateServerUrl}/${this.options.bundleId}/${os.type()}`
 
 		this.connectionPromise = buildConnectionAsync(uri, query)
 
@@ -268,10 +268,10 @@ class ElectronClientUpdateService extends EventEmitter implements IUpdateService
 			id: this.clientId,
 			versionId: update.versionId,
 		}
-		
+
 		try {
 			if (!downloadUrl) {
-				throw new Error("DownloadUrl not present.")
+				throw new Error('DownloadUrl not present.')
 			}
 
 			this.emitToServer(Server.Downloading, report)
