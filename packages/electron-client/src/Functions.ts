@@ -56,6 +56,6 @@ export function normalizeOptions(options: IUpdateServiceOptions): IUpdateService
 		retryTimeout: options.retryTimeout || 1000 * 60,
 		checkForUpdateOnConnect: options.checkForUpdateOnConnect === void 0
 			? true
-			: options.checkHashAfterDownload,
+			: options.checkForUpdateOnConnect,
 	}
 }

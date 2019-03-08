@@ -62,7 +62,7 @@ class ElectronClientUpdateService extends EventEmitter implements IUpdateService
 
 		this.options = normalizeOptions(options)
 
-		this.updateDirPath = path.join(options.userDataPath, 'updates')
+		this.updateDirPath = path.join(this.options.userDataPath, 'updates')
 
 		if (!this.options.versionName) {
 			throw new Error('Version name was not provided and is missing from package.json.')
