@@ -21,7 +21,7 @@ export function hashFile(path: string): Promise<string> {
 }
 
 export function hashFileSync(path: string): string {
-	const file = fs.readFileSync('path')
+	const file = fs.readFileSync(path)
 	const hash = crypto.createHash('sha256')
 		.update(file)
 		.digest('base64')
@@ -35,7 +35,7 @@ export function uuid(): string {
 
 export async function buildConnectionAsync(uri: string, query: string): Promise<SocketIOClient.Socket> {
 	await Promise.resolve()
-	return io(uri, { query })
+	return io(uri, { query, reconnectionDelayMax: 60 * 60 * 1000 })
 }
 
 function getVersion(): string | null {

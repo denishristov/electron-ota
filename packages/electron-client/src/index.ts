@@ -101,7 +101,7 @@ class ElectronClientUpdateService extends EventEmitter implements IUpdateService
 			const [latestUpdateFilename] = updates.splice(updates.length - 1, 1)
 			const latestUpdatePath = path.join(this.updateDirPath, latestUpdateFilename)
 
-			const updateInfo = this.downloadsStore.get(latestUpdateFilename)
+			const updateInfo = this.downloadsStore.get(latestUpdateFilename.slice(0, -5))
 
 			if (!updateInfo || !semver.lt(this.options.versionName, updateInfo.versionName)) {
 				return null
@@ -156,7 +156,7 @@ class ElectronClientUpdateService extends EventEmitter implements IUpdateService
 			const [latestUpdateFilename] = updates.splice(updates.length - 1, 1)
 			const latestUpdatePath = path.join(this.updateDirPath, latestUpdateFilename)
 
-			const updateInfo = this.downloadsStore.get(latestUpdateFilename)
+			const updateInfo = this.downloadsStore.get(latestUpdateFilename.slice(0, -5))
 
 			if (!updateInfo || !semver.lt(this.options.versionName, updateInfo.versionName)) {
 				return null
@@ -241,7 +241,8 @@ class ElectronClientUpdateService extends EventEmitter implements IUpdateService
 	private async downloadUpdate(args: INewUpdate) {
 		const { downloadUrl, ...update } = args
 
-		const filename = `${Date.now()}.asar`
+		const now = Date.now().toString()
+		const filename = `${now}.asar`
 		const filePath = path.join(this.updateDirPath, filename)
 
 		const updateInfo = {
@@ -255,13 +256,14 @@ class ElectronClientUpdateService extends EventEmitter implements IUpdateService
 		}
 
 		for (const version of Object.values(this.downloadsStore.store)) {
-			if (semver.gt(version.versionName, update.versionName)) {
+			if (semver.gt((version as IUpdateInfo).versionName, update.versionName)) {
 				return
 			}
 		}
 
 		if (update.isBase) {
 			this.emit(UpdateService.Update, updateInfo)
+			return
 		}
 
 		const report = {
@@ -290,7 +292,7 @@ class ElectronClientUpdateService extends EventEmitter implements IUpdateService
 				}
 			}
 
-			this.downloadsStore.set(filename, updateInfo)
+			this.downloadsStore.set(now, updateInfo)
 
 			this.emit(UpdateService.Update, updateInfo)
 		} catch (error) {
