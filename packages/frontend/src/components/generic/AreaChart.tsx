@@ -119,12 +119,12 @@ export default class AreaChart extends React.Component<IProps, IState> {
 									>
 										<Flex col className={list(styles.hint, !isHovered && styles.reverse)}>
 											<Flex list>
-												<label className={styles.dark}>Date</label>
-												<label>{formatDateFull(hovered.x)}</label>
+												<label>Date</label>
+												<label className={styles.dark}>{formatDateFull(hovered.x)}</label>
 											</Flex>
 											<Flex list>
-												<label className={styles.dark}>Clients</label>
-												<label>{hovered.y}</label>
+												<label>Clients</label>
+												<label className={styles.dark}>{hovered.y}</label>
 											</Flex>
 										</Flex>
 									</Crosshair>

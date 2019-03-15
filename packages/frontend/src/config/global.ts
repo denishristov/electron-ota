@@ -3,7 +3,6 @@ import { inject as _inject, injectable as _injectable, interfaces } from 'invers
 import SVGComponent from '../components/generic/SVG'
 
 declare global {
-	// const nameof: <T>() => string
 	const SVG: typeof SVGComponent
 	const bind: typeof _bind
 	const inject: typeof _inject

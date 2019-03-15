@@ -146,6 +146,13 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 			.reduce((sum, report) => sum + report.length, 0))
 	}
 
+	@computed
+	get hasAnyColumnReports() {
+		return this.reports && Object.values(this.reports)
+			.filter((reports) => reports instanceof Array)
+			.every((reports) => reports.length)
+	}
+
 	public async componentDidMount() {
 		if (!this.appsStore.allApps.length) {
 			await this.appsStore.fetchApps()
@@ -196,8 +203,6 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 			color,
 		} = this.app
 
-		const hasPieData = Boolean(this.usingPieDate.length || this.connectedPieData.length)
-
 		return (
 			<Container>
 				<div className={styles.container}>
@@ -208,39 +213,43 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 					<Flex m x className={styles.tilesContainer}>
 						<Flex col list>
 							<Flex col m p list className={styles.details}>
-								<MenuProvider id={ID} event='onClick' style={{ margin: 0 }}>
-									<div>
-										<Pushable>
-											<SVG src={icons.Dots} className={utilStyles.dots} />
-										</Pushable>
-									</div>
-								</MenuProvider>
-								<ConfirmDeleteModal name={versionName} onDelete={this.handleDeleteVersion}>
-								{(openDelete) => (
-									<Modal>
-										<Modal.Content
-											title={`Edit ${versionName}`}
-											className={versionModalStyles.versionModal}
-											component={UpdateVersionModal}
-											props={{
-												store: this.updateVersionStoreFactory(this.app!, this.version!),
-											}}
-										/>
-											<TriggerContext.Consumer>
-												{({ open }) => (
-													<Menu
-														id={ID}
-														animation='menu-animation'
-														theme='menu-theme'
-													>
-														<Item onClick={open}>Edit</Item>
-														<Item onClick={openDelete}>Delete</Item>
-													</Menu>
-												)}
-											</TriggerContext.Consumer>
-									</Modal>
+								{!isReleased && (
+									<>
+										<MenuProvider id={ID} event='onClick' style={{ margin: 0 }}>
+											<div>
+												<Pushable>
+													<SVG src={icons.Dots} className={utilStyles.dots} />
+												</Pushable>
+											</div>
+										</MenuProvider>
+										<ConfirmDeleteModal name={versionName} onDelete={this.handleDeleteVersion}>
+										{(openDelete) => (
+											<Modal>
+												<Modal.Content
+													title={`Edit ${versionName}`}
+													className={versionModalStyles.versionModal}
+													component={UpdateVersionModal}
+													props={{
+														store: this.updateVersionStoreFactory(this.app!, this.version!),
+													}}
+												/>
+													<TriggerContext.Consumer>
+														{({ open }) => (
+															<Menu
+																id={ID}
+																animation='menu-animation'
+																theme='menu-theme'
+															>
+																<Item onClick={open}>Edit</Item>
+																<Item onClick={openDelete}>Delete</Item>
+															</Menu>
+														)}
+													</TriggerContext.Consumer>
+											</Modal>
+										)}
+										</ConfirmDeleteModal>
+									</>
 								)}
-								</ConfirmDeleteModal>
 								{createdAt && (
 									<Flex list y>
 										<label>Added on</label>
@@ -336,10 +345,10 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 									data={this.usingPieDate}
 								/>
 							</Flex>
-						{(this.hasReports || this.reports)
+						{(this.hasReports || this.hasAnyColumnReports)
 							? (
 								<Flex grow col className={styles.timeReports}>
-									{this.reports && (
+									{this.reports && this.hasAnyColumnReports && (
 										<div className={styles.clientColumnsContainers}>
 											<ClientColumn
 												icon={icons.Success}

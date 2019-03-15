@@ -11,24 +11,28 @@
 	max-width: 50vw
 
 .client-columns-containers
+	@include glowing-shadow($dark-accent)
 	display: grid
 	grid-template-columns: repeat(auto-fit, minmax(196px, 1fr))
-	grid-gap: $spacing * 2
+	border-radius: $default-border-radius
+	overflow: hidden
 	margin: $spacing
 	height: 40vh
 
+	> .report-column:last-of-type
+		border-right: none
+
 .report-column
 	@include transition(box-shadow)
-	@include glowing-shadow($dark-accent)
-	border-radius: $default-border-radius
+	// border-radius: $default-border-radius
 	min-width: 196px
 	background-color: $entry-bg
 	overflow: hidden
 	flex-flow: column
 	color: $dark-text
+	border-right: 1px solid $dark-accent
 
 	> span:first-child
-		border-bottom: 1px solid $accent
 		min-height: 20px
 
 		svg:first-of-type 
@@ -36,6 +40,7 @@
 				fill: $dark-text
 
 	> span:last-child
+		border-top: 1px solid $dark-accent
 		flex-flow: column
 		flex-grow: 1
 		overflow: scroll
@@ -81,7 +86,6 @@
 	border-radius: $default-border-radius
 	background-color: $entry-bg
 	min-width: $spacing * 10 * 2
-	max-width: $spacing * 10 * 3
 	position: relative
 
 	label

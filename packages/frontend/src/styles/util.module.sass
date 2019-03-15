@@ -11,6 +11,7 @@
 
 label.dark
 	color: $text
+	text-transform: unset
 
 .background
 	background-image: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
@@ -27,7 +28,7 @@ label.dark
 	@include transition(box-shadow)
 	background-image: linear-gradient(60deg, #29323c 0%, #485563 100%)
 	color: $accent
-	border-radius: 16px
+	border-radius: $default-border-radius
 
 	> span
 		overflow: hidden
@@ -59,7 +60,7 @@ label.dark
 	@include appear
 	@include glowing-shadow($shadow-color)
 	background-color: $entry-bg
-	border-radius: 10px
+	border-radius: 4px
 	padding: 4px
 
 	span:first-child

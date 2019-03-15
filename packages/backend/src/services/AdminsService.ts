@@ -39,7 +39,7 @@ interface IJWTPayload {
 @injectable()
 export default class AdminsService implements IAdminsService {
 	constructor(
-		@inject(nameof<ModelType<Admin>>())
+		@inject(nameof<Admin>())
 		private readonly AdminModel: ModelType<Admin>,
 		@inject(nameof<IRegisterCredentialsService>())
 		private readonly credentialsService: IRegisterCredentialsService,
