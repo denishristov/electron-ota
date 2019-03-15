@@ -12,16 +12,16 @@ export interface IDeleteClientMediatorHook extends IPostRespondHook {
 	): Promise<void>
 }
 
-@DI.injectable()
+@injectable()
 export default class DeleteClientMediatorHook implements IPostRespondHook {
 	public readonly eventTypes = new Set([EventType.DeleteApp])
 
 	constructor(
-		@DI.inject(DI.Factories.ClientsMediator)
+		@inject(nameof<ClientsMediatorFactory>())
 		private readonly clientMediatorFactory: ClientsMediatorFactory,
-		@DI.inject(DI.Mediators)
+		@inject(nameof<Map<string, ISocketMediator>>())
 		private readonly mediators: Map<string, ISocketMediator>,
-		@DI.inject(DI.Models.App)
+		@inject(nameof<App>())
 		private readonly AppModel: ModelType<App>,
 	) {}
 

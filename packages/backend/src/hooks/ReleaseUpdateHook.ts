@@ -9,16 +9,16 @@ export interface IReleaseUpdateHook extends IPostRespondHook {
 	handle(eventType: EventType, req: PublishVersionRequest, res: PublishVersionResponse): Promise<void>
 }
 
-@DI.injectable()
+@injectable()
 export default class ReleaseUpdateHook implements IReleaseUpdateHook {
 	public eventTypes = new Set([EventType.ReleaseUpdate])
 
 	constructor(
-		@DI.inject(DI.Mediators)
+		@inject(nameof<Map<string, ISocketMediator>>())
 		private readonly mediators: Map<string, ISocketMediator>,
-		@DI.inject(DI.Models.Version)
+		@inject(nameof<Version>())
 		private readonly VersionModel: ModelType<Version>,
-		@DI.inject(DI.Models.App)
+		@inject(nameof<App>())
 		private readonly AppModel: ModelType<App>,
 	) {}
 

@@ -6,14 +6,14 @@ export interface ICreateClientMediatorHook extends IPostRespondHook {
 	handle(event: EventType, req: CreateAppRequest, res: CreateAppResponse): Promise<void>
 }
 
-@DI.injectable()
-export default class CreateClientMediatorHook implements IPostRespondHook {
+@injectable()
+export default class CreateClientMediatorHook implements ICreateClientMediatorHook {
 	public readonly eventTypes = new Set([EventType.CreateApp])
 
 	constructor(
-		@DI.inject(DI.Factories.ClientsMediator)
+		@inject(nameof<ClientsMediatorFactory>())
 		private readonly clientMediatorFactory: ClientsMediatorFactory,
-		@DI.inject(DI.Mediators)
+		@inject(nameof<Map<string, ISocketMediator>>())
 		private readonly mediators: Map<string, ISocketMediator>,
 	) {}
 

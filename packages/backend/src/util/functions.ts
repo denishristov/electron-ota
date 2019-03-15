@@ -1,6 +1,6 @@
 import crypto from 'crypto'
 import { ITimestampedDocument } from '../models/util'
-import { ITimestampedObject } from './types';
+import { ITimestampedObject } from './types'
 
 export function wait(ms: number) {
 	return new Promise((resolve) => setTimeout(resolve, ms))

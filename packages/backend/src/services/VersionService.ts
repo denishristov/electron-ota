@@ -19,16 +19,16 @@ export interface IVersionService {
 	deleteVersion({ id }: DeleteVersionRequest): Promise<DeleteVersionResponse>
 }
 
-@DI.injectable()
+@injectable()
 export default class VersionService implements IVersionService {
 	constructor(
-		@DI.inject(DI.Models.Version)
+		@inject(nameof<Version>())
 		public readonly VersionModel: ModelType<Version>,
-		@DI.inject(DI.Models.App)
+		@inject(nameof<App>())
 		private readonly AppModel: ModelType<App>,
-		@DI.inject(DI.Models.VersionReports)
+		@inject(nameof<VersionReports>())
 		private readonly VersionReportsModel: ModelType<VersionReports>,
-		@DI.inject(DI.Services.FileUpload)
+		@inject(nameof<IFileUploadService>())
 		private readonly fileService: IFileUploadService,
 	) {}
 

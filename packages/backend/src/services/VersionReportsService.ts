@@ -32,7 +32,7 @@ export interface IVersionReportsService {
 	getVersionGroupedReports(req: GetVersionGroupedReportsRequest): Promise<GetVersionGroupedReportsResponse>
 }
 
-@DI.injectable()
+@injectable()
 export default class VersionReportsService implements IVersionReportsService {
 	private static readonly fields = [
 		'downloading',
@@ -42,11 +42,11 @@ export default class VersionReportsService implements IVersionReportsService {
 	]
 
 	constructor(
-		@DI.inject(DI.Models.Client)
+		@inject(nameof<Client>())
 		private readonly ClientModel: ModelType<Client>,
-		@DI.inject(DI.Models.VersionReports)
+		@inject(nameof<VersionReports>())
 		private readonly VersionReportsModel: ModelType<VersionReports>,
-		@DI.inject(DI.Models.App)
+		@inject(nameof<App>())
 		private readonly AppModel: ModelType<App>,
 	) {}
 

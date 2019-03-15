@@ -56,28 +56,29 @@ import {
 	GetVersionGroupedReportsRequest,
 	GetVersionGroupedReportsResponse,
 } from 'shared'
+import { AdminMediator } from '../util/symbols'
 
 export type AdminMediatorFactory = () => ISocketMediator
 
 export default function adminMediatorFactory({ container }: interfaces.Context): AdminMediatorFactory {
-	const server = container.get<SocketIO.Server>(DI.Server)
+	const server = container.get<SocketIO.Server>(nameof<SocketIO.Server>())
 
-	const adminService = container.get<IAdminsService>(DI.Services.Admin)
-	const appService = container.get<IAppService>(DI.Services.App)
-	const versionService = container.get<IVersionService>(DI.Services.Version)
-	const fileUploadService = container.get<IFileUploadService>(DI.Services.FileUpload)
-	const updateService = container.get<IReleaseService>(DI.Services.Update)
-	const versionReportsService = container.get<IVersionReportsService>(DI.Services.VersionReports)
-	const clientCounterService = container.get<IClientCounterService>(DI.Services.ClientCounter)
+	const adminService = container.get<IAdminsService>(nameof<IAdminsService>())
+	const appService = container.get<IAppService>(nameof<IAppService>())
+	const versionService = container.get<IVersionService>(nameof<IVersionService>())
+	const fileUploadService = container.get<IFileUploadService>(nameof<IFileUploadService>())
+	const updateService = container.get<IReleaseService>(nameof<IReleaseService>())
+	const versionReportsService = container.get<IVersionReportsService>(nameof<IVersionReportsService>())
+	const clientCounterService = container.get<IClientCounterService>(nameof<IClientCounterService>())
 
-	const authHook = container.get<IAuthHook>(DI.Hooks.Auth)
-	const validationHook = container.get<IValidationHook>(DI.Hooks.Validation)
+	const authHook = container.get<IAuthHook>(nameof<IAuthHook>())
+	const validationHook = container.get<IValidationHook>(nameof<IValidationHook>())
 
-	const createMediatorHook = container.get<ICreateClientMediatorHook>(DI.Hooks.CreateClientMediator)
-	const deleteMediatorHook = container.get<IDeleteClientMediatorHook>(DI.Hooks.DeleteClientMediator)
-	const releaseUpdateHook = container.get<IReleaseUpdateHook>(DI.Hooks.ReleaseUpdate)
+	const createMediatorHook = container.get<ICreateClientMediatorHook>(nameof<ICreateClientMediatorHook>())
+	const deleteMediatorHook = container.get<IDeleteClientMediatorHook>(nameof<IDeleteClientMediatorHook>())
+	const releaseUpdateHook = container.get<IReleaseUpdateHook>(nameof<IReleaseUpdateHook>())
 
-	return () => new SocketMediator(server.of(DI.AdminMediator))
+	return () => new SocketMediator(server.of(AdminMediator))
 		.use({
 			eventType: EventType.Login,
 			handler: adminService.login,

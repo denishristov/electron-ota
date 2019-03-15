@@ -26,10 +26,10 @@ export interface IAppService {
 	deleteApp(deleteRequest: DeleteAppRequest): Promise<DeleteAppResponse>
 }
 
-@DI.injectable()
+@injectable()
 export default class AppService implements IAppService {
 	constructor(
-		@DI.inject(DI.Models.App)
+		@inject(nameof<App>())
 		private readonly AppModel: ModelType<App>,
 	) {}
 

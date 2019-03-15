@@ -25,15 +25,15 @@ import {
 export type ClientsMediatorFactory = (bundleId: string, systemType: SystemType) => ISocketMediator
 
 export default function clientsMediatorFactory({ container }: interfaces.Context): ClientsMediatorFactory {
-	const server = container.get<SocketIO.Server>(DI.Server)
+	const server = container.get<SocketIO.Server>(nameof<SocketIO.Server>())
 
-	const updateService = container.get<IReleaseService>(DI.Services.Update)
-	const clientService = container.get<IClientService>(DI.Services.Client)
-	const reportsService = container.get<IVersionReportsService>(DI.Services.VersionReports)
-	const clientCounterService = container.get<IClientCounterService>(DI.Services.ClientCounter)
+	const updateService = container.get<IReleaseService>(nameof<IReleaseService>())
+	const clientService = container.get<IClientService>(nameof<IClientService>())
+	const reportsService = container.get<IVersionReportsService>(nameof<IVersionReportsService>())
+	const clientCounterService = container.get<IClientCounterService>(nameof<IClientCounterService>())
 
-	const validationHook = container.get<IValidationHook>(DI.Hooks.Validation)
-	const reportHook = container.get<IReportHook>(DI.Hooks.Report)
+	const validationHook = container.get<IValidationHook>(nameof<IValidationHook>())
+	const reportHook = container.get<IReportHook>(nameof<IReportHook>())
 
 	return (bundleId: string, systemType: SystemType) => {
 		const namespaceName = `/${bundleId}/${systemType}`

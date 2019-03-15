@@ -5,6 +5,7 @@ import { ModelType, InstanceType } from 'typegoose'
 import { Version } from '../models/Version'
 import { VersionReports, ReportType } from '../models/VersionReports'
 import { Client } from '../models/Client'
+import { AdminMediator } from '../util/symbols'
 
 export interface IReportHook extends IPostRespondHook {
 	handle(
@@ -13,7 +14,7 @@ export interface IReportHook extends IPostRespondHook {
 	): Promise<void>
 }
 
-@DI.injectable()
+@injectable()
 export default class ReportHook implements IReportHook {
 	public eventTypes = new Set([
 		EventType.UpdateDownloading,
@@ -23,11 +24,11 @@ export default class ReportHook implements IReportHook {
 	])
 
 	constructor(
-		@DI.inject(DI.Mediators)
+		@inject(nameof<Map<string, ISocketMediator>>())
 		private readonly mediators: Map<string, ISocketMediator>,
-		@DI.inject(DI.Models.Version)
+		@inject(nameof<Version>())
 		public readonly VersionModel: ModelType<Version>,
-		@DI.inject(DI.Models.VersionReports)
+		@inject(nameof<VersionReports>())
 		public readonly VersionReportModel: ModelType<VersionReports>,
 	) {}
 
@@ -49,7 +50,7 @@ export default class ReportHook implements IReportHook {
 
 		const { timestamp, client } = (reports)[type as ReportType][0]
 
-		this.mediators.get(DI.AdminMediator).broadcast(eventType, {
+		this.mediators.get(AdminMediator).broadcast(eventType, {
 			appId,
 			versionId,
 			timestamp,

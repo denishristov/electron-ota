@@ -12,15 +12,14 @@ export interface IClientCounterService {
 const defaultSystemTypeCounters = Object.keys(SystemType).group((x) => [x, 0])
 const clientMediatorRegex = /\/([\w\.-]+)\/(\w+)/
 
-@DI.injectable()
+@injectable()
 export default class ClientCounterService implements IClientCounterService {
-
 	public readonly handleClientConnection = this.createClientHandler(EventType.ClientConnected)
 
 	public readonly handleClientDisconnection = this.createClientHandler(EventType.ClientDisconnected)
 
 	constructor(
-		@DI.inject(DI.Mediators)
+		@inject(nameof<Map<string, ISocketMediator>>())
 		private readonly mediators: Map<string, ISocketMediator>,
 	) {}
 

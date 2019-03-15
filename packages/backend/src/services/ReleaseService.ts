@@ -22,14 +22,14 @@ const defaultResponse = {
 	isUpToDate: true,
 }
 
-@DI.injectable()
+@injectable()
 export default class ReleaseService implements IReleaseService {
 	constructor(
-		@DI.inject(DI.Services.App)
+		@inject(nameof<IAppService>())
 		private readonly appService: IAppService,
-		@DI.inject(DI.Models.Version)
+		@inject(nameof<Version>())
 		private readonly VersionModel: ModelType<Version>,
-		@DI.inject(DI.Services.Admin)
+		@inject(nameof<IAdminsService>())
 		private readonly adminService: IAdminsService,
 	) {}
 

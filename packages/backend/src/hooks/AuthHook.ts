@@ -6,7 +6,7 @@ export interface IAuthHook extends IPreRespondHook {
 	handle(eventType: EventType, data: AuthenticatedRequest): Promise<object>
 }
 
-@DI.injectable()
+@injectable()
 export default class AuthHook implements IAuthHook {
 	public exceptions = new Set([
 		EventType.Login,
@@ -21,7 +21,7 @@ export default class AuthHook implements IAuthHook {
 	])
 
 	constructor(
-		@DI.inject(DI.Services.Admin)
+		@inject(nameof<IAdminsService>())
 		private readonly userService: IAdminsService,
 	) {}
 

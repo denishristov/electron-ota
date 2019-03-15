@@ -26,7 +26,7 @@ interface IS3ConfigOptions {
 	Bucket: string
 }
 
-@DI.injectable()
+@injectable()
 export default class S3Service implements IFileUploadService {
 	private readonly s3 = new AWS.S3()
 

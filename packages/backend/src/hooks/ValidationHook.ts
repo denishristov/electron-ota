@@ -7,7 +7,7 @@ export interface IValidationHook extends IPreRespondHook {
 	handle(eventType: EventType, req: object): Promise<object>
 }
 
-@DI.injectable()
+@injectable()
 export default class ValidationHook implements IValidationHook {
 	private readonly validator = new Validator()
 

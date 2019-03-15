@@ -1,5 +1,8 @@
 {
 	"compilerOptions": {
+		"plugins": [
+			{ "transform": "ts-nameof", "type": "raw" }
+		],
 		"module": "commonjs",
 		"esModuleInterop": true,
 		"target": "es2017",

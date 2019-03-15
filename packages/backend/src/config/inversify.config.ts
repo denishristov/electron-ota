@@ -16,113 +16,113 @@ import { Version } from '../models/Version'
 import { VersionReports } from '../models/VersionReports'
 import { Client } from '../models/Client'
 
-import AuthHook from '../hooks/AuthHook'
-import ReportHook from '../hooks/ReportHook'
-import ReleaseUpdateHook from '../hooks/ReleaseUpdateHook'
-import CreateClientMediatorHook from '../hooks/DeleteClientMediatorHook'
-import ValidationHook from '../hooks/ValidationHook'
+import AuthHook, { IAuthHook } from '../hooks/AuthHook'
+import ReportHook, { IReportHook } from '../hooks/ReportHook'
+import ReleaseUpdateHook, { IReleaseUpdateHook } from '../hooks/ReleaseUpdateHook'
+import DeleteClientMediatorHook, { IDeleteClientMediatorHook } from '../hooks/DeleteClientMediatorHook'
+import ValidationHook, { IValidationHook } from '../hooks/ValidationHook'
+import CreateClientMediatorHook, { ICreateClientMediatorHook } from '../hooks/CreateClientMediatorHook'
 
 import socketio from 'socket.io'
 
 import { S3_CONFIG, PORT } from '.'
 
-import adminMediatorFactory from '../mediators/AdminMediatorFactory'
+import adminMediatorFactory, { AdminMediatorFactory } from '../mediators/AdminMediatorFactory'
 import clientsMediatorFactory, { ClientsMediatorFactory } from '../mediators/ClientsMediatorFactory'
 
-import { IPreRespondHook, IPostRespondHook, ISocketMediator } from '../util/mediator/interfaces'
+import { ISocketMediator } from '../util/mediator/interfaces'
 
 import { defaultSchemaOptions } from '../models/util'
 import { ModelType } from 'typegoose'
 
 import socketioConfig from './socketioConfig'
 import { REGISTER_KEY } from './index'
-import DeleteClientMediatorHook from '../hooks/DeleteClientMediatorHook'
 
 const container = new Container()
 
-container.bind<SocketIO.Server>(DI.Server)
+container.bind<SocketIO.Server>(nameof<SocketIO.Server>())
 	.toConstantValue(socketio(PORT, socketioConfig))
 
-container.bind<IAdminsService>(DI.Services.Admin)
+container.bind<IAdminsService>(nameof<IAdminsService>())
 	.to(AdminsService)
 	.inSingletonScope()
 
-container.bind<IAppService>(DI.Services.App)
+container.bind<IAppService>(nameof<IAppService>())
 	.to(AppService)
 	.inSingletonScope()
 
-container.bind<IVersionService>(DI.Services.Version)
+container.bind<IVersionService>(nameof<IVersionService>())
 	.to(VersionService)
 	.inSingletonScope()
 
-container.bind<IFileUploadService>(DI.Services.FileUpload)
+container.bind<IFileUploadService>(nameof<IFileUploadService>())
 	.toConstantValue(new S3Service(S3_CONFIG))
 
-container.bind<IRegisterCredentialsService>(DI.Services.RegisterCredentials)
+container.bind<IRegisterCredentialsService>(nameof<IRegisterCredentialsService>())
 	.toConstantValue(new RegisterCredentialsService(REGISTER_KEY))
 
-container.bind<IReleaseService>(DI.Services.Update)
+container.bind<IReleaseService>(nameof<IReleaseService>())
 	.to(ReleaseService)
 	.inSingletonScope()
 
-container.bind<IClientService>(DI.Services.Client)
+container.bind<IClientService>(nameof<IClientService>())
 	.to(ClientService)
 	.inSingletonScope()
 
-container.bind<IVersionReportsService>(DI.Services.VersionReports)
+container.bind<IVersionReportsService>(nameof<IVersionReportsService>())
 	.to(VersionReportsService)
 	.inSingletonScope()
 
-container.bind<IClientCounterService>(DI.Services.ClientCounter)
+container.bind<IClientCounterService>(nameof<IClientCounterService>())
 	.to(ClientCounterService)
 	.inSingletonScope()
 
-container.bind<ModelType<Admin>>(DI.Models.Admin)
+container.bind<ModelType<Admin>>(nameof<Admin>())
 	.toConstantValue(new Admin().getModelForClass(Admin, defaultSchemaOptions))
 
-container.bind<ModelType<App>>(DI.Models.App)
+container.bind<ModelType<App>>(nameof<App>())
 	.toConstantValue(new App().getModelForClass(App, defaultSchemaOptions))
 
-container.bind<ModelType<Version>>(DI.Models.Version)
+container.bind<ModelType<Version>>(nameof<Version>())
 	.toConstantValue(new Version().getModelForClass(Version, defaultSchemaOptions))
 
-container.bind<ModelType<VersionReports>>(DI.Models.VersionReports)
+container.bind<ModelType<VersionReports>>(nameof<VersionReports>())
 	.toConstantValue(new VersionReports().getModelForClass(VersionReports, defaultSchemaOptions))
 
-container.bind<ModelType<Client>>(DI.Models.Client)
+container.bind<ModelType<Client>>(nameof<Client>())
 	.toConstantValue(new Client().getModelForClass(Client, defaultSchemaOptions))
 
-container.bind<IPreRespondHook>(DI.Hooks.Auth)
+container.bind<IAuthHook>(nameof<IAuthHook>())
 	.to(AuthHook)
 	.inSingletonScope()
 
-container.bind<IPreRespondHook>(DI.Hooks.Validation)
+container.bind<IValidationHook>(nameof<IValidationHook>())
 	.to(ValidationHook)
 	.inSingletonScope()
 
-container.bind<IPostRespondHook>(DI.Hooks.CreateClientMediator)
+container.bind<ICreateClientMediatorHook>(nameof<ICreateClientMediatorHook>())
 	.to(CreateClientMediatorHook)
 	.inSingletonScope()
 
-container.bind<IPostRespondHook>(DI.Hooks.DeleteClientMediator)
+container.bind<IDeleteClientMediatorHook>(nameof<IDeleteClientMediatorHook>())
 	.to(DeleteClientMediatorHook)
 	.inSingletonScope()
 
-container.bind<IPostRespondHook>(DI.Hooks.Report)
+container.bind<IReportHook>(nameof<IReportHook>())
 	.to(ReportHook)
 	.inSingletonScope()
 
-container.bind<IPostRespondHook>(DI.Hooks.ReleaseUpdate)
+container.bind<IReleaseUpdateHook>(nameof<IReleaseUpdateHook>())
 	.to(ReleaseUpdateHook)
 	.inSingletonScope()
 
-container.bind<ClientsMediatorFactory>(DI.Factories.ClientsMediator)
+container.bind<ClientsMediatorFactory>(nameof<ClientsMediatorFactory>())
 	.toFactory(clientsMediatorFactory)
 
-container.bind(DI.Factories.AdminsMediator)
+container.bind<AdminMediatorFactory>(nameof<AdminMediatorFactory>())
 	.toFactory(adminMediatorFactory)
 
-container.bind<Map<string, ISocketMediator>>(DI.Mediators)
+container.bind<Map<string, ISocketMediator>>(nameof<Map<string, ISocketMediator>>())
 	.toConstantValue(new Map())
 
 export default container

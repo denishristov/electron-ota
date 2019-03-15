@@ -36,12 +36,12 @@ interface IJWTPayload {
 	id: string
 }
 
-@DI.injectable()
+@injectable()
 export default class AdminsService implements IAdminsService {
 	constructor(
-		@DI.inject(DI.Models.Admin)
+		@inject(nameof<ModelType<Admin>>())
 		private readonly AdminModel: ModelType<Admin>,
-		@DI.inject(DI.Services.RegisterCredentials)
+		@inject(nameof<IRegisterCredentialsService>())
 		private readonly credentialsService: IRegisterCredentialsService,
 	) {}
 

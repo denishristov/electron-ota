@@ -1,36 +1,30 @@
-import bindDecorator from 'bind-decorator'
-import { inject, injectable } from 'inversify'
-import * as Symbols from '../util/symbols'
+import _bind from 'bind-decorator'
+import { inject as _inject, injectable as _injectable } from 'inversify'
 import { InstanceType } from 'typegoose'
 import { ObjectID } from 'bson'
 
 import Global = NodeJS.Global
 
 interface IGlobal extends Global {
-	bind: typeof bindDecorator
-	DI: typeof DI
+	bind: typeof _bind
+	inject: typeof inject
+	injectable: typeof _injectable
 }
-
-type DIType = typeof DI
 
 declare const global: IGlobal
 
 declare global {
-	const bind: typeof bindDecorator
-	const DI: DIType
+	const bind: typeof _bind
+	const inject: typeof _inject
+	const injectable: typeof _injectable
 }
 
 declare global {
 	type Ref<T> = InstanceType<T> | ObjectID
 }
 
-const DI = {
-	inject,
-	injectable,
-	...Symbols,
-}
-
-global.bind = bindDecorator
-global.DI = DI
+global.bind = _bind
+global.inject = _inject
+global.injectable = _injectable
 
 export {}

@@ -2,7 +2,7 @@ export interface IRegisterCredentialsService {
 	verify(key: string): boolean
 }
 
-@DI.injectable()
+@injectable()
 export default class RegisterCredentialsService implements IRegisterCredentialsService {
 	constructor(private readonly registerKey: string) {}
 

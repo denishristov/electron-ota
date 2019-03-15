@@ -5,10 +5,10 @@ export interface IClientService {
 	registerClient(client: RegisterClientRequest): Promise<RegisterClientResponse>
 }
 
-@DI.injectable()
+@injectable()
 export default class ClientService implements IClientService {
 	constructor(
-		@DI.inject(DI.Models.Client)
+		@inject(nameof<Client>())
 		private readonly ClientModel: ModelType<Client>,
 	) {}
 
