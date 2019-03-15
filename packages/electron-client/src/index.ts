@@ -57,6 +57,8 @@ class ElectronClientUpdateService extends EventEmitter implements IUpdateService
 
 	private readonly connectionPromise: Promise<SocketIOClient.Socket>
 
+	private isDownloading = false
+
 	constructor(options: IUpdateServiceOptions) {
 		super()
 
@@ -101,9 +103,9 @@ class ElectronClientUpdateService extends EventEmitter implements IUpdateService
 			const [latestUpdateFilename] = updates.splice(updates.length - 1, 1)
 			const latestUpdatePath = path.join(this.updateDirPath, latestUpdateFilename)
 
-			const updateInfo = this.downloadsStore.get(latestUpdateFilename.slice(0, -5))
+			const updateInfo = this.downloadsStore.get(latestUpdateFilename.replace('.asar', ''))
 
-			if (!updateInfo || !semver.lt(this.options.versionName, updateInfo.versionName)) {
+			if (!updateInfo || !semver.gt(updateInfo.versionName, this.options.versionName)) {
 				return null
 			}
 
@@ -156,9 +158,9 @@ class ElectronClientUpdateService extends EventEmitter implements IUpdateService
 			const [latestUpdateFilename] = updates.splice(updates.length - 1, 1)
 			const latestUpdatePath = path.join(this.updateDirPath, latestUpdateFilename)
 
-			const updateInfo = this.downloadsStore.get(latestUpdateFilename.slice(0, -5))
+			const updateInfo = this.downloadsStore.get(latestUpdateFilename.replace('.asar', ''))
 
-			if (!updateInfo || !semver.lt(this.options.versionName, updateInfo.versionName)) {
+			if (!updateInfo || !semver.gt(updateInfo.versionName, this.options.versionName)) {
 				return null
 			}
 
@@ -239,6 +241,12 @@ class ElectronClientUpdateService extends EventEmitter implements IUpdateService
 	}
 
 	private async downloadUpdate(args: INewUpdate) {
+		if (this.isDownloading) {
+			return
+		}
+
+		this.isDownloading = true
+
 		const { downloadUrl, ...update } = args
 
 		const now = Date.now().toString()
@@ -309,6 +317,7 @@ class ElectronClientUpdateService extends EventEmitter implements IUpdateService
 			)
 		} finally {
 			process.noAsar = false
+			this.isDownloading = false
 		}
 	}
 
