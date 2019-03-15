@@ -4,7 +4,7 @@ export interface IFileService {
 	downloadFile(uri: string, name: string): void
 }
 
-@DI.injectable()
+@injectable()
 export default class FileService implements IFileService {
 	public getSourceFromFile(file: File): Promise<string | null> {
 		return new Promise((resolve, reject) => {

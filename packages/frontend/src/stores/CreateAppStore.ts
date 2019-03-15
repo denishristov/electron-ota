@@ -12,14 +12,14 @@ export interface ICreateAppStore {
 	handleCreate(data: IFormData): Promise<void>
 }
 
-@DI.injectable()
+@injectable()
 export default class CreateAppStore implements ICreateAppStore {
 	constructor(
-		@DI.inject(DI.Stores.Apps)
+		@inject(nameof<IAppsStore>())
 		private readonly appsStore: IAppsStore,
-		@DI.inject(DI.Services.Upload)
+		@inject(nameof<IUploadService>())
 		private readonly uploadService: IUploadService,
-		@DI.inject(DI.Stores.AppModal)
+		@inject(nameof<IAppModalStore>())
 		public readonly appModalStore: IAppModalStore,
 	) {}
 

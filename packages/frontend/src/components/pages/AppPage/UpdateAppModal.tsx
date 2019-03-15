@@ -27,7 +27,7 @@ interface IProps {
 
 @observer
 export default class UpdateAppModal extends Component<IProps> {
-	@DI.lazyInject(DI.Stores.UpdateApp)
+	@lazyInject(nameof<IUpdateAppStore>())
 	private readonly store: IUpdateAppStore
 
 	public componentDidMount() {

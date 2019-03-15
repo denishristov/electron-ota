@@ -35,13 +35,13 @@ export default class ProfileModal extends React.Component<{}> {
 		pictureSrc: '',
 	}
 
-	@DI.lazyInject(DI.Stores.User)
+	@lazyInject(nameof<IUserStore>())
 	private readonly userStore: IUserStore
 
-	@DI.lazyInject(DI.Services.File)
+	@lazyInject(nameof<IFileService>())
 	private readonly fileService: IFileService
 
-	@DI.lazyInject(DI.Services.Upload)
+	@lazyInject(nameof<IUploadService>())
 	private readonly uploadService: IUploadService
 
 	public render() {

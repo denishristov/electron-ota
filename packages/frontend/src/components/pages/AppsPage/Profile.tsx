@@ -22,7 +22,7 @@ interface IProps {
 
 @observer
 export default class Profile extends Component<IProps> {
-	@DI.lazyInject(DI.Stores.User)
+	@lazyInject(nameof<IUserStore>())
 	private readonly userStore: IUserStore
 
 	public render() {

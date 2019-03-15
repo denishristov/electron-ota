@@ -12,14 +12,14 @@ export interface IUpdateAppStore {
 	handleEdit(data: IFormData): Promise<void>
 }
 
-@DI.injectable()
+@injectable()
 export default class UpdateAppStore implements IUpdateAppStore {
 	constructor(
-		@DI.inject(DI.Stores.Apps)
+		@inject(nameof<IAppsStore>())
 		private readonly appsStore: IAppsStore,
-		@DI.inject(DI.Services.Upload)
+		@inject(nameof<IUploadService>())
 		private readonly uploadService: IUploadService,
-		@DI.inject(DI.Stores.AppModal)
+		@inject(nameof<IAppModalStore>())
 		public readonly appModalStore: IAppModalStore,
 	) {}
 

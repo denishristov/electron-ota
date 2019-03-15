@@ -8,7 +8,7 @@ export type UpdateVersionStoreFactory = (app: IApp, version: VersionModel) => IU
 
 export default function updateVersionStoreFactory({ container }: interfaces.Context): UpdateVersionStoreFactory {
 	return (app: IApp, version: VersionModel) => {
-		const versionModal = container.get<IVersionModalStore>(DI.Stores.VersionModal)
+		const versionModal = container.get<IVersionModalStore>(nameof<IVersionModalStore>())
 
 		return new UpdateVersionStore(app, version, versionModal)
 	}

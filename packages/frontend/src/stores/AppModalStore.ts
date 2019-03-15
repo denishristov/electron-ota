@@ -10,7 +10,7 @@ export interface IAppModalStore {
 	handleSelectPicture([pictureFile]: File[]): Promise<void>
 }
 
-@DI.injectable()
+@injectable()
 export default class AppModalStore implements IAppModalStore {
 	@observable
 	public color = colors.ui.accent
@@ -26,7 +26,7 @@ export default class AppModalStore implements IAppModalStore {
 	public picture?: File
 
 	constructor(
-		@DI.inject(DI.Services.File)
+		@inject(nameof<IFileService>())
 		private readonly fileService: IFileService,
 	) {}
 

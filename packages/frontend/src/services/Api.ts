@@ -17,12 +17,12 @@ export interface IApi {
 
 type PreHook = (req: object) => Promise<object> | object
 
-@DI.injectable()
+@injectable()
 export default class Api implements IApi {
 	private readonly preHooks: PreHook[] = []
 
 	constructor(
-		@DI.inject(DI.Connection)
+		@inject(nameof<SocketIOClient.Socket>())
 		private readonly connection: SocketIOClient.Socket,
 	) {}
 

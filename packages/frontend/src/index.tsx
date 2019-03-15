@@ -1,12 +1,13 @@
+import * as tsNameOf from 'ts-nameof'
+import 'reflect-metadata'
+
+import './config/global'
+import 'shared/dist/extensions'
+
 import React from 'react'
 import { render } from 'react-dom'
 
-import { configure } from 'mobx'
 import { Route, Router } from 'react-router-dom'
-
-import 'reflect-metadata'
-import './config/global'
-import 'shared/dist/extensions'
 
 import container from './config/inversify.config'
 
@@ -18,13 +19,7 @@ import './index.sass'
 import './styles/Menu.sass'
 import 'react-contexify/dist/ReactContexify.min.css'
 
-configure({
-	computedRequiresReaction: true,
-	enforceActions: 'always',
-	isolateGlobalState: true,
-})
-
-const history = container.get<BrowserHistory>(DI.BrowserHistory)
+const history = container.get<BrowserHistory>(nameof<BrowserHistory>())
 
 render(
 	<AuthProvider>

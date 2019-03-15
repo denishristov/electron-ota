@@ -39,16 +39,16 @@ export interface IAppsStore {
 	deleteApp(deleteAppRequest: DeleteAppRequest): void
 }
 
-@DI.injectable()
+@injectable()
 export default class AppsStore implements IAppsStore {
 	private readonly apps: ObservableMap<string, IApp> = observable.map({})
 
 	private readonly liveCounters = observable.map<string, ISystemTypeCount>({})
 
 	constructor(
-		@DI.inject(DI.Services.Api)
+		@inject(nameof<IApi>())
 		private readonly api: IApi,
-		@DI.inject(DI.Factories.App)
+		@inject(nameof<AppFactory>())
 		private readonly appFactory: AppFactory,
 	) {
 		this.api

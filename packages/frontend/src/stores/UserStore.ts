@@ -32,7 +32,7 @@ interface IProfile {
 	pictureUrl: string
 }
 
-@DI.injectable()
+@injectable()
 class UserStore implements IUserStore {
 	@observable
 	public isAuthenticated: boolean | null = null
@@ -47,7 +47,7 @@ class UserStore implements IUserStore {
 	private authToken: string | null = Cookies.get('authToken') || null
 
 	constructor(
-		@DI.inject(DI.Services.Api)
+		@inject(nameof<IApi>())
 		private readonly api: IApi,
 	) {
 		this.api

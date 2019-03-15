@@ -53,10 +53,10 @@ export default class AppPage extends Component<RouteComponentProps<IParams>, ISt
 		isModalClosingDisabled: false,
 	}
 
-	@DI.lazyInject(DI.Stores.Apps)
+	@lazyInject(nameof<IAppsStore>())
 	private readonly appsStore: IAppsStore
 
-	@DI.lazyInject(DI.Factories.CreateVersionStore)
+	@lazyInject(nameof<CreateVersionStoreFactory>())
 	private readonly createVersionStoreFactory: CreateVersionStoreFactory
 
 	@computed

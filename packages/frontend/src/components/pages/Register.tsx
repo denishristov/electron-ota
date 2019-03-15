@@ -41,7 +41,7 @@ export default class Register extends React.Component<{}, IState> {
 		errorMessage: '',
 	}
 
-	@DI.lazyInject(DI.Stores.User)
+	@lazyInject(nameof<IUserStore>())
 	private readonly userStore: IUserStore
 
 	public render() {

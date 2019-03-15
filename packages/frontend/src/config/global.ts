@@ -1,35 +1,26 @@
-import bindDecorator from 'bind-decorator'
-import { inject, injectable, interfaces } from 'inversify'
-import * as Symbols from '../util/constants/symbols'
+import _bind from 'bind-decorator'
+import { inject as _inject, injectable as _injectable, interfaces } from 'inversify'
 import SVGComponent from '../components/generic/SVG'
 
-type SymbolType = typeof Symbols
-
-interface IDI extends SymbolType {
-	inject: typeof inject
-	injectable: typeof injectable
-	// tslint:disable-next-line:max-line-length no-any
-	lazyInject: (serviceIdentifier: string | symbol | interfaces.Newable<any> | interfaces.Abstract<any>) => (proto: any, key: string) => void
-}
-
 declare global {
-	const bind: typeof bindDecorator
-	const DI: IDI
+	// const nameof: <T>() => string
 	const SVG: typeof SVGComponent
-}
-
-const DI = {
-	inject,
-	injectable,
-	...Symbols,
+	const bind: typeof _bind
+	const inject: typeof _inject
+	const injectable: typeof _injectable
+	// tslint:disable-next-line:max-line-length
+	const lazyInject: (serviceIdentifier: string | symbol | interfaces.Newable<any> | interfaces.Abstract<any>) => (proto: any, key: string) => void
 }
 
 Object.defineProperties(global, {
 	bind: {
-		value: bindDecorator,
+		value: _bind,
 	},
-	DI: {
-		value: DI,
+	inject: {
+		value: _inject,
+	},
+	injectable: {
+		value: _injectable,
 	},
 	SVG: {
 		value: SVGComponent,

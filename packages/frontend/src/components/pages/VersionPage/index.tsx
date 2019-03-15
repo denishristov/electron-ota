@@ -54,13 +54,13 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 		hasLoaded: false,
 	}
 
-	@DI.lazyInject(DI.Services.File)
+	@lazyInject(nameof<IFileService>())
 	private readonly fileService: IFileService
 
-	@DI.lazyInject(DI.Stores.Apps)
+	@lazyInject(nameof<IAppsStore>())
 	private readonly appsStore: IAppsStore
 
-	@DI.lazyInject(DI.Factories.UpdateVersionStore)
+	@lazyInject(nameof<UpdateVersionStoreFactory>())
 	private readonly updateVersionStoreFactory: UpdateVersionStoreFactory
 
 	@computed

@@ -13,7 +13,7 @@ interface IProps {
 }
 
 export default observer(function ClientColumn({ reports, title, icon, color }: IProps) {
-	return reports ? (
+	return reports.length ? (
 		<Flex col grow className={styles.reportColumn}>
 			<Flex p spread style={{ backgroundColor: color }}>
 				<Flex>

@@ -36,7 +36,7 @@ export default class Login extends React.Component<RouteComponentProps, IState> 
 		errorMessage: '',
 	}
 
-	@DI.lazyInject(DI.Stores.User)
+	@lazyInject(nameof<IUserStore>())
 	private readonly userStore: IUserStore
 
 	public render() {

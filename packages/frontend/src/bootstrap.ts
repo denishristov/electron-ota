@@ -1,5 +1,6 @@
 import * as Sentry from '@sentry/browser'
 import React from 'react'
+import { configure } from 'mobx'
 
 if (process.env.NODE_ENV === 'production') {
 	Sentry.init({
@@ -10,6 +11,12 @@ if (process.env.NODE_ENV === 'production') {
 if (process.env.NODE_ENV !== 'production') {
 	// tslint:disable-next-line:no-var-requires
 	require('@welldone-software/why-did-you-render')(React, { onlyLogs: true })
+
+	configure({
+		computedRequiresReaction: true,
+		enforceActions: 'always',
+		isolateGlobalState: true,
+	})
 }
 
 import './index'

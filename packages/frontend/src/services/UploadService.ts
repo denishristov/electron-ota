@@ -20,10 +20,10 @@ export interface IUploadService {
 	uploadPicture(picture: File): Promise<IFileUpload>
 }
 
-@DI.injectable()
+@injectable()
 export default class UploadService implements IUploadService {
 	constructor(
-		@DI.inject(DI.Services.Api)
+		@inject(nameof<IApi>())
 		private readonly api: IApi,
 	) {}
 

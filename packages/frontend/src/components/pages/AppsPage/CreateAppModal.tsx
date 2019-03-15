@@ -24,7 +24,7 @@ interface ICreateAppEvent extends FormEvent<HTMLFormElement> {
 
 @observer
 export default class CreateAppModal extends React.Component {
-	@DI.lazyInject(DI.Stores.CreateApp)
+	@lazyInject(nameof<ICreateAppStore>())
 	private readonly store: ICreateAppStore
 
 	public render() {

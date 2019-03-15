@@ -20,7 +20,7 @@ export interface IVersionModalStore extends Toggles {
 	}
 }
 
-@DI.injectable()
+@injectable()
 export default class VersionModalStore implements IVersionModalStore {
 	@observable
 	public versionName: string = ''

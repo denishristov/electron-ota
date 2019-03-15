@@ -17,7 +17,7 @@ import Button from '../../generic/Button'
 
 @observer
 export default class AppsContainer extends Component<RouteComponentProps> {
-	@DI.lazyInject(DI.Stores.Apps)
+	@lazyInject(nameof<IAppsStore>())
 	private readonly appsStore: IAppsStore
 
 	public componentDidMount() {
