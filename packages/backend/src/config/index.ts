@@ -48,3 +48,9 @@ if (!MONGODB_URI) {
 	logger.error('No mongo connection string. Set MONGODB_URI environment variable.')
 	process.exit(1)
 }
+
+export const REDIS_PORT = parseInt(process.env.REDIS_PORT, 10) || 6379
+export const REDIS_URI = process.env.REDIS_URI
+
+invariant(REDIS_URI, 'REDIS_PORT is undefined')
+invariant(REDIS_PORT, 'REDIS_PORT is undefined')

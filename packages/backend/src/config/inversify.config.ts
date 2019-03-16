@@ -25,7 +25,7 @@ import CreateClientMediatorHook, { ICreateClientMediatorHook } from '../hooks/Cr
 
 import socketio from 'socket.io'
 
-import { S3_CONFIG, PORT } from '.'
+import { S3_CONFIG, PORT, REDIS_URI, REDIS_PORT } from '.'
 
 import adminMediatorFactory, { AdminMediatorFactory } from '../mediators/AdminMediatorFactory'
 import clientsMediatorFactory, { ClientsMediatorFactory } from '../mediators/ClientsMediatorFactory'
@@ -35,13 +35,17 @@ import { ISocketMediator } from '../util/mediator/interfaces'
 import { defaultSchemaOptions } from '../models/util'
 import { ModelType } from 'typegoose'
 
-import socketioConfig from './socketioConfig'
 import { REGISTER_KEY } from './index'
+
+import redisAdapter from 'socket.io-redis'
 
 const container = new Container()
 
 container.bind<SocketIO.Server>(nameof<SocketIO.Server>())
-	.toConstantValue(socketio(PORT, socketioConfig))
+	.toConstantValue(socketio(PORT).adapter(redisAdapter({
+		host: REDIS_URI,
+		port: REDIS_PORT,
+	})))
 
 container.bind<IAdminsService>(nameof<IAdminsService>())
 	.to(AdminsService)

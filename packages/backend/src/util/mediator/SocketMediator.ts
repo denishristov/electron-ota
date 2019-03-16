@@ -12,6 +12,7 @@ import { IRequestHandler } from './interfaces'
 import { Empty } from '../types'
 import { colors } from '../constants'
 import { EventEmitter } from 'events'
+import { RedisAdapter } from 'socket.io-redis'
 
 export default class SocketMediator extends EventEmitter implements ISocketMediator {
 	private readonly requestHandlers = new Map<string, ConstructedHandler>()
@@ -26,7 +27,6 @@ export default class SocketMediator extends EventEmitter implements ISocketMedia
 		super()
 
 		namespace.on(EventType.Connection, this.subscribe)
-		namespace.on(EventType.Connection, (client) => this.emit(MediatorEvent.Subscribe, client))
 	}
 
 	public get name() {
@@ -34,7 +34,7 @@ export default class SocketMediator extends EventEmitter implements ISocketMedia
 	}
 
 	public get clients(): IClient[] {
-		return Object.values(this.namespace.sockets)
+		return Object.values(this.namespace.clients)
 	}
 
 	public use<Req extends object, Res extends object>(requestHandler: IRequestHandler<Req, Res>) {
@@ -49,7 +49,9 @@ export default class SocketMediator extends EventEmitter implements ISocketMedia
 
 	@bind
 	public subscribe(client: IClient) {
-		client.join(this.roomId, () => {
+		this.adapter.remoteJoin(client.id, this.roomId, () => {
+			this.emit(MediatorEvent.Subscribe, client)
+
 			for (const handler of this.requestHandlers) {
 				client.on(...handler)
 			}
@@ -97,6 +99,10 @@ export default class SocketMediator extends EventEmitter implements ISocketMedia
 		}
 
 		this.logBroadcast(eventType, data)
+	}
+
+	private get adapter(): RedisAdapter {
+		return this.namespace.adapter as RedisAdapter
 	}
 
 	private async applyPreHooks<T extends object>(eventType: EventType, request: T): Promise<T> {

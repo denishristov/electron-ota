@@ -14,6 +14,7 @@ export enum MediatorEvent {
 }
 
 export interface IClient extends EventEmitter {
+	id: string
 	nsp: {
 		name: string,
 	}
