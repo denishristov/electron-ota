@@ -63,20 +63,18 @@ export default class UpdateAppModal extends Component<IProps> {
 							<label>Color</label>
 							<Flex list col>
 								<Flex list>
-									{Object.values(colors.data)
-										.map((backgroundColor) => (
-											<div
-												key={backgroundColor}
-												className={styles.color}
-												style={{ backgroundColor }}
-												onClick={colorSetters[backgroundColor]}
-											>
-												{color === backgroundColor && (
-													<SVG src={icons.Success} />
-												)}
-											</div>
-										))
-									}
+									{Object.values(colors.data).map((backgroundColor) => (
+										<div
+											key={backgroundColor}
+											className={styles.color}
+											style={{ backgroundColor }}
+											onClick={colorSetters[backgroundColor]}
+										>
+											{color === backgroundColor && (
+												<SVG src={icons.Success} />
+											)}
+										</div>
+									))}
 								</Flex>
 							</Flex>
 						</Flex>

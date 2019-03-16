@@ -1,8 +1,8 @@
 // tslint:disable:max-classes-per-file
 import { VersionModel } from './Version'
 import { Nested, NestedArray } from 'tsdv-joi'
-import { Token, StringSchema, Uri } from 'tsdv-joi/constraints/string'
-import { Required, Allow, Strict } from 'tsdv-joi/constraints/any'
+import { Token, StringSchema, Uri, Regex } from 'tsdv-joi/constraints/string'
+import { Required, Allow } from 'tsdv-joi/constraints/any'
 import { NumberSchema } from 'tsdv-joi/constraints/number'
 import { AuthenticatedRequest, TimestampedDocument } from './generic'
 
@@ -63,7 +63,7 @@ export class CreateAppRequest extends AuthenticatedRequest {
 	public pictureUrl?: string
 
 	@Required()
-	@StringSchema()
+	@Regex(/^[\w-.]+$/)
 	public bundleId: string
 
 	@Required()

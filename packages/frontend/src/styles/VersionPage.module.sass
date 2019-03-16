@@ -14,13 +14,13 @@
 	@include glowing-shadow($dark-accent)
 	display: grid
 	grid-template-columns: repeat(auto-fit, minmax(196px, 1fr))
+	grid-auto-rows: 40vh
 	border-radius: $default-border-radius
 	overflow: hidden
 	margin: $spacing
 	height: 40vh
-
-	> .report-column:last-of-type
-		border-right: none
+	background: $dark-accent
+	grid-gap: 1px
 
 .report-column
 	@include transition(box-shadow)
@@ -30,7 +30,6 @@
 	overflow: hidden
 	flex-flow: column
 	color: $dark-text
-	border-right: 1px solid $dark-accent
 
 	> span:first-child
 		min-height: 20px

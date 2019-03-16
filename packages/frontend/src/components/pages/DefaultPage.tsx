@@ -9,10 +9,7 @@ export default function DefaultPage() {
 			{({ isLoading, isAuthenticated }) => {
 				return isLoading
 					? <Loading />
-					: isAuthenticated
-						? <Redirect push to='/apps' />
-						: <Redirect push to='/login' />
-
+					: <Redirect push to={isAuthenticated ? '/apps' : '/login'} />
 			}}
 		</AuthConsumer>
 	)

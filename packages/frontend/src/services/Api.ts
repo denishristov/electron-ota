@@ -39,7 +39,7 @@ export default class Api implements IApi {
 		request,
 		responseType,
 	}: IFetchArguments<Req, Res>): Promise<Res> {
-		const promise: Promise<Res> = new Promise(async (resolve, reject) => {
+		return new Promise(async (resolve, reject) => {
 			let _request = {}
 
 			try {
@@ -67,8 +67,6 @@ export default class Api implements IApi {
 				reject(error)
 			}
 		})
-
-		return promise
 	}
 
 	@bind

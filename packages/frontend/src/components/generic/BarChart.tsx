@@ -110,14 +110,14 @@ export default class BarChart extends React.Component<IProps, IState> {
 									{dataPoint && (
 										<Hint value={dataPoint}>
 											<Flex col className={list(styles.hint, !isHovered && styles.reverse)}>
-											<Flex list>
-												<label>Version name</label>
-												<label className={styles.dark}>{dataPoint.y}</label>
-											</Flex>
-											<Flex list>
-												<label>Clients</label>
-												<label className={styles.dark}>{dataPoint.x}</label>
-											</Flex>
+												<Flex list>
+													<label>Version name</label>
+													<label className={styles.dark}>{dataPoint.y}</label>
+												</Flex>
+												<Flex list>
+													<label>Clients</label>
+													<label className={styles.dark}>{dataPoint.x}</label>
+												</Flex>
 											</Flex>
 										</Hint>
 									)}

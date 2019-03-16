@@ -150,7 +150,7 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 	get hasAnyColumnReports() {
 		return this.reports && Object.values(this.reports)
 			.filter((reports) => reports instanceof Array)
-			.every((reports) => reports.length)
+			.some((reports) => reports.length)
 	}
 
 	public async componentDidMount() {
