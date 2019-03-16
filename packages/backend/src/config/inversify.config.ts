@@ -35,13 +35,37 @@ import { ISocketMediator } from '../util/mediator/interfaces'
 import { defaultSchemaOptions } from '../models/util'
 import { ModelType } from 'typegoose'
 
+import { InversifyExpressServer } from 'inversify-express-utils'
+import { Application } from 'express'
+
+import bodyParser from 'body-parser'
+
 import socketioConfig from './socketioConfig'
 import { REGISTER_KEY } from './index'
+import PublicController from '../controllers/PublicController'
 
 const container = new Container()
 
+container.bind<Application>(nameof<Application>())
+	.toDynamicValue(({ container }) => {
+		const server = new InversifyExpressServer(container)
+
+		server.setConfig((app) => {
+			app.use(bodyParser.json())
+		})
+
+		return server.build()
+	})
+	.inSingletonScope()
+
 container.bind<SocketIO.Server>(nameof<SocketIO.Server>())
-	.toConstantValue(socketio(PORT, socketioConfig))
+	.toDynamicValue(({ container }) => {
+		const app = container.get<Application>(nameof<Application>())
+		const server = app.listen(PORT)
+
+		return socketio(server, socketioConfig)
+	})
+	.inSingletonScope()
 
 container.bind<IAdminsService>(nameof<IAdminsService>())
 	.to(AdminsService)
@@ -121,6 +145,10 @@ container.bind<ClientsMediatorFactory>(nameof<ClientsMediatorFactory>())
 
 container.bind<AdminMediatorFactory>(nameof<AdminMediatorFactory>())
 	.toFactory(adminMediatorFactory)
+
+container.bind<PublicController>(nameof<PublicController>())
+	.to(PublicController)
+	.inRequestScope()
 
 container.bind<Map<string, ISocketMediator>>(nameof<Map<string, ISocketMediator>>())
 	.toConstantValue(new Map())
