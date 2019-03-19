@@ -1,8 +1,5 @@
 import { Container } from 'inversify'
 import getDecorators from 'inversify-inject-decorators'
-import io from 'socket.io-client'
-
-import { SERVER_URI } from '.'
 
 import Api, { IApi } from '../services/Api'
 
@@ -32,9 +29,6 @@ const { lazyInject } = getDecorators(container)
 Object.defineProperty(window, 'lazyInject', {
 	value: lazyInject,
 })
-
-container.bind(nameof<SocketIOClient.Socket>())
-	.toConstantValue(io(SERVER_URI))
 
 container.bind<BrowserHistory>(nameof<BrowserHistory>())
 	.toDynamicValue(() => {

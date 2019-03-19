@@ -16,7 +16,7 @@ import { Version } from '../models/Version'
 import { VersionReports } from '../models/VersionReports'
 import { Client } from '../models/Client'
 
-import AuthHook, { IAuthHook } from '../hooks/AuthHook'
+import AuthHook, { IAuthHook, NamespaceAuthHook, namespaceAuthHook } from '../hooks/AuthHook'
 import ReportHook, { IReportHook } from '../hooks/ReportHook'
 import ReleaseUpdateHook, { IReleaseUpdateHook } from '../hooks/ReleaseUpdateHook'
 import DeleteClientMediatorHook, { IDeleteClientMediatorHook } from '../hooks/DeleteClientMediatorHook'
@@ -36,9 +36,9 @@ import { defaultSchemaOptions } from '../models/util'
 import { ModelType } from 'typegoose'
 
 import { InversifyExpressServer } from 'inversify-express-utils'
-import { Application } from 'express'
 
 import bodyParser from 'body-parser'
+import cors from 'cors'
 
 import socketioConfig from './socketioConfig'
 import { REGISTER_KEY } from './index'
@@ -46,24 +46,18 @@ import PublicController from '../controllers/PublicController'
 
 const container = new Container()
 
-container.bind<Application>(nameof<Application>())
+container.bind<SocketIO.Server>(nameof<SocketIO.Server>())
 	.toDynamicValue(({ container }) => {
 		const server = new InversifyExpressServer(container)
 
 		server.setConfig((app) => {
-			app.use(bodyParser.json())
+			app.use(bodyParser.json()).use(cors())
 		})
 
-		return server.build()
-	})
-	.inSingletonScope()
+		const httpServer = server.build().listen(PORT)
+		const io = socketio(httpServer, socketioConfig)
 
-container.bind<SocketIO.Server>(nameof<SocketIO.Server>())
-	.toDynamicValue(({ container }) => {
-		const app = container.get<Application>(nameof<Application>())
-		const server = app.listen(PORT)
-
-		return socketio(server, socketioConfig)
+		return io
 	})
 	.inSingletonScope()
 
@@ -152,5 +146,9 @@ container.bind<PublicController>(nameof<PublicController>())
 
 container.bind<Map<string, ISocketMediator>>(nameof<Map<string, ISocketMediator>>())
 	.toConstantValue(new Map())
+
+container.bind<NamespaceAuthHook>(nameof<NamespaceAuthHook>())
+	.toDynamicValue(namespaceAuthHook)
+	.inSingletonScope()
 
 export default container

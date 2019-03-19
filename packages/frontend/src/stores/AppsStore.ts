@@ -1,4 +1,4 @@
-import { action, computed, observable, ObservableMap, keys } from 'mobx'
+import { action, computed, observable, ObservableMap } from 'mobx'
 import {
 	EventType,
 	CreateAppResponse,
@@ -14,15 +14,14 @@ import {
 	CreateAppRequest,
 	SystemType,
 	ISystemTypeCount,
-	AuthenticatedRequest,
 	ReportModelResponse,
+	IGroupedReportModel,
 } from 'shared'
 import { IApi } from '../services/Api'
 import { IApp } from './App'
 import { AppFactory } from './factories/AppFactory'
 import { getDefaultSimpleStatistics, memoize, isDifferenceLongerThanHour } from '../util/functions'
 import { defaultSystemCounts } from '../util/constants/defaults'
-import { IGroupedReportsModel, IGroupedReportModel } from '../../../shared/dist/interfaces/GroupedReports'
 
 interface IClient {
 	versionName: string
@@ -81,7 +80,6 @@ export default class AppsStore implements IAppsStore {
 	public async fetchApps(): Promise<void> {
 		const { apps } = await this.api.fetch({
 			eventType: EventType.GetApps,
-			requestType: AuthenticatedRequest,
 			responseType: GetAppsResponse,
 		})
 

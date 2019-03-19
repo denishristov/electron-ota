@@ -4,7 +4,8 @@ import { EventEmitter } from 'events'
 
 export type Handler<Req = object, Res = object> = (request: Req) => Res | Promise<Res | void>
 
-export type ConstructedHandler = (request: object, respond: (res: Error | object) => void) => void
+export type ConstructedHandler = (client: IClient) =>
+	(request: object, respond: (res: Error | object) => void)	=> void
 
 type ClientPredicate = (client: IClient) => boolean
 
@@ -52,7 +53,7 @@ interface IHook {
 }
 
 export interface IPreRespondHook extends IHook {
-	handle(eventType: EventType, req: object): Promise<any>
+	handle(client: IClient, req: object): Promise<any>
 }
 
 export interface IPostRespondHook extends IHook {

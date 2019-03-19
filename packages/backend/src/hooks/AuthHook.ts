@@ -1,41 +1,43 @@
-import { EventType, AuthenticatedRequest } from 'shared'
+import { EventType } from 'shared'
 import { IAdminsService } from '../services/AdminsService'
-import { IPreRespondHook } from '../util/mediator/interfaces'
+import { IPreRespondHook, IClient } from '../util/mediator/interfaces'
+import { interfaces } from 'inversify'
 
 export interface IAuthHook extends IPreRespondHook {
-	handle(eventType: EventType, data: AuthenticatedRequest): Promise<object>
+	handle(client: IClient, data?: object): Promise<object>
+}
+
+export type NamespaceAuthHook = (client: SocketIO.Socket, next: (err?: Error) => void) => void
+
+export function namespaceAuthHook({ container }: interfaces.Context) {
+	const authHook = container.get<IAuthHook>(nameof<IAuthHook>())
+
+	return (client: SocketIO.Socket, next: (err?: Error) => void) => {
+		try {
+			authHook.handle(client)
+			next()
+		} catch (error) {
+			next(error)
+		}
+	}
 }
 
 @injectable()
 export default class AuthHook implements IAuthHook {
-	public exceptions = new Set([
-		EventType.Login,
-		EventType.Logout,
-		EventType.Authentication,
-		EventType.GetRegisterKeyPath,
-		EventType.RegisterAdmin,
-		EventType.GetProfile,
-		EventType.EditProfile,
-		EventType.DeleteProfile,
-		EventType.ReleaseUpdate,
-	])
-
 	constructor(
 		@inject(nameof<IAdminsService>())
 		private readonly userService: IAdminsService,
 	) {}
 
 	@bind
-	public async handle(eventType: EventType, data: AuthenticatedRequest) {
-		const { isAuthenticated } = await this.userService.authenticate(data)
+	public async handle(client: IClient, data: object) {
+		const { authToken } = client.handshake.query
+		const payload = await this.userService.verify(authToken)
 
-		if (isAuthenticated) {
-			const result = { ...data }
-			delete result.authToken
-
-			return result
-		} else {
+		if (!payload) {
 			throw new Error('Auth token is invalid')
 		}
+
+		return { ...data, authToken, payload }
 	}
 }

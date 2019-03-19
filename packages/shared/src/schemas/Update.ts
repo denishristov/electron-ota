@@ -1,10 +1,9 @@
 // tslint:disable:max-classes-per-file
-import { Required, Allow } from 'tsdv-joi/constraints/any'
+import { Required } from 'tsdv-joi/constraints/any'
 import { StringSchema, Token, Uri } from 'tsdv-joi/constraints/string'
 import { BooleanSchema } from 'tsdv-joi/constraints/boolean'
 import { Nested } from 'tsdv-joi'
 import { SystemType } from '../enums/SystemType'
-import { AuthenticatedRequest } from './generic'
 import { AdminPublicModel } from './Admin'
 
 class Update {
@@ -61,7 +60,7 @@ export class NewUpdateMessage {
 	public update: Update
 }
 
-export class PublishVersionRequest extends AuthenticatedRequest {
+export class PublishVersionRequest {
 	@Required()
 	@Token()
 	public versionId: string

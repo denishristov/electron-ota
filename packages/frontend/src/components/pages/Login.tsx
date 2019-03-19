@@ -99,18 +99,13 @@ export default class Login extends React.Component<RouteComponentProps, IState> 
 		const inputIsEmail = isEmail(input)
 
 		try {
-			const isSuccessful = await this.userStore.login({
+			await this.userStore.login({
 				name: inputIsEmail ? void 0 : input,
 				email: inputIsEmail ? input : void 0,
 				password: password.value,
 			})
 
-			// This will be removed some day, I promise
-			if (!isSuccessful) {
-				throw new Error()
-			}
-
-			isSuccessful && this.props.history.push('/apps')
+			this.props.history.push('/apps')
 		} catch {
 			this.setState({ errorMessage: unsuccessfulLoginMessage })
 		}

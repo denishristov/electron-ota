@@ -12,9 +12,3 @@ export class TimestampedDocument {
 	@DateSchema()
 	public updatedAt: string
 }
-
-export class AuthenticatedRequest {
-	@Required()
-	@StringSchema()
-	public authToken?: string
-}

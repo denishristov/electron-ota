@@ -10,7 +10,7 @@ import semver from 'semver'
 import { Version } from '../models/Version'
 import { ModelType } from 'typegoose'
 import { IAppService } from './AppService'
-import { IAdminsService } from './AdminsService'
+import { IAdminsService, IAuthenticatedRequest } from './AdminsService'
 import { ObjectID } from 'bson'
 
 export interface IReleaseService {
@@ -36,11 +36,9 @@ export default class ReleaseService implements IReleaseService {
 	@bind
 	public async releaseVersion({
 		versionId,
-		authToken,
 		password,
-	}: PublishVersionRequest): Promise<PublishVersionResponse> {
-		const { id } = await this.adminService.getPayloadFromToken(authToken)
-
+		payload: { id },
+	}: PublishVersionRequest & IAuthenticatedRequest): Promise<PublishVersionResponse> {
 		if (!await this.adminService.validatePassword(id, password)) {
 			throw new Error('Invalid password')
 		}

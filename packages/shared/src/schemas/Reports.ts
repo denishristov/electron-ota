@@ -4,7 +4,6 @@ import { NumberSchema } from 'tsdv-joi/constraints/number'
 import { Required } from 'tsdv-joi/constraints/any'
 import { Token, StringSchema } from 'tsdv-joi/constraints/string'
 import { NestedArray, Nested } from 'tsdv-joi'
-import { AuthenticatedRequest } from './generic'
 import { ISystemTypeCount } from '../interfaces/AppClientCount'
 import { IGroupedReportsModel } from '../interfaces/GroupedReports'
 
@@ -30,7 +29,7 @@ export class SimpleVersionReportModel {
 	public version: string
 }
 
-export class GetSimpleVersionReportsRequest extends AuthenticatedRequest {
+export class GetSimpleVersionReportsRequest {
 	@Required()
 	@Token()
 	public appId: string
@@ -88,7 +87,7 @@ export class VersionReportModel {
 	public version: string
 }
 
-export class GetVersionReportsRequest extends AuthenticatedRequest {
+export class GetVersionReportsRequest {
 	@Required()
 	@Token()
 	public versionId: string
@@ -96,7 +95,7 @@ export class GetVersionReportsRequest extends AuthenticatedRequest {
 
 export class GetVersionReportsResponse extends VersionReportModel {}
 
-export class GetAppUsingReportsRequest extends AuthenticatedRequest {
+export class GetAppUsingReportsRequest {
 	@Required()
 	@StringSchema()
 	public appId: string
@@ -106,7 +105,7 @@ export class GetAppUsingReportsResponse {
 	public reports: { [version: string]: ISystemTypeCount }
 }
 
-export class GetVersionGroupedReportsRequest extends AuthenticatedRequest {
+export class GetVersionGroupedReportsRequest {
 	@Required()
 	@StringSchema()
 	public versionId: string

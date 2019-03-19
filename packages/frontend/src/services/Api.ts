@@ -1,7 +1,12 @@
-import { EventType } from 'shared'
+import { EventType, AdminLoginRequest, AdminLoginResponse, RegisterAdminRequest, RegisterAdminResponse } from 'shared'
 import { isError, filterValues } from '../util/functions'
-import { Newable, Empty } from '../util/types'
+import { Newable } from '../util/types'
 import { terminalColors } from '../util/constants/styles'
+import axios from 'axios'
+import { SERVER_URI, PUBLIC_API_URI } from '../config'
+import { OK } from 'http-status-codes'
+import io from 'socket.io-client'
+import { Validator } from 'tsdv-joi/Validator'
 
 interface IFetchArguments<Req extends object, Res extends object> {
 	eventType: EventType
@@ -10,27 +15,35 @@ interface IFetchArguments<Req extends object, Res extends object> {
 	request?: Req
 }
 export interface IApi {
+	connect(query: object): Promise<void>
 	fetch<Req extends object, Res extends object>(arg: IFetchArguments<Req, Res>): Promise<Res>
 	on<Res extends object>(eventType: string, cb: (res: Res) => void): this
-	pre(cb: PreHook): this
+	login(request: AdminLoginRequest): Promise<AdminLoginResponse>
+	register(request: RegisterAdminRequest): Promise<RegisterAdminResponse>
 }
 
 type PreHook = (req: object) => Promise<object> | object
 
 @injectable()
 export default class Api implements IApi {
-	private readonly preHooks: PreHook[] = []
+	private connection: SocketIOClient.Socket
 
-	constructor(
-		@inject(nameof<SocketIOClient.Socket>())
-		private readonly connection: SocketIOClient.Socket,
-	) {}
+	private readonly validator = new Validator()
 
-	@bind
-	public pre(cb: PreHook) {
-		this.preHooks.push(cb)
+	public connect(query: object): Promise<void> {
+		return new Promise((resolve, reject) => {
+			this.connection = io(SERVER_URI, { query })
+			this.connection.once(EventType.Connect, resolve)
+			this.connection.once(EventType.Error, reject)
+		})
+	}
 
-		return this
+	public async login(request: AdminLoginRequest): Promise<AdminLoginResponse> {
+		return this.post('/login', request)
+	}
+
+	public async register(request: RegisterAdminRequest): Promise<RegisterAdminResponse> {
+		return this.post('/register', request)
 	}
 
 	public fetch<Req extends object, Res extends object>({
@@ -40,11 +53,10 @@ export default class Api implements IApi {
 		responseType,
 	}: IFetchArguments<Req, Res>): Promise<Res> {
 		return new Promise(async (resolve, reject) => {
-			let _request = {}
+			const _request = filterValues(request || {})
 
 			try {
-				_request = Object.assign(new (requestType || Empty)(), filterValues(request || {}))
-				_request = await this.applyPreHooks(_request)
+				requestType && this.validator.validateAsClass(_request, requestType)
 
 				const timeout = setTimeout(() => reject({ eventType, request, message: 'timeout' }), 1000 * 10)
 
@@ -79,14 +91,14 @@ export default class Api implements IApi {
 		return this
 	}
 
-	private async applyPreHooks(request: object) {
-		let data: object = request
+	private async post<Req, Res>(url: string, request: Req): Promise<Res> {
+		const res = await axios.post<Res>(PUBLIC_API_URI + url, request)
 
-		for (const hook of this.preHooks) {
-			data = await hook(data)
+		if (res.status !== OK) {
+			throw new Error('Not authenticated')
 		}
 
-		return data
+		return res.data
 	}
 
 	// tslint:disable:no-console

@@ -1,7 +1,7 @@
 // tslint:disable:max-classes-per-file
-import { TimestampedDocument, AuthenticatedRequest } from './generic'
+import { TimestampedDocument } from './generic'
 import { Token, StringSchema, Uri } from 'tsdv-joi/constraints/string'
-import { Required, Allow } from 'tsdv-joi/constraints/any'
+import { Required } from 'tsdv-joi/constraints/any'
 import { BooleanSchema } from 'tsdv-joi/constraints/boolean'
 import { Nested, NestedArray } from 'tsdv-joi'
 import { AdminPublicModel } from './Admin'
@@ -88,7 +88,7 @@ export class VersionEditModel {
 	public systems?: SystemSupport
 }
 
-export class VersionRequest extends AuthenticatedRequest {
+export class VersionRequest {
 	@Required()
 	@Token()
 	public appId: string

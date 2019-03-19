@@ -1,14 +1,41 @@
-import { injectable, inject } from 'inversify'
 import {
-		controller, httpGet, BaseHttpController, HttpResponseMessage, StringContent,
+	controller,
+	httpPost,
+	BaseHttpController,
+	requestBody,
 } from 'inversify-express-utils'
+import { IAdminsService } from '../services/AdminsService'
+import { AdminLoginRequest, RegisterAdminRequest } from 'shared'
+import { UNAUTHORIZED } from 'http-status-codes'
 
-@controller('/')
+@controller('/public')
 export default class PublicController extends BaseHttpController {
-	@httpGet('/')
-	public async get() {
-			const response = new HttpResponseMessage(200)
-			response.content = new StringContent('foo')
-			return response
+	constructor(
+		@inject(nameof<IAdminsService>())
+		private readonly adminsService: IAdminsService,
+	) {
+		super()
+	}
+
+	@httpPost('/login')
+	public async login(@requestBody() request: AdminLoginRequest) {
+		try {
+			return this.ok(await this.adminsService.login(request))
+		} catch {
+			return this.unauthorized()
+		}
+	}
+
+	@httpPost('/register')
+	public async register(@requestBody() request: RegisterAdminRequest) {
+		try {
+			return this.ok(await this.adminsService.register(request))
+		} catch {
+			return this.unauthorized()
+		}
+	}
+
+	private unauthorized() {
+		return this.json({}, UNAUTHORIZED)
 	}
 }

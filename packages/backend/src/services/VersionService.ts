@@ -51,8 +51,7 @@ export default class VersionService implements IVersionService {
 
 	@bind
 	public async updateVersion(update: UpdateVersionRequest): Promise<UpdateVersionResponse> {
-		await this.VersionModel.findByIdAndUpdate(update.id, update)
-		return update
+		return await this.VersionModel.findByIdAndUpdate(update.id, update, { new: true })
 	}
 
 	@bind

@@ -8,7 +8,7 @@ import { IReleaseService } from '../services/ReleaseService'
 import { IVersionReportsService } from '../services/VersionReportsService'
 import { IClientCounterService } from '../services/ClientCounterService'
 
-import { IAuthHook } from '../hooks/AuthHook'
+import { IAuthHook, NamespaceAuthHook } from '../hooks/AuthHook'
 import { IValidationHook } from '../hooks/ValidationHook'
 import { IDeleteClientMediatorHook } from '../hooks/DeleteClientMediatorHook'
 import { ICreateClientMediatorHook } from '../hooks/CreateClientMediatorHook'
@@ -19,11 +19,6 @@ import SocketMediator from '../util/mediator/SocketMediator'
 
 import {
 	EventType,
-	AuthenticatedRequest,
-	AdminLoginRequest,
-	AdminLoginResponse,
-	AdminAuthenticationResponse,
-	RegisterAdminRequest,
 	GetAppsResponse,
 	UpdateAppResponse,
 	UpdateVersionRequest,
@@ -47,7 +42,6 @@ import {
 	GetSimpleVersionReportsResponse,
 	GetVersionReportsRequest,
 	GetVersionReportsResponse,
-	RegisterAdminResponse,
 	AdminEditProfileRequest,
 	AdminPublicModel,
 	GetAppCountersRequest,
@@ -78,34 +72,18 @@ export default function adminMediatorFactory({ container }: interfaces.Context):
 	const deleteMediatorHook = container.get<IDeleteClientMediatorHook>(nameof<IDeleteClientMediatorHook>())
 	const releaseUpdateHook = container.get<IReleaseUpdateHook>(nameof<IReleaseUpdateHook>())
 
-	return () => new SocketMediator(server.of(AdminMediator))
-		.use({
-			eventType: EventType.Login,
-			handler: adminService.login,
-			requestType: AdminLoginRequest,
-			responseType: AdminLoginResponse,
-		})
+	const namespaceAuthHook = container.get<NamespaceAuthHook>(nameof<NamespaceAuthHook>())
+
+	const namespace = server.of(AdminMediator).use(namespaceAuthHook)
+
+	return () => new SocketMediator(namespace)
 		.use({
 			eventType: EventType.Logout,
 			handler: adminService.logout,
-			requestType: AuthenticatedRequest,
-		})
-		.use({
-			eventType: EventType.Authentication,
-			handler: adminService.authenticate,
-			requestType: AuthenticatedRequest,
-			responseType: AdminAuthenticationResponse,
-		})
-		.use({
-			eventType: EventType.RegisterAdmin,
-			handler: adminService.register,
-			requestType: RegisterAdminRequest,
-			responseType: RegisterAdminResponse,
 		})
 		.use({
 			eventType: EventType.GetProfile,
 			handler: adminService.getProfile,
-			requestType: AuthenticatedRequest,
 			responseType: AdminPublicModel,
 		})
 		.use({
@@ -116,12 +94,10 @@ export default function adminMediatorFactory({ container }: interfaces.Context):
 		.use({
 			eventType: EventType.DeleteProfile,
 			handler: adminService.deleteProfile,
-			requestType: AuthenticatedRequest,
 		})
 		.use({
 			eventType: EventType.GetApps,
 			handler: appService.getAllApps,
-			requestType: AuthenticatedRequest,
 			responseType: GetAppsResponse,
 		})
 		.use({
@@ -206,7 +182,6 @@ export default function adminMediatorFactory({ container }: interfaces.Context):
 		.use({
 			eventType: EventType.AppsClientCount,
 			handler: clientCounterService.getAppsClientsCount,
-			requestType: AuthenticatedRequest,
 		})
 		.use({
 			eventType: EventType.AppClientCount,

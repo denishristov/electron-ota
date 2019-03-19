@@ -1,8 +1,6 @@
 // tslint:disable:max-classes-per-file
 import { Email, Regex, Min, StringSchema, Max, Uri } from 'tsdv-joi/constraints/string'
 import { Required } from 'tsdv-joi/constraints/any'
-import { BooleanSchema } from 'tsdv-joi/constraints/boolean'
-import { AuthenticatedRequest } from './generic'
 
 export const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,64}$/
 
@@ -13,6 +11,7 @@ export class AdminPublicModel {
 
 	public pictureUrl: string
 }
+
 export class AdminLoginRequest {
 	@Email()
 	public email?: string
@@ -24,24 +23,8 @@ export class AdminLoginRequest {
 }
 
 export class AdminLoginResponse {
-	@Required()
-	@BooleanSchema()
-	public isAuthenticated: boolean
-
 	@StringSchema()
-	public authToken?: string
-}
-
-export class AdminAuthenticationResponse {
-	@Required()
-	@BooleanSchema()
-	public isAuthenticated: boolean
-}
-
-export class RegisterKeyPathResponse {
-	@Required()
-	@StringSchema()
-	public path: string
+	public authToken: string
 }
 
 export class RegisterAdminRequest {
@@ -63,15 +46,11 @@ export class RegisterAdminRequest {
 }
 
 export class RegisterAdminResponse {
-	@Required()
-	@BooleanSchema()
-	public isSuccessful: boolean
-
 	@StringSchema()
-	public authToken?: string
+	public authToken: string
 }
 
-export class AdminEditProfileRequest extends AuthenticatedRequest {
+export class AdminEditProfileRequest {
 	@Email()
 	public email?: string
 

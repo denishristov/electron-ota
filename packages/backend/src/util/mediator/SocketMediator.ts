@@ -26,7 +26,6 @@ export default class SocketMediator extends EventEmitter implements ISocketMedia
 		super()
 
 		namespace.on(EventType.Connection, this.subscribe)
-		namespace.on(EventType.Connection, (client) => this.emit(MediatorEvent.Subscribe, client))
 	}
 
 	public get name() {
@@ -50,12 +49,14 @@ export default class SocketMediator extends EventEmitter implements ISocketMedia
 	@bind
 	public subscribe(client: IClient) {
 		client.join(this.roomId, () => {
-			for (const handler of this.requestHandlers) {
-				client.on(...handler)
+			for (const [eventType, attach] of this.requestHandlers) {
+				client.on(eventType, attach(client))
 			}
-		})
 
-		client.on(EventType.Disconnect, () => this.unsubscribe(client))
+			client.on(EventType.Disconnect, () => this.unsubscribe(client))
+
+			this.emit(MediatorEvent.Subscribe, client)
+		})
 	}
 
 	@bind
@@ -99,7 +100,7 @@ export default class SocketMediator extends EventEmitter implements ISocketMedia
 		this.logBroadcast(eventType, data)
 	}
 
-	private async applyPreHooks<T extends object>(eventType: EventType, request: T): Promise<T> {
+	private async applyPreHooks<T extends object>(eventType: EventType, request: T, client: IClient): Promise<T> {
 		if (!this.preRespondHooks.length) {
 			return request
 		}
@@ -114,7 +115,7 @@ export default class SocketMediator extends EventEmitter implements ISocketMedia
 				continue
 			}
 
-			data = await handle(eventType, data)
+			data = await handle(client, data)
 		}
 
 		return data
@@ -144,29 +145,31 @@ export default class SocketMediator extends EventEmitter implements ISocketMedia
 		responseType,
 		broadcast,
 	}: IRequestHandler<Req, Res>) {
-		return async (request: Req, respond: (res: object) => void) => {
-			let response = null
+		return (client: IClient) => {
+			return async (request: Req, respond: (res: object) => void) => {
+				let response = null
 
-			try {
-				const data = await this.applyPreHooks(eventType, Object.assign(new (requestType || Empty)(), request))
+				try {
+					const data = await this.applyPreHooks(eventType, Object.assign(new (requestType || Empty)(), request), client)
 
-				const result = await handler(data)
+					const result = await handler(data)
 
-				response = Object.assign(new (responseType || Empty)(), result || {})
+					response = Object.assign(new (responseType || Empty)(), result || {})
 
-				respond(response)
+					respond(response)
 
-				this.logRequest(eventType, request, response)
-			} catch (error) {
-				this.logError(eventType, request, error)
-				respond(error)
-			}
+					this.logRequest(eventType, request, response)
+				} catch (error) {
+					this.logError(eventType, request, error)
+					respond(error)
+				}
 
-			if (response) {
-				this.applyPostHooks(eventType, request, response)
+				if (response) {
+					this.applyPostHooks(eventType, request, response)
 
-				if (broadcast) {
-					this.broadcast(eventType, response)
+					if (broadcast) {
+						this.broadcast(eventType, response)
+					}
 				}
 			}
 		}

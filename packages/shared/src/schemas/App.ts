@@ -4,7 +4,7 @@ import { Nested, NestedArray } from 'tsdv-joi'
 import { Token, StringSchema, Uri, Regex } from 'tsdv-joi/constraints/string'
 import { Required, Allow } from 'tsdv-joi/constraints/any'
 import { NumberSchema } from 'tsdv-joi/constraints/number'
-import { AuthenticatedRequest, TimestampedDocument } from './generic'
+import { TimestampedDocument } from './generic'
 
 export class LatestVersionsModel {
 	@Allow(null)
@@ -54,7 +54,7 @@ export class GetAppsResponse {
 	public apps: AppModel[]
 }
 
-export class CreateAppRequest extends AuthenticatedRequest {
+export class CreateAppRequest {
 	@Required()
 	@StringSchema()
 	public name: string
@@ -73,7 +73,7 @@ export class CreateAppRequest extends AuthenticatedRequest {
 
 export class CreateAppResponse extends AppModel {}
 
-export class UpdateAppRequest extends AuthenticatedRequest {
+export class UpdateAppRequest {
 	@Required()
 	@Token()
 	public id: string
@@ -103,7 +103,7 @@ export class UpdateAppResponse {
 	public color?: string
 }
 
-export class DeleteAppRequest extends AuthenticatedRequest {
+export class DeleteAppRequest {
 	@Required()
 	@Token()
 	public id: string
@@ -111,7 +111,7 @@ export class DeleteAppRequest extends AuthenticatedRequest {
 
 export class DeleteAppResponse extends DeleteAppRequest {}
 
-export class GetAppCountersRequest extends AuthenticatedRequest {
+export class GetAppCountersRequest {
 	@Required()
 	@StringSchema()
 	public bundleId: string

@@ -1,7 +1,7 @@
 import React, { FormEvent } from 'react'
 import { observer } from 'mobx-react'
 import { Redirect } from 'react-router'
-import { copyToClipboard } from '../../util/functions'
+
 import Input from '../generic/Input'
 import Button from '../generic/Button'
 import Container from '../generic/Container'
@@ -33,6 +33,8 @@ interface IRegisterFormEvent extends FormEvent<HTMLFormElement> {
 		},
 	}
 }
+
+const unsuccessfulRegisterMessage = 'Invalid registration key.'
 
 @observer
 export default class Register extends React.Component<{}, IState> {
@@ -116,15 +118,17 @@ export default class Register extends React.Component<{}, IState> {
 		const { name, password1, password2, email, key } = event.target.elements
 
 		if (password1.value === password2.value) {
-			const isRegistered = await this.userStore.register({
-				name: name.value,
-				email: email.value,
-				password: password1.value,
-				key: key.value,
-			})
+			try {
+				await this.userStore.register({
+					name: name.value,
+					email: email.value,
+					password: password1.value,
+					key: key.value,
+				})
 
-			if (isRegistered) {
-				this.setState({ isRegistered })
+				this.setState({ isRegistered: true })
+			} catch {
+				this.setState({ errorMessage: unsuccessfulRegisterMessage })
 			}
 		} else {
 			this.setState({ errorMessage: errors.passwordMatch })

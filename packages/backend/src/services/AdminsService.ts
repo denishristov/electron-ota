@@ -8,8 +8,6 @@ import { IRegisterCredentialsService } from './RegisterCredentialsService'
 import { InstanceType, ModelType } from 'typegoose'
 
 import {
-	AuthenticatedRequest,
-	AdminAuthenticationResponse,
 	AdminLoginRequest,
 	AdminLoginResponse,
 	RegisterAdminRequest,
@@ -21,19 +19,23 @@ import { filterValues } from '../util/functions'
 
 export interface IAdminsService {
 	login(req: AdminLoginRequest): Promise<AdminLoginResponse>
-	logout(req: AuthenticatedRequest): Promise<void>
-	authenticate(req: AuthenticatedRequest): Promise<AdminAuthenticationResponse>
+	logout(req: IAuthenticatedRequest): Promise<void>
+	verify(authToken: string): Promise<IJWTPayload>
 	register(req: RegisterAdminRequest): Promise<RegisterAdminResponse>
-	getProfile(req: AuthenticatedRequest): Promise<AdminPublicModel>
+	getProfile(req: IAuthenticatedRequest): Promise<AdminPublicModel>
 	getPublicProfile(id: string): Promise<AdminPublicModel>
 	editProfile(req: AdminEditProfileRequest): Promise<void>
-	deleteProfile(req: AuthenticatedRequest): Promise<void>
-	getPayloadFromToken(authToken: string): Promise<IJWTPayload>
+	deleteProfile(req: IAuthenticatedRequest): Promise<void>
 	validatePassword(id: string, password: string): Promise<boolean>
 }
 
 interface IJWTPayload {
 	id: string
+}
+
+export interface IAuthenticatedRequest {
+	payload: IJWTPayload
+	authToken: string
 }
 
 @injectable()
@@ -47,73 +49,53 @@ export default class AdminsService implements IAdminsService {
 
 	@bind
 	public async login({ email, name, password }: AdminLoginRequest): Promise<AdminLoginResponse> {
-		try {
-			if (!email && !name) {
-				throw new Error('No email or name')
-			}
-
-			const user = await this.AdminModel
-				.findOne(filterValues({ email, name }))
-				.select('password authTokens')
-
-			if (!await this.comparePasswords(password, user.password)) {
-				throw new Error('Invalid password')
-			}
-
-			return {
-				authToken: await this.generateTokenAndAddToAdmin(user),
-				isAuthenticated: true,
-			}
-		} catch (error) {
-			// tslint:disable-next-line:no-console
-			console.log(error)
-			return {
-				// errorMessage: error.message,
-				isAuthenticated: false,
-			}
+		if (!email && !name) {
+			throw new Error('No email or name')
 		}
+
+		const admin = await this.AdminModel
+			.findOne(filterValues({ email, name }))
+			.select('password authTokens')
+
+		if (!admin || !await this.comparePasswords(password, admin.password)) {
+			throw new Error('Invalid password')
+		}
+
+		return this.generateTokenAndAddToAdmin(admin)
 	}
 
 	@bind
-	public async logout({ authToken }: AuthenticatedRequest): Promise<void> {
-		const { id } =  await this.getPayloadFromToken(authToken)
-
+	public async logout({ authToken, payload }: IAuthenticatedRequest): Promise<void> {
 		const hashed = this.hashAuthToken(authToken)
 
-		await this.AdminModel.findByIdAndUpdate(id, { $pull: { authTokens: hashed } })
+		await this.AdminModel.findByIdAndUpdate(payload.id, { $pull: { authTokens: hashed } })
 	}
 
 	@bind
-	public async authenticate({ authToken }: AuthenticatedRequest): Promise<AdminAuthenticationResponse> {
-		try {
-			const { id } =  await this.getPayloadFromToken(authToken)
+	public async verify(authToken: string): Promise<IJWTPayload> {
+		const payload = await this.getPayloadFromToken(authToken)
 
-			const { authTokens } = await this.AdminModel.findById(id).select('authTokens')
+		const { authTokens } = await this.AdminModel.findById(payload.id).select('authTokens')
 
-			if (!authTokens) {
-				throw new Error('Invalid token')
-			}
-
-			const hashedToken = await this.hashAuthToken(authToken)
-
-			return {
-				isAuthenticated: Boolean(authTokens.find((token) => token === hashedToken)),
-			}
-		} catch (error) {
-			return {
-				isAuthenticated: false,
-			}
+		if (!authTokens) {
+			return null
 		}
+
+		const hashedToken = await this.hashAuthToken(authToken)
+
+		if (!authTokens.find((token) => token === hashedToken)) {
+			return null
+		}
+
+		return payload
 	}
 
 	@bind
 	public async register({ name, email, password, key }: RegisterAdminRequest): Promise<RegisterAdminResponse> {
-		const firstAdmin = await this.AdminModel.find().limit(1)
+		const [firstAdmin] = await this.AdminModel.find().limit(1)
 
-		if (firstAdmin.length || !this.credentialsService.verify(key)) {
-			return {
-				isSuccessful: false,
-			}
+		if (firstAdmin || !this.credentialsService.verify(key)) {
+			throw new Error('Registration form has been closed.')
 		}
 
 		const { AdminModel } = this
@@ -124,23 +106,19 @@ export default class AdminsService implements IAdminsService {
 			password: await this.hashPassword(password),
 		})
 
-		return {
-			isSuccessful: true,
-			authToken: await this.generateTokenAndAddToAdmin(admin),
-		}
+		return this.generateTokenAndAddToAdmin(admin)
 	}
 
 	@bind
 	public async editProfile({
+		payload: { id },
 		authToken,
 		name,
 		email,
 		pictureUrl,
 		newPassword,
 		oldPassword,
-	}: AdminEditProfileRequest) {
-		const { id } = await this.getPayloadFromToken(authToken)
-
+	}: AdminEditProfileRequest & IAuthenticatedRequest) {
 		const user = await this.AdminModel.findByIdAndUpdate(id, filterValues({
 			name,
 			email,
@@ -160,21 +138,13 @@ export default class AdminsService implements IAdminsService {
 	}
 
 	@bind
-	public async deleteProfile({ authToken }: AuthenticatedRequest) {
-		const { id } = await this.getPayloadFromToken(authToken)
-
+	public async deleteProfile({ payload: { id } }: IAuthenticatedRequest) {
 		await this.AdminModel.findByIdAndDelete(id)
 	}
 
 	@bind
-	public async getProfile({ authToken }: AuthenticatedRequest) {
-		const { id } = await this.getPayloadFromToken(authToken)
-
+	public async getProfile({ payload: { id } }: IAuthenticatedRequest) {
 		return this.getPublicProfile(id)
-	}
-
-	public getPayloadFromToken(authToken: string): Promise<IJWTPayload> {
-		return jwt.verify(authToken, PASS_SECRET_KEY, { algorithms: ['HS256'] }) as Promise<IJWTPayload>
 	}
 
 	public async validatePassword(id: string, password: string) {
@@ -191,19 +161,23 @@ export default class AdminsService implements IAdminsService {
 		return { name, pictureUrl, email }
 	}
 
+	private getPayloadFromToken(authToken: string): Promise<IJWTPayload> {
+		return jwt.verify(authToken, PASS_SECRET_KEY, { algorithms: ['HS256'] }) as Promise<IJWTPayload>
+	}
+
 	private comparePasswords(password: string, hashedPassword: string) {
 		return bcrypt.compare(password, hashedPassword)
 	}
 
-	private async generateTokenAndAddToAdmin(admin: InstanceType<Admin>): Promise<string> {
-		const token = await this.generateToken(admin.id)
+	private async generateTokenAndAddToAdmin(admin: InstanceType<Admin>) {
+		const authToken = await this.generateToken(admin.id)
 
-		const hashed = this.hashAuthToken(token)
+		const hashed = this.hashAuthToken(authToken)
 
 		admin.authTokens.push(hashed)
 		await admin.save()
 
-		return token
+		return { authToken }
 	}
 
 	private generateToken(userId: string, expiresIn: string = '30d'): Promise<string> {
