@@ -18,7 +18,7 @@ class SystemSupport {
 	@Required()
 	@BooleanSchema()
 	// tslint:disable-next-line:variable-name
-	public Windows_RT: boolean
+	public Windows_NT: boolean
 }
 
 export class VersionModel extends TimestampedDocument {

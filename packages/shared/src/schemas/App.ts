@@ -10,7 +10,7 @@ export class LatestVersionsModel {
 	@Allow(null)
 	@Nested()
 	// tslint:disable-next-line:variable-name
-	public Windows_RT?: VersionModel | null
+	public Windows_NT?: VersionModel | null
 
 	@Allow(null)
 	@Nested()

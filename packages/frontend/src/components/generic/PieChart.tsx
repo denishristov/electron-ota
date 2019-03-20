@@ -60,7 +60,7 @@ export default observer(function PieChart({ data, title }: IProps) {
 										<stop offset='0%' stopColor={colors.data.yellow} stopOpacity={1} />
 										<stop offset='100%' stopColor={colors.data.orange} stopOpacity={1} />
 									</linearGradient>
-									<linearGradient id={SystemType.Windows_RT} x1='0' x2='1' y1='0' y2='1'>
+									<linearGradient id={SystemType.Windows_NT} x1='0' x2='1' y1='0' y2='1'>
 										<stop offset='0%' stopColor={colors.data.green} stopOpacity={1} />
 										<stop offset='100%' stopColor={colors.data.blue} stopOpacity={1} />
 									</linearGradient>

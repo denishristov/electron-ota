@@ -95,7 +95,7 @@ export default class Version extends React.Component<IProps> {
 								<>
 									{version.systems.Darwin && <SVG src={icons.Darwin} />}
 									{version.systems.Linux && <SVG src={icons.Linux} />}
-									{version.systems.Windows_RT && <SVG src={icons.Windows_RT} />}
+									{version.systems.Windows_NT && <SVG src={icons.Windows_NT} />}
 								</>
 							)}
 						</Flex>
@@ -121,8 +121,8 @@ export default class Version extends React.Component<IProps> {
 		const counter = this.props.liveCounters.get(versionName)
 
 		if (counter) {
-			const { Windows_RT, Darwin, Linux } = counter
-			return Windows_RT + Darwin + Linux
+			const { Windows_NT, Darwin, Linux } = counter
+			return Windows_NT + Darwin + Linux
 		}
 
 		return 0

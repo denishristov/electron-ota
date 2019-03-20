@@ -1,4 +1,4 @@
-import Windows_RT from '../../img/Windows.svg'
+import Windows_NT from '../../img/Windows.svg'
 import Darwin from '../../img/Apple.svg'
 import Linux from '../../img/Ubuntu.svg'
 import Electron from '../../img/Electron.svg'
@@ -19,7 +19,7 @@ import Key from '../../img/Key.svg'
 
 const icons = {
 	Darwin,
-	Windows_RT,
+	Windows_NT,
 	Linux,
 	Electron,
 	Camera,

@@ -27,7 +27,7 @@ export default class UpdateVersionStore implements IUpdateVersionStore {
 		this.versionModalStore.versionName = versionName
 		this.versionModalStore.isCritical = isCritical
 		this.versionModalStore.isDarwin = systems.Darwin
-		this.versionModalStore.isWindows = systems.Windows_RT
+		this.versionModalStore.isWindows = systems.Windows_NT
 		this.versionModalStore.isLinux = systems.Linux
 		this.description = description
 	}
@@ -51,7 +51,7 @@ export default class UpdateVersionStore implements IUpdateVersionStore {
 			description,
 			isCritical,
 			systems: {
-				Windows_RT: isWindows,
+				Windows_NT: isWindows,
 				Darwin: isDarwin,
 				Linux: isLinux,
 			},

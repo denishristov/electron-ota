@@ -122,7 +122,7 @@ export default class CreateVersionModal extends Component<IProps> {
 							/>
 							<ToggleRow
 								label='Windows'
-								icon={icons.Windows_RT}
+								icon={icons.Windows_NT}
 								onChange={toggles[ToggleNames.isWindows]}
 								value={versionModalStore.isWindows}
 							/>

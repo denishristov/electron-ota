@@ -71,10 +71,10 @@ export default class AppPage extends Component<RouteComponentProps<IParams>, ISt
 		if (this.app) {
 			const data = Object.entries({ ...defaultSystemCounts }).group(returnArgument)
 
-			for (const { Darwin, Linux, Windows_RT } of [...this.app.clientCounters.values()]) {
+			for (const { Darwin, Linux, Windows_NT } of [...this.app.clientCounters.values()]) {
 				data.Darwin += Darwin
 				data.Linux += Linux
-				data.Windows_RT += Windows_RT
+				data.Windows_NT += Windows_NT
 			}
 
 			return Object.entries(data)
@@ -92,10 +92,10 @@ export default class AppPage extends Component<RouteComponentProps<IParams>, ISt
 		if (this.app) {
 			const data = Object.entries({ ...defaultSystemCounts }).group(returnArgument)
 
-			for (const { Darwin, Linux, Windows_RT } of [...this.app.usingReports.values()]) {
+			for (const { Darwin, Linux, Windows_NT } of [...this.app.usingReports.values()]) {
 				data.Darwin += Darwin
 				data.Linux += Linux
-				data.Windows_RT += Windows_RT
+				data.Windows_NT += Windows_NT
 			}
 
 			return Object.entries(data)

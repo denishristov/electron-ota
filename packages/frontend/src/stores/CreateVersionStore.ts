@@ -120,7 +120,7 @@ export default class CreateVersionStore implements ICreateVersionStore {
 			isReleasing,
 			password,
 			systems: {
-				Windows_RT: isWindows,
+				Windows_NT: isWindows,
 				Darwin: isDarwin,
 				Linux: isLinux,
 			},
