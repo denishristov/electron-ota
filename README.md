@@ -24,7 +24,6 @@ The application is in production use by [Ora.pm](https://Ora.pm/) and is my dipl
 * webpack
 
 ## Screenshots
-![AppsPage](https://i.imgur.com/7XpMHT4.png)
 ![AppPage](https://i.imgur.com/5U7bB8O.jpg)
 ![VersionModal](https://i.imgur.com/RswO0lw.png)
 ![VersionPage](https://i.imgur.com/szy5GeS.jpg)
