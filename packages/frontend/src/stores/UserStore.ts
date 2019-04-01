@@ -1,4 +1,3 @@
-import Cookies from 'js-cookie'
 import { action, computed, observable } from 'mobx'
 import { IApi } from '../services/Api'
 import {
@@ -39,29 +38,23 @@ class UserStore implements IUserStore {
 		pictureUrl: '',
 	}
 
-	private authToken?: string | null = null
-
 	constructor(
 		@inject(nameof<IApi>())
 		private readonly api: IApi,
 	) {
-		const authToken = Cookies.get('authToken')
-
-		if (authToken) {
-			this.authenticate(authToken)
-		}
+		this.authenticate()
 	}
 
 	@computed
 	public get isLoading(): boolean {
-		return !this.profile.name && Boolean(this.authToken) && this.isAuthenticated === null
+		return !this.profile.name && this.isAuthenticated === null
 	}
 
 	@action.bound
 	public async login(request: AdminLoginRequest) {
-		const { authToken } = await this.api.login(request)
+		await this.api.login(request)
 
-		await this.authenticate(authToken)
+		await this.authenticate()
 	}
 
 	@action.bound
@@ -69,16 +62,13 @@ class UserStore implements IUserStore {
 		this.api.fetch({ eventType: EventType.Logout })
 
 		this.isAuthenticated = null
-		this.authToken = null
-
-		Cookies.remove('authToken')
 	}
 
 	@action
 	public async register(request: RegisterAdminRequest) {
-		const { authToken } = await this.api.register(request)
+		await this.api.register(request)
 
-		await this.authenticate(authToken)
+		await this.authenticate()
 	}
 
 	@action.bound
@@ -105,12 +95,9 @@ class UserStore implements IUserStore {
 	}
 
 	@action.bound
-	private async authenticate(authToken: string): Promise<void> {
-		await this.api.connect({ authToken })
+	private async authenticate(): Promise<void> {
+		await this.api.connect()
 
-		Cookies.set('authToken', authToken)
-
-		this.authToken = authToken
 		this.isAuthenticated = true
 
 		this.fetchProfile()

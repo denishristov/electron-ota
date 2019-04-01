@@ -50,7 +50,7 @@ import {
 	GetVersionGroupedReportsRequest,
 	GetVersionGroupedReportsResponse,
 } from 'shared'
-import { AdminMediator } from '../util/symbols'
+import { AdminMediatorPath } from '../util/symbols'
 
 export type AdminMediatorFactory = () => ISocketMediator
 
@@ -74,7 +74,7 @@ export default function adminMediatorFactory({ container }: interfaces.Context):
 
 	const namespaceAuthHook = container.get<NamespaceAuthHook>(nameof<NamespaceAuthHook>())
 
-	const namespace = server.of(AdminMediator).use(namespaceAuthHook)
+	const namespace = server.of(AdminMediatorPath).use(namespaceAuthHook)
 
 	return () => new SocketMediator(namespace)
 		.use({

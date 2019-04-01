@@ -78,13 +78,13 @@ export default class AdminsService implements IAdminsService {
 		const { authTokens } = await this.AdminModel.findById(payload.id).select('authTokens')
 
 		if (!authTokens) {
-			return null
+			throw new Error('Auth token is invalid.')
 		}
 
 		const hashedToken = await this.hashAuthToken(authToken)
 
 		if (!authTokens.find((token) => token === hashedToken)) {
-			return null
+			throw new Error('Auth token is invalid.')
 		}
 
 		return payload
@@ -144,7 +144,7 @@ export default class AdminsService implements IAdminsService {
 
 	@bind
 	public async getProfile({ payload: { id } }: IAuthenticatedRequest) {
-		return this.getPublicProfile(id)
+		return await this.getPublicProfile(id)
 	}
 
 	public async validatePassword(id: string, password: string) {

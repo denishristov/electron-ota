@@ -1,1 +1,3 @@
-export default {}
+export default {
+	transports: ['websocket', 'xhr-polling'],
+}

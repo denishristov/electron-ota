@@ -1,1 +1,1 @@
-export const AdminMediator = '/admins'
+export const AdminMediatorPath = '/admins'

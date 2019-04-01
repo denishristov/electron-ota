@@ -1,5 +1,5 @@
 import { EventType, AdminLoginRequest, AdminLoginResponse, RegisterAdminRequest, RegisterAdminResponse } from 'shared'
-import { isError, filterValues } from '../util/functions'
+import { filterValues } from '../util/functions'
 import { Newable } from '../util/types'
 import { terminalColors } from '../util/constants/styles'
 import axios from 'axios'
@@ -15,14 +15,12 @@ interface IFetchArguments<Req extends object, Res extends object> {
 	request?: Req
 }
 export interface IApi {
-	connect(query: object): Promise<void>
+	connect(): Promise<void>
 	fetch<Req extends object, Res extends object>(arg: IFetchArguments<Req, Res>): Promise<Res>
 	on<Res extends object>(eventType: string, cb: (res: Res) => void): this
 	login(request: AdminLoginRequest): Promise<AdminLoginResponse>
 	register(request: RegisterAdminRequest): Promise<RegisterAdminResponse>
 }
-
-type PreHook = (req: object) => Promise<object> | object
 
 @injectable()
 export default class Api implements IApi {
@@ -30,9 +28,11 @@ export default class Api implements IApi {
 
 	private readonly validator = new Validator()
 
-	public connect(query: object): Promise<void> {
+	public connect(): Promise<void> {
 		return new Promise((resolve, reject) => {
-			this.connection = io(SERVER_URI, { query })
+			this.connection = io(SERVER_URI, {
+				transports: ['websocket', 'xhr-polling'],
+			})
 			this.connection.once(EventType.Connect, resolve)
 			this.connection.once(EventType.Error, reject)
 		})
@@ -60,13 +60,13 @@ export default class Api implements IApi {
 
 				const timeout = setTimeout(() => reject({ eventType, request, message: 'timeout' }), 1000 * 10)
 
-				this.connection.emit(eventType, _request, (data: Res) => {
+				this.connection.emit(eventType, _request, (data: Res & { __isError: boolean }) => {
 					const typedResponse = responseType ? Object.assign(new (responseType)(), data) : data
 					const response = data
 
 					clearTimeout(timeout)
 
-					if (isError(response)) {
+					if (response.__isError) {
 						this.logError(eventType, _request || {}, typedResponse)
 						reject(response)
 					} else {
@@ -92,7 +92,7 @@ export default class Api implements IApi {
 	}
 
 	private async post<Req, Res>(url: string, request: Req): Promise<Res> {
-		const res = await axios.post<Res>(PUBLIC_API_URI + url, request)
+		const res = await axios.post<Res>(PUBLIC_API_URI + url, request, { withCredentials: true })
 
 		if (res.status !== OK) {
 			throw new Error('Not authenticated')

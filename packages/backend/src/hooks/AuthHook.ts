@@ -12,9 +12,9 @@ export type NamespaceAuthHook = (client: SocketIO.Socket, next: (err?: Error) =>
 export function namespaceAuthHook({ container }: interfaces.Context) {
 	const authHook = container.get<IAuthHook>(nameof<IAuthHook>())
 
-	return (client: SocketIO.Socket, next: (err?: Error) => void) => {
+	return async (client: SocketIO.Socket, next: (err?: Error) => void) => {
 		try {
-			authHook.handle(client)
+			await authHook.handle(client)
 			next()
 		} catch (error) {
 			next(error)
@@ -31,12 +31,8 @@ export default class AuthHook implements IAuthHook {
 
 	@bind
 	public async handle(client: IClient, data: object) {
-		const { authToken } = client.handshake.query
+		const { authToken } = client.request.cookies
 		const payload = await this.userService.verify(authToken)
-
-		if (!payload) {
-			throw new Error('Auth token is invalid')
-		}
 
 		return { ...data, authToken, payload }
 	}

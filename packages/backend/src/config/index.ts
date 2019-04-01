@@ -31,6 +31,7 @@ export const AWS_CREDENTIALS = {
 	secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
 	region: process.env.AWS_REGION,
 }
+
 invariant(AWS_CREDENTIALS.accessKeyId, 'AWS_ACCESS_KEY_ID is undefined')
 invariant(AWS_CREDENTIALS.secretAccessKey, 'AWS_SECRET_ACCESS_KEY is undefined')
 invariant(AWS_CREDENTIALS.region, 'AWS_REGION is undefined')
@@ -40,6 +41,7 @@ export const S3_CONFIG = {
 	Bucket: process.env.S3_BUCKET,
 	Expires: parseInt(process.env.S3_EXPIRES, 10),
 }
+
 invariant(S3_CONFIG.ACL, 'S3_ACL is undefined')
 invariant(S3_CONFIG.Bucket, 'S3_BUCKET is undefined')
 invariant(S3_CONFIG.Expires, 'S3_EXPIRES is undefined or is NaN')

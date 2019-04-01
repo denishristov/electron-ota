@@ -51,11 +51,17 @@ container.bind<SocketIO.Server>(nameof<SocketIO.Server>())
 		const server = new InversifyExpressServer(container)
 
 		server.setConfig((app) => {
-			app.use(bodyParser.json()).use(cors())
+			app.use(bodyParser.json())
+				.use(cors({
+					origin: 'http://localhost:3000',
+					credentials: true,
+				}))
 		})
 
 		const httpServer = server.build().listen(PORT)
 		const io = socketio(httpServer, socketioConfig)
+
+		io.use(require('socket.io-cookie-parser')())
 
 		return io
 	})

@@ -67,10 +67,6 @@ export function formatDate(date: Date) {
 // tslint:disable-next-line:no-empty
 export function noop() {}
 
-export function isError(data: any) {
-	return Boolean(data) && (data.details || data.stack)
-}
-
 export function getDefaultSimpleStatistics(version: string): SimpleVersionReportModel {
 	return {
 		downloadedCount: 0,

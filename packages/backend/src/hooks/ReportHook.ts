@@ -5,7 +5,7 @@ import { ModelType, InstanceType } from 'typegoose'
 import { Version } from '../models/Version'
 import { VersionReports, ReportType } from '../models/VersionReports'
 import { Client } from '../models/Client'
-import { AdminMediator } from '../util/symbols'
+import { AdminMediatorPath } from '../util/symbols'
 
 export interface IReportHook extends IPostRespondHook {
 	handle(
@@ -50,7 +50,7 @@ export default class ReportHook implements IReportHook {
 
 		const { timestamp, client } = (reports)[type as ReportType][0]
 
-		this.mediators.get(AdminMediator).broadcast(eventType, {
+		this.mediators.get(AdminMediatorPath).broadcast(eventType, {
 			appId,
 			versionId,
 			timestamp,

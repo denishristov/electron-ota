@@ -1,6 +1,6 @@
 import { ISocketMediator, IClient  } from '../util/mediator/interfaces'
 import { SystemType, EventType, IAppsClientCount, IAppClientCount, GetAppCountersRequest } from 'shared'
-import { AdminMediator } from '../util/symbols'
+import { AdminMediatorPath } from '../util/symbols'
 
 export interface IClientCounterService {
 	getAppsClientsCount(): IAppsClientCount
@@ -66,7 +66,7 @@ export default class ClientCounterService implements IClientCounterService {
 			const { versionName } = client.handshake.query
 			const [_, bundleId, systemType] = client.nsp.name.match(clientMediatorRegex)
 
-			this.mediators.get(AdminMediator).broadcast(eventType, {
+			this.mediators.get(AdminMediatorPath).broadcast(eventType, {
 				bundleId,
 				versionName,
 				systemType,

@@ -3,10 +3,13 @@ import {
 	httpPost,
 	BaseHttpController,
 	requestBody,
+	response,
+	request,
 } from 'inversify-express-utils'
 import { IAdminsService } from '../services/AdminsService'
 import { AdminLoginRequest, RegisterAdminRequest } from 'shared'
 import { UNAUTHORIZED } from 'http-status-codes'
+import { Response, Request } from 'express-serve-static-core'
 
 @controller('/public')
 export default class PublicController extends BaseHttpController {
@@ -18,21 +21,29 @@ export default class PublicController extends BaseHttpController {
 	}
 
 	@httpPost('/login')
-	public async login(@requestBody() request: AdminLoginRequest) {
+	public async login(@requestBody() data: AdminLoginRequest, @response() res: Response) {
 		try {
-			return this.ok(await this.adminsService.login(request))
+			const { authToken } = await this.adminsService.login(data)
+			return this.authenticate(res, authToken)
 		} catch {
 			return this.unauthorized()
 		}
 	}
 
 	@httpPost('/register')
-	public async register(@requestBody() request: RegisterAdminRequest) {
+	public async register(@requestBody() data: RegisterAdminRequest, @response() res: Response) {
 		try {
-			return this.ok(await this.adminsService.register(request))
+			const { authToken } = await this.adminsService.register(data)
+			return this.authenticate(res, authToken)
 		} catch {
 			return this.unauthorized()
 		}
+	}
+
+	private authenticate(res: Response, authToken: string) {
+		res.cookie('authToken', authToken, { httpOnly: true, sameSite: true  })
+
+		return this.ok()
 	}
 
 	private unauthorized() {

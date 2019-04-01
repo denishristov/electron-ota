@@ -151,17 +151,16 @@ export default class SocketMediator extends EventEmitter implements ISocketMedia
 
 				try {
 					const data = await this.applyPreHooks(eventType, Object.assign(new (requestType || Empty)(), request), client)
-
 					const result = await handler(data)
 
 					response = Object.assign(new (responseType || Empty)(), result || {})
-
 					respond(response)
 
 					this.logRequest(eventType, request, response)
 				} catch (error) {
 					this.logError(eventType, request, error)
-					respond(error)
+
+					respond({ ...error, __isError: true })
 				}
 
 				if (response) {

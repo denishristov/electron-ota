@@ -18,9 +18,14 @@ export interface IClient extends EventEmitter {
 	nsp: {
 		name: string,
 	}
+	request: {
+		cookies: {
+			authToken: string,
+		},
+	}
 	handshake: {
 		query: {
-			[x: string]: any,
+			[x: string]: string,
 		},
 	}
 	join(room: string, callback?: () => void): void
