@@ -150,3 +150,7 @@ export function naturalNumber(num: number) {
 export function randomInteger(min: number, max: number) {
 	return Math.floor(Math.random() * (max - min) ) + min
 }
+
+export function capitalize(str: string) {
+	return [str[0].toLocaleUpperCase(), ...str.slice(1)].join('')
+}

@@ -71,7 +71,7 @@ export default class UpdateAppModal extends Component<IProps> {
 											onClick={colorSetters[backgroundColor]}
 										>
 											{color === backgroundColor && (
-												<SVG src={icons.Success} />
+												<SVG src={icons.Using} />
 											)}
 										</div>
 									))}
@@ -87,7 +87,7 @@ export default class UpdateAppModal extends Component<IProps> {
 							</Button>
 						</Modal.CloseTrigger>
 						<Button size='small' color='blue' type='submit'>
-							<SVG src={icons.Success} />
+							<SVG src={icons.Using} />
 							Save
 						</Button>
 					</footer>

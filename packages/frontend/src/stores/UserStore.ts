@@ -51,7 +51,7 @@ class UserStore implements IUserStore {
 
 	@computed
 	public get isLoading(): boolean {
-		return this.isFetching && this.isAuthenticated === null
+		return this.isFetching || this.isAuthenticated === null
 	}
 
 	@action.bound

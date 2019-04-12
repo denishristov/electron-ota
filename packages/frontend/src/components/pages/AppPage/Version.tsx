@@ -51,7 +51,7 @@ export default class Version extends React.Component<IProps> {
 								/>
 								<Counter
 									message='Using'
-									icon={icons.Success}
+									icon={icons.Using}
 									count={this.simpleReport.usingCount}
 									color={colors.data.blue}
 								/>
@@ -69,7 +69,7 @@ export default class Version extends React.Component<IProps> {
 								/>
 								<Counter
 									message='Errors'
-									icon={icons.ErrorIcon}
+									icon={icons.ErrorMessages}
 									count={this.simpleReport.errorsCount}
 									color={colors.data.red}
 								/>

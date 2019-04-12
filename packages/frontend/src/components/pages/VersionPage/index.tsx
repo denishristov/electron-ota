@@ -10,7 +10,7 @@ import { computed } from 'mobx'
 import { IApp } from '../../../stores/App'
 import Loading from '../../generic/LoadingContainer'
 import { observer } from 'mobx-react'
-import { formatDate } from '../../../util/functions'
+import { formatDate, capitalize } from '../../../util/functions'
 
 import styles from '../../../styles/VersionPage.module.sass'
 import versionStyles from '../../../styles/Version.module.sass'
@@ -32,6 +32,9 @@ import Pushable from '../../generic/Pushable'
 import ConfirmDeleteModal from '../../generic/ConfirmDeleteModal'
 import { TriggerContext } from '../../contexts/ModalContext'
 import PieChart from '../../generic/PieChart'
+import { reportTypes, actionColors } from '../../../util/constants/defaults'
+import { format } from 'timeago.js'
+import Tip from '../../generic/Tip';
 
 const ID = 'edit_version'
 
@@ -83,6 +86,16 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 	@computed
 	get reports(): VersionReportModel | null {
 		return this.app && this.version && this.app.reports.get(this.version.id) || null
+	}
+
+	@computed
+	get activity(): Array<ReportModel & { type: string }> | null {
+		if (!this.reports) {
+			return null
+		}
+
+		return reportTypes.flatMap((type) => this.reports![type].map((report: ReportModel) => ({ ...report, type })))
+			.sort((a, b) => +new Date(b.timestamp) - +new Date(a.timestamp))
 	}
 
 	@computed
@@ -335,49 +348,44 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 										/>
 									</Modal>
 								</Flex>
+								{this.activity && (
+									<>
+										<label>Activity Log</label>
+										{this.activity.map(({ client, type, timestamp }) => (
+											<Flex key={client.id + type} className={styles.client} list y>
+												<Tip message={capitalize(type)}>
+													<SVG
+														className={styles.actionType}
+														src={icons[capitalize(type)]}
+														style={{ backgroundColor: actionColors[type] }}
+													/>
+												</Tip>
+												<h6>
+													{format(new Date(timestamp))}
+												</h6>
+												<h5>{client.username}</h5>
+												<Flex grow />
+												<label>{client.osRelease}</label>
+												<SVG src={icons[client.systemType]} />
+											</Flex>
+										))}
+									</>
+								)}
 							</Flex>
-								<PieChart
-									title='Clients connected on this version per system type'
-									data={this.connectedPieData}
-								/>
-								<PieChart
-									title='Clients using this version per system type'
-									data={this.usingPieDate}
-								/>
-							</Flex>
+						</Flex>
 						{(this.hasReports || this.hasAnyColumnReports)
 							? (
 								<Flex grow col className={styles.timeReports}>
-									{this.reports && this.hasAnyColumnReports && (
-										<div className={styles.clientColumnsContainers}>
-											<ClientColumn
-												icon={icons.Success}
-												title='Using'
-												reports={this.reports.using}
-												color={colors.data.blue}
-											/>
-											<ClientColumn
-												icon={icons.Downloading}
-												title='Downloading'
-												reports={this.reports.downloading}
-												color={colors.data.purple}
-											/>
-											<ClientColumn
-												icon={icons.Downloaded}
-												title='Downloaded'
-												reports={this.reports.downloaded}
-												color={colors.data.green}
-											/>
-											<ClientColumn
-												icon={icons.ErrorIcon}
-												reports={this.reports.errorMessages}
-												title='Errors'
-												color={colors.data.red}
-											/>
-										</div>
-									)}
 									{(this.groupedReports && this.hasReports) && (
 										<Flex list col>
+											<PieChart
+												title='Clients connected on this version per system type'
+												data={this.connectedPieData}
+											/>
+											<PieChart
+												title='Clients using this version per system type'
+												data={this.usingPieDate}
+											/>
 											<AreaChart
 												title='Clients downloading time reports'
 												data={this.groupedReports.downloading}

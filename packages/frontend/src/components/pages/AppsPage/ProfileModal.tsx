@@ -99,7 +99,7 @@ export default class ProfileModal extends React.Component<{}> {
 							</Button>
 						</Modal.CloseTrigger>
 						<Button size='small' color='blue' type='submit'>
-							<SVG src={icons.Success} />
+							<SVG src={icons.Using} />
 							Save
 						</Button>
 					</footer>

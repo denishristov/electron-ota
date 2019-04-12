@@ -10,9 +10,9 @@ export default function LoadingContainer() {
 		<div className={list(styles.loadingContainer, styles.containerPage)}>
 			<Spinner
 				visible
-				size={120}
-				spinnerColor={colors.ui.darkAccent}
-				spinnerWidth={4}
+				size={80}
+				spinnerColor={colors.ui.accent}
+				spinnerWidth={2}
 			/>
 		</div>
 	)

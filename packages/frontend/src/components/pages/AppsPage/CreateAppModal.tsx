@@ -62,7 +62,7 @@ export default class CreateAppModal extends React.Component {
 												onClick={colorSetters[backgroundColor]}
 											>
 												{color === backgroundColor && (
-													<SVG src={icons.Success} />
+													<SVG src={icons.Using} />
 												)}
 											</div>
 										))

@@ -65,11 +65,22 @@
 		
 
 .client
-	@include transition(box-shadow, background-color)
 	background-color: $entry-bg
-	
-	&:hover
-		background-color: $entry-hover-bg
+	position: relative
+
+	&:not(:last-child):before
+		border-right: 1px solid $dark-accent
+
+	&:before
+		content: ''
+		width: 14px
+		height: 24px
+		position: absolute
+		top: 34px
+
+	h3, h5
+		margin-top: 8px
+		margin-bottom: 8px
 
 	> span > span
 		label
@@ -102,6 +113,12 @@
 	h4
 		margin-top: $spacing / 2
 
+	h6
+		color: $dark-accent
+		font-size: 0.9rem
+		margin-top: 8px
+		margin-bottom: 8px
+
 	img
 		width: $spacing * 3
 		height: $spacing * 3
@@ -112,3 +129,13 @@
 		position: absolute
 		right: $spacing
 		top: $spacing
+
+	.action-type
+		border-radius: 50%
+		width: 24px
+		height: 24px
+		padding: 2px
+
+		g, path
+			fill: $dark-text
+	
