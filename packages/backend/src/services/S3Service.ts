@@ -72,7 +72,7 @@ export default class S3Service implements IFileUploadService {
 		}
 
 		return {
-			downloadUrl: `https://s3.amazonaws.com/${params.Bucket}/${params.Key}`,
+			downloadUrl: `https://s3.${AWS_CREDENTIALS.region}.amazonaws.com/${params.Bucket}/${params.Key}`,
 			signedRequest: await this.signUrl(S3Action.Upload, params),
 		}
 	}

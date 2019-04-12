@@ -4,9 +4,6 @@ export enum EventType {
 	Disconnect = 'disconnect',
 	Error = 'error',
 
-	Login = 'login',
-	Logout = 'logout',
-	Authentication = 'authentication',
 	GetProfile = 'profile.get',
 	EditProfile = 'profile.edit',
 	DeleteProfile = 'profile.delete',
@@ -33,9 +30,6 @@ export enum EventType {
 	CheckForUpdate = 'update.check',
 	NewUpdate = 'update.new',
 
-	GetRegisterKeyPath = 'register.path',
-	RegisterAdmin = 'register',
-
 	RegisterClient = 'client.register',
 	UpdateDownloading = 'client.downloading',
 	UpdateDownloaded = 'client.downloaded',
@@ -45,6 +39,6 @@ export enum EventType {
 	ClientConnected = 'client.connected',
 	ClientDisconnected = 'client.disconnected',
 
-	AppsClientCount = 'clients.apps',
-	AppClientCount = 'clients.app',
+	GetAppsClientCount = 'clients.apps',
+	GetAppClientCount = 'clients.app',
 }

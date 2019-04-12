@@ -25,7 +25,7 @@ import CreateClientMediatorHook, { ICreateClientMediatorHook } from '../hooks/Cr
 
 import socketio from 'socket.io'
 
-import { S3_CONFIG, PORT } from '.'
+import { S3_CONFIG, PORT, CLIENT_ORIGIN } from '.'
 
 import adminMediatorFactory, { AdminMediatorFactory } from '../mediators/AdminMediatorFactory'
 import clientsMediatorFactory, { ClientsMediatorFactory } from '../mediators/ClientsMediatorFactory'
@@ -54,7 +54,7 @@ container.bind<SocketIO.Server>(nameof<SocketIO.Server>())
 		server.setConfig((app) => {
 			app.use(bodyParser.json())
 				.use(cors({
-					origin: 'http://localhost:3000',
+					origin: CLIENT_ORIGIN,
 					credentials: true,
 				}))
 				.use(cookieParser())

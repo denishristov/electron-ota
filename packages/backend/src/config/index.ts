@@ -50,3 +50,6 @@ if (!MONGODB_URI) {
 	logger.error('No mongo connection string. Set MONGODB_URI environment variable.')
 	process.exit(1)
 }
+
+export const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN
+invariant(CLIENT_ORIGIN, 'CLIENT_ORIGIN is undefined')
