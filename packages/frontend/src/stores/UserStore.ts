@@ -18,6 +18,7 @@ export interface IUserStore {
 	register(request: RegisterAdminRequest): Promise<void>
 	deleteProfile(): Promise<void>
 	editProfile(request: AdminEditProfileRequest): Promise<void>
+	authenticate(): Promise<void>
 }
 
 interface IProfile {
@@ -41,9 +42,7 @@ class UserStore implements IUserStore {
 	constructor(
 		@inject(nameof<IApi>())
 		private readonly api: IApi,
-	) {
-		this.authenticate()
-	}
+	) {}
 
 	@computed
 	public get isLoading(): boolean {
@@ -59,7 +58,7 @@ class UserStore implements IUserStore {
 
 	@action.bound
 	public logout() {
-		this.api.fetch({ eventType: EventType.Logout })
+		this.api.logout()
 
 		this.isAuthenticated = null
 	}
@@ -95,12 +94,16 @@ class UserStore implements IUserStore {
 	}
 
 	@action.bound
-	private async authenticate(): Promise<void> {
-		await this.api.connect()
+	public async authenticate(): Promise<void> {
+		try {
+			await this.api.connect()
 
-		this.isAuthenticated = true
+			this.isAuthenticated = true
 
-		this.fetchProfile()
+			this.fetchProfile()
+		} catch {
+			this.isAuthenticated = false
+		}
 	}
 
 	@memoize

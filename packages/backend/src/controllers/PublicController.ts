@@ -11,6 +11,8 @@ import { AdminLoginRequest, RegisterAdminRequest } from 'shared'
 import { UNAUTHORIZED } from 'http-status-codes'
 import { Response, Request } from 'express-serve-static-core'
 
+const TOKEN_KEY = 'authToken'
+
 @controller('/public')
 export default class PublicController extends BaseHttpController {
 	constructor(
@@ -40,8 +42,20 @@ export default class PublicController extends BaseHttpController {
 		}
 	}
 
+	@httpPost('/logout')
+	public async logout(@response() res: Response, @request() req: Request) {
+		this.adminsService.logout({
+			authToken: req.cookies.authToken,
+			payload: await this.adminsService.verify(req.cookies.authToken),
+		})
+
+		res.clearCookie(TOKEN_KEY)
+
+		return this.ok()
+	}
+
 	private authenticate(res: Response, authToken: string) {
-		res.cookie('authToken', authToken, { httpOnly: true, sameSite: true  })
+		res.cookie(TOKEN_KEY, authToken, { httpOnly: true, sameSite: true  })
 
 		return this.ok()
 	}

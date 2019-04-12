@@ -78,10 +78,6 @@ export default function adminMediatorFactory({ container }: interfaces.Context):
 
 	return () => new SocketMediator(namespace)
 		.use({
-			eventType: EventType.Logout,
-			handler: adminService.logout,
-		})
-		.use({
 			eventType: EventType.GetProfile,
 			handler: adminService.getProfile,
 			responseType: AdminPublicModel,
@@ -180,11 +176,11 @@ export default function adminMediatorFactory({ container }: interfaces.Context):
 			responseType: GetVersionReportsResponse,
 		})
 		.use({
-			eventType: EventType.AppsClientCount,
+			eventType: EventType.GetAppsClientCount,
 			handler: clientCounterService.getAppsClientsCount,
 		})
 		.use({
-			eventType: EventType.AppClientCount,
+			eventType: EventType.GetAppClientCount,
 			handler: clientCounterService.getAppClientsCount,
 			requestType: GetAppCountersRequest,
 		})

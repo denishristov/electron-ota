@@ -20,6 +20,7 @@ export interface IApi {
 	on<Res extends object>(eventType: string, cb: (res: Res) => void): this
 	login(request: AdminLoginRequest): Promise<AdminLoginResponse>
 	register(request: RegisterAdminRequest): Promise<RegisterAdminResponse>
+	logout(): Promise<void>
 }
 
 @injectable()
@@ -33,6 +34,7 @@ export default class Api implements IApi {
 			this.connection = io(SERVER_URI, {
 				transports: ['websocket', 'xhr-polling'],
 			})
+
 			this.connection.once(EventType.Connect, resolve)
 			this.connection.once(EventType.Error, reject)
 		})
@@ -40,6 +42,10 @@ export default class Api implements IApi {
 
 	public async login(request: AdminLoginRequest): Promise<AdminLoginResponse> {
 		return this.post('/login', request)
+	}
+
+	public async logout(): Promise<void> {
+		return this.post('/logout')
 	}
 
 	public async register(request: RegisterAdminRequest): Promise<RegisterAdminResponse> {
@@ -67,6 +73,8 @@ export default class Api implements IApi {
 					clearTimeout(timeout)
 
 					if (response.__isError) {
+						delete response.__isError
+
 						this.logError(eventType, _request || {}, typedResponse)
 						reject(response)
 					} else {
@@ -91,14 +99,14 @@ export default class Api implements IApi {
 		return this
 	}
 
-	private async post<Req, Res>(url: string, request: Req): Promise<Res> {
-		const res = await axios.post<Res>(PUBLIC_API_URI + url, request, { withCredentials: true })
+	private async post<Req, Res>(url: string, request?: Req): Promise<Res> {
+		const { data } = await axios.post<Res>(
+			PUBLIC_API_URI + url,
+			request,
+			{ withCredentials: true },
+		)
 
-		if (res.status !== OK) {
-			throw new Error('Not authenticated')
-		}
-
-		return res.data
+		return data
 	}
 
 	// tslint:disable:no-console

@@ -39,6 +39,7 @@ import { InversifyExpressServer } from 'inversify-express-utils'
 
 import bodyParser from 'body-parser'
 import cors from 'cors'
+import cookieParser from 'cookie-parser'
 
 import socketioConfig from './socketioConfig'
 import { REGISTER_KEY } from './index'
@@ -56,6 +57,7 @@ container.bind<SocketIO.Server>(nameof<SocketIO.Server>())
 					origin: 'http://localhost:3000',
 					credentials: true,
 				}))
+				.use(cookieParser())
 		})
 
 		const httpServer = server.build().listen(PORT)

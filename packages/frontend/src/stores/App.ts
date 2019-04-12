@@ -179,7 +179,7 @@ export default class App implements IApp {
 	@action
 	public async fetchAppLiveCount() {
 		const counters = await this.api.fetch({
-			eventType: EventType.AppClientCount,
+			eventType: EventType.GetAppClientCount,
 			request: { bundleId: this.bundleId },
 			requestType: GetAppCountersRequest,
 		})

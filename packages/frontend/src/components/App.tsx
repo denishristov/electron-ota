@@ -8,6 +8,7 @@ import Routes from './Routes'
 import styles from '../styles/util.module.sass'
 import { observer } from 'mobx-react'
 import Profile from './pages/AppsPage/Profile'
+import { IUserStore } from '../stores/UserStore'
 
 const animationGetters = Object.keys(pageAnimations.POP).group((key) =>
 	[key, ({ history }: RouteComponentProps) => {
@@ -26,6 +27,13 @@ interface IState {
 export default class App extends React.Component<RouteComponentProps, IState> {
 	public state ={
 		isResting: false,
+	}
+
+	@lazyInject(nameof<IUserStore>())
+	private readonly userStore: IUserStore
+
+	public componentDidMount() {
+		this.userStore.authenticate()
 	}
 
 	public render() {
