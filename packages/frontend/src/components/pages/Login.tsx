@@ -12,8 +12,8 @@ import Flex from '../generic/Flex'
 import Container from '../generic/Container'
 
 import styles from '../../styles/LoginPage.module.sass'
-import Loading from '../generic/Loading'
 import icons from '../../util/constants/icons'
+import LoadingContainer from '../generic/LoadingContainer'
 
 interface ILoginFormEvent extends FormEvent<HTMLFormElement> {
 	target: EventTarget & {
@@ -47,7 +47,7 @@ export default class Login extends React.Component<RouteComponentProps, IState> 
 		return (
 			<Container className={styles.container}>
 				{this.userStore.isLoading
-					? <Loading />
+					? <LoadingContainer />
 					: (
 						<form
 							onSubmit={this.handleSubmit}

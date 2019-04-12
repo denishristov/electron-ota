@@ -7,7 +7,7 @@ import Button from '../generic/Button'
 import Container from '../generic/Container'
 
 import styles from '../../styles/LoginPage.module.sass'
-import Loading from '../generic/Loading'
+import Loading from '../generic/LoadingContainer'
 import Flex from '../generic/Flex'
 import { passwordRegex } from 'shared'
 import { IUserStore } from '../../stores/UserStore'

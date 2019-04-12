@@ -8,7 +8,7 @@ import { IAppsStore } from '../../../stores/AppsStore'
 import Version from './Version'
 
 import Container from '../../generic/Container'
-import Loading from '../../generic/Loading'
+import Loading from '../../generic/LoadingContainer'
 import Modal from '../../generic/Modal'
 import VersionModal from './CreateVersionModal'
 import AppearAnimation from '../../generic/AppearAnimation'

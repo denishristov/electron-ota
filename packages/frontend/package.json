@@ -30,6 +30,7 @@
     "react-dropzone": "8.0.3",
     "react-router": "4.3.1",
     "react-router-dom": "4.3.1",
+    "react-spinner-material": "^1.1.1",
     "react-spring": "7.2.10",
     "react-switch": "3.0.4",
     "react-timeseries-charts": "0.15.5",

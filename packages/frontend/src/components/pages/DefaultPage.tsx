@@ -1,6 +1,6 @@
 import React from 'react'
 import { Redirect } from 'react-router'
-import Loading from '../generic/Loading'
+import Loading from '../generic/LoadingContainer'
 import { AuthConsumer } from '../contexts/AuthProvider'
 
 export default function DefaultPage() {

@@ -7,7 +7,7 @@ import {
 	AdminEditProfileRequest,
 	RegisterAdminRequest,
  } from 'shared'
-import { filterValues, memoize } from '../util/functions'
+import { filterValues } from '../util/functions'
 
 export interface IUserStore {
 	profile: IProfile
@@ -27,17 +27,22 @@ interface IProfile {
 	pictureUrl: string
 }
 
+const emptyProfile = {
+	name: '',
+	email: '',
+	pictureUrl: '',
+}
+
 @injectable()
 class UserStore implements IUserStore {
 	@observable
 	public isAuthenticated: boolean | null = null
 
 	@observable
-	public profile: IProfile = {
-		name: '',
-		email: '',
-		pictureUrl: '',
-	}
+	public profile: IProfile = { ...emptyProfile }
+
+	@observable
+	private isFetching = false
 
 	constructor(
 		@inject(nameof<IApi>())
@@ -46,21 +51,26 @@ class UserStore implements IUserStore {
 
 	@computed
 	public get isLoading(): boolean {
-		return !this.profile.name && this.isAuthenticated === null
+		return this.isFetching && this.isAuthenticated === null
 	}
 
 	@action.bound
 	public async login(request: AdminLoginRequest) {
-		await this.api.login(request)
+		try {
+			this.isFetching = true
+			await this.api.login(request)
+			await this.authenticate()
 
-		await this.authenticate()
+		} finally {
+			this.isFetching = false
+		}
 	}
 
 	@action.bound
 	public logout() {
-		this.api.logout()
-
+		this.profile = { ...emptyProfile }
 		this.isAuthenticated = null
+		this.api.logout()
 	}
 
 	@action
@@ -100,21 +110,15 @@ class UserStore implements IUserStore {
 
 			this.isAuthenticated = true
 
-			this.fetchProfile()
+			const profile = await this.api.fetch({
+				eventType: EventType.GetProfile,
+				responseType: AdminPublicModel,
+			})
+
+			Object.assign(this.profile, profile)
 		} catch {
 			this.isAuthenticated = false
 		}
-	}
-
-	@memoize
-	@action
-	private async fetchProfile() {
-		const profile = await this.api.fetch({
-			eventType: EventType.GetProfile,
-			responseType: AdminPublicModel,
-		})
-
-		Object.assign(this.profile, profile)
 	}
 }
 

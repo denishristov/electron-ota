@@ -8,7 +8,7 @@ import { RouteComponentProps, Redirect } from 'react-router'
 import { IAppsStore } from '../../../stores/AppsStore'
 import { computed } from 'mobx'
 import { IApp } from '../../../stores/App'
-import Loading from '../../generic/Loading'
+import Loading from '../../generic/LoadingContainer'
 import { observer } from 'mobx-react'
 import { formatDate } from '../../../util/functions'
 
