@@ -16,6 +16,7 @@ import Close from '../../img/Close.svg'
 import Plus from '../../img/Plus.svg'
 import User from '../../img/User.svg'
 import Key from '../../img/Key.svg'
+import Logo from '../../img/Logo.svg'
 
 const icons = {
 	Darwin,
@@ -36,6 +37,7 @@ const icons = {
 	Close,
 	User,
 	Key,
+	Logo,
 }
 
 export default icons

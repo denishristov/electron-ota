@@ -11,7 +11,7 @@ export default function LoadingContainer() {
 			<Spinner
 				visible
 				size={80}
-				spinnerColor={colors.ui.accent}
+				spinnerColor={colors.ui.darkAccent}
 				spinnerWidth={2}
 			/>
 		</div>

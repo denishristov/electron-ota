@@ -33,7 +33,7 @@ export default class Profile extends Component<IProps> {
 				<MenuProvider id={ID} event='onClick'>
 					<Pushable>
 						<Flex y list className={styles.profile}>
-							<h5>{profile.name}</h5>
+							{/* <h5>{profile.name}</h5> */}
 							{profile.pictureUrl
 								? <img src={profile.pictureUrl} />
 								: <SVG src={icons.User} />

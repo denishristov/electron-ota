@@ -54,7 +54,7 @@ export default class Login extends React.Component<RouteComponentProps, IState> 
 							className={list(styles.form, styles.loginForm)}
 						>
 							<Flex col list>
-								<h1>Sign in</h1>
+								<SVG src={icons.Logo} className={styles.logo} />
 								<Input
 									label='Username or Email'
 									name='nameOrEmail'

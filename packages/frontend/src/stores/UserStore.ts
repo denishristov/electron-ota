@@ -68,9 +68,9 @@ class UserStore implements IUserStore {
 
 	@action.bound
 	public logout() {
-		this.profile = { ...emptyProfile }
-		this.isAuthenticated = null
 		this.api.logout()
+		this.profile = { ...emptyProfile }
+		this.isAuthenticated = false
 	}
 
 	@action

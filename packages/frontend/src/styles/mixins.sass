@@ -87,8 +87,7 @@
 		color: darken(adjust-hue($color, 32%), 20%)
 
 @mixin outline-button($color)
-	$darker: darken($color, 24%)
-	$alternate: darken($color, 32%)
+	$darker: darken($color, 16%)
 
 	@include shadow($color)
 	@include ease(box-shadow, background-color, color, transform, border-color)
@@ -101,12 +100,11 @@
 
 	&:focus, &:hover
 		@include glowing-shadow($color)
-		background-color: lighten($color, 8%)
 		border-color: $darker
-		color: $alternate
+		color: $darker
 
 		svg, g, path
-			fill: $alternate
+			fill: $darker
 
 
 @mixin color-button($background, $background2, $color)
@@ -118,7 +116,7 @@
 
 	&:disabled
 		cursor: not-allowed
-		background-image: linear-gradient(to top right, desaturate($background, 50%) 0%, desaturate($background, 50%) 20%, desaturate($background2, 50%) 100%)
+		background-image: linear-gradient(to top right, desaturate($background, 50%) 0%, desaturate($background, 20%) 20%, desaturate($background2, 20%) 100%)
 
 		&:hover
 			box-shadow: none
@@ -131,7 +129,7 @@
 		background-position: 0 0
 
 @mixin dark-button($background) 
-	@include color-button($background, adjust-hue($background, 24%), white)
+	@include color-button($background, darken(adjust-hue($background, 8%), 16%), white)
 
 @mixin avatar
 	border-radius: 50%
