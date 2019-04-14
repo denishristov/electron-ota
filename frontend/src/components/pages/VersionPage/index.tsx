@@ -225,43 +225,39 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 					<Flex m x className={styles.tilesContainer}>
 						<Flex col list>
 							<Flex col m p list className={styles.details}>
-								{!isReleased && (
-									<>
-										<MenuProvider id={ID} event='onClick' style={{ margin: 0 }}>
-											<div>
-												<Pushable>
-													<SVG src={icons.Dots} className={utilStyles.dots} />
-												</Pushable>
-											</div>
-										</MenuProvider>
-										<ConfirmDeleteModal name={versionName} onDelete={this.handleDeleteVersion}>
-										{(openDelete) => (
-											<Modal>
-												<Modal.Content
-													title={`Edit ${versionName}`}
-													className={versionModalStyles.versionModal}
-													component={UpdateVersionModal}
-													props={{
-														store: this.updateVersionStoreFactory(this.app!, this.version!),
-													}}
-												/>
-													<TriggerContext.Consumer>
-														{({ open }) => (
-															<Menu
-																id={ID}
-																animation='menu-animation'
-																theme='menu-theme'
-															>
-																<Item onClick={open}>Edit</Item>
-																<Item onClick={openDelete}>Delete</Item>
-															</Menu>
-														)}
-													</TriggerContext.Consumer>
-											</Modal>
-										)}
-										</ConfirmDeleteModal>
-									</>
+								<MenuProvider id={ID} event='onClick' style={{ margin: 0 }}>
+									<div>
+										<Pushable>
+											<SVG src={icons.Dots} className={utilStyles.dots} />
+										</Pushable>
+									</div>
+								</MenuProvider>
+								<ConfirmDeleteModal name={versionName} onDelete={this.handleDeleteVersion}>
+								{(openDelete) => (
+									<Modal>
+										<Modal.Content
+											title={`Edit ${versionName}`}
+											className={versionModalStyles.versionModal}
+											component={UpdateVersionModal}
+											props={{
+												store: this.updateVersionStoreFactory(this.app!, this.version!),
+											}}
+										/>
+											<TriggerContext.Consumer>
+												{({ open }) => (
+													<Menu
+														id={ID}
+														animation='menu-animation'
+														theme='menu-theme'
+													>
+														<Item onClick={open}>Edit</Item>
+														<Item onClick={openDelete}>Delete</Item>
+													</Menu>
+												)}
+											</TriggerContext.Consumer>
+									</Modal>
 								)}
+								</ConfirmDeleteModal>
 								{createdAt && (
 									<Flex list y>
 										<label>Added on</label>
