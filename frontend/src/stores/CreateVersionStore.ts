@@ -53,19 +53,19 @@ export default class CreateVersionStore implements ICreateVersionStore {
 		}
 	}
 
-	@computed
+	@computed({ keepAlive: true })
 	get isValid() {
 		return Boolean(
 			this.versionModalStore.versionName && (this.versionModalStore.isBase || this.versionFile),
 		)
 	}
 
-	@computed
+	@computed({ keepAlive: true })
 	public get isUploading() {
 		return typeof this.progress === 'number'
 	}
 
-	@action
+	@transformToMobxFlow
 	public async handleCreate({ versionName, description, password }: IVersionFormData) {
 		const {
 			isReleasing,

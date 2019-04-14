@@ -84,6 +84,7 @@
     "terser-webpack-plugin": "1.1.0",
     "ts-loader": "^5.3.2",
     "ts-nameof": "^3.0.3",
+    "ts-transform-async-to-mobx-flow": "^0.0.8",
     "tslint": "^5.12.0",
     "typelevel-ts": "^0.3.4",
     "typescript": "^3.3.3333",

@@ -59,14 +59,14 @@ export default class AppPage extends Component<RouteComponentProps<IParams>, ISt
 	@lazyInject(nameof<CreateVersionStoreFactory>())
 	private readonly createVersionStoreFactory: CreateVersionStoreFactory
 
-	@computed
+	@computed({ keepAlive: true })
 	private get app(): IApp | null {
 		const app = this.appsStore.getApp(this.props.match.params.appId)
 
 		return app
 	}
 
-	@computed
+	@computed({ keepAlive: true })
 	private get liveClientsPieData() {
 		if (this.app) {
 			const data = Object.entries({ ...defaultSystemCounts }).group(returnArgument)
@@ -87,7 +87,7 @@ export default class AppPage extends Component<RouteComponentProps<IParams>, ISt
 		}
 	}
 
-	@computed
+	@computed({ keepAlive: true })
 	private get appUsingPieData() {
 		if (this.app) {
 			const data = Object.entries({ ...defaultSystemCounts }).group(returnArgument)
@@ -108,7 +108,7 @@ export default class AppPage extends Component<RouteComponentProps<IParams>, ISt
 		}
 	}
 
-	@computed
+	@computed({ keepAlive: true })
 	private get usingReportsBarData() {
 		if (this.app) {
 			const data: IBarChartSystemTypeData = Object.values(SystemType).group((x) => [x, []])
@@ -128,7 +128,7 @@ export default class AppPage extends Component<RouteComponentProps<IParams>, ISt
 		}
 	}
 
-	@computed
+	@computed({ keepAlive: true })
 	private get liveClientsBarData() {
 		if (this.app) {
 			const data: IBarChartSystemTypeData = Object.values(SystemType).group((x) => [x, []])

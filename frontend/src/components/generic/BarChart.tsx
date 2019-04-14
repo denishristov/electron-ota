@@ -68,7 +68,7 @@ export default class BarChart extends React.Component<IProps, IState> {
 		this.setState({ dataPoint: hovered, isHovered: false })
 	}
 
-	@computed
+	@computed({ keepAlive: true })
 	private get total() {
 		const { data } = this.props
 		return data && [...Object.values(data)].flat().reduce((sum, { x }) => sum + x, 0)

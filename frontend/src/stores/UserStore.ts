@@ -49,12 +49,13 @@ class UserStore implements IUserStore {
 		private readonly api: IApi,
 	) {}
 
-	@computed
+	@computed({ keepAlive: true })
 	public get isLoading(): boolean {
 		return this.isFetching || this.isAuthenticated === null
 	}
 
-	@action.bound
+	@bind
+	@transformToMobxFlow
 	public async login(request: AdminLoginRequest) {
 		try {
 			this.isFetching = true
@@ -73,20 +74,22 @@ class UserStore implements IUserStore {
 		this.isAuthenticated = false
 	}
 
-	@action
+	@transformToMobxFlow
 	public async register(request: RegisterAdminRequest) {
 		await this.api.register(request)
 
 		await this.authenticate()
 	}
 
-	@action.bound
+	@bind
+	@transformToMobxFlow
 	public async deleteProfile() {
 		await this.api.fetch({ eventType: EventType.DeleteProfile })
 		this.logout()
 	}
 
-	@action.bound
+	@bind
+	@transformToMobxFlow
 	public async editProfile(request: AdminEditProfileRequest) {
 		const { name, email, pictureUrl } = request
 
@@ -103,7 +106,8 @@ class UserStore implements IUserStore {
 		}))
 	}
 
-	@action.bound
+	@bind
+	@transformToMobxFlow
 	public async authenticate(): Promise<void> {
 		try {
 			await this.api.connect()

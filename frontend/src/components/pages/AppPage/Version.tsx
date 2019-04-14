@@ -14,7 +14,7 @@ import styles from '../../../styles/Version.module.sass'
 import Pushable from '../../generic/Pushable'
 import { BrowserHistory } from '../../../util/types'
 import icons from '../../../util/constants/icons'
-import Tip from '../../generic/Tip';
+import Tip from '../../generic/Tip'
 import { colors } from '../../../util/constants/styles'
 
 interface IProps {
@@ -114,7 +114,7 @@ export default class Version extends React.Component<IProps> {
 		this.props.history.push(`${location.pathname}/${this.props.version.id}`)
 	}
 
-	@computed
+	@computed({ keepAlive: true })
 	private get dates() {
 		const { version } = this.props
 		const date = new Date(version.createdAt)
@@ -125,12 +125,12 @@ export default class Version extends React.Component<IProps> {
 		]
 	}
 
-	@computed
+	@computed({ keepAlive: true })
 	private get simpleReport(): SimpleVersionReportModel | null {
 		return this.props.simpleReports.get(this.props.version.id) || null
 	}
 
-	@computed
+	@computed({ keepAlive: true })
 	private get liveCount(): number {
 		const { versionName } = this.props.version
 		const counter = this.props.liveCounters.get(versionName)

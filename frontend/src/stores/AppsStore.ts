@@ -66,7 +66,7 @@ export default class AppsStore implements IAppsStore {
 			.on(EventType.ReleaseUpdate, this.handleVersionPublished)
 	}
 
-	@computed
+	@computed({ keepAlive: true })
 	get allApps(): IApp[] {
 		return Array.from(this.apps.values()) || []
 	}
@@ -76,7 +76,7 @@ export default class AppsStore implements IAppsStore {
 	}
 
 	@memoize
-	@action
+	@transformToMobxFlow
 	public async fetchApps(): Promise<void> {
 		const { apps } = await this.api.fetch({
 			eventType: EventType.GetApps,
@@ -87,7 +87,7 @@ export default class AppsStore implements IAppsStore {
 	}
 
 	@memoize
-	@action
+	@transformToMobxFlow
 	public async fetchAppsLiveCount(): Promise<void> {
 		const counters = await this.api.fetch({
 			eventType: EventType.GetAppsClientCount,

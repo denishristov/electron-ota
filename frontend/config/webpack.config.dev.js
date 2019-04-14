@@ -18,7 +18,7 @@ const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin-alt');
 const typescriptFormatter = require('react-dev-utils/typescriptFormatter');
 const tsNameof = require("ts-nameof");
-
+const tsTransformAsyncToMobxFlow = require('ts-transform-async-to-mobx-flow').default;
 // Webpack uses `publicPath` to determine where the app is being served from.
 // In development, we always serve from the root. This makes config easier.
 const publicPath = '/';
@@ -201,7 +201,9 @@ module.exports = {
               {
                 loader: require.resolve('ts-loader'),
                 options: {
-                  getCustomTransformers: () => ({ before: [tsNameof] }),
+                  getCustomTransformers: () => ({ 
+                    before: [tsNameof, tsTransformAsyncToMobxFlow(/** options */)] 
+                  }),
                   // disable type checker - we will use it in fork plugin
                   transpileOnly: true,
                 },

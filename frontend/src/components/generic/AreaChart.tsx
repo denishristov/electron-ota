@@ -5,8 +5,7 @@ import styles from '../../styles/util.module.sass'
 import { colors } from '../../util/constants/styles'
 import { list, formatDate as formatDateFull, naturalNumber } from '../../util/functions'
 import AnimationContext from '../contexts/AnimationContext'
-import Spinner from 'react-spinner-material'
-import LoadingPlaceholder from './LoadingPlaceholder';
+import LoadingPlaceholder from './LoadingPlaceholder'
 
 const {
 	FlexibleWidthXYPlot,

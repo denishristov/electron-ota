@@ -65,29 +65,29 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 	@lazyInject(nameof<UpdateVersionStoreFactory>())
 	private readonly updateVersionStoreFactory: UpdateVersionStoreFactory
 
-	@computed
+	@computed({ keepAlive: true })
 	private get app(): IApp | null {
 		const { appId } = this.props.match.params
 		return this.appsStore.getApp(appId) || null
 	}
 
-	@computed
+	@computed({ keepAlive: true })
 	private get version(): VersionModel | null {
 		const { versionId } = this.props.match.params
 		return this.app && this.app.getVersion(versionId) || null
 	}
 
-	@computed
+	@computed({ keepAlive: true })
 	private get createdAt() {
 		return this.version && formatDate(new Date(this.version.createdAt))
 	}
 
-	@computed
+	@computed({ keepAlive: true })
 	get reports(): VersionReportModel | null {
 		return this.app && this.version && this.app.reports.get(this.version.id) || null
 	}
 
-	@computed
+	@computed({ keepAlive: true })
 	get activity(): Array<ReportModel & { type: string }> | null {
 		if (!this.reports) {
 			return null
@@ -97,7 +97,7 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 			.sort((a, b) => +new Date(b.timestamp) - +new Date(a.timestamp))
 	}
 
-	@computed
+	@computed({ keepAlive: true })
 	get groupedReports() {
 		if (this.app && this.version) {
 			const reports = this.app.groupedReports.get(this.version.id)
@@ -114,7 +114,7 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 		}
 	}
 
-	@computed
+	@computed({ keepAlive: true })
 	get usingPieDate() {
 		if (this.app && this.version && this.app.usingReports.size) {
 			const reports = this.app.usingReports.get(this.version.versionName)
@@ -133,7 +133,7 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 		return []
 	}
 
-	@computed
+	@computed({ keepAlive: true })
 	get connectedPieData() {
 		if (this.app && this.version) {
 			const reports = this.app.clientCounters.get(this.version.versionName)
@@ -152,13 +152,13 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 		return []
 	}
 
-	@computed
+	@computed({ keepAlive: true })
 	get hasReports() {
 		return Boolean(this.groupedReports && Object.values(this.groupedReports)
 			.reduce((sum, report) => sum + report.length, 0))
 	}
 
-	@computed
+	@computed({ keepAlive: true })
 	get hasAnyColumnReports() {
 		return this.reports && Object.values(this.reports)
 			.filter((reports) => reports instanceof Array)
@@ -338,7 +338,7 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 													Release
 												</Button>
 											</Modal.OpenTrigger>
-										)}
+											)}
 										<Modal.Content
 											title={`Release ${versionName}`}
 											component={ReleaseModal}

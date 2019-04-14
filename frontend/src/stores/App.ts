@@ -137,18 +137,18 @@ export default class App implements IApp {
 		return this.versions.get(id) || null
 	}
 
-	@computed
+	@computed({ keepAlive: true })
 	get latestAddedVersion(): VersionModel | null {
 		return this.allVersions[0] || null
 	}
 
-	@computed
+	@computed({ keepAlive: true })
 	get allVersions(): VersionModel[] {
 		return [...this.versions.values()].sort(byDateDesc)
 	}
 
 	@memoize
-	@action
+	@transformToMobxFlow
 	public async fetchVersions() {
 		const { versions } = await this.api.fetch({
 			eventType: EventType.GetVersions,
@@ -161,7 +161,7 @@ export default class App implements IApp {
 	}
 
 	@memoize
-	@action
+	@transformToMobxFlow
 	public async fetchSimpleReports() {
 		const { reports } = await this.api.fetch({
 			eventType: EventType.SimpleVersionReports,
@@ -176,7 +176,7 @@ export default class App implements IApp {
 	}
 
 	@memoize
-	@action
+	@transformToMobxFlow
 	public async fetchAppLiveCount() {
 		const counters = await this.api.fetch({
 			eventType: EventType.GetAppClientCount,
@@ -188,7 +188,7 @@ export default class App implements IApp {
 	}
 
 	@memoize
-	@action
+	@transformToMobxFlow
 	public async fetchAppUsingReports() {
 		const { reports } = await this.api.fetch({
 			eventType: EventType.AppUsingReports,
@@ -201,7 +201,7 @@ export default class App implements IApp {
 	}
 
 	@memoize
-	@action
+	@transformToMobxFlow
 	public async fetchReports(versionId: string) {
 		const reports = await this.api.fetch({
 			eventType: EventType.VersionReports,
@@ -214,7 +214,7 @@ export default class App implements IApp {
 	}
 
 	@memoize
-	@action
+	@transformToMobxFlow
 	public async fetchVersionGroupedReports(versionId: string) {
 		const { reports } = await this.api.fetch({
 			eventType: EventType.VersionGroupedReports,

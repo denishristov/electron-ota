@@ -2,12 +2,19 @@
 /// <reference types="react" />
 /// <reference types="react-dom" />
 
+
 declare namespace NodeJS {
   interface ProcessEnv {
     NODE_ENV: 'development' | 'production' | 'test'
     PUBLIC_URL: string
   }
 }
+
+declare function transformToMobxFlow<T extends (...args: any[]) => Promise<any>>(
+  target: Object,
+  propertyKey: string | symbol,
+  descriptor: TypedPropertyDescriptor<T>,
+): TypedPropertyDescriptor<T> | void;
 
 declare module '*.bmp' {
   const src: string;

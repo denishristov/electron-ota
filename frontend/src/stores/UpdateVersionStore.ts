@@ -32,7 +32,8 @@ export default class UpdateVersionStore implements IUpdateVersionStore {
 		this.description = description
 	}
 
-	@action.bound
+	@transformToMobxFlow
+	@bind
 	public async handleUpdate({
 		versionName,
 		description,

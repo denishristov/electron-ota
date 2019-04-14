@@ -1,4 +1,6 @@
+
 import * as tsNameOf from 'ts-nameof'
+import * as a from 'ts-transform-async-to-mobx-flow'
 import 'reflect-metadata'
 
 import './config/global'
@@ -25,8 +27,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 	configure({
 		computedRequiresReaction: true,
-		enforceActions: 'always',
-		isolateGlobalState: true,
+		enforceActions: 'observed',
 	})
 }
 
