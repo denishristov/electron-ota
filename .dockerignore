@@ -5,7 +5,6 @@ node_modules
 **/dist
 
 .vscode
-db
 electron-ota.code-workspace
 *.Dockerfile
 .env

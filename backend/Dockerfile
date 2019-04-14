@@ -2,13 +2,13 @@ FROM node:10.15.1-alpine
 RUN mkdir /opt/app
 WORKDIR /opt/app
 COPY package.json yarn.lock ./
-COPY ./packages/backend/package.json ./packages/backend/
-COPY ./packages/shared/package.json ./packages/shared/
+COPY ./backend/package.json ./backend/
+COPY ./shared/package.json ./shared/
 RUN yarn
 ENV NODE_ENV=production
-COPY ./packages/shared ./packages/shared
+COPY ./shared ./shared
 RUN yarn workspace shared build
-COPY ./packages/backend ./packages/backend
+COPY ./backend ./backend
 RUN yarn workspace backend build \
 	&& rm -rf **/node_modules node_modules \
 	&& yarn --prod \

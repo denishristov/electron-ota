@@ -15,7 +15,6 @@
     "build": "node scripts/build.js"
   },
   "dependencies": {
-    "@sentry/browser": "4.5.3",
     "aws-sdk": "2.376.0",
     "axios": "0.18.0",
     "bind-decorator": "1.0.11",

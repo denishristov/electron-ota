@@ -6,7 +6,11 @@
     "frontend-start": "yarn workspace frontend start"
   },
   "workspaces": [
-    "packages/*"
+    "backend",
+    "frontend",
+    "shared",
+    "demo",
+    "electron-client"
   ],
   "devDependencies": {
     "tslint": "^5.12.1",

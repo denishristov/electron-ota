@@ -4,13 +4,12 @@
 
 Update service for Electron apps. Provides a real-time solution for updating the app.asar package of an app and monitoring the process through an admin web application.
 
-The application is in production use by [Ora.pm](https://Ora.pm/) and is my diploma work for TUES.
-
 ## Tech Stack:
 
 ### Back-end: 
 * Node
 * Typescript
+* Express
 * Socket.IO
 * AWS S3
 * Mongo

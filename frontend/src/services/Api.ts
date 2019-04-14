@@ -1,10 +1,10 @@
+
 import { EventType, AdminLoginRequest, AdminLoginResponse, RegisterAdminRequest, RegisterAdminResponse } from 'shared'
 import { filterValues } from '../util/functions'
 import { Newable } from '../util/types'
 import { terminalColors } from '../util/constants/styles'
 import axios from 'axios'
 import { SERVER_URI, PUBLIC_API_URI } from '../config'
-import { OK } from 'http-status-codes'
 import io from 'socket.io-client'
 import { Validator } from 'tsdv-joi/Validator'
 
@@ -111,22 +111,28 @@ export default class Api implements IApi {
 
 	// tslint:disable:no-console
 	private logUpdate(eventType: string, data: object) {
-		console.log(terminalColors.eventType(eventType))
-		console.log(terminalColors.update('Update: '), data)
-		console.log()
+		if (process.env.NODE_ENV !== 'production') {
+			console.log(terminalColors.eventType(eventType))
+			console.log(terminalColors.update('Update: '), data)
+			console.log()
+		}
 	}
 
 	private logRequest(eventType: string, request: object, response: object) {
-		console.log(terminalColors.eventType(eventType))
-		console.log(terminalColors.request('Request: '), request)
-		console.log(terminalColors.response('Response: '), response)
-		console.log()
+		if (process.env.NODE_ENV !== 'production') {
+			console.log(terminalColors.eventType(eventType))
+			console.log(terminalColors.request('Request: '), request)
+			console.log(terminalColors.response('Response: '), response)
+			console.log()
+		}
 	}
 
 	private logError(eventType: string, request: object, error: object) {
-		console.log(terminalColors.eventType(eventType))
-		console.log(terminalColors.request('Request: '), request)
-		console.log(terminalColors.error('Error: '), error)
-		console.log()
+		if (process.env.NODE_ENV !== 'production') {
+			console.log(terminalColors.eventType(eventType))
+			console.log(terminalColors.request('Request: '), request)
+			console.log(terminalColors.error('Error: '), error)
+			console.log()
+		}
 	}
 }

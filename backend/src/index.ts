@@ -1,4 +1,4 @@
-import 'ts-nameof'
+import * as tsNameOf from 'ts-nameof'
 import 'reflect-metadata'
 
 import 'shared/dist/extensions'
