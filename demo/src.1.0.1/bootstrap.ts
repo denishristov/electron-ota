@@ -10,13 +10,14 @@ declare global {
 	}
 }
 
-global.isDevMode = /[\\/]electron[\\/]/u.test(process.execPath)
+global.isDevMode = false
 
-!global.isDevMode && (global.updateService = new ElectronUpdateServiceClient({
+global.updateService = new ElectronUpdateServiceClient({
 	bundleId: 'test-electron',
-	updateServerUrl: 'http://localhost:4000',
+	updateServerUrl: 'https://electron-ota-api.herokuapp.com',
 	versionName: require('../package.json').version,
-}))
+	checkForUpdateOnConnect: false,
+})
 
 if (global.isDevMode || !global.updateService.loadLatestUpdateSync()) {
 	import('./main')

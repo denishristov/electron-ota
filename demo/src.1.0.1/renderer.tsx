@@ -15,6 +15,7 @@ function CounterWithName() {
 
 	return (
 		<div>
+			<p>Version: {require('../package.json').version}</p>
 			<p>Hi {name} you clicked {count} times</p>
 			<button onClick={handleCounterButtonClick}>
 				Click me

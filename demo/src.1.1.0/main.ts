@@ -3,22 +3,22 @@ import * as path from 'path'
 
 let mainWindow: Electron.BrowserWindow
 
-if (!global.isDevMode) {
-	global.updateService.checkForUpdate()
-
-	global.updateService.on('update', () => {
-		dialog.showMessageBox({
-			buttons: ['Reload', 'Not now'] ,
-			message: 'A new update is available',
-			type: 'question',
-		}, (index) => {
-			if (index === 0) {
-				app.relaunch()
-				app.exit()
-			}
-		})
+dialog
+global.updateService.on('update', (update) => {
+	dialog.showMessageBox({
+		buttons: ['Reload', 'Not now'] ,
+		message: `A new update is available:
+${Object.entries(update).map(([k, v]) => `${k}: ${v}`).join('\n')}
+		`,
+		type: 'question',
+	}, (index) => {
+		if (index === 0) {
+			// TODO: Set launch URL to be the same
+			app.relaunch()
+			app.exit(0)
+		}
 	})
-}
+})
 
 function createWindow() {
 	mainWindow = new BrowserWindow({
@@ -28,11 +28,13 @@ function createWindow() {
 
 	mainWindow.loadFile(path.join(__dirname, '../index.html'))
 
-	// mainWindow.webContents.openDevTools()
+	mainWindow.webContents.openDevTools()
 
 	mainWindow.on('closed', () => {
 		mainWindow = null
 	})
+
+	global.updateService.checkForUpdate()
 }
 
 app.on('ready', createWindow)
@@ -48,3 +50,4 @@ app.on('activate', () => {
 		createWindow()
 	}
 })
+

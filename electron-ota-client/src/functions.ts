@@ -35,7 +35,14 @@ export function uuid(): string {
 
 export async function buildConnectionAsync(uri: string, query: string): Promise<SocketIOClient.Socket> {
 	await Promise.resolve()
-	return io(uri, { query, reconnectionDelayMax: 60 * 60 * 1000 })
+
+	const connection = io(uri, {
+		query,
+		reconnectionDelayMax: 60 * 60 * 1000,
+		transports: ['websocket', 'xhr-polling'],
+	})
+
+	return connection
 }
 
 function getVersion(): string | null {

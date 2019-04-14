@@ -76,6 +76,10 @@ class ElectronClientUpdateService extends EventEmitter implements IUpdateService
 		this.connectionPromise = buildConnectionAsync(uri, query)
 
 		this.connectionPromise.then((connection) => {
+			connection.on(UpdateService.Error, (error: Error) => {
+				this.emit(UpdateService.Error, error)
+			})
+
 			if (this.options.checkForUpdateOnConnect) {
 				connection.on(Server.Connect, this.checkForUpdate.bind(this))
 			}
@@ -129,9 +133,7 @@ class ElectronClientUpdateService extends EventEmitter implements IUpdateService
 			this.emitToServer(Server.Using, {
 				versionId: updateInfo.versionId,
 				id: this.clientId,
-			})
-
-			this.dispose()
+			}).then(this.dispose.bind(this))
 
 			return updateModule
 		} catch (error) {
@@ -187,9 +189,7 @@ class ElectronClientUpdateService extends EventEmitter implements IUpdateService
 			this.emitToServer(Server.Using, {
 				versionId: updateInfo.versionId,
 				id: this.clientId,
-			})
-
-			this.dispose()
+			}).then(this.dispose.bind(this))
 
 			return updateModule
 		} catch (error) {

@@ -19,6 +19,7 @@ import { ICreateVersionStore } from '../../../stores/CreateVersionStore'
 import ToggleRow from '../../generic/ToggleRow'
 
 import { messages } from '../../../util/constants/defaults'
+import { action } from 'mobx'
 
 const uploadMessages = {
 	active: 'Drop here',
@@ -233,7 +234,7 @@ export default class CreateVersionModal extends Component<IProps> {
 		)
 	}
 
-	@bind
+	@action.bound
 	private setVersionName(event: ChangeEvent<HTMLInputElement>) {
 		this.store.versionModalStore.versionName = event.target.value
 	}

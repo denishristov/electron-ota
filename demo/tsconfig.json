@@ -9,10 +9,10 @@
 		"jsxFactory": "createElement",
 		"outDir": "dist",
 		"baseUrl": ".",
+		"resolveJsonModule": false,
 		"paths": {
 			"*": ["node_modules/*"]
 		},
-		"resolveJsonModule": false,
 		"esModuleInterop": true
 	},
 }

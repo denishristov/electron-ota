@@ -92,9 +92,9 @@ export default class CreateVersionStore implements ICreateVersionStore {
 
 			this.cancelTokenSource = upload.cancelSource
 
-			upload.onProgress((progress) => {
+			upload.onProgress(action((progress: number) => {
 				this.progress = progress
-			})
+			}))
 
 			const [calculatedHash] = await Promise.all([
 				this.fileService.hashFile(versionFile),

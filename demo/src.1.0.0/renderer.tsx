@@ -10,6 +10,7 @@ function Counter() {
 
 	return (
 		<div>
+			<p>Version: {require('../package.json').version}</p>
 			<p>You clicked {count} times</p>
 			<button onClick={handleClick}>Click me</button>
 		</div>

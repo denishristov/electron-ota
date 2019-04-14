@@ -32,6 +32,7 @@ function CounterWithName() {
 
 	return (
 		<div>
+			<p>Version: {require('../package.json').version}</p>
 			<p>Hi {name} you clicked {count} times</p>
 			<button onClick={handleCounterButtonClick}>
 				Click me
@@ -66,9 +67,9 @@ function Clock() {
 }
 
 ReactDOM.render(
-	<Fragment>
+	<div>
 		<CounterWithName />
 		<Clock />
-	</Fragment>,
+	</div>,
 	document.getElementById('root'),
 )

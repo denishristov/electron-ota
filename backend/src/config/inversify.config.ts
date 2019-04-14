@@ -54,7 +54,7 @@ container.bind<SocketIO.Server>(nameof<SocketIO.Server>())
 		server.setConfig((app) => {
 			app.use(bodyParser.json())
 				.use(cors({
-					origin: CLIENT_ORIGIN,
+					origin: '*',
 					credentials: true,
 				}))
 				.use(cookieParser())
