@@ -42,14 +42,14 @@
 	max-width: 300px
 
 .color
-	@include glowing-shadow($accent)
+	box-shadow: $rest-shadow
 	@include transition(box-shadow)
 	width: $spacing * 2
 	height: $spacing * 2
 	border-radius: 50%
 
 	&:hover
-		@include glowing-shadow($dark-accent)
+		box-shadow: $rest-shadow
 
 	svg
 		width: $spacing * 2

@@ -17,7 +17,6 @@ import versionStyles from '../../../styles/Version.module.sass'
 import versionModalStyles from '../../../styles/VersionModal.module.sass'
 import utilStyles from '../../../styles/util.module.sass'
 
-import ClientColumn from './ClientColumn'
 import icons from '../../../util/constants/icons'
 
 import Modal from '../../generic/Modal'
@@ -34,7 +33,7 @@ import { TriggerContext } from '../../contexts/ModalContext'
 import PieChart from '../../generic/PieChart'
 import { reportTypes, actionColors } from '../../../util/constants/defaults'
 import { format } from 'timeago.js'
-import Tip from '../../generic/Tip';
+import Tip from '../../generic/Tip'
 
 const ID = 'edit_version'
 
@@ -329,16 +328,17 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 										</Button>
 									)}
 									<Modal>
-										<Modal.OpenTrigger>
-											<Button
-												color='blue'
-												size='small'
-												disabled={isReleased}
-											>
-												<SVG src={icons.Upload} />
-												Release
-											</Button>
-										</Modal.OpenTrigger>
+										{!isReleased && (
+											<Modal.OpenTrigger>
+												<Button
+													color='blue'
+													size='small'
+												>
+													<SVG src={icons.Upload} />
+													Release
+												</Button>
+											</Modal.OpenTrigger>
+										)}
 										<Modal.Content
 											title={`Release ${versionName}`}
 											component={ReleaseModal}
@@ -348,7 +348,7 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 										/>
 									</Modal>
 								</Flex>
-								{this.activity && (
+								{this.activity && Boolean(this.activity.length) && (
 									<>
 										<label>Activity Log</label>
 										{this.activity.map(({ client, type, timestamp }) => (

@@ -6,7 +6,7 @@
 	transform: scale(0.96)
 
 .pushable
-	@include glowing-shadow($dark-accent)
+	box-shadow: $rest-shadow
 	cursor: pointer
 
 label.dark
@@ -24,8 +24,8 @@ label.dark
 	overflow: hidden
 
 .dark-tile
-	@include glowing-shadow($dark-accent)
-	@include transition(box-shadow)
+	@include ease(box-shadow)
+	box-shadow: $rest-shadow
 	background-image: linear-gradient(60deg, #29323c 0%, #485563 100%)
 	color: $accent
 	border-radius: $default-border-radius
@@ -58,7 +58,7 @@ label.dark
 
 .hint
 	@include appear
-	@include glowing-shadow($shadow-color)
+	box-shadow: $rest-shadow
 	background-color: $entry-bg
 	border-radius: 4px
 	padding: 4px

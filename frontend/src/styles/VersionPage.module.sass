@@ -10,60 +10,6 @@
 .time-reports
 	max-width: 50vw
 
-.client-columns-containers
-	@include glowing-shadow($dark-accent)
-	display: grid
-	grid-template-columns: repeat(auto-fit, minmax(196px, 1fr))
-	grid-auto-rows: 40vh
-	border-radius: $default-border-radius
-	overflow: hidden
-	margin: $spacing
-	height: 40vh
-	background: $dark-accent
-	grid-gap: 1px
-
-.report-column
-	@include transition(box-shadow)
-	// border-radius: $default-border-radius
-	min-width: 196px
-	background-color: $entry-bg
-	overflow: hidden
-	flex-flow: column
-	color: $dark-text
-
-	> span:first-child
-		min-height: 20px
-
-		svg:first-of-type 
-			g, path
-				fill: $dark-text
-
-	> span:last-child
-		border-top: 1px solid $dark-accent
-		flex-flow: column
-		flex-grow: 1
-		overflow: scroll
-
-	h3
-		font-size: 1rem
-		margin: 0
-
-	h4
-		color: $dark-text
-
-	h3, h4, h5
-		margin: 0
-
-	h6
-		@include text-overflow
-		margin: $spacing / 2 0 0
-		
-	svg
-		margin-left: $spacing / 2
-		width: 20px
-		height: 20px
-		
-
 .client
 	background-color: $entry-bg
 	position: relative
@@ -92,7 +38,7 @@
 
 .details
 	@include transition(box-shadow)
-	@include glowing-shadow(lighten($dark-accent, 10%))
+	box-shadow: $rest-shadow
 	border-radius: $default-border-radius
 	background-color: $entry-bg
 	min-width: $spacing * 10 * 2

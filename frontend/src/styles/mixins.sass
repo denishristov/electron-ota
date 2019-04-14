@@ -1,9 +1,7 @@
 @import './variables'
 
 @mixin glowing-shadow($color)
-	// box-shadow: 0 $spacing / 2 60px transparentize($color, 0.6), 0 4px 14px transparentize($color, 0.8)
-	// box-shadow: 0 15px 30px 0 transparentize($color, 0.89),0 5px 15px 0 transparentize($color, 0.72);
-	box-shadow: 0 15px 30px 0 rgba(0,0,0,0.11), 0 5px 15px 0 rgba(0,0,0,0.08)
+	box-shadow: 0 $spacing / 2 60px transparentize($color, 0.6), 0 4px 14px transparentize($color, 0.8)
 
 @mixin text-overflow
 	white-space: nowrap
@@ -50,21 +48,11 @@
 				height: $spacing
 				margin-right: $spacing / 2
 
-@mixin shadow($color)
-	box-shadow: 0 0 20px 0 transparentize($color, 0.76)
-
-	&:hover, &:focus
-		box-shadow: 0 5px 12px transparentize($color, 0.92), 0 1px 4px transparentize($color, 0.91), 0 -5px 15px -1px transparentize($color, 0.9), inset 0 0 20px -3px transparentize($color, 0.9)
-
 @mixin entry-shadow
 	box-shadow: $rest-shadow
 
 	&:hover, &:focus
 		box-shadow: $hover-shadow
-
-@mixin focus-shadow
-	@include shadow($accent)
-	box-shadow: none
 
 @mixin dot($color)
 	@include glowing-shadow($color)
@@ -91,7 +79,7 @@
 @mixin outline-button($color)
 	$darker: darken($color, 16%)
 
-	@include shadow($color)
+	@include entry-shadow
 	@include ease(box-shadow, background-color, color, transform, border-color)
 	background-color: transparent
 	border: 1px solid $color
@@ -101,17 +89,17 @@
 		fill: $darker
 
 	&:focus, &:hover
-		@include glowing-shadow($color)
+		box-shadow: $rest-shadow
 		border-color: $color
 		color: white
 		background-color: $color
 
 		svg, g, path
-			fill: $darker
+			fill: white
 
 
 @mixin color-button($background, $background2, $color)
-	@include shadow($background)
+	@include entry-shadow
 	background-size: auto 200%
 	background-position: 0 100%
 	background-image: linear-gradient(to top right, $background 0%, $background 20%, $background2 100%)
@@ -119,7 +107,9 @@
 
 	&:disabled
 		cursor: not-allowed
-		background-image: linear-gradient(to top right, desaturate($background, 50%) 0%, desaturate($background, 20%) 20%, desaturate($background2, 20%) 100%)
+		box-shadow: none
+		background-image: none
+		background-color: $dark-accent
 
 		&:hover
 			box-shadow: none
@@ -128,7 +118,7 @@
 		fill: $color
 
 	&:focus, &:hover
-		@include glowing-shadow($background)
+		box-shadow: $rest-shadow
 		background-position: 0 0
 
 @mixin dark-button($background) 

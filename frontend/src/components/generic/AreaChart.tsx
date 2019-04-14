@@ -5,6 +5,8 @@ import styles from '../../styles/util.module.sass'
 import { colors } from '../../util/constants/styles'
 import { list, formatDate as formatDateFull, naturalNumber } from '../../util/functions'
 import AnimationContext from '../contexts/AnimationContext'
+import Spinner from 'react-spinner-material'
+import LoadingPlaceholder from './LoadingPlaceholder';
 
 const {
 	FlexibleWidthXYPlot,
@@ -80,57 +82,62 @@ export default class AreaChart extends React.Component<IProps, IState> {
 
 		return data && data.length ? (
 			<AnimationContext.Consumer>
-				{({ isResting }) => isResting && (
+				{({ isResting }) => (
 					<Flex p m col list className={styles.darkTile}>
 						<h3>{title}</h3>
-						<Flex list x onMouseOut={this.handleMouseLeave}>
-							<FlexibleWidthXYPlot
-								// width={600}
-								height={300}
-								xType='time'
-							>
-								<GradientDefs>
-									<linearGradient id={this.colorKey} x1='0' x2='0' y1='0' y2='1'>
-										<stop offset='0%' stopColor={color} stopOpacity={1} />
-										<stop offset='100%' stopColor={color} stopOpacity={0.1} />
-									</linearGradient>
-								</GradientDefs>
-								<VerticalGridLines />
-								<HorizontalGridLines />
-								<XAxis
-									animation
-									tickLabelAngle={-45}
-									tickFormat={formatDate}
-									style={labelsStyle}
-								/>
-								<YAxis animation style={labelsStyle} tickFormat={naturalNumber} />
-								<AreaSeries
-									animation
-									onNearestX={this.handleNearestX}
-									data={data}
-									curve='curveMonotoneX'
-									stroke='transparent'
-									color={`url(#${this.colorKey})`}
-								/>
-								{hovered && (
-									<Crosshair
-										values={this.state.crosshairValues}
-										styles={lineStyles}
-									>
-										<Flex col className={list(styles.hint, !isHovered && styles.reverse)}>
-											<Flex list>
-												<label>Date</label>
-												<label className={styles.dark}>{formatDateFull(hovered.x)}</label>
+						{!isResting && (
+							<LoadingPlaceholder color={color} height={300} />
+						)}
+						{isResting && (
+							<Flex list x onMouseOut={this.handleMouseLeave}>
+								<FlexibleWidthXYPlot
+									// width={600}
+									height={300}
+									xType='time'
+								>
+									<GradientDefs>
+										<linearGradient id={this.colorKey} x1='0' x2='0' y1='0' y2='1'>
+											<stop offset='0%' stopColor={color} stopOpacity={1} />
+											<stop offset='100%' stopColor={color} stopOpacity={0.1} />
+										</linearGradient>
+									</GradientDefs>
+									<VerticalGridLines />
+									<HorizontalGridLines />
+									<XAxis
+										animation
+										tickLabelAngle={-45}
+										tickFormat={formatDate}
+										style={labelsStyle}
+									/>
+									<YAxis animation style={labelsStyle} tickFormat={naturalNumber} />
+									<AreaSeries
+										animation
+										onNearestX={this.handleNearestX}
+										data={data}
+										curve='curveMonotoneX'
+										stroke='transparent'
+										color={`url(#${this.colorKey})`}
+									/>
+									{hovered && (
+										<Crosshair
+											values={this.state.crosshairValues}
+											styles={lineStyles}
+										>
+											<Flex col className={list(styles.hint, !isHovered && styles.reverse)}>
+												<Flex list>
+													<label>Date</label>
+													<label className={styles.dark}>{formatDateFull(hovered.x)}</label>
+												</Flex>
+												<Flex list>
+													<label>Clients</label>
+													<label className={styles.dark}>{hovered.y}</label>
+												</Flex>
 											</Flex>
-											<Flex list>
-												<label>Clients</label>
-												<label className={styles.dark}>{hovered.y}</label>
-											</Flex>
-										</Flex>
-									</Crosshair>
-								)}
-							</FlexibleWidthXYPlot>
-						</Flex>
+										</Crosshair>
+									)}
+								</FlexibleWidthXYPlot>
+							</Flex>
+						)}
 					</Flex>
 			)}
 			</AnimationContext.Consumer>

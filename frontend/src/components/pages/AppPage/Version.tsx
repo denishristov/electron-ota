@@ -5,6 +5,7 @@ import { ObservableMap, computed } from 'mobx'
 
 import { formatDate, list } from '../../../util/functions'
 import { animated } from 'react-spring'
+import { format } from 'timeago.js'
 
 import Flex from '../../generic/Flex'
 import Counter from './Counter'
@@ -13,7 +14,7 @@ import styles from '../../../styles/Version.module.sass'
 import Pushable from '../../generic/Pushable'
 import { BrowserHistory } from '../../../util/types'
 import icons from '../../../util/constants/icons'
-import Tip from '../../generic/Tip'
+import Tip from '../../generic/Tip';
 import { colors } from '../../../util/constants/styles'
 
 interface IProps {
@@ -28,6 +29,7 @@ interface IProps {
 export default class Version extends React.Component<IProps> {
 	public render() {
 		const { version, animation } = this.props
+		const [date, ago] = this.dates
 
 		return (
 			<animated.div
@@ -36,7 +38,9 @@ export default class Version extends React.Component<IProps> {
 				onClick={this.handleClick}
 			>
 				<Flex pr y x className={styles.date}>
-					{formatDate(new Date(version.createdAt))}
+					<Tip message={date}>
+						{ago}
+					</Tip>
 				</Flex>
 				<Pushable>
 					<Flex list y grow className={styles.version}>
@@ -108,6 +112,17 @@ export default class Version extends React.Component<IProps> {
 	@bind
 	private handleClick() {
 		this.props.history.push(`${location.pathname}/${this.props.version.id}`)
+	}
+
+	@computed
+	private get dates() {
+		const { version } = this.props
+		const date = new Date(version.createdAt)
+
+		return [
+			formatDate(date),
+			format(date),
+		]
 	}
 
 	@computed

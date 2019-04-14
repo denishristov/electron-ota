@@ -10,12 +10,12 @@
 	display: flex
 	justify-content: center
 	align-items: center
-	background-color: #e6e6e6cc
+	background-color: #efefefeb
 	backdrop-filter: blur(8px)
 	z-index: 2
 	
 	.content
-		@include glowing-shadow($dark-accent)
+		box-shadow: $hover-shadow
 		min-width: 428px
 		border-radius: $default-border-radius
 		background-color: white

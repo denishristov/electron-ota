@@ -12,11 +12,6 @@
 	margin: $spacing
 
 .new-version
-	color: $light-text
-
-	g, path
-		fill: $light-text
-
 	h3
 		margin: 0
 
@@ -26,7 +21,7 @@
 	margin-right: 0px
 
 	> span:first-child
-		@include glowing-shadow(lighten($dark-accent, 10%))
+		box-shadow: $rest-shadow
 		position: relative
 		background-color: white
 		border-radius: $default-border-radius
