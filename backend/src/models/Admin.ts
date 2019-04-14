@@ -13,6 +13,6 @@ export class Admin extends Typegoose {
 	@prop()
 	public pictureUrl: string
 
-	@arrayProp({ items: String, unique: true })
-	public authTokens: string[] = []
+	@arrayProp({ items: String, unique: true, default: [] })
+	public authTokens: string[]
 }

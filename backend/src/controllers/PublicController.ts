@@ -27,7 +27,8 @@ export default class PublicController extends BaseHttpController {
 		try {
 			const { authToken } = await this.adminsService.login(data)
 			return this.authenticate(res, authToken)
-		} catch {
+		} catch (error) {
+			console.log(error)
 			return this.unauthorized()
 		}
 	}
@@ -37,7 +38,8 @@ export default class PublicController extends BaseHttpController {
 		try {
 			const { authToken } = await this.adminsService.register(data)
 			return this.authenticate(res, authToken)
-		} catch {
+		} catch (error) {
+			console.log(error)
 			return this.unauthorized()
 		}
 	}

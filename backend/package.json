@@ -39,14 +39,14 @@
     "inversify-express-utils": "^6.3.2",
     "joi": "14.3.1",
     "jsonwebtoken": "8.4.0",
-    "mongoose": "5.4.9",
+    "mongoose": "5.4.15",
     "reflect-metadata": "0.1.12",
     "semver": "5.6.0",
     "socket.io": "2.2.0",
     "socket.io-cookie-parser": "1.0.0",
     "socket.io-redis": "5.2.0",
     "tsdv-joi": "0.0.11",
-    "typegoose": "5.5.0",
+    "typegoose": "5.6.0",
     "winston": "2.4.4"
   },
   "devDependencies": {
@@ -82,8 +82,5 @@
     "tslint": "^5.11.0",
     "ttypescript": "^1.5.6",
     "typescript": "^3.2.2"
-  },
-  "resolutions": {
-    "typegoose/mongoose": "5.4.9"
   }
 }
