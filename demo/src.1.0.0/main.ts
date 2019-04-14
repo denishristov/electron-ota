@@ -5,7 +5,7 @@ let mainWindow: Electron.BrowserWindow
 
 if (!global.isDevMode) {
 	global.updateService.checkForUpdate()
-	
+
 	global.updateService.on('update', () => {
 		dialog.showMessageBox({
 			buttons: ['Reload', 'Not now'] ,
@@ -14,8 +14,9 @@ if (!global.isDevMode) {
 		}, (index) => {
 			if (index === 0) {
 				// TODO: Set launch URL to be the same
-				app.relaunch()
-				app.exit()
+				mainWindow.reload()
+				// app.relaunch()
+				// app.exit()
 			}
 		})
 	})

@@ -1,6 +1,6 @@
 {
-  "name": "electron-ota",
-  "version": "0.0.4",
+  "name": "electron-ota-client",
+  "version": "1.0.0",
   "main": "dist/index.js",
   "license": "UNLICENSED",
   "scripts": {

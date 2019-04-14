@@ -10,7 +10,7 @@
 			"path": "shared",
 		},
 		{
-			"path": "electron-client",
+			"path": "electron-ota-client",
 		},
 		{
 			"path": "demo",

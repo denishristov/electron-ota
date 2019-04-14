@@ -1,4 +1,4 @@
-import ElectronUpdateServiceClient from 'electron-ota'
+import ElectronUpdateServiceClient from 'electron-ota-client'
 
 declare global {
 	namespace NodeJS {

@@ -4180,16 +4180,6 @@ electron-osx-sign@0.4.11:
     minimist "^1.2.0"
     plist "^3.0.1"
 
-electron-ota@0.0.0:
-  version "0.0.0"
-  resolved "https://registry.yarnpkg.com/electron-ota/-/electron-ota-0.0.0.tgz#f03890c5cc0719851183b2f9fc971fa5eb6cb03e"
-  integrity sha512-I7h6zP3j9QSQe5r8EHxjba5siMDTPUk4Ya+wPSRBVK8pZvn/oRmsnx3W+xNUFC4PuKbYc8OCDwvhvyQW438G8A==
-  dependencies:
-    download "^7.1.0"
-    electron-store "^2.0.0"
-    semver "^5.6.0"
-    socket.io-client "^2.2.0"
-
 electron-publish@20.39.0:
   version "20.39.0"
   resolved "https://registry.yarnpkg.com/electron-publish/-/electron-publish-20.39.0.tgz#a945d871b469b4160933d4e027612710b653f006"

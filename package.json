@@ -10,7 +10,7 @@
     "frontend",
     "shared",
     "demo",
-    "electron-client"
+    "electron-ota-client"
   ],
   "devDependencies": {
     "tslint": "^5.12.1",
