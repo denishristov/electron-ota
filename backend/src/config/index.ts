@@ -16,7 +16,7 @@ export const ENVIRONMENT = process.env.NODE_ENV || 'development'
 
 export const isProduction = ENVIRONMENT === 'production' // Anything else is treated as 'dev'
 
-export const MONGODB_URI = isProduction ? process.env.MONGODB_URI : process.env.MONGODB_URI_LOCAL
+export const MONGODB_URI = process.env.MONGODB_URI
 
 export const PORT = process.env.PORT || 4000
 

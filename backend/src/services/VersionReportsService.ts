@@ -148,7 +148,7 @@ export default class VersionReportsService implements IVersionReportsService {
 			.select('using version.versionName')
 			.populate('using.client version')
 
-		const result = reports.group(({ using, version }) => {
+		const result = reports.filter(({ version }) => version).group(({ using, version }) => {
 			const systemTypeReports = Object.values(SystemType).group((systemType) => [systemType, 0])
 
 			for (const report of using) {

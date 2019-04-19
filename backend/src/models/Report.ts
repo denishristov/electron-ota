@@ -9,5 +9,5 @@ export class Report {
 	public errorMessage?: string
 
 	@prop({ default: new Date() })
-	public timestamp: Date = new Date()
+	public timestamp: Date
 }

@@ -15,6 +15,7 @@ import { ClientsMediatorFactory } from './mediators/ClientsMediatorFactory'
 import { AdminMediatorFactory } from './mediators/AdminMediatorFactory'
 
 import { IAppService } from './services/AppService'
+// import Seed from './config/seed'
 
 (async function bootstrap() {
 	const mediators = container.get<Map<string, ISocketMediator>>(nameof<Map<string, ISocketMediator>>())
@@ -29,6 +30,8 @@ import { IAppService } from './services/AppService'
 	const bundleIds = await appService.getAllBundleIds()
 
 	const systemTypes = Object.keys(SystemType) as SystemType[]
+	// const a = container.get<Seed>(nameof<Seed>())
+	// a.seed()
 
 	for (const bundleId of bundleIds) {
 		for (const systemType of systemTypes) {

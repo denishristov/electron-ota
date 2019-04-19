@@ -44,6 +44,7 @@ import cookieParser from 'cookie-parser'
 import socketioConfig from './socketioConfig'
 import { REGISTER_KEY } from './index'
 import PublicController from '../controllers/PublicController'
+import Seed from './seed';
 
 const container = new Container()
 
@@ -54,7 +55,7 @@ container.bind<SocketIO.Server>(nameof<SocketIO.Server>())
 		server.setConfig((app) => {
 			app.use(bodyParser.json())
 				.use(cors({
-					origin: '*',
+					origin: CLIENT_ORIGIN,
 					credentials: true,
 				}))
 				.use(cookieParser())
@@ -158,5 +159,7 @@ container.bind<Map<string, ISocketMediator>>(nameof<Map<string, ISocketMediator>
 container.bind<NamespaceAuthHook>(nameof<NamespaceAuthHook>())
 	.toDynamicValue(namespaceAuthHook)
 	.inSingletonScope()
+
+container.bind<Seed>(nameof<Seed>()).to(Seed).inSingletonScope()
 
 export default container
