@@ -106,7 +106,7 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 				return Object.entries(reports).group(([type, reports]) => {
 					const data = reports.map(({ timestamp, count }) => {
 						return { x: new Date(timestamp), y: count }
-					})
+					}).sort((a, b) => +a.x - +b.x)
 
 					return [type, data]
 				})

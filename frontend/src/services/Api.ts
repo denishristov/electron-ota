@@ -36,7 +36,7 @@ export default class Api implements IApi {
 			})
 
 			this.connection.once(EventType.Connect, resolve)
-			this.connection.once(EventType.Error, reject)
+			this.connection.once('connect_error', reject)
 		})
 	}
 

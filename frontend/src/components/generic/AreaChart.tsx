@@ -103,14 +103,14 @@ export default class AreaChart extends React.Component<IProps, IState> {
 									<VerticalGridLines />
 									<HorizontalGridLines />
 									<XAxis
-										animation
+										// animation
 										tickLabelAngle={-45}
 										tickFormat={formatDate}
 										style={labelsStyle}
 									/>
 									<YAxis animation style={labelsStyle} tickFormat={naturalNumber} />
 									<AreaSeries
-										animation
+										// animation
 										onNearestX={this.handleNearestX}
 										data={data}
 										curve='curveMonotoneX'
