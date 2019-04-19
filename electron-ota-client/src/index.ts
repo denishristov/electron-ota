@@ -127,6 +127,7 @@ class ElectronClientUpdateService extends EventEmitter implements IUpdateService
 			const updateModule = require(latestUpdatePath)
 
 			for (const filename of updates) {
+				this.downloadsStore.delete(filename.replace('.asar', ''))
 				unlink(path.join(this.updateDirPath, filename))
 			}
 
@@ -183,6 +184,7 @@ class ElectronClientUpdateService extends EventEmitter implements IUpdateService
 			const updateModule = require(latestUpdatePath)
 
 			for (const filename of updates) {
+				this.downloadsStore.delete(filename.replace('.asar', ''))
 				unlink(path.join(this.updateDirPath, filename))
 			}
 
