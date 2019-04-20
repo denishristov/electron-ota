@@ -36,7 +36,7 @@ const emptyProfile = {
 @injectable()
 class UserStore implements IUserStore {
 	@observable
-	public isAuthenticated: boolean | null = null
+	public isAuthenticated = false
 
 	@observable
 	public profile: IProfile = { ...emptyProfile }
@@ -51,7 +51,7 @@ class UserStore implements IUserStore {
 
 	@computed({ keepAlive: true })
 	public get isLoading(): boolean {
-		return this.isFetching || this.isAuthenticated === null
+		return this.isFetching
 	}
 
 	@bind
@@ -110,6 +110,7 @@ class UserStore implements IUserStore {
 	@transformToMobxFlow
 	public async authenticate(): Promise<void> {
 		try {
+			this.isFetching = true
 			await this.api.connect()
 
 			this.isAuthenticated = true
@@ -122,6 +123,8 @@ class UserStore implements IUserStore {
 			Object.assign(this.profile, profile)
 		} catch {
 			this.isAuthenticated = false
+		} finally {
+			this.isFetching = false
 		}
 	}
 }
