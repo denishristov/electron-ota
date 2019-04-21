@@ -33,8 +33,7 @@ This repo serves as a mono repo for the following components:
 * Express
 * Socket.IO
 * AWS S3
-* Mongo
-* Electron
+* MongoDB
 
 ### Front-end:
 * React
@@ -43,13 +42,14 @@ This repo serves as a mono repo for the following components:
 * SASS
 * webpack
 
-## Admin UI Screenshots
-![AppPage](https://i.imgur.com/5U7bB8O.jpg)
-![VersionPage](https://i.imgur.com/7dNQxkM.jpg)
-![VersionModal](https://i.imgur.com/6fjG57B.png)
-
 ## Todo: 
 * Proper documentation
 * Unit tests
 * React Native support
 * Client targeting
+* Redis sessions
+
+## Admin UI Screenshots
+![AppPage](https://i.imgur.com/5U7bB8O.jpg)
+![VersionPage](https://i.imgur.com/7dNQxkM.jpg)
+![VersionModal](https://i.imgur.com/5iHJoWp.png)
