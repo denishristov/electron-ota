@@ -10,7 +10,7 @@
 
 Update service for Electron apps. Provides a real-time solution for updating the app.asar package of an app and monitoring the process through an admin web application.
 
-What differentiates it from the "autoUpdater" module built-it "Electron" is that it only updates the app.asar of an app, without the native modules of "Electron".
+What differentiates it from other open-source solutions is that it does not use the "autoUpdater" module built-in "Electron" and it only updates the app.asar of an app, excluding the native modules of "Electron".
 
 This repo serves as a mono repo for the following components:
 
