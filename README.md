@@ -51,5 +51,5 @@ This repo serves as a mono repo for the following components:
 
 ## Admin UI Screenshots
 ![AppPage](https://i.imgur.com/5U7bB8O.jpg)
-![VersionPage](https://i.imgur.com/7dNQxkM.jpg)
+![VersionPage](https://i.imgur.com/LnjWXVM.jpg)
 ![VersionModal](https://i.imgur.com/5iHJoWp.png)
