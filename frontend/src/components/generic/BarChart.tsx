@@ -24,7 +24,9 @@ import AnimationContext from '../contexts/AnimationContext'
 import LoadingPlaceholder from './LoadingPlaceholder'
 
 interface IDataPoint {
+	systemType: string
 	x: number
+	x0?: number
 	y: string
 }
 
@@ -114,12 +116,16 @@ export default class BarChart extends React.Component<IProps, IState> {
 												<Hint value={dataPoint}>
 													<Flex col className={list(styles.hint, !isHovered && styles.reverse)}>
 														<Flex list>
+															<label>System type</label>
+															<label className={styles.dark}>{SystemTypeDisplay[dataPoint.systemType]}</label>
+														</Flex>
+														<Flex list>
 															<label>Version name</label>
 															<label className={styles.dark}>{dataPoint.y}</label>
 														</Flex>
 														<Flex list>
 															<label>Clients</label>
-															<label className={styles.dark}>{dataPoint.x}</label>
+															<label className={styles.dark}>{dataPoint.x - (dataPoint.x0 || 0)}</label>
 														</Flex>
 													</Flex>
 												</Hint>

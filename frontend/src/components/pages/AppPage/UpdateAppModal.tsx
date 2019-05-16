@@ -10,6 +10,7 @@ import Button from '../../generic/Button'
 import styles from '../../../styles/AppsPage.module.sass'
 import { IUpdateAppStore } from '../../../stores/UpdateAppStore'
 import { observer } from 'mobx-react'
+import { action } from 'mobx';
 
 interface IEditAppEvent extends FormEvent<HTMLFormElement> {
 	target: EventTarget & {
@@ -31,6 +32,7 @@ export default class UpdateAppModal extends Component<IProps> {
 	@lazyInject(nameof<IUpdateAppStore>())
 	private readonly store: IUpdateAppStore
 
+	@action
 	public componentDidMount() {
 		const { pictureSrc, color } = this.props
 

@@ -154,3 +154,7 @@ export function randomInteger(min: number, max: number) {
 export function capitalize(str: string) {
 	return [str[0].toLocaleUpperCase(), ...str.slice(1)].join('')
 }
+
+export function gradient(color: string) {
+	return { backgroundImage: `linear-gradient(${color} -50%, transparent 100%)` }
+}

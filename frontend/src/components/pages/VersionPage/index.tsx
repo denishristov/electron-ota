@@ -10,7 +10,7 @@ import { computed } from 'mobx'
 import { IApp } from '../../../stores/App'
 import Loading from '../../generic/LoadingContainer'
 import { observer } from 'mobx-react'
-import { formatDate, capitalize } from '../../../util/functions'
+import { formatDate, capitalize, gradient } from '../../../util/functions'
 
 import styles from '../../../styles/VersionPage.module.sass'
 import versionStyles from '../../../styles/Version.module.sass'
@@ -215,7 +215,7 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 		return (
 			<Container>
 				<div className={styles.container}>
-					<header style={{ backgroundColor: color }}>
+					<header style={gradient(color)}>
 						<img src={this.app.pictureUrl} />
 						<h1>{`${this.app.name} v${versionName}`}</h1>
 					</header>

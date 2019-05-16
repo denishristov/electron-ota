@@ -22,11 +22,10 @@ import utilStyles from '../../../styles/util.module.sass'
 import versionModalStyles from '../../../styles/VersionModal.module.sass'
 import versionStyles from '../../../styles/Version.module.sass'
 
-import { list, formatDate, returnArgument } from '../../../util/functions'
+import { list, formatDate, returnArgument, gradient } from '../../../util/functions';
 import Pushable from '../../generic/Pushable'
-import { CreateVersionStoreFactory } from '../../../stores/factories/CreateVersionStoreFactory'
 import icons from '../../../util/constants/icons'
-import { MenuProvider, Menu, Item, Separator } from 'react-contexify'
+import { MenuProvider, Menu, Item } from 'react-contexify'
 import UpdateAppModal from './UpdateAppModal'
 import { TriggerContext } from '../../contexts/ModalContext'
 import ConfirmDeleteModal from '../../generic/ConfirmDeleteModal'
@@ -114,10 +113,7 @@ export default class AppPage extends Component<RouteComponentProps<IParams>, ISt
 				for (const systemType of Object.keys(SystemType)) {
 					const x = systemTypeReports[systemType]
 
-					x && data[systemType].push({
-						x,
-						y: versionName,
-					})
+					x && data[systemType].push({ x, y: versionName, systemType })
 				}
 			}
 
@@ -134,10 +130,7 @@ export default class AppPage extends Component<RouteComponentProps<IParams>, ISt
 				for (const systemType of Object.keys(SystemType)) {
 					const x = systemTypeReports[systemType]
 
-					x && data[systemType].push({
-						x,
-						y: versionName,
-					})
+					x && data[systemType].push({ x, y: versionName, systemType })
 				}
 			}
 
@@ -191,7 +184,7 @@ export default class AppPage extends Component<RouteComponentProps<IParams>, ISt
 		return (
 			<Container>
 				<div className={styles.appPageContainer}>
-					<header style={{ backgroundColor: color }}>
+					<header style={gradient(color)}>
 						{pictureUrl && <img src={pictureUrl} />}
 						<h1>{name}</h1>
 					</header>
