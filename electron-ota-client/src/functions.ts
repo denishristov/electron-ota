@@ -1,7 +1,6 @@
 import fs from 'fs'
 import util from 'util'
 import crypto from 'crypto'
-import io from 'socket.io-client'
 import { IUpdateServiceOptions } from './interfaces'
 import { app } from 'electron'
 
@@ -33,18 +32,6 @@ export function uuid(): string {
 	return crypto.randomBytes(32).toString('base64')
 }
 
-export async function buildConnectionAsync(uri: string, query: string): Promise<SocketIOClient.Socket> {
-	await Promise.resolve()
-
-	const connection = io(uri, {
-		query,
-		reconnectionDelayMax: 60 * 60 * 1000,
-		transports: ['websocket', 'xhr-polling'],
-	})
-
-	return connection
-}
-
 function getVersion(): string | null {
 	const packageJSON = JSON.parse(fs.readFileSync('package.json', 'utf8'))
 
@@ -61,8 +48,16 @@ export function normalizeOptions(options: IUpdateServiceOptions): IUpdateService
 		checkHashBeforeLoad: Boolean(options.checkHashBeforeLoad),
 		versionName: options.versionName || getVersion(),
 		retryTimeout: options.retryTimeout || 1000 * 60,
+		emitTimeout: options.emitTimeout || 1000 * 60,
 		checkForUpdateOnConnect: options.checkForUpdateOnConnect === void 0
 			? true
 			: options.checkForUpdateOnConnect,
 	}
+}
+
+export function timeout(ms: number, data?: {}): Promise<never> {
+	return new Promise((_, reject) => setTimeout(() => reject({
+		message: 'timeout',
+		...data,
+	}), ms))
 }
