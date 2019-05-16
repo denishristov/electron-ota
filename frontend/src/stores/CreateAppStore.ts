@@ -32,7 +32,7 @@ export default class CreateAppStore implements ICreateAppStore {
 		if (picture) {
 			const upload = await this.uploadService.uploadPicture(picture)
 
-			await upload.upload
+			await upload.uploadPromise
 
 			pictureUrl = upload.downloadUrl
 		}

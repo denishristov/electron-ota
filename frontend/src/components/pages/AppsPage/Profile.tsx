@@ -4,7 +4,7 @@ import icons from '../../../util/constants/icons'
 import styles from '../../../styles/AppsPage.module.sass'
 import Flex from '../../generic/Flex'
 
-import { Menu, Item, Separator, Submenu, MenuProvider } from 'react-contexify'
+import { Menu, Item, Separator, MenuProvider } from 'react-contexify'
 
 import { IUserStore } from '../../../stores/UserStore'
 import Modal from '../../generic/Modal'
@@ -42,11 +42,7 @@ export default class Profile extends Component<IProps> {
 					</Pushable>
 				</MenuProvider>
 				<Modal>
-					<Modal.Content
-						title='Edit profile'
-						component={ProfileModal}
-						props={{}}
-					/>
+					<Modal.Content title='Edit profile' component={<ProfileModal />} />
 					<TriggerContext.Consumer>
 					{({ open }) => (
 						<ConfirmDeleteModal name='your profile' onDelete={this.userStore.deleteProfile}>

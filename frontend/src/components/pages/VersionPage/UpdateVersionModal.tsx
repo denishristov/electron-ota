@@ -10,11 +10,15 @@ import icons from '../../../util/constants/icons'
 
 import { ToggleNames } from '../../../util/enums'
 import ToggleRow from '../../generic/ToggleRow'
-import { IUpdateVersionStore } from '../../../stores/UpdateVersionStore'
 import { messages } from '../../../util/constants/defaults'
+import { UpdateVersionStoreFactory } from '../../../stores/factories/UpdateVersionStoreFactory';
+import { IApp } from '../../../stores/App'
+import { VersionModel } from 'shared'
+import { IUpdateVersionStore } from '../../../stores/UpdateVersionStore'
 
 interface IProps {
-	store: IUpdateVersionStore
+	app: IApp
+	version: VersionModel
 }
 
 interface IUpdateEvent extends FormEvent<HTMLFormElement> {
@@ -28,8 +32,20 @@ interface IUpdateEvent extends FormEvent<HTMLFormElement> {
 
 @observer
 export default class UpdateVersionModal extends Component<IProps> {
+	@lazyInject(nameof<UpdateVersionStoreFactory>())
+	private readonly updateVersionStoreFactory: UpdateVersionStoreFactory
+
+	private readonly store: IUpdateVersionStore
+
+	constructor(props: IProps) {
+		super(props)
+
+		const { app, version } = props
+		this.store = this.updateVersionStoreFactory(app, version)
+	}
+
 	public render() {
-		const { versionModalStore } = this.props.store
+		const { versionModalStore } = this.store
 		const { toggles } = versionModalStore
 
 		return (
@@ -45,7 +61,7 @@ export default class UpdateVersionModal extends Component<IProps> {
 							<Flex grow col>
 								<label className={styles.label}>Description</label>
 								<textarea
-									defaultValue={this.props.store.description}
+									defaultValue={this.store.description}
 									name='description'
 									placeholder='Optional description for the update'
 								/>
@@ -108,7 +124,7 @@ export default class UpdateVersionModal extends Component<IProps> {
 			description,
 		} = event.target.elements
 
-		await this.props.store.handleUpdate({
+		await this.store.handleUpdate({
 			versionName: versionName.value,
 			description: description.value,
 		})

@@ -17,8 +17,7 @@ import { animationConfig } from '../../config'
 interface IContentProps<T = {}> extends Exclude<DivProps, 'children'> {
 	title?: string
 	className?: string
-	component: React.ComponentClass<T> | React.FunctionComponent<T>
-	props: T
+	component: JSX.Element
 }
 
 interface IModalProps extends Pick<DivProps, 'children'> {
@@ -30,7 +29,7 @@ interface IState {
 	isClosing: boolean
 }
 
-function Content<T>({ component: Component, props, title, className }: IContentProps<T>) {
+function Content<T>({ component, title, className }: IContentProps<T>) {
 	return createPortal(
 		<TriggerContext.Consumer>
 			{({ close, _close }) => (
@@ -75,7 +74,7 @@ function Content<T>({ component: Component, props, title, className }: IContentP
 														</Pushable> */}
 													</header>
 												)}
-												<Component {...props} />
+												{component}
 											</animated.div>
 										}
 									</Spring>

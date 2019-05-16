@@ -9,7 +9,7 @@ const { CancelToken } = axios
 type ProgressCallback = (progress: number) => void
 
 interface IFileUpload {
-	upload: Promise<any>
+	uploadPromise: Promise<any>
 	onProgress: (callback: ProgressCallback) => void
 	cancelSource: CancelTokenSource
 	downloadUrl: string
@@ -61,7 +61,7 @@ export default class UploadService implements IUploadService {
 			holder.onProgress = cb
 		}
 
-		const upload = axios.put(signedRequest, file, {
+		const uploadPromise = axios.put(signedRequest, file, {
 			headers: {
 				'Content-Type': file.type,
 			},
@@ -71,6 +71,6 @@ export default class UploadService implements IUploadService {
 			cancelToken: cancelSource.token,
 		})
 
-		return { onProgress, cancelSource, upload, downloadUrl }
+		return { onProgress, cancelSource, uploadPromise, downloadUrl }
 	}
 }

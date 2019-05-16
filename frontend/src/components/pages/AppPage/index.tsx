@@ -56,9 +56,6 @@ export default class AppPage extends Component<RouteComponentProps<IParams>, ISt
 	@lazyInject(nameof<IAppsStore>())
 	private readonly appsStore: IAppsStore
 
-	@lazyInject(nameof<CreateVersionStoreFactory>())
-	private readonly createVersionStoreFactory: CreateVersionStoreFactory
-
 	@computed({ keepAlive: true })
 	private get app(): IApp | null {
 		const app = this.appsStore.getApp(this.props.match.params.appId)
@@ -237,8 +234,7 @@ export default class AppPage extends Component<RouteComponentProps<IParams>, ISt
 									<Modal>
 										<Modal.Content
 											title={`Edit ${name}`}
-											component={UpdateAppModal}
-											props={{ id, pictureSrc: pictureUrl, name }}
+											component={<UpdateAppModal id={id} pictureSrc={pictureUrl} name={name} color={color} />}
 										/>
 										<TriggerContext.Consumer>
 											{({ open }) => (
@@ -276,14 +272,13 @@ export default class AppPage extends Component<RouteComponentProps<IParams>, ISt
 											versionModalStyles.versionModal,
 											isModalClosingDisabled && versionModalStyles.disabled,
 										)}
-										component={VersionModal}
-										props={{
-											store: this.createVersionStoreFactory(
-												this.app,
-												latestAddedVersion && latestAddedVersion.versionName,
-											),
-											toggleClosing: this.toggleClosing,
-										}}
+										component={
+											<VersionModal
+												app={this.app}
+												latestVersionName={latestAddedVersion && latestAddedVersion.versionName}
+												toggleClosing={this.toggleClosing}
+											/>
+										}
 									/>
 								</Modal>
 								<AppearAnimation items={allVersions}>

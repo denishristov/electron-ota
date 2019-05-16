@@ -47,11 +47,7 @@ export default class AppsContainer extends Component<RouteComponentProps> {
 									</Button>
 								</div>
 							</Modal.OpenTrigger>
-							<Modal.Content
-								title='Add a new app'
-								component={AppModal}
-								props={{}}
-							/>
+							<Modal.Content title='Add a new app' component={<AppModal />} />
 						</Modal>
 					</header>
 					<div className={styles.appsContainer}>

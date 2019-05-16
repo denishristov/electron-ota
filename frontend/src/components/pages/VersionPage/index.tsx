@@ -62,9 +62,6 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 	@lazyInject(nameof<IAppsStore>())
 	private readonly appsStore: IAppsStore
 
-	@lazyInject(nameof<UpdateVersionStoreFactory>())
-	private readonly updateVersionStoreFactory: UpdateVersionStoreFactory
-
 	@computed({ keepAlive: true })
 	private get app(): IApp | null {
 		const { appId } = this.props.match.params
@@ -238,10 +235,7 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 										<Modal.Content
 											title={`Edit ${versionName}`}
 											className={versionModalStyles.versionModal}
-											component={UpdateVersionModal}
-											props={{
-												store: this.updateVersionStoreFactory(this.app!, this.version!),
-											}}
+											component={<UpdateVersionModal app={this.app!} version={this.version!} />}
 										/>
 											<TriggerContext.Consumer>
 												{({ open }) => (
@@ -337,10 +331,7 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 											)}
 										<Modal.Content
 											title={`Release ${versionName}`}
-											component={ReleaseModal}
-											props={{
-												onSubmit: this.handleRelease,
-											}}
+											component={<ReleaseModal onSubmit={this.handleRelease} />}
 										/>
 									</Modal>
 								</Flex>
@@ -440,5 +431,4 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 			this.app.deleteVersion(id)
 		}
 	}
-
 }

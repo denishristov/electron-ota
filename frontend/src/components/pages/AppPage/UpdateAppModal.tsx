@@ -23,6 +23,7 @@ interface IProps {
 	id: string
 	pictureSrc?: string
 	name: string
+	color: string
 }
 
 @observer
@@ -31,11 +32,9 @@ export default class UpdateAppModal extends Component<IProps> {
 	private readonly store: IUpdateAppStore
 
 	public componentDidMount() {
-		const { pictureSrc } = this.props
+		const { pictureSrc, color } = this.props
 
-		if (pictureSrc) {
-			this.store.appModalStore.pictureSrc = pictureSrc
-		}
+		Object.assign(this.store.appModalStore, { pictureSrc, color })
 	}
 
 	public render() {

@@ -20,6 +20,8 @@ import ToggleRow from '../../generic/ToggleRow'
 
 import { messages } from '../../../util/constants/defaults'
 import { action } from 'mobx'
+import { CreateVersionStoreFactory } from '../../../stores/factories/CreateVersionStoreFactory';
+import { IApp } from '../../../stores/App'
 
 const uploadMessages = {
 	active: 'Drop here',
@@ -27,7 +29,8 @@ const uploadMessages = {
 }
 
 interface IProps {
-	store: ICreateVersionStore
+	app: IApp
+	latestVersionName: string | null
 	toggleClosing: () => void
 }
 
@@ -46,7 +49,17 @@ interface ICreateEvent extends FormEvent<HTMLFormElement> {
 
 @observer
 export default class CreateVersionModal extends Component<IProps> {
-	private readonly store = this.props.store
+	@lazyInject(nameof<CreateVersionStoreFactory>())
+	private readonly createVersionStoreFactory: CreateVersionStoreFactory
+
+	private readonly store: ICreateVersionStore
+
+	constructor(props: IProps) {
+		super(props)
+
+		const { app, latestVersionName } = props
+		this.store = this.createVersionStoreFactory(app, latestVersionName)
+	}
 
 	public componentWillUnmount() {
 		removeEventListener('beforeunload', preventClose)
@@ -241,10 +254,11 @@ export default class CreateVersionModal extends Component<IProps> {
 
 	@bind
 	private handleCancel() {
-		const { store, toggleClosing } = this.props
+		const { toggleClosing } = this.props
+		const { cancelTokenSource } = this.store
 
 		toggleClosing()
-		store.cancelTokenSource && store.cancelTokenSource.cancel()
+		cancelTokenSource && cancelTokenSource.cancel()
 	}
 
 	@bind

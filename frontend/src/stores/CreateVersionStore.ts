@@ -98,7 +98,7 @@ export default class CreateVersionStore implements ICreateVersionStore {
 
 			const [calculatedHash] = await Promise.all([
 				this.fileService.hashFile(versionFile),
-				upload.upload,
+				upload.uploadPromise,
 			])
 
 			if (!calculatedHash) {

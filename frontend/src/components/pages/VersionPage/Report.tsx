@@ -38,8 +38,7 @@ export default observer(function Report({ client, errorMessage, timestamp }: Rep
 				<Modal.Content
 					title='Error'
 					className={styles.errorModal}
-					component={ErrorModal}
-					props={{ errorMessage }}
+					component={<ErrorModal errorMessage={errorMessage} />}
 				/>
 			)}
 		</Modal>

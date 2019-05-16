@@ -43,10 +43,7 @@ export default function ConfirmDeleteModal({ children, ...props }: IProps) {
 			<TriggerContext.Consumer>
 				{({ open }) => children(open)}
 			</TriggerContext.Consumer>
-			<Modal.Content
-				component={Content}
-				props={props}
-			/>
+			<Modal.Content component={<Content {...props} />} />
 		</Modal>
 	)
 }
