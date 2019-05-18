@@ -75,15 +75,16 @@ export default class AdminsService implements IAdminsService {
 	public async verify(authToken: string): Promise<IJWTPayload> {
 		const payload = await this.getPayloadFromToken(authToken)
 
-		const { authTokens } = await this.AdminModel.findById(payload.id).select('authTokens')
-
-		if (!authTokens) {
-			throw new Error('Auth token is invalid.')
-		}
-
 		const hashedToken = await this.hashAuthToken(authToken)
 
-		if (!authTokens.find((token) => token === hashedToken)) {
+		const [{ id }] = await this.AdminModel
+			.find({
+				_id: payload.id,
+				authTokens: hashedToken,
+			})
+			.select('')
+
+		if (!id) {
 			throw new Error('Auth token is invalid.')
 		}
 
