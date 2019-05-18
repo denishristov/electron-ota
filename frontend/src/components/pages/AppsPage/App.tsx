@@ -11,7 +11,7 @@ import utilStyles from '../../../styles/util.module.sass'
 import { IApp } from '../../../stores/App'
 import Pushable from '../../generic/Pushable'
 import icons from '../../../util/constants/icons'
-import { formatDate } from '../../../util/functions'
+import { formatDate, gradient } from '../../../util/functions'
 import { colors } from '../../../util/constants/styles'
 
 interface IProps extends IAnimatable {
@@ -40,7 +40,7 @@ export default class App extends Component<IProps> {
 						style={this.props.animation}
 						className={styles.appTile}
 					>
-						<Flex y list mb style={{ backgroundColor: color || colors.ui.accent }}>
+						<Flex y list mb style={gradient(color || colors.ui.accent)}>
 							{pictureUrl && <img src={pictureUrl} />}
 							<h3>{name}</h3>
 						</Flex>

@@ -5,13 +5,13 @@ import { colors } from '../../util/constants/styles'
 
 interface IProps {
 	color?: string
-	height: number
+	height?: number
 	width?: number
 }
 
 export default function LoadingPlaceholder({ color, height, width }: IProps) {
 	return (
-		<Flex x y style={{ height, width: width || '100%' }}>
+		<Flex x y grow style={{ height: height || '100%', width: width || '100%' }}>
 			<Spinner
 				visible
 				size={80}

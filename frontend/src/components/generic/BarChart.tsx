@@ -10,7 +10,7 @@ const {
 	HorizontalBarSeries,
 	GradientDefs,
 	Hint,
-// tslint:disable-next-line:no-var-requires
+	// tslint:disable-next-line:no-var-requires
 } = require('react-vis')
 
 import { colors } from '../../util/constants/styles'
@@ -85,7 +85,7 @@ export default class BarChart extends React.Component<IProps, IState> {
 				{({ isResting }) => (
 					<Flex p m col list className={styles.darkTile}>
 						<h3>{title}</h3>
-						{isResting
+						{isResting && data
 							? (
 								<Flex list col x>
 									<Flex>
@@ -160,13 +160,13 @@ export default class BarChart extends React.Component<IProps, IState> {
 								</Flex>
 							)
 							: (
-								<LoadingPlaceholder height={600} width={442} />
+								<LoadingPlaceholder height={600} width={462} />
 							)
 						}
 					</Flex>
-			)}
+				)}
 			</AnimationContext.Consumer>
 		)
-		: null
+			: null
 	}
 }

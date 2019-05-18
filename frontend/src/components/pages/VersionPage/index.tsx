@@ -10,7 +10,7 @@ import { computed } from 'mobx'
 import { IApp } from '../../../stores/App'
 import Loading from '../../generic/LoadingContainer'
 import { observer } from 'mobx-react'
-import { formatDate, capitalize, gradient } from '../../../util/functions'
+import { formatDate, gradient } from '../../../util/functions'
 
 import styles from '../../../styles/VersionPage.module.sass'
 import versionStyles from '../../../styles/Version.module.sass'
@@ -21,7 +21,6 @@ import icons from '../../../util/constants/icons'
 
 import Modal from '../../generic/Modal'
 import { IFileService } from '../../../services/FileService'
-import { UpdateVersionStoreFactory } from '../../../stores/factories/UpdateVersionStoreFactory'
 import UpdateVersionModal from './UpdateVersionModal'
 import ReleaseModal from './ReleaseModal'
 import AreaChart from '../../generic/AreaChart'
@@ -31,9 +30,8 @@ import Pushable from '../../generic/Pushable'
 import ConfirmDeleteModal from '../../generic/ConfirmDeleteModal'
 import { TriggerContext } from '../../contexts/ModalContext'
 import PieChart from '../../generic/PieChart'
-import { reportTypes, actionColors } from '../../../util/constants/defaults'
-import { format } from 'timeago.js'
-import Tip from '../../generic/Tip'
+import { reportTypes } from '../../../util/constants/defaults'
+import Report from './Report'
 
 const ID = 'edit_version'
 
@@ -220,8 +218,8 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 						<h1>{`${this.app.name} v${versionName}`}</h1>
 					</header>
 					<Flex m x className={styles.tilesContainer}>
-						<Flex col list>
-							<Flex col m p list className={styles.details}>
+						<Flex col>
+							<Flex col m p list className={styles.details} style={this.maxDetailsHeight}>
 								<MenuProvider id={ID} event='onClick' style={{ margin: 0 }}>
 									<div>
 										<Pushable>
@@ -230,13 +228,13 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 									</div>
 								</MenuProvider>
 								<ConfirmDeleteModal name={versionName} onDelete={this.handleDeleteVersion}>
-								{(openDelete) => (
-									<Modal>
-										<Modal.Content
-											title={`Edit ${versionName}`}
-											className={versionModalStyles.versionModal}
-											component={<UpdateVersionModal app={this.app!} version={this.version!} />}
-										/>
+									{(openDelete) => (
+										<Modal>
+											<Modal.Content
+												title={`Edit ${versionName}`}
+												className={versionModalStyles.versionModal}
+												component={<UpdateVersionModal app={this.app!} version={this.version!} />}
+											/>
 											<TriggerContext.Consumer>
 												{({ open }) => (
 													<Menu
@@ -249,8 +247,8 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 													</Menu>
 												)}
 											</TriggerContext.Consumer>
-									</Modal>
-								)}
+										</Modal>
+									)}
 								</ConfirmDeleteModal>
 								{createdAt && (
 									<Flex list y>
@@ -310,7 +308,7 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 										{releasedBy.pictureUrl && <img src={releasedBy.pictureUrl} />}
 									</Flex>
 								)}
-								<Flex list m x y mta>
+								<Flex list m x y>
 									{downloadUrl && (
 										<Button color='white' size='small' onClick={this.handleDownload}>
 											<SVG src={icons.Download} />
@@ -328,7 +326,7 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 													Release
 												</Button>
 											</Modal.OpenTrigger>
-											)}
+										)}
 										<Modal.Content
 											title={`Release ${versionName}`}
 											component={<ReleaseModal onSubmit={this.handleRelease} />}
@@ -338,23 +336,14 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 								{this.activity && Boolean(this.activity.length) && (
 									<>
 										<label>Activity Log</label>
-										{this.activity.map(({ client, type, timestamp }) => (
-											<Flex key={client.id + type} className={styles.client} list y>
-												<Tip message={capitalize(type)}>
-													<SVG
-														className={styles.actionType}
-														src={icons[capitalize(type)]}
-														style={{ backgroundColor: actionColors[type] }}
-													/>
-												</Tip>
-												<h6>
-													{format(new Date(timestamp))}
-												</h6>
-												<h5>{client.username}</h5>
-												<Flex grow />
-												<label>{client.osRelease}</label>
-												<SVG src={icons[client.systemType]} />
-											</Flex>
+										{this.activity.map(({ client, type, timestamp, errorMessage }) => (
+											<Report
+												key={client.id + type}
+												client={client}
+												type={type}
+												timestamp={timestamp}
+												errorMessage={errorMessage}
+											/>
 										))}
 									</>
 								)}
@@ -430,5 +419,15 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 			const { id } = this.version
 			this.app.deleteVersion(id)
 		}
+	}
+
+	private get maxDetailsHeight() {
+		const numberOfCharts = [
+			this.connectedPieData,
+			this.usingPieDate,
+			...this.groupedReports ? Object.values(this.groupedReports) : [],
+		].filter((chart) => chart && chart.length).length
+
+		return { maxHeight: numberOfCharts * (370 + 32) - 64 }
 	}
 }

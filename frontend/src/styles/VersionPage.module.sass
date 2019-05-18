@@ -16,8 +16,6 @@
 
 	&:not(:last-child):before
 		border-right: 1px solid $dark-accent
-
-	&:before
 		content: ''
 		width: 14px
 		height: 24px
@@ -35,6 +33,9 @@
 
 .error-modal
 	max-width: 60vw
+
+	code
+		margin: 0 0 16px 0
 
 .details
 	@include transition(box-shadow)

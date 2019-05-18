@@ -19,6 +19,7 @@ export const colors = {
 		blue: '#8fd3f4',
 		purple: '#bbaaff',
 		pink: '#ffbad7',
+		accent: '#dedede',
 	},
 }
 

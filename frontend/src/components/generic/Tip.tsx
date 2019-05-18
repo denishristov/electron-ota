@@ -3,12 +3,13 @@ import { DivProps } from '../../util/types'
 
 import styles from '../../styles/Tip.module.sass'
 import { list } from '../../util/functions'
+import { createPortal } from 'react-dom'
 
 interface IProps extends DivProps {
 	message: string
 }
 
-interface IState  {
+interface IState {
 	isHovered: boolean
 }
 
@@ -19,9 +20,12 @@ export default class Tip extends React.Component<IProps, IState> {
 
 	private readonly containerRef = React.createRef<HTMLSpanElement>()
 
+	private readonly tipRef = React.createRef<HTMLSpanElement>()
+
 	private position?: React.CSSProperties
 
 	public render() {
+		const { isHovered } = this.state
 		const { children, message, className, ...props } = this.props
 
 		return (
@@ -33,7 +37,16 @@ export default class Tip extends React.Component<IProps, IState> {
 				{...props}
 			>
 				{children}
-				<span className={styles.tip} style={this.position}>{message}</span>
+				{createPortal(
+					<span
+						ref={this.tipRef}
+						className={list(styles.tip, isHovered && styles.hovered)}
+						style={this.position}
+					>
+						{message}
+					</span>,
+					document.body,
+				)}
 			</span>
 		)
 	}
@@ -42,14 +55,13 @@ export default class Tip extends React.Component<IProps, IState> {
 	private handleMouseOver() {
 		this.setState({ isHovered: true })
 
-		const { current } = this.containerRef
+		const { current: container } = this.containerRef
+		const { current: tip } = this.tipRef
 
-		if (current && !this.position) {
-			const tip = current.childNodes[1]
-
+		if (container && tip && !this.position) {
 			this.position = this.calculateLeftOffset(
-				current.getBoundingClientRect(),
-				(tip as HTMLSpanElement).getBoundingClientRect(),
+				container.getBoundingClientRect(),
+				tip.getBoundingClientRect(),
 			)
 		}
 	}
@@ -60,6 +72,9 @@ export default class Tip extends React.Component<IProps, IState> {
 	}
 
 	private calculateLeftOffset(container: ClientRect | DOMRect, tip: ClientRect | DOMRect) {
-		return { left: Math.round((container.width - tip.width) / 2) }
+		return {
+			top: container.top - tip.height - 16,
+			left: container.left + Math.round((container.width - tip.width) / 2),
+		}
 	}
 }

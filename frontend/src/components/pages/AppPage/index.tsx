@@ -22,7 +22,7 @@ import utilStyles from '../../../styles/util.module.sass'
 import versionModalStyles from '../../../styles/VersionModal.module.sass'
 import versionStyles from '../../../styles/Version.module.sass'
 
-import { list, formatDate, returnArgument, gradient } from '../../../util/functions';
+import { list, formatDate, returnArgument, gradient } from '../../../util/functions'
 import Pushable from '../../generic/Pushable'
 import icons from '../../../util/constants/icons'
 import { MenuProvider, Menu, Item } from 'react-contexify'
@@ -223,26 +223,26 @@ export default class AppPage extends Component<RouteComponentProps<IParams>, ISt
 									))
 								}
 								<ConfirmDeleteModal name={name} onDelete={this.handleDeleteApp}>
-								{(openDelete) => (
-									<Modal>
-										<Modal.Content
-											title={`Edit ${name}`}
-											component={<UpdateAppModal id={id} pictureSrc={pictureUrl} name={name} color={color} />}
-										/>
-										<TriggerContext.Consumer>
-											{({ open }) => (
-												<Menu
-													id={ID}
-													animation='menu-animation'
-													theme='menu-theme'
-												>
-													<Item onClick={open}>Edit</Item>
-													<Item onClick={openDelete}>Delete</Item>
-												</Menu>
-											)}
-										</TriggerContext.Consumer>
-									</Modal>
-								)}
+									{(openDelete) => (
+										<Modal>
+											<Modal.Content
+												title={`Edit ${name}`}
+												component={<UpdateAppModal id={id} pictureSrc={pictureUrl} name={name} color={color} />}
+											/>
+											<TriggerContext.Consumer>
+												{({ open }) => (
+													<Menu
+														id={ID}
+														animation='menu-animation'
+														theme='menu-theme'
+													>
+														<Item onClick={open}>Edit</Item>
+														<Item onClick={openDelete}>Delete</Item>
+													</Menu>
+												)}
+											</TriggerContext.Consumer>
+										</Modal>
+									)}
 								</ConfirmDeleteModal>
 							</Flex>
 							<Flex col y className={styles.versionsContainer}>

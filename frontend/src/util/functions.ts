@@ -41,7 +41,7 @@ export function formatFileSize(bytes: number) {
 	const thresh = 1024
 
 	let i = 0
-	for ( ; bytes >= thresh && i < units.length - 1; ++i) {
+	for (; bytes >= thresh && i < units.length - 1; ++i) {
 		bytes /= thresh
 	}
 
@@ -65,7 +65,7 @@ export function formatDate(date: Date) {
 }
 
 // tslint:disable-next-line:no-empty
-export function noop() {}
+export function noop() { }
 
 export function getDefaultSimpleStatistics(version: string): SimpleVersionReportModel {
 	return {
@@ -117,7 +117,7 @@ let memoizedCounter = 0
 function getNewFunction(originalFunction: () => void) {
 	const identifier = ++memoizedCounter
 
-	return function(this: any, ...args: any[]) {
+	return function (this: any, ...args: any[]) {
 		const argumentsKey = args.map((x) => typeof x === 'object' ? JSON.stringify(x) : `${x}`).join('_')
 
 		const propName = `__memoized_${originalFunction.name}_${identifier}_${argumentsKey}`
@@ -148,7 +148,7 @@ export function naturalNumber(num: number) {
 }
 
 export function randomInteger(min: number, max: number) {
-	return Math.floor(Math.random() * (max - min) ) + min
+	return Math.floor(Math.random() * (max - min)) + min
 }
 
 export function capitalize(str: string) {
@@ -156,5 +156,5 @@ export function capitalize(str: string) {
 }
 
 export function gradient(color: string) {
-	return { backgroundImage: `linear-gradient(${color} -50%, transparent 100%)` }
+	return { backgroundImage: `linear-gradient(${color} -100%, transparent 100%)` }
 }

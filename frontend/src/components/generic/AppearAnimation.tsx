@@ -10,7 +10,7 @@ interface IProps<T extends IEntry> {
 	items: T[]
 }
 
-const trail = 2 ** 5
+const trail = 2 ** 6
 
 export default function AppearAnimation<T extends IEntry>({ children, items }: IProps<T>) {
 	return children && (
@@ -21,7 +21,7 @@ export default function AppearAnimation<T extends IEntry>({ children, items }: I
 			keys={getId}
 			items={items}
 			trail={trail}
-			initial={null}
+			// initial={null}
 			{...versionsTransitions}
 		>
 			{(item) => (animation) => children(item)(animation)}

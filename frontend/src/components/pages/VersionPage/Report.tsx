@@ -24,15 +24,11 @@ const ErrorModal = ({ errorMessage }: { errorMessage?: string }) => (
 	</>
 )
 
-export default observer(function Report({ client, errorMessage, timestamp }: ReportModel) {
+export default observer(function Report({ client, errorMessage, timestamp, type }: ReportModel & { type: string }) {
 	return (
 		<Modal>
 			<Modal.OpenTrigger>
-				<div>
-					<Pushable>
-						<Client client={client} timestamp={timestamp} />
-					</Pushable>
-				</div>
+				<Client client={client} timestamp={timestamp} type={type} />
 			</Modal.OpenTrigger>
 			{errorMessage && (
 				<Modal.Content
