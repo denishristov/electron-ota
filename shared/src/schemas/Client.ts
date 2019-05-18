@@ -51,6 +51,10 @@ export class ClientReportRequest {
 	@Required()
 	@Token()
 	public versionId: string
+
+	@Required()
+	@StringSchema()
+	public timestamp: string
 }
 
 export class ErrorReportRequest extends ClientReportRequest {

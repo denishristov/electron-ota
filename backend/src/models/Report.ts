@@ -8,6 +8,6 @@ export class Report {
 	@prop()
 	public errorMessage?: string
 
-	@prop({ default: new Date() })
+	@prop()
 	public timestamp: Date
 }

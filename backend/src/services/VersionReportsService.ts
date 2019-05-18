@@ -48,13 +48,13 @@ export default class VersionReportsService implements IVersionReportsService {
 		private readonly VersionReportsModel: ModelType<VersionReports>,
 		@inject(nameof<App>())
 		private readonly AppModel: ModelType<App>,
-	) {}
+	) { }
 
 	@bind
-	public async downloadingUpdate({ id, versionId }: ClientReportRequest) {
+	public async downloadingUpdate({ id, versionId, timestamp }: ClientReportRequest) {
 		const report = await this.VersionReportsModel.findOneAndUpdate(
 			{ 'version': versionId, 'downloading.client': { $ne: new ObjectID(id) } },
-			{ $push: { downloading: { client: id } } },
+			{ $push: { downloading: { client: id, timestamp: new Date(timestamp) } } },
 		)
 
 		if (!report) {
@@ -63,10 +63,10 @@ export default class VersionReportsService implements IVersionReportsService {
 	}
 
 	@bind
-	public async downloadedUpdate({ id, versionId }: ClientReportRequest) {
+	public async downloadedUpdate({ id, versionId, timestamp }: ClientReportRequest) {
 		const report = await this.VersionReportsModel.findOneAndUpdate(
 			{ 'version': versionId, 'downloaded.client': { $ne: new ObjectID(id) } },
-			{ $push: { downloaded: { client: id } } },
+			{ $push: { downloaded: { client: id, timestamp: new Date(timestamp) } } },
 		)
 
 		if (!report) {
@@ -75,7 +75,7 @@ export default class VersionReportsService implements IVersionReportsService {
 	}
 
 	@bind
-	public async usingUpdate({ id, versionId }: ClientReportRequest) {
+	public async usingUpdate({ id, versionId, timestamp }: ClientReportRequest) {
 		const client = await this.ClientModel.findById(id).select('version')
 
 		if (!client.version || client.version.toString() !== versionId) {
@@ -84,7 +84,7 @@ export default class VersionReportsService implements IVersionReportsService {
 
 		const report = await this.VersionReportsModel.findOneAndUpdate(
 			{ 'version': versionId, 'using.client': { $ne: new ObjectID(id) } },
-			{ $push: { using: { client: id } } },
+			{ $push: { using: { client: id, timestamp: new Date(timestamp) } } },
 		)
 
 		if (!report) {
@@ -93,10 +93,10 @@ export default class VersionReportsService implements IVersionReportsService {
 	}
 
 	@bind
-	public async errorOnUpdate({ id, versionId, errorMessage }: ErrorReportRequest) {
+	public async errorOnUpdate({ id, versionId, errorMessage, timestamp }: ErrorReportRequest) {
 		const report = await this.VersionReportsModel.findOneAndUpdate(
 			{ 'version': versionId, 'errorMessages.client': { $ne: new ObjectID(id) } },
-			{ $push: { errorMessages: { client: id, errorMessage } } },
+			{ $push: { errorMessages: { client: id, errorMessage, timestamp: new Date(timestamp) } } },
 		)
 
 		if (!report) {
@@ -113,14 +113,16 @@ export default class VersionReportsService implements IVersionReportsService {
 
 		const reports = await this.VersionReportsModel.aggregate([
 			{ $match: { version: { $in: versions } } },
-			{ $project: {
-				_id : 0,
-				downloadingCount: { $size: '$downloading' },
-				downloadedCount: { $size: '$downloaded' },
-				usingCount: { $size: '$using' },
-				errorsCount: { $size: '$errorMessages' },
-				version: { $toString: '$version' },
-			}},
+			{
+				$project: {
+					_id: 0,
+					downloadingCount: { $size: '$downloading' },
+					downloadedCount: { $size: '$downloaded' },
+					usingCount: { $size: '$using' },
+					errorsCount: { $size: '$errorMessages' },
+					version: { $toString: '$version' },
+				}
+			},
 		])
 
 		return { reports }
@@ -190,15 +192,17 @@ export default class VersionReportsService implements IVersionReportsService {
 			{ $match: { version: new ObjectID(versionId) } },
 			{ $unwind: $field },
 			{ $sort: { [`${field}.timestamp`]: 1 } },
-			{ $group: {
-				_id: {
-					hour: { $hour: $timestamp },
-					day: { $dayOfMonth: $timestamp },
-					month: { $month: $timestamp },
-					year: { $year: $timestamp },
-				},
-				count: { $sum: 1 },
-			} },
+			{
+				$group: {
+					_id: {
+						hour: { $hour: $timestamp },
+						day: { $dayOfMonth: $timestamp },
+						month: { $month: $timestamp },
+						year: { $year: $timestamp },
+					},
+					count: { $sum: 1 },
+				}
+			},
 		])
 	}
 }
