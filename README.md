@@ -40,7 +40,17 @@ This repo serves as a mono repo for the following components:
 * Typescript
 * MobX
 * SASS
-* webpack
+* Webpack
+
+## Demo:
+Starting a production optimized version of the services requires:
+* Installed Docker 
+* Inserting a .env file containing the required keys for AWS S3 into the root of the project (example .env file)
+* Running the following command into the root of the project
+```
+docker-compose up -d --build
+```
+Precompiled electron apps for demo purposes and built asars will be available soon.
 
 ## Todo: 
 * Proper documentation
