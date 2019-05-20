@@ -1,6 +1,14 @@
 {
     "version": "2",
     "services": {
+         "database": {
+            "container_name": "electron-ota-database",
+            "image": "mongo",
+            "restart": "always",
+            "environment": {
+                "MONGO_INITDB_DATABASE": "electron-ota",
+            }
+        },
         "backend": {
             "container_name": "electron-ota-backend",
             "build": {
@@ -9,9 +17,7 @@
             },
             "restart": "always",
             "command": "yarn workspace backend start",
-            "env_file": [
-                "docker.env"
-            ],
+            "env_file": ".env",
             "ports": [
                 "5600:4000"
             ]
@@ -20,10 +26,11 @@
             "container_name": "electron-ota-frontend",
             "build": {
                 "context": ".",
-                "dockerfile": "frontend/Dockerfile",
-                "args": {
-                    "serverUrl": "localhost:5600/admins"
-                }
+                "dockerfile": "frontend/Dockerfile"
+            },
+            "environment": {
+                "REACT_APP_SERVER_URI": "http://localhost:5600/admins",
+                "REACT_APP_PUBLIC_API_URI": "http://localhost:5600/public"
             },
             "command": "nginx -g \"daemon off;\"",
             "ports": [

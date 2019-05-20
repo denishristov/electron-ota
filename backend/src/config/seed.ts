@@ -1,11 +1,11 @@
 import { IClientService } from '../services/ClientService'
 
-import { SystemType } from 'shared';
-import { randomInteger } from '../util/functions';
-import { ModelType } from 'typegoose';
-import { VersionReports } from '../models/VersionReports';
-import { IAppService } from '../services/AppService';
-import { Client } from '../models/Client';
+import { SystemType } from 'shared'
+import { randomInteger } from '../util/functions'
+import { ModelType } from 'typegoose'
+import { VersionReports } from '../models/VersionReports'
+import { IAppService } from '../services/AppService'
+import { Client } from '../models/Client'
 
 const reportTypes = ['downloading', 'downloaded', 'using', 'errorMessages']
 
@@ -250,8 +250,8 @@ const dates = [
 	'04/19/2019 11:47:42 PM',
 	'04/19/2019 11:53:48 PM',
 	'04/19/2019 11:58:37 PM',
-	
-].map(z => new Date(z))
+
+].map((z) => new Date(z))
 
 @injectable()
 export default class Seed {
@@ -262,9 +262,9 @@ export default class Seed {
 		private readonly VersionReportModel: ModelType<VersionReports>,
 		@inject(nameof<IAppService>())
 		private readonly appService: IAppService,
-	) {}
+	) { }
 
-	async seed() {
+	public async seed() {
 		console.log('start')
 		const users = await this.Clients.find()
 
@@ -275,7 +275,7 @@ export default class Seed {
 				for (const user of users.slice(0, randomInteger(50, 100))) {
 					console.log(type)
 					await this.VersionReportModel.findOneAndUpdate({ version: version.id }, {
-						$push: { [type]: { client: user.id, timestamp: dates[randomInteger(0, dates.length)] } }
+						$push: { [type]: { client: user.id, timestamp: dates[randomInteger(0, dates.length)] } },
 					})
 				}
 			}
