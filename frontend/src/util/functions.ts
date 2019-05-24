@@ -156,5 +156,5 @@ export function capitalize(str: string) {
 }
 
 export function gradient(color: string) {
-	return { backgroundImage: `linear-gradient(${color} -100%, transparent 100%)` }
+	return { backgroundImage: `linear-gradient(225deg, ${color} -40%, rgba(255,255,255,0) 140%)` }
 }

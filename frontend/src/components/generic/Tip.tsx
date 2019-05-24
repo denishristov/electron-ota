@@ -24,6 +24,14 @@ export default class Tip extends React.Component<IProps, IState> {
 
 	private position?: React.CSSProperties
 
+	public componentDidMount() {
+		addEventListener('resize', this.dereference)
+	}
+
+	public componentWillUnmount() {
+		removeEventListener('resize', this.dereference)
+	}
+
 	public render() {
 		const { isHovered } = this.state
 		const { children, message, className, ...props } = this.props
@@ -40,7 +48,7 @@ export default class Tip extends React.Component<IProps, IState> {
 				{createPortal(
 					<span
 						ref={this.tipRef}
-						className={list(styles.tip, isHovered && styles.hovered)}
+						className={list(styles.tip, this.position && isHovered && styles.hovered)}
 						style={this.position}
 					>
 						{message}
@@ -71,10 +79,15 @@ export default class Tip extends React.Component<IProps, IState> {
 		this.setState({ isHovered: false })
 	}
 
+	@bind
+	private dereference() {
+		delete this.position
+	}
+
 	private calculateLeftOffset(container: ClientRect | DOMRect, tip: ClientRect | DOMRect) {
 		return {
-			top: container.top - tip.height - 16,
-			left: container.left + Math.round((container.width - tip.width) / 2),
+			top: Math.floor(container.top - tip.height - 16),
+			left: Math.floor(container.left) + Math.floor((container.width - tip.width) / 2),
 		}
 	}
 }

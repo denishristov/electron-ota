@@ -30,7 +30,7 @@
 		flex-grow: 1
         
 .release-button
-	@include transition(transform, box-shadow, color, background-color)
+	@include ease(box-shadow, color, background-color, transform)
 	border-radius: 4px
 	border: 1px solid $dark-accent
 	color: $dark-accent
@@ -41,9 +41,9 @@
 
 	&-selected
 		box-shadow: $rest-shadow
-		background-color: $blue
+		background-color: lighten($blue, 16%)
 		border-color: darken($blue, 16%)
-		color: white
+		color: darken($blue, 16%)
 	
 .os-row
 	svg
@@ -95,7 +95,7 @@
 	border-radius: 50%
 	width: $spacing
 	height: $spacing
-	background-color: $accent
+	background-color: $entry-bg
 	color: $dark-accent
 	margin-left: $spacing
 	font-size: 12px

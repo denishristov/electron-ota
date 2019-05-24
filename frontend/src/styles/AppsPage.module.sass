@@ -42,19 +42,26 @@
 	max-width: 300px
 
 .color
-	box-shadow: $rest-shadow
-	@include transition(box-shadow)
+	@include ease(box-shadow, transform)
+	box-shadow: none
 	width: $spacing * 2
 	height: $spacing * 2
 	border-radius: 50%
+	cursor: pointer
 
 	&:hover
 		box-shadow: $rest-shadow
 
 	svg
+		@include ease(opacity)
+		opacity: 0
 		width: $spacing * 2
 		height: $spacing * 2
 		fill: $text
+
+.color.selected
+	svg
+		opacity: 1
 
 .placeholder
 	@include entry-shadow

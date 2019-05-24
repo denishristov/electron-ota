@@ -9,6 +9,10 @@
 @mixin disappear
 	animation: disappear .24s $cubic-breezer 1 forwards
 
+@mixin glide
+	background-size: 400% 400%
+	animation: glide 8s ease infinite
+
 @keyframes moving-gradient
 	0% 
 		background-position: 0% 50%
@@ -34,3 +38,12 @@
 	100%
 		opacity: 0
 		transform: scale(.9) translateY(8px)
+
+@keyframes glide
+	0%
+		background-position: 0% 50%
+	50%
+		background-position: 100% 50%
+	100%
+		background-position: 0% 50%
+

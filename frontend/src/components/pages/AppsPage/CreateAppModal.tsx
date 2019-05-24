@@ -12,6 +12,8 @@ import icons from '../../../util/constants/icons'
 import PictureUpload from '../../generic/PictureUpload'
 import { colors } from '../../../util/constants/styles'
 import { ICreateAppStore } from '../../../stores/CreateAppStore'
+import { gradient, list } from '../../../util/functions'
+import Pushable from '../../generic/Pushable';
 
 interface ICreateAppEvent extends FormEvent<HTMLFormElement> {
 	target: EventTarget & {
@@ -55,16 +57,15 @@ export default class CreateAppModal extends React.Component {
 								<Flex list>
 									{Object.values(colors.data)
 										.map((backgroundColor) => (
-											<div
-												key={backgroundColor}
-												className={styles.color}
-												style={{ backgroundColor }}
-												onClick={colorSetters[backgroundColor]}
-											>
-												{color === backgroundColor && (
+											<Pushable key={backgroundColor}>
+												<div
+													className={list(styles.color, color === backgroundColor && styles.selected)}
+													style={gradient(backgroundColor)}
+													onClick={colorSetters[backgroundColor]}
+												>
 													<SVG src={icons.Using} />
-												)}
-											</div>
+												</div>
+											</Pushable>
 										))
 									}
 								</Flex>
@@ -74,7 +75,7 @@ export default class CreateAppModal extends React.Component {
 					<footer>
 						<Modal.CloseTrigger>
 							<Button size='small' color='white' type='button'>
-							<SVG src={icons.Close} />
+								<SVG src={icons.Close} />
 								Cancel
 							</Button>
 						</Modal.CloseTrigger>

@@ -10,6 +10,7 @@ export const colors = {
 		accent: '#dedede',
 		darkAccent: '#9a9a9a',
 		text: '#29323c',
+		entryBg: '#fafafa',
 	},
 	data: {
 		red: '#ff9696',

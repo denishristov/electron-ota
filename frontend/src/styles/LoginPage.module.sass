@@ -1,33 +1,12 @@
 @import './variables'
 @import './mixins'
-
-.key-path
-	position: relative
-	overflow: hidden
-
-	&:after
-		content: 'COPY'
-		position: absolute
-		top: 0
-		left: 0
-		width: 100%
-		height: 100%
-		background-color: #fdfbfbdb
-		color: $text
-		transition: all .33s ease-out
-		opacity: 0
-		cursor: pointer
-		font-weight: 400
-		font-size: 1.8rem
-		display: flex
-		justify-content: center
-		align-items: center
-
-	&:hover
-		&:after
-			opacity: 1
+@import './animations.sass'
 
 .container
+	@include glide
+	background-image: $login-bg
+	
+
 	button
 		min-width: $spacing * 10
 
@@ -65,7 +44,7 @@
 	height: 128px
 	width: 128px
 	border-radius: 50%
-	box-shadow: $rest-shadow
+	// box-shadow: $rest-shadow
 	margin: 0 auto 32px
 
 	svg

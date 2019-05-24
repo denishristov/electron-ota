@@ -16,6 +16,9 @@
     "directories": {
       "output": "build"
     },
+    "win": {
+      "target": "nsis"
+    },
     "mac": {
       "target": [
         "dir"
