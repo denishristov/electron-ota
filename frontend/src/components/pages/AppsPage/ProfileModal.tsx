@@ -29,10 +29,16 @@ interface IEditProfileEvent extends FormEvent<HTMLFormElement> {
 	}
 }
 
+interface IState {
+	pictureSrc: string
+	pictureFile: File | null
+}
+
 @observer
 export default class ProfileModal extends React.Component<{}> {
-	public readonly state = {
+	public readonly state: IState = {
 		pictureSrc: '',
+		pictureFile: null,
 	}
 
 	@lazyInject(nameof<IUserStore>())
@@ -56,12 +62,14 @@ export default class ProfileModal extends React.Component<{}> {
 							<Input
 								name='name'
 								label='Name'
+								autoComplete='lskmgniegl'
 								placeholder={profile.name}
 							/>
 							<Input
 								name='email'
 								type='email'
 								label='Email'
+								autoComplete='trsyrth'
 								placeholder={profile.email}
 							/>
 							<PictureUpload
@@ -77,6 +85,7 @@ export default class ProfileModal extends React.Component<{}> {
 								name='oldPassword'
 								label='Old password'
 								type='password'
+								autoComplete='retshgrthrshwrt'
 							/>
 							<Input
 								name='newPassword'
@@ -126,7 +135,7 @@ export default class ProfileModal extends React.Component<{}> {
 		}
 
 		let downloadUrl
-		const avatar = picture.files[0]
+		const avatar = this.state.pictureFile || picture.files[0]
 
 		if (avatar) {
 			const upload = await this.uploadService.uploadPicture(avatar)
@@ -149,6 +158,6 @@ export default class ProfileModal extends React.Component<{}> {
 	private async handleSelectPicture([pictureFile]: File[]) {
 		const pictureSrc = await this.fileService.getSourceFromFile(pictureFile)
 
-		this.setState({ pictureSrc })
+		this.setState({ pictureSrc, pictureFile })
 	}
 }

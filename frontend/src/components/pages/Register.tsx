@@ -75,18 +75,21 @@ export default class Register extends React.Component<{}, IState> {
 							type='email'
 							name='email'
 							label='Email'
+							autoComplete='yrdyjke'
 							required
 						/>
 						<Input
 							name='name'
 							label='Username'
 							minLength={4}
+							autoComplete='hfshkjthskr'
 							required
 						/>
 						<Input
 							type='password'
 							name='password1'
 							label='Password'
+							autoComplete='dtukdtuk'
 							pattern={passRegex}
 							required
 						/>
@@ -94,6 +97,7 @@ export default class Register extends React.Component<{}, IState> {
 							type='password'
 							name='password2'
 							label='Confirm password'
+							autoComplete='dyuehje'
 							pattern={passRegex}
 							required
 						/>
