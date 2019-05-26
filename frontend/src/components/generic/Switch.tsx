@@ -2,20 +2,17 @@ import React from 'react'
 import { colors } from '../../util/constants/styles'
 const ReactSwitch = require('react-ios-switch')
 
+import styles from '../../styles/Switch.module.sass'
+
 interface IProps {
 	onChange: (checked: boolean, event: MouseEvent | React.SyntheticEvent<MouseEvent | KeyboardEvent>, id: string) => void
 	value: boolean
 }
 
-const style = {
-	marginLeft: 'auto',
-	// border: `1px solid ${colors.ui.accent}`,
-}
-
 export default function Switch({ onChange, value }: IProps) {
 	return (
 		<ReactSwitch
-			style={style}
+			className={styles.switch}
 			onChange={onChange}
 			checked={value}
 			onColor={colors.data.green}

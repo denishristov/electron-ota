@@ -7,7 +7,7 @@ import { IApp } from './App'
 import semver from 'semver'
 import { CancelTokenSource } from 'axios'
 
-export interface ICreateVersionStore  {
+export interface ICreateVersionStore {
 	versionModalStore: IVersionModalStore
 	isUploading: boolean
 	isValid: boolean
@@ -86,7 +86,7 @@ export default class CreateVersionStore implements ICreateVersionStore {
 		let downloadUrl
 		let fileName
 
-		if (versionFile) {
+		if (versionFile && !isBase) {
 			fileName = `${this.app.bundleId}-${versionName}-${Date.now()}.asar`
 			const upload = await this.uploadService.uploadVersion(fileName, versionFile)
 
