@@ -45,7 +45,7 @@ export default class AdminsService implements IAdminsService {
 		private readonly AdminModel: ModelType<Admin>,
 		@inject(nameof<IRegisterCredentialsService>())
 		private readonly credentialsService: IRegisterCredentialsService,
-	) {}
+	) { }
 
 	@bind
 	public async login({ email, name, password }: AdminLoginRequest): Promise<AdminLoginResponse> {
@@ -93,9 +93,7 @@ export default class AdminsService implements IAdminsService {
 
 	@bind
 	public async register({ name, email, password, key }: RegisterAdminRequest): Promise<RegisterAdminResponse> {
-		const [firstAdmin] = await this.AdminModel.find().limit(1)
-
-		if (firstAdmin || !this.credentialsService.verify(key)) {
+		if (!await this.credentialsService.verify(key)) {
 			throw new Error('Registration form has been closed.')
 		}
 
