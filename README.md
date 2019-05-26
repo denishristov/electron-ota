@@ -67,5 +67,5 @@ The following links contain:
 ![AppPage](https://i.imgur.com/SdK6Pfn.png)
 ![VersionPage](https://i.imgur.com/1HNVuuI.png)
 ![VersionModal](https://i.imgur.com/5gV6VaY.png)
-![AppsPage](https://i.imgur.com/lk2XyWg.png)
-![LoginPage](https://i.imgur.com/5gV6VaY.png)
+![AppsPage](https://i.imgur.com/7VNncNU.png)
+![LoginPage](https://i.imgur.com/lk2XyWg.png)
