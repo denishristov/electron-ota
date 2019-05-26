@@ -1,6 +1,6 @@
 {
   "name": "sample-electron-app",
-  "version": "0.0.0",
+  "version": "2.2.0",
   "main": "./dist/bootstrap.js",
   "license": "UNLICENSED",
   "private": true,
@@ -24,12 +24,12 @@
   },
   "scripts": {
     "vv": "yarn version --no-git-tag-version --new-version",
-    "dist.2.2.0": "yarn vv 2.2.0 && yarn build.2.2.0 && build && yarn vv 0.0.0",
-    "dist.3.0.0": "yarn vv 3.0.0 && yarn build.3.0.0 && build && yarn vv 0.0.0",
-    "dist.3.1.0": "yarn vv 3.1.0 && yarn build.3.1.0 && build && yarn vv 0.0.0",
-    "build.2.2.0": "rm -rf dist && tsc -p tsconfig.1.0.0.json",
-    "build.3.0.0": "rm -rf dist && tsc -p tsconfig.1.0.1.json",
-    "build.3.1.0": "rm -rf dist && tsc -p tsconfig.1.1.0.json",
+    "dist.2.2.0": "yarn build.2.2.0 && build",
+    "dist.3.0.0": "yarn build.3.0.0 && build",
+    "dist.3.1.0": "yarn build.3.1.0 && build",
+    "build.2.2.0": "yarn vv 2.2.0 && rm -rf dist && tsc -p tsconfig.1.0.0.json",
+    "build.3.0.0": "yarn vv 3.0.0 && rm -rf dist && tsc -p tsconfig.1.0.1.json",
+    "build.3.1.0": "yarn vv 3.1.0 && rm -rf dist && tsc -p tsconfig.1.1.0.json",
     "lint": "tslint -c tslint.json -p tsconfig.json",
     "start": "electron ."
   },
@@ -42,7 +42,7 @@
   },
   "dependencies": {
     "@types/react-dom": "^16.8.4",
-    "electron-ota-client": "^1.0.4",
+    "electron-ota-client": "^1.0.5",
     "react": "16.8.1",
     "react-dom": "16.8.1",
     "use-force-update": "^1.0.5"
