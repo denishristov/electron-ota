@@ -44,7 +44,7 @@ import cookieParser from 'cookie-parser'
 import socketioConfig from './socketioConfig'
 import { REGISTER_KEY } from './index'
 import PublicController from '../controllers/PublicController'
-import Seed from './seed';
+import Seed from './seed'
 
 const container = new Container()
 
@@ -86,7 +86,8 @@ container.bind<IFileUploadService>(nameof<IFileUploadService>())
 	.toConstantValue(new S3Service(S3_CONFIG))
 
 container.bind<IRegisterCredentialsService>(nameof<IRegisterCredentialsService>())
-	.toConstantValue(new RegisterCredentialsService(REGISTER_KEY))
+	.to(RegisterCredentialsService)
+	.inSingletonScope()
 
 container.bind<IReleaseService>(nameof<IReleaseService>())
 	.to(ReleaseService)
