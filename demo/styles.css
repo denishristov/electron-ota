@@ -12,6 +12,10 @@ button {
   border-radius: 8px;
 }
 
+button:not(:last-child) {
+  margin-right: 16px;
+}
+
 #root > div {
   display: flex;
   flex-flow: column;
@@ -20,6 +24,12 @@ button {
   height: 100vh;
 }
 
+.row {
+  display: flex;
+  justify-content: space-evenly;
+}
+
 body {
-  font-family: "SF Display Pro", "Rubik";
+  margin: 0;
+  font-family: "SF Display Pro", "Rubik", "Roboto", "Arial", sans-serif;
 }

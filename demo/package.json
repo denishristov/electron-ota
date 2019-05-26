@@ -16,9 +16,6 @@
     "directories": {
       "output": "build"
     },
-    "win": {
-      "target": "nsis"
-    },
     "mac": {
       "target": [
         "dir"
@@ -27,15 +24,12 @@
   },
   "scripts": {
     "vv": "yarn version --no-git-tag-version --new-version",
-    "dist.1.0.0": "yarn vv 1.0.0 && yarn build.1.0.0 && build && yarn vv 0.0.0",
-    "dist.1.0.1": "yarn vv 1.0.1 && yarn build.1.0.1 && build && yarn vv 0.0.0",
-    "dist.1.1.0": "yarn vv 1.1.0 && yarn build.1.1.0 && build && yarn vv 0.0.0",
-    "build.1.0.0": "rimraf dist && tsc -p tsconfig.1.0.0.json",
-    "build.1.0.1": "rimraf dist && tsc -p tsconfig.1.0.1.json",
-    "build.1.1.0": "rimraf dist && tsc -p tsconfig.1.1.0.json",
-    "watch.1.0.0": "rimraf dist && tsc -w -p tsconfig.1.0.0.json",
-    "watch.1.0.1": "rimraf dist && tsc -w -p tsconfig.1.0.1.json",
-    "watch.1.1.0": "rimraf dist && tsc -w -p tsconfig.1.1.0.json",
+    "dist.2.2.0": "yarn vv 2.2.0 && yarn build.2.2.0 && build && yarn vv 0.0.0",
+    "dist.3.0.0": "yarn vv 3.0.0 && yarn build.3.0.0 && build && yarn vv 0.0.0",
+    "dist.3.1.0": "yarn vv 3.1.0 && yarn build.3.1.0 && build && yarn vv 0.0.0",
+    "build.2.2.0": "rm -rf dist && tsc -p tsconfig.1.0.0.json",
+    "build.3.0.0": "rm -rf dist && tsc -p tsconfig.1.0.1.json",
+    "build.3.1.0": "rm -rf dist && tsc -p tsconfig.1.1.0.json",
     "lint": "tslint -c tslint.json -p tsconfig.json",
     "start": "electron ."
   },
@@ -43,15 +37,13 @@
     "@types/react": "^16.8.2",
     "electron": "^4.0.4",
     "electron-builder": "^20.38.5",
-    "rimraf": "^2.6.3",
     "tslint": "^5.12.0",
     "typescript": "^3.2.2"
   },
   "dependencies": {
     "@types/react-dom": "^16.8.4",
-    "electron-ota-client": "^1.0.2",
+    "electron-ota-client": "^1.0.4",
     "react": "16.8.1",
-    "react-dom": "16.8.1",
-    "use-force-update": "1.0.2"
+    "react-dom": "16.8.1"
   }
 }

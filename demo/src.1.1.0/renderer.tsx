@@ -1,4 +1,4 @@
-import { useState, useEffect, Fragment, createElement } from 'react'
+import { useState, useEffect, createElement } from 'react'
 import ReactDOM from 'react-dom'
 import useForceUpdate from 'use-force-update'
 
@@ -19,8 +19,8 @@ function padStart(this: string, targetLength: number, padString: string) {
 }
 
 function CounterWithName() {
-	const [ count, setCount ] = useState(0)
-	const [ name, setName ] = useState('Flavio')
+	const [count, setCount] = useState(0)
+	const [name, setName] = useState('Flavio')
 
 	function handleCounterButtonClick() {
 		setCount(count + 1)
@@ -30,16 +30,23 @@ function CounterWithName() {
 		setName(name === 'Flavio' ? 'Roger' : 'Flavio')
 	}
 
+	useEffect(() => {
+		const root = document.getElementById('root')
+		root.style.backgroundImage = 'linear-gradient(-225deg, #2CD8D550 0%, #C5C1FF50 56%, #FFBAC350 100%)'
+	}, [])
+
 	return (
 		<div>
 			<p>Version: {require('../package.json').version}</p>
 			<p>Hi {name} you clicked {count} times</p>
-			<button onClick={handleCounterButtonClick}>
-				Click me
-			</button>
-			<button onClick={handleChangeNameClick}>
-				Change name
-			</button>
+			<div className='row'>
+				<button onClick={handleCounterButtonClick}>
+					Click me
+				</button>
+				<button onClick={handleChangeNameClick}>
+					Change name
+				</button>
+			</div>
 		</div>
 	)
 }
@@ -56,13 +63,13 @@ function Clock() {
 
 	const now = new Date()
 	return (
-		<div>
+		<h1>
 			{padStart.call(now.getHours().toString(), 2, '0')}
 			:
 			{padStart.call(now.getMinutes().toString(), 2, '0')}
 			:
 			{padStart.call(now.getSeconds().toString(), 2, '0')}
-		</div>
+		</h1>
 	)
 }
 

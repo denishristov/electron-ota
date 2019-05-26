@@ -14,7 +14,7 @@ global.isDevMode = false
 
 global.updateService = new ElectronUpdateServiceClient({
 	bundleId: 'test-electron',
-	updateServerUrl: 'https://electron-ota-api.herokuapp.com',
+	updateServerUrl: 'http://localhost:5600',
 	versionName: require('../package.json').version,
 	checkForUpdateOnConnect: false,
 })
