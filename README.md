@@ -48,8 +48,9 @@ Starting a production optimized version of the services requires:
 * Inserting a .env file containing the required keys for AWS S3 into the root of the project (example .env file)
 * Running the following command into the root of the project
 ```
-docker-compose up -d --build
+docker-compose up
 ```
+The frontend is served on port 80.
 Precompiled electron apps for demo purposes and built asars will be available soon.
 
 ## Todo: 

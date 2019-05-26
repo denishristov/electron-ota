@@ -2,12 +2,14 @@ FROM node:10.15.1-alpine as builder
 RUN mkdir /opt/app
 WORKDIR /opt/app
 COPY package.json yarn.lock ./
-COPY ./frontend/package.json ./frontend/
-COPY ./shared/package.json ./shared/
-
 COPY ./shared ./shared
-RUN yarn workspace shared build
 COPY ./frontend ./frontend
+
+RUN yarn
+RUN yarn workspace shared build
+
+ENV REACT_APP_SERVER_URI=http://localhost:5600/admins
+ENV REACT_APP_PUBLIC_API_URI=http://localhost:5600/public
 RUN yarn workspace frontend build
 
 FROM nginx:1.15.8-alpine

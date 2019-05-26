@@ -1,0 +1,1 @@
+{"options":{},"indexes":[{"v":2,"key":{"_id":1},"name":"_id_","ns":"electron-ota.versions"},{"v":2,"unique":true,"key":{"versionName":1,"appId":1},"name":"versionName_1_appId_1","ns":"electron-ota.versions","background":true}],"uuid":"8ddea119b41c4bada2cd7f07ed32be3d"}

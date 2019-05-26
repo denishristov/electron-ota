@@ -6,9 +6,9 @@ node_modules
 
 .vscode
 electron-ota.code-workspace
-*.Dockerfile
-.env
-docker.env
+Dockerfile
+**/.env
+
 .git
 .gitignore
 tslint.json
