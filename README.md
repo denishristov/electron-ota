@@ -12,6 +12,8 @@ Update service for Electron apps. Provides a real-time solution for updating the
 
 What differentiates it from other open-source solutions is that it does not use the "autoUpdater" module built-in "Electron" and it only updates the app.asar of an app, excluding the native modules of "Electron".
 
+[Bulgarian detailed documentation](https://drive.google.com/file/d/1a0oHT2TD_kj3IdeEayJr8xQVgk2WVZHg/edit)
+
 This repo serves as a mono repo for the following components:
 
 | Packages            | Version                                                                                                          |
