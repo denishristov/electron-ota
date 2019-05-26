@@ -222,8 +222,6 @@ class ElectronClientUpdateService extends EventEmitter implements IUpdateService
 			return
 		}
 
-		this.isDownloading = true
-
 		const { downloadUrl, ...update } = args
 
 		const now = Date.now().toString()
@@ -255,6 +253,8 @@ class ElectronClientUpdateService extends EventEmitter implements IUpdateService
 			if (!downloadUrl) {
 				throw new Error('DownloadUrl not present.')
 			}
+
+			this.isDownloading = true
 
 			this.api.reportDownloading(this.clientId, update.versionId)
 

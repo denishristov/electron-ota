@@ -24,7 +24,7 @@ export default class Api implements IApi {
 	}
 
 	public on<T = {}>(eventType: Server, callback: (data: T) => void): this {
-		this.connect.then(({ on }) => on(eventType, callback))
+		this.connect.then((io) => io.on(eventType, callback))
 
 		return this
 	}
