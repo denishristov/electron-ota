@@ -10,7 +10,9 @@ import Button from '../../generic/Button'
 import styles from '../../../styles/AppsPage.module.sass'
 import { IUpdateAppStore } from '../../../stores/UpdateAppStore'
 import { observer } from 'mobx-react'
-import { action } from 'mobx';
+import { action } from 'mobx'
+import Pushable from '../../generic/Pushable'
+import { list, gradient } from '../../../util/functions'
 
 interface IEditAppEvent extends FormEvent<HTMLFormElement> {
 	target: EventTarget & {
@@ -64,18 +66,19 @@ export default class UpdateAppModal extends Component<IProps> {
 							<label>Color</label>
 							<Flex list col>
 								<Flex list>
-									{Object.values(colors.data).map((backgroundColor) => (
-										<div
-											key={backgroundColor}
-											className={styles.color}
-											style={{ backgroundColor }}
-											onClick={colorSetters[backgroundColor]}
-										>
-											{color === backgroundColor && (
-												<SVG src={icons.Using} />
-											)}
-										</div>
-									))}
+									{Object.values(colors.data)
+										.map((backgroundColor) => (
+											<Pushable key={backgroundColor}>
+												<div
+													className={list(styles.color, color === backgroundColor && styles.selected)}
+													style={gradient(backgroundColor)}
+													onClick={colorSetters[backgroundColor]}
+												>
+													<SVG src={icons.Using} />
+												</div>
+											</Pushable>
+										))
+									}
 								</Flex>
 							</Flex>
 						</Flex>
@@ -83,7 +86,7 @@ export default class UpdateAppModal extends Component<IProps> {
 					<footer>
 						<Modal.CloseTrigger>
 							<Button size='small' color='white' type='button'>
-							<SVG src={icons.Close} />
+								<SVG src={icons.Close} />
 								Cancel
 							</Button>
 						</Modal.CloseTrigger>

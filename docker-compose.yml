@@ -26,18 +26,14 @@
                 "CLIENT_ORIGIN": "http: //localhost"
             },
             "ports": [
-                "5600:4000"
+                "4000:4000"
             ]
         },
         "frontend": {
             "container_name": "electron-ota-frontend",
             "build": {
                 "context": ".",
-                "dockerfile": "frontend/Dockerfile",
-                "args": {
-                    "serverUri": "http://localhost:5600/admins",
-                    "publicUri": "http://localhost:5600/public"
-                }
+                "dockerfile": "frontend/Dockerfile"
             },
             "command": "nginx -g \"daemon off;\"",
             "ports": [

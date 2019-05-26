@@ -211,7 +211,7 @@ export default class AppPage extends Component<RouteComponentProps<IParams>, ISt
 										{versions.size || versionsCount}
 									</label>
 								</Flex>
-								<label>Latest versions and connected clients</label>
+								<label>Latest versions</label>
 								{latestVersions && Object.entries(latestVersions).map(([systemType, version]) => version && (
 									<Flex y list key={systemType}>
 										<SVG src={icons[systemType]} />

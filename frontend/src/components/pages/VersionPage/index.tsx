@@ -354,14 +354,6 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 								<Flex grow col className={styles.timeReports}>
 									{(this.groupedReports && this.hasReports) && (
 										<Flex list col>
-											<PieChart
-												title='Clients connected on this version per system type'
-												data={this.connectedPieData}
-											/>
-											<PieChart
-												title='Clients using this version per system type'
-												data={this.usingPieDate}
-											/>
 											<AreaChart
 												title='Clients downloading time reports'
 												data={this.groupedReports.downloading}
@@ -381,6 +373,14 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 												title='Clients error time reports'
 												data={this.groupedReports.errorMessages}
 												color={colors.data.red}
+											/>
+											<PieChart
+												title='Clients connected on this version per system type'
+												data={this.connectedPieData}
+											/>
+											<PieChart
+												title='Clients using this version per system type'
+												data={this.usingPieDate}
 											/>
 										</Flex>
 									)}
