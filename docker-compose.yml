@@ -21,6 +21,10 @@
             "restart": "always",
             "command": "yarn workspace backend start",
             "env_file": ".env",
+            "environment": {
+                "MONGODB_URI": "mongodb: //database:27017/electron-ota",
+                "CLIENT_ORIGIN": "http: //localhost"
+            },
             "ports": [
                 "5600:4000"
             ]
