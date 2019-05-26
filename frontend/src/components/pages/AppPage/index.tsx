@@ -22,7 +22,7 @@ import utilStyles from '../../../styles/util.module.sass'
 import versionModalStyles from '../../../styles/VersionModal.module.sass'
 import versionStyles from '../../../styles/Version.module.sass'
 
-import { list, formatDate, returnArgument, gradient } from '../../../util/functions'
+import { list, returnArgument, gradient } from '../../../util/functions'
 import Pushable from '../../generic/Pushable'
 import icons from '../../../util/constants/icons'
 import { MenuProvider, Menu, Item } from 'react-contexify'
@@ -34,6 +34,7 @@ import PieChart from '../../generic/PieChart'
 import Button from '../../generic/Button'
 import BarChart, { IBarChartSystemTypeData } from '../../generic/BarChart'
 import { SystemType, SystemTypeDisplay } from 'shared'
+import { format } from 'timeago.js'
 
 const ID = 'edit_app'
 interface IParams {
@@ -210,18 +211,14 @@ export default class AppPage extends Component<RouteComponentProps<IParams>, ISt
 										{versions.size || versionsCount}
 									</label>
 								</Flex>
-								<label>Latest versions</label>
-								{latestVersions && Object.entries(latestVersions)
-									.map(([systemType, version]) => version && (
-										<Flex y list key={systemType}>
-											<SVG src={icons[systemType]} />
-											<label className={utilStyles.dark}>
-												{version.versionName}
-											</label>
-											<label>{formatDate(new Date(version.createdAt))}</label>
-										</Flex>
-									))
-								}
+								<label>Latest versions and connected clients</label>
+								{latestVersions && Object.entries(latestVersions).map(([systemType, version]) => version && (
+									<Flex y list key={systemType}>
+										<SVG src={icons[systemType]} />
+										<label className={utilStyles.dark}>{version.versionName}</label>
+										<label className={utilStyles.dark}>{format(new Date(version.createdAt))}</label>
+									</Flex>
+								))}
 								<ConfirmDeleteModal name={name} onDelete={this.handleDeleteApp}>
 									{(openDelete) => (
 										<Modal>

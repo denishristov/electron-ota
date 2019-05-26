@@ -28,8 +28,9 @@ export default class AppModalStore implements IAppModalStore {
 	constructor(
 		@inject(nameof<IFileService>())
 		private readonly fileService: IFileService,
-	) {}
+	) { }
 
+	@transformToMobxFlow
 	@bind
 	public async handleSelectPicture([pictureFile]: File[]) {
 		this.picture = pictureFile
