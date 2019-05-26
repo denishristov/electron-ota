@@ -51,6 +51,11 @@ Starting a production optimized version of the services requires:
 docker-compose up
 ```
 The frontend is served on port http://localhost while the backend is on http://localhost:4000.
+There is a default account when running with docker:
+* username: Test
+* password: Test1234
+
+The compiled demo app is called Demo (with the little planet icon).
 
 The following links contain:
 * [pre-compiled apps for all platforms](https://drive.google.com/drive/folders/14E5ILM0WXYvB0T19GkCjwUu1RHeebMSM)
