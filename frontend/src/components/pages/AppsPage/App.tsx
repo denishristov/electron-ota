@@ -11,17 +11,21 @@ import utilStyles from '../../../styles/util.module.sass'
 import { IApp } from '../../../stores/App'
 import Pushable from '../../generic/Pushable'
 import icons from '../../../util/constants/icons'
-import { formatDate, gradient } from '../../../util/functions'
+import { gradient } from '../../../util/functions'
+import { format } from 'timeago.js'
 import { colors } from '../../../util/constants/styles'
+import { ISystemTypeCount } from 'shared'
 
 interface IProps extends IAnimatable {
 	app: IApp
 	history: BrowserHistory
+	clients?: ISystemTypeCount
 }
 
 @observer
 export default class App extends Component<IProps> {
 	public render() {
+		const { clients } = this.props
 		const {
 			name,
 			bundleId,
@@ -55,12 +59,17 @@ export default class App extends Component<IProps> {
 							</Flex>
 							{latestVersions && (
 								<>
-									<label>Latest versions</label>
+									<label>Latest versions and connected clients</label>
 									{Object.entries(latestVersions).map(([systemType, version]) => version && (
 										<Flex y list key={systemType}>
-											<label className={utilStyles.dark}>{version.versionName}</label>
 											<SVG src={icons[systemType]} />
-											<label>{formatDate(new Date(version.createdAt))}</label>
+											<label className={utilStyles.dark}>{version.versionName}</label>
+											<label className={utilStyles.dark}>{format(new Date(version.createdAt))}</label>
+											{clients && (
+												<label className={utilStyles.dark}>
+													{clients[systemType]} total clients
+												</label>
+											)}
 										</Flex>
 									))}
 								</>

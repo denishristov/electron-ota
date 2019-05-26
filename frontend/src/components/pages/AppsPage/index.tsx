@@ -22,6 +22,7 @@ export default class AppsContainer extends Component<RouteComponentProps> {
 
 	public componentDidMount() {
 		this.appsStore.fetchApps()
+		this.appsStore.fetchAppsLiveCount()
 	}
 
 	public componentDidCatch() {
@@ -31,7 +32,7 @@ export default class AppsContainer extends Component<RouteComponentProps> {
 	}
 
 	public render() {
-		const { allApps } = this.appsStore
+		const { allApps, liveCounters } = this.appsStore
 
 		return (
 			<Container>
@@ -51,17 +52,18 @@ export default class AppsContainer extends Component<RouteComponentProps> {
 						</Modal>
 					</header>
 					<div className={styles.appsContainer}>
-					<AppearAnimation items={allApps}>
+						<AppearAnimation items={allApps}>
 							{(app) => (animation) => (
 								<App
 									app={app}
 									key={app.id}
 									history={this.props.history}
 									animation={animation}
+									clients={liveCounters.get(app.bundleId)}
 								/>
 							)}
 						</AppearAnimation>
-					{/* <Pushable>
+						{/* <Pushable>
 						<div className={styles.placeholder}>
 						</div>
 					</Pushable> */}

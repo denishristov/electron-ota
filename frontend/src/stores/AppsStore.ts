@@ -31,8 +31,10 @@ interface IClient {
 
 export interface IAppsStore {
 	allApps: IApp[]
+	liveCounters: ObservableMap<string, ISystemTypeCount>
 	getApp(id: string): IApp | null
 	fetchApps(): Promise<void>
+	fetchAppsLiveCount(): Promise<void>
 	createApp(createAppRequest: CreateAppRequest): void
 	updateApp(updateAppRequest: UpdateAppRequest): void
 	deleteApp(deleteAppRequest: DeleteAppRequest): void
@@ -40,9 +42,9 @@ export interface IAppsStore {
 
 @injectable()
 export default class AppsStore implements IAppsStore {
-	private readonly apps: ObservableMap<string, IApp> = observable.map({})
+	public readonly liveCounters: ObservableMap<string, ISystemTypeCount> = observable.map({})
 
-	private readonly liveCounters = observable.map<string, ISystemTypeCount>({})
+	private readonly apps: ObservableMap<string, IApp> = observable.map({})
 
 	constructor(
 		@inject(nameof<IApi>())
