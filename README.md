@@ -51,7 +51,9 @@ Starting a production optimized version of the services requires:
 docker-compose up
 ```
 The frontend is served on port 80.
-Precompiled electron apps for demo purposes and built asars will be available soon.
+
+The following link contains pre-compiled apps for all platforms and pre-built .asar files for 2 newer versions of the app, ready to be used for updating the demo app trough the service.
+https://drive.google.com/drive/folders/1wWPTOrsGhmoG67lUSA0cQjyH9D3lPih3?usp=sharing
 
 ## Todo: 
 * Proper documentation
