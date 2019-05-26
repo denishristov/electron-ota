@@ -45,15 +45,16 @@ This repo serves as a mono repo for the following components:
 ## Demo:
 Starting a production optimized version of the services requires:
 * Installed Docker 
-* Inserting a .env file containing the required keys for AWS S3 into the root of the project (example .env file)
+* Inserting a .env file containing the required keys for AWS S3 into the root of the project
 * Running the following command into the root of the project
 ```
 docker-compose up
 ```
-The frontend is served on port 80.
+The frontend is served on port http://localhost while the backend is on http://localhost:4000.
 
-The following link contains pre-compiled apps for all platforms and pre-built .asar files for 2 newer versions of the app, ready to be used for updating the demo app trough the service.
-https://drive.google.com/drive/folders/1wWPTOrsGhmoG67lUSA0cQjyH9D3lPih3?usp=sharing
+The following links contain:
+* [pre-compiled apps for all platforms](https://drive.google.com/drive/folders/14E5ILM0WXYvB0T19GkCjwUu1RHeebMSM)
+* [pre-built .asar files for 2 newer versions of the app, ready to be used for updating the demo app trough the service](https://drive.google.com/drive/folders/1uGzFqSQcVENd7xeqoNHBH6zza8UmHyvK)
 
 ## Todo: 
 * Proper documentation
@@ -63,6 +64,8 @@ https://drive.google.com/drive/folders/1wWPTOrsGhmoG67lUSA0cQjyH9D3lPih3?usp=sha
 * Redis sessions
 
 ## Admin UI Screenshots
-![AppPage](https://i.imgur.com/5U7bB8O.jpg)
-![VersionPage](https://i.imgur.com/LnjWXVM.jpg)
-![VersionModal](https://i.imgur.com/5iHJoWp.png)
+![AppPage](https://i.imgur.com/SdK6Pfn.png)
+![VersionPage](https://i.imgur.com/1HNVuuI.png)
+![VersionModal](https://i.imgur.com/5gV6VaY.png)
+![AppsPage](https://i.imgur.com/lk2XyWg.png)
+![LoginPage](https://i.imgur.com/5gV6VaY.png)
