@@ -14,7 +14,7 @@ global.isDevMode = false
 
 global.updateService = new ElectronUpdateServiceClient({
 	bundleId: 'test-electron',
-	updateServerUrl: 'http://localhost:5600',
+	updateServerUrl: 'http://localhost:4000',
 	versionName: require('../package.json').version,
 	checkForUpdateOnConnect: false,
 })
