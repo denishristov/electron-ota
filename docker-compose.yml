@@ -33,7 +33,11 @@
             "container_name": "electron-ota-frontend",
             "build": {
                 "context": ".",
-                "dockerfile": "frontend/Dockerfile"
+                "dockerfile": "frontend/Dockerfile",
+                "args": {
+                    "serverUri": "http://localhost:4000/admins",
+                    "publicUri": "http://localhost:4000/public"
+                }
             },
             "command": "nginx -g \"daemon off;\"",
             "ports": [

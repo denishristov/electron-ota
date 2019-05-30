@@ -8,8 +8,12 @@ COPY ./frontend ./frontend
 RUN yarn
 RUN yarn workspace shared build
 
-ENV REACT_APP_SERVER_URI=http://localhost:4000/admins
-ENV REACT_APP_PUBLIC_API_URI=http://localhost:4000/public
+ARG serverUri
+ENV REACT_APP_SERVER_URI=$serverUri
+
+ARG publicUri
+ENV REACT_APP_PUBLIC_API_URI=$publicUri
+
 RUN yarn workspace frontend build
 
 FROM nginx:1.15.8-alpine

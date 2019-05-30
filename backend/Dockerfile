@@ -8,6 +8,4 @@ COPY ./backend ./backend
 
 RUN yarn
 RUN yarn workspace shared build
-RUN yarn workspace backend build \
-	&& rm -rf **/node_modules node_modules \
-	&& yarn --prod 
+RUN yarn workspace backend build
