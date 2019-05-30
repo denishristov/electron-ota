@@ -4,11 +4,11 @@
 		{
 			"type": "chrome",
 			"request": "launch",
-			"name": "Launch Chrome",
+			"name": "Launch frontend",
 			"url": "http://localhost:3000",
 			"webRoot": "${workspaceFolder}/src",
 			"preLaunchTask": "npm: start",
 		},
 	],
 	"console": "externalTerminal"
-}	
+}
