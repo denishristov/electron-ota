@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "compose": "docker-compose up -d --build",
+    "up": "docker-compose up -d --build",
     "backend-watch-ts": "yarn workspace backend watch-ts",
     "frontend-start": "yarn workspace frontend start"
   },

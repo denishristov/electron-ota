@@ -19,7 +19,7 @@ services:
     env_file: ".env"
     environment:
       MONGODB_URI: mongodb://database:27017/electron-ota
-      CLIENT_ORIGIN: https://dockhero-fitted-13720-flexible-ssl.dockhero.io
+      CLIENT_ORIGIN: http://${DOCKHERO_HOST}
     ports:
     - 4000:4000
   frontend:
@@ -28,8 +28,8 @@ services:
       context: "."
       dockerfile: frontend/Dockerfile
       args:
-        serverUri: http://dockhero-fitted-13720.dockhero.io:4000/admins
-        publicUri: http://dockhero-fitted-13720.dockhero.io:4000/public
+        serverUri: http://${DOCKHERO_HOST}:4000/admins
+        publicUri: http://${DOCKHERO_HOST}:4000/public
     command: nginx -g "daemon off;"
     ports:
     - 80:80

@@ -1,7 +1,7 @@
 == restore.sh ==
 #!/usr/bin/env bash
 
-# Execute restore in the background after 5s
+# Execute restore in the background after 10s
 # https://docs.docker.com/engine/reference/run/#detached--d
 sleep 10 && mongorestore --verbose --drop ./db/dump &
 
