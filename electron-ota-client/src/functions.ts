@@ -1,5 +1,6 @@
 import fs from 'fs'
 import util from 'util'
+import path from 'path'
 import crypto from 'crypto'
 import { IUpdateServiceOptions } from './interfaces'
 import { app } from 'electron'
@@ -33,9 +34,19 @@ export function uuid(): string {
 }
 
 function getVersion(): string | null {
-	const packageJSON = JSON.parse(fs.readFileSync('package.json', 'utf8'))
+	const packageJSON = require(path.join(__dirname, '..', '..', '..', 'package.json'))
 
 	return (Boolean(packageJSON) && packageJSON.version) || null
+}
+
+export function parseConfigFile(): IUpdateServiceOptions | null {
+	try {
+		return require(path.join(__dirname, '..', '..', '..', 'electron-ota.config.json'))
+	} catch {
+		console.log('No electron-ota.config.json present.')
+
+		return null
+	}
 }
 
 export function normalizeOptions(options: IUpdateServiceOptions): IUpdateServiceOptions {
@@ -49,6 +60,7 @@ export function normalizeOptions(options: IUpdateServiceOptions): IUpdateService
 		versionName: options.versionName || getVersion(),
 		retryTimeout: options.retryTimeout || 1000 * 60,
 		emitTimeout: options.emitTimeout || 1000 * 60,
+		mainPath: options.mainPath ? path.join(__dirname, '..', '..', '..', options.mainPath) : void 0,
 		checkForUpdateOnConnect: options.checkForUpdateOnConnect === void 0
 			? true
 			: options.checkForUpdateOnConnect,

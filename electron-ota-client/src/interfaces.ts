@@ -14,6 +14,7 @@ export interface IUpdateServiceOptions extends IApiConfig {
 	checkHashBeforeLoad?: boolean
 	retryTimeout?: number
 	checkForUpdateOnConnect?: boolean
+	mainPath?: string
 }
 
 export interface IUpdateResponse extends INewUpdate {
