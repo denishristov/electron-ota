@@ -19,17 +19,29 @@ services:
     env_file: ".env"
     environment:
       MONGODB_URI: mongodb://database:27017/electron-ota
-      CLIENT_ORIGIN: http://${DOCKHERO_HOST}
+      CLIENT_ORIGIN: https://${DOCKHERO_HOST}
     ports:
-    - 4000:4000
+      - 4000:4000
   frontend:
     container_name: electron-ota-frontend
     build:
       context: "."
       dockerfile: frontend/Dockerfile
       args:
-        serverUri: http://${DOCKHERO_HOST}:4000/admins
-        publicUri: http://${DOCKHERO_HOST}:4000/public
+        serverUri: https://${DOCKHERO_HOST}/admins
+        publicUri: https://${DOCKHERO_HOST}/public
     command: nginx -g "daemon off;"
     ports:
-    - 80:80
+      - 3000:3000
+  proxy:
+    container_name: proxy
+    build:
+      context: "."
+      dockerfile: ".caddy/Dockerfile"
+    volumes: 
+      - caddy:/root
+    ports:
+      - "80:80"
+      - "443:443"
+volumes:
+  caddy:

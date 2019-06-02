@@ -43,3 +43,7 @@ build
 reports.txt
 
 docker.env
+
+.caddy/locks
+.caddy/uuid
+Cadyfile
