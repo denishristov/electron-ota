@@ -2,7 +2,7 @@ import { useState, createElement } from 'react'
 import ReactDOM from 'react-dom'
 
 function Counter() {
-	const [ count, setCount ] = useState(0)
+	const [count, setCount] = useState(0)
 
 	function handleClick() {
 		setCount(count + 1)

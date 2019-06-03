@@ -29,17 +29,15 @@ import {
 } from './functions'
 
 class ElectronClientUpdateService extends EventEmitter implements IUpdateService {
-	private readonly updateDirPath: string
-
-	private readonly downloadsStore = new Store<IUpdateInfo>({ name: 'updater' })
-
 	private readonly sessionStore = new Store<ISession>({ name: 'session' })
+
+	private readonly downloadsStore = new Store<IUpdateInfo>({ name: 'updates' })
+
+	private readonly updateDirPath: string
 
 	private readonly options: IUpdateServiceOptions
 
 	private readonly api: IApi
-
-	private isDownloading = false
 
 	constructor(options: IUpdateServiceOptions) {
 		super()
@@ -74,11 +72,13 @@ class ElectronClientUpdateService extends EventEmitter implements IUpdateService
 	}
 
 	public async loadLatestUpdate<T = any>(): Promise<T> {
+		const { mainPath } = this.options
+
 		let updateInfo: IUpdateInfo
 
 		try {
 			if (await exists(this.updateDirPath)) {
-				throw new Error('No updates')
+				return mainPath ? require(mainPath) : null
 			}
 
 			const files = await readdir(this.updateDirPath)
@@ -86,7 +86,7 @@ class ElectronClientUpdateService extends EventEmitter implements IUpdateService
 			const updates = files.filter((filename) => filename.endsWith('.asar')).sort()
 
 			if (!updates.length) {
-				throw new Error('No updates')
+				return mainPath ? require(mainPath) : null
 			}
 
 			const [latestUpdateFilename] = updates.splice(updates.length - 1, 1)
@@ -95,7 +95,7 @@ class ElectronClientUpdateService extends EventEmitter implements IUpdateService
 			updateInfo = this.downloadsStore.get(latestUpdateFilename.replace('.asar', ''))
 
 			if (!updateInfo || !semver.gt(updateInfo.versionName, this.options.versionName)) {
-				throw new Error('No updates')
+				return mainPath ? require(mainPath) : null
 			}
 
 			if (this.options.checkHashBeforeLoad) {
@@ -125,36 +125,26 @@ class ElectronClientUpdateService extends EventEmitter implements IUpdateService
 
 			return updateModule
 		} catch (error) {
-			if (updateInfo && this.clientId && updateInfo.versionId) {
-				this.api.reportError(this.clientId, updateInfo.versionId, error.message || error.stack)
-			}
+			this.error(error, updateInfo && updateInfo.versionId)
 
-			this.emit(UpdateService.Error, error)
-
-			const { mainPath } = this.options
-
-			if (mainPath) {
-				require(mainPath)
-			}
-
-			return null
+			return mainPath ? require(mainPath) : null
 		}
 	}
 
 	public loadLatestUpdateSync<T = any>(): T {
+		const { mainPath } = this.options
 		let updateInfo: IUpdateInfo
 
 		try {
 			if (!fs.existsSync(this.updateDirPath)) {
-				throw new Error('No updates')
+				return mainPath ? require(mainPath) : null
 			}
 
 			const files = fs.readdirSync(this.updateDirPath)
-
 			const updates = files.filter((filename) => filename.endsWith('.asar')).sort()
 
 			if (!updates.length) {
-				throw new Error('No updates')
+				return mainPath ? require(mainPath) : null
 			}
 
 			const [latestUpdateFilename] = updates.splice(updates.length - 1, 1)
@@ -163,7 +153,7 @@ class ElectronClientUpdateService extends EventEmitter implements IUpdateService
 			updateInfo = this.downloadsStore.get(latestUpdateFilename.replace('.asar', ''))
 
 			if (!updateInfo || !semver.gt(updateInfo.versionName, this.options.versionName)) {
-				throw new Error('No updates')
+				return mainPath ? require(mainPath) : null
 			}
 
 			if (this.options.checkHashBeforeLoad) {
@@ -193,19 +183,9 @@ class ElectronClientUpdateService extends EventEmitter implements IUpdateService
 
 			return updateModule
 		} catch (error) {
-			if (updateInfo && this.clientId && updateInfo.versionId) {
-				this.api.reportError(this.clientId, updateInfo.versionId, error.message || error.stack)
-			}
+			this.error(error, updateInfo && updateInfo.versionId)
 
-			this.emit(UpdateService.Error, error)
-
-			const { mainPath } = this.options
-
-			if (mainPath) {
-				require(mainPath)
-			}
-
-			return null
+			return mainPath ? require(mainPath) : null
 		}
 	}
 
@@ -227,11 +207,15 @@ class ElectronClientUpdateService extends EventEmitter implements IUpdateService
 		this.sessionStore.set('clientId', id)
 	}
 
-	private async downloadUpdate(args: INewUpdate) {
-		if (this.isDownloading) {
-			return
+	private error(error: Error, versionId?: string) {
+		if (this.clientId && versionId) {
+			this.api.reportError(this.clientId, versionId, `${error.message}${'\n' + error.stack}`)
 		}
 
+		setTimeout(() => this.emit(UpdateService.Error, error))
+	}
+
+	private async downloadUpdate(args: INewUpdate) {
 		const { downloadUrl, ...update } = args
 
 		const now = Date.now().toString()
@@ -264,8 +248,6 @@ class ElectronClientUpdateService extends EventEmitter implements IUpdateService
 				throw new Error('DownloadUrl not present.')
 			}
 
-			this.isDownloading = true
-
 			this.api.reportDownloading(this.clientId, update.versionId)
 
 			process.noAsar = true
@@ -286,8 +268,7 @@ class ElectronClientUpdateService extends EventEmitter implements IUpdateService
 
 			this.emit(UpdateService.Update, updateInfo)
 		} catch (error) {
-			this.api.reportError(this.clientId, update.versionId, error.errorMessage || error.stack)
-			this.emit(UpdateService.Error, error)
+			this.error(error, updateInfo.versionId)
 
 			setTimeout(
 				this.downloadUpdate.bind(this, args),
@@ -295,7 +276,6 @@ class ElectronClientUpdateService extends EventEmitter implements IUpdateService
 			)
 		} finally {
 			process.noAsar = false
-			this.isDownloading = false
 		}
 	}
 }

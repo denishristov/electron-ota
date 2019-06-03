@@ -1,24 +1,26 @@
+// This always needs to be first import
+import ElectronOTA from 'electron-ota-client'
+
 import { app, BrowserWindow, dialog } from 'electron'
 import * as path from 'path'
 
 let mainWindow: Electron.BrowserWindow
 
 dialog
-global.updateService.on('update', (update) => {
+ElectronOTA.on('update', (update) => {
 	dialog.showMessageBox({
-		buttons: ['Reload', 'Not now'] ,
+		buttons: ['Reload', 'Not now'],
 		message: `A new update is available:
 ${Object.entries(update).map(([k, v]) => `${k}: ${v}`).join('\n')}
 		`,
 		type: 'question',
 	}, (index) => {
 		if (index === 0) {
-			// TODO: Set launch URL to be the same
 			app.relaunch()
 			app.exit(0)
 		}
 	})
-})
+}).on('error', console.warn)
 
 function createWindow() {
 	mainWindow = new BrowserWindow({
@@ -34,7 +36,7 @@ function createWindow() {
 		mainWindow = null
 	})
 
-	global.updateService.checkForUpdate()
+	ElectronOTA.checkForUpdate()
 }
 
 app.on('ready', createWindow)
