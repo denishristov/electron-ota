@@ -131,13 +131,13 @@ class ElectronClientUpdateService extends EventEmitter implements IUpdateService
 
 			this.emit(UpdateService.Error, error)
 
-			return null
-		} finally {
 			const { mainPath } = this.options
 
 			if (mainPath) {
 				require(mainPath)
 			}
+
+			return null
 		}
 	}
 
@@ -199,13 +199,13 @@ class ElectronClientUpdateService extends EventEmitter implements IUpdateService
 
 			this.emit(UpdateService.Error, error)
 
-			return null
-		} finally {
 			const { mainPath } = this.options
 
 			if (mainPath) {
 				require(mainPath)
 			}
+
+			return null
 		}
 	}
 
