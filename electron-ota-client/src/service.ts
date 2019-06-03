@@ -78,7 +78,7 @@ class ElectronClientUpdateService extends EventEmitter implements IUpdateService
 
 		try {
 			if (await exists(this.updateDirPath)) {
-				return null
+				throw new Error('No updates')
 			}
 
 			const files = await readdir(this.updateDirPath)
@@ -86,7 +86,7 @@ class ElectronClientUpdateService extends EventEmitter implements IUpdateService
 			const updates = files.filter((filename) => filename.endsWith('.asar')).sort()
 
 			if (!updates.length) {
-				return null
+				throw new Error('No updates')
 			}
 
 			const [latestUpdateFilename] = updates.splice(updates.length - 1, 1)
@@ -95,7 +95,7 @@ class ElectronClientUpdateService extends EventEmitter implements IUpdateService
 			updateInfo = this.downloadsStore.get(latestUpdateFilename.replace('.asar', ''))
 
 			if (!updateInfo || !semver.gt(updateInfo.versionName, this.options.versionName)) {
-				return null
+				throw new Error('No updates')
 			}
 
 			if (this.options.checkHashBeforeLoad) {
@@ -146,7 +146,7 @@ class ElectronClientUpdateService extends EventEmitter implements IUpdateService
 
 		try {
 			if (!fs.existsSync(this.updateDirPath)) {
-				return null
+				throw new Error('No updates')
 			}
 
 			const files = fs.readdirSync(this.updateDirPath)
@@ -154,7 +154,7 @@ class ElectronClientUpdateService extends EventEmitter implements IUpdateService
 			const updates = files.filter((filename) => filename.endsWith('.asar')).sort()
 
 			if (!updates.length) {
-				return null
+				throw new Error('No updates')
 			}
 
 			const [latestUpdateFilename] = updates.splice(updates.length - 1, 1)
@@ -163,7 +163,7 @@ class ElectronClientUpdateService extends EventEmitter implements IUpdateService
 			updateInfo = this.downloadsStore.get(latestUpdateFilename.replace('.asar', ''))
 
 			if (!updateInfo || !semver.gt(updateInfo.versionName, this.options.versionName)) {
-				return null
+				throw new Error('No updates')
 			}
 
 			if (this.options.checkHashBeforeLoad) {
