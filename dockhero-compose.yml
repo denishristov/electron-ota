@@ -37,7 +37,7 @@ services:
     container_name: proxy
     build:
       context: "."
-      dockerfile: ".caddy/Dockerfile"
+      dockerfile: "caddy/Dockerfile"
     volumes: 
       - caddy:/root
     ports:
