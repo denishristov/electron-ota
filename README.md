@@ -16,7 +16,7 @@ What differentiates it from other open-source solutions is that it does not use 
 
 This repo serves as a mono repo for the following components:
 
-| Packages              | Version                                                                                                          |
+| Package              | Version                                                                                                          |
 |-----------------------|------------------------------------------------------------------------------------------------------------------|
 | electron-ota-frontend |                                                                                                                  |
 | electron-ota-backend  |                                                                                                                  |
