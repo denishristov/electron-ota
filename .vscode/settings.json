@@ -1,6 +1,3 @@
 {
-	"files.associations": {
-		"docker-compose.yml": "json",
-	},
 	"npm.packageManager": "yarn",
 }

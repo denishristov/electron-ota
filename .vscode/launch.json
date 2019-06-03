@@ -4,7 +4,7 @@
 		{
 			"type": "node",
 			"request": "launch",
-			"name": "Launch Back end",
+			"name": "Launch backend",
 			"runtimeExecutable": "${workspaceFolder}/backend/node_modules/.bin/nodemon",
 			"program": "${workspaceFolder}/backend/dist/index.js",
 			"envFile": "${workspaceFolder}/backend/.env",
@@ -15,7 +15,7 @@
 		{
 			"type": "chrome",
 			"request": "launch",
-			"name": "Launch Chrome",
+			"name": "Launch frontend",
 			"url": "http://localhost:3000",
 			"webRoot": "${workspaceFolder}/frontend/src",
 			"preLaunchTask": "npm: frontend-start",

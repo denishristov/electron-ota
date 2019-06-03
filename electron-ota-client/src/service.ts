@@ -73,7 +73,6 @@ class ElectronClientUpdateService extends EventEmitter implements IUpdateService
 
 	public async loadLatestUpdate<T = any>(): Promise<T> {
 		const { mainPath } = this.options
-
 		let updateInfo: IUpdateInfo
 
 		try {
@@ -82,7 +81,6 @@ class ElectronClientUpdateService extends EventEmitter implements IUpdateService
 			}
 
 			const files = await readdir(this.updateDirPath)
-
 			const updates = files.filter((filename) => filename.endsWith('.asar')).sort()
 
 			if (!updates.length) {

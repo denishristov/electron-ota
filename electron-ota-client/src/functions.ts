@@ -43,8 +43,6 @@ export function parseConfigFile(): IUpdateServiceOptions | null {
 	try {
 		return require(path.join(__dirname, '..', '..', '..', 'electron-ota.config.json'))
 	} catch {
-		console.log('No electron-ota.config.json present.')
-
 		return null
 	}
 }

@@ -11,10 +11,7 @@
 		},
 		{
 			"path": "electron-ota-client",
-		},
-		{
-			"path": "demo",
-		},
+		}
 	],
 	"settings": {
 		"search.exclude": {

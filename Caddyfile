@@ -1,8 +1,0 @@
-dockhero-colorful-31872.dockhero.io {
-  proxy /  100.25.253.39:3000
-  proxy /public    100.25.253.39:4000
-  proxy /socket.io/ 100.25.253.39:4000 {
-    transparent
-    websocket
-  }
-}

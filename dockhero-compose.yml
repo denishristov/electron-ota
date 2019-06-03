@@ -4,7 +4,7 @@ services:
   database:
     container_name: electron-ota-database
     build:
-      context: "."
+      context: .
       dockerfile: db/Dockerfile
     restart: always
     environment:
@@ -12,11 +12,11 @@ services:
   backend:
     container_name: electron-ota-backend
     build:
-      context: "."
+      context: .
       dockerfile: backend/Dockerfile
     restart: always
     command: yarn workspace backend start
-    env_file: ".env"
+    env_file: .env
     environment:
       MONGODB_URI: mongodb://database:27017/electron-ota
       CLIENT_ORIGIN: https://${DOCKHERO_HOST}
@@ -25,7 +25,7 @@ services:
   frontend:
     container_name: electron-ota-frontend
     build:
-      context: "."
+      context: .
       dockerfile: frontend/Dockerfile
       args:
         serverUri: https://${DOCKHERO_HOST}/admins
@@ -36,12 +36,12 @@ services:
   proxy:
     container_name: proxy
     build:
-      context: "."
-      dockerfile: "caddy/Dockerfile"
-    volumes: 
-      - caddy:/root
+      context: .
+      dockerfile: caddy/Dockerfile
+    environment:
+        HOST: dockhero-colorful-31872.dockhero.io
+        FRONTEND: 100.25.253.39:3000
+        BACKEND: 100.25.253.39:4000
     ports:
-      - "80:80"
-      - "443:443"
-volumes:
-  caddy:
+      - 80:80
+      - 443:443

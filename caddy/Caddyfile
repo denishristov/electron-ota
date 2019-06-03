@@ -1,0 +1,8 @@
+{$HOST} {
+  proxy / {$FRONTEND}
+  proxy /public {$BACKEND}
+  proxy /socket.io/ {$BACKEND} {
+    transparent
+    websocket
+  }
+}
