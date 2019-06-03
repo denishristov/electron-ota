@@ -16,15 +16,15 @@ What differentiates it from other open-source solutions is that it does not use 
 
 This repo serves as a mono repo for the following components:
 
-| Packages            | Version                                                                                                          |
-|---------------------|------------------------------------------------------------------------------------------------------------------|
-| electron-ota        |                                                                                                                  |
-| electron-ota-api    |                                                                                                                  |
-| electron-ota-client | [![npm version](https://badge.fury.io/js/electron-ota-client.svg)](https://badge.fury.io/js/electron-ota-client) |
-| electron-ota-shared | [![npm version](https://badge.fury.io/js/electron-ota-shared.svg)](https://badge.fury.io/js/electron-ota-shared) |
+| Packages              | Version                                                                                                          |
+|-----------------------|------------------------------------------------------------------------------------------------------------------|
+| electron-ota-frontend |                                                                                                                  |
+| electron-ota-backend  |                                                                                                                  |
+| electron-ota-shared   |                                                                                                                  |
+| electron-ota-client   | [![npm version](https://badge.fury.io/js/electron-ota-client.svg)](https://badge.fury.io/js/electron-ota-client) |
 
 ## Awards and recognition
-* Company choice award from <b>VMware</b> at <b>TUES Fest 2019</b>
+* Company choice award from <b>VMware Bulgaria</b> at <b>TUES Fest 2019</b>
 * Company choice award from <b>TelebidPro</b> at <b>TUES Fest 2019</b>
 
 ## Tech Stack:
@@ -47,24 +47,19 @@ This repo serves as a mono repo for the following components:
 ## Demo:
 Starting a production optimized version of the services requires:
 * Installed Docker 
-* Inserting a .env file containing the required keys for AWS S3 into the root of the project
+* Inserting a .env file containing the required keys for AWS S3 into the root of the project [example with placeholders](https://github.com/denishristov/electron-ota/blob/master/.env.example)
 * Running the following command into the root of the project
 ```
 docker-compose up
 ```
-The frontend is served on port http://localhost while the backend is on http://localhost:4000.
-There is a default account when running with docker:
-* username: Test
-* password: Test1234
-
-The compiled demo app is called Demo (with the little planet icon).
+The service is accessible on http://localhost.
 
 The following links contain:
 * [pre-compiled apps for all platforms](https://drive.google.com/drive/folders/14E5ILM0WXYvB0T19GkCjwUu1RHeebMSM)
 * [pre-built .asar files for 2 newer versions of the app, ready to be used for updating the demo app trough the service](https://drive.google.com/drive/folders/1uGzFqSQcVENd7xeqoNHBH6zza8UmHyvK)
 
 ## Todo: 
-* Proper documentation
+* Proper english documentation
 * Unit tests
 * React Native support
 * Client targeting
