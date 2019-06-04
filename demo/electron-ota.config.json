@@ -1,6 +1,6 @@
 {
   "bundleId": "test-electron",
-  "updateServerUrl": "https://dockhero-colorful-31872.dockhero.io",
+  "updateServerUrl": "http://localhost",
   "checkForUpdateOnConnect": false,
   "mainPath": "./dist/index.js"
 }
