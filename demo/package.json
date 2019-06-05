@@ -43,7 +43,7 @@
   },
   "dependencies": {
     "@types/react-dom": "^16.8.4",
-    "electron-ota-client": "^1.2.0",
+    "electron-ota-client": "^1.2.1",
     "react": "16.8.1",
     "react-dom": "16.8.1",
     "use-force-update": "^1.0.5"
