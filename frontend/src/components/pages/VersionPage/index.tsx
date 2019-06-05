@@ -338,7 +338,7 @@ export default class VersionPage extends React.Component<RouteComponentProps<IPa
 										<label>Activity Log</label>
 										{this.activity.map(({ client, type, timestamp, errorMessage }) => (
 											<Report
-												key={client.id + type}
+												key={client.id + type + timestamp}
 												client={client}
 												type={type}
 												timestamp={timestamp}

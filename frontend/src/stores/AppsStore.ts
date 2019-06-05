@@ -175,7 +175,7 @@ export default class AppsStore implements IAppsStore {
 			const simpleReports = app.simpleReports.get(versionId)
 
 			if (simpleReports) {
-				simpleReports.downloadingCount++
+				simpleReports.downloadingCount = simpleReports.downloadingCount + 1
 			}
 
 			const reports = app.reports.get(versionId)
@@ -198,8 +198,7 @@ export default class AppsStore implements IAppsStore {
 			const simpleReports = app.simpleReports.get(versionId)
 
 			if (simpleReports) {
-				simpleReports.downloadingCount--
-				simpleReports.downloadedCount++
+				simpleReports.downloadedCount = simpleReports.downloadedCount + 1
 			}
 
 			const reports = app.reports.get(versionId)
@@ -222,7 +221,7 @@ export default class AppsStore implements IAppsStore {
 			const simpleReports = app.simpleReports.get(versionId)
 
 			if (simpleReports) {
-				simpleReports.usingCount++
+				simpleReports.usingCount = simpleReports.usingCount + 1
 			}
 
 			const reports = app.reports.get(versionId)
@@ -237,7 +236,7 @@ export default class AppsStore implements IAppsStore {
 				const usingReports = app.usingReports.get(version.versionName)
 
 				if (usingReports) {
-					++usingReports[report.client.systemType]
+					usingReports[report.client.systemType] = usingReports[report.client.systemType] + 1
 				}
 			}
 
@@ -255,7 +254,7 @@ export default class AppsStore implements IAppsStore {
 			const simpleReports = app.simpleReports.get(versionId)
 
 			if (simpleReports) {
-				simpleReports.errorsCount++
+				simpleReports.errorsCount = simpleReports.errorsCount + 1
 			}
 
 			const reports = app.reports.get(versionId)
