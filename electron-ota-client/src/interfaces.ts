@@ -62,6 +62,10 @@ export interface IApi {
 	reportError(clientId: string, versionId: string, error: string): Promise<{}>
 }
 
+export interface IStringMap<T> {
+	[key: string]: T,
+}
+
 export interface ISession {
 	id: string
 }

@@ -17,6 +17,7 @@ import {
 	IUpdateService,
 	ISession,
 	IApi,
+	IStringMap,
 } from './interfaces'
 
 import {
@@ -31,7 +32,7 @@ import {
 class ElectronClientUpdateService extends EventEmitter implements IUpdateService {
 	private readonly sessionStore = new Store<ISession>({ name: 'session' })
 
-	private readonly downloadsStore = new Store<IUpdateInfo>({ name: 'updates' })
+	private readonly downloadsStore = new Store<IStringMap<IUpdateInfo>>({ name: 'updates' })
 
 	private readonly updateDirPath: string
 
@@ -226,12 +227,14 @@ class ElectronClientUpdateService extends EventEmitter implements IUpdateService
 			...update,
 		}
 
-		if (semver.gt(this.options.versionName, update.versionName)) {
+		if (semver.gte(this.options.versionName, update.versionName)) {
 			return
 		}
 
-		for (const version of Object.values(this.downloadsStore.store)) {
-			if (semver.gt((version as IUpdateInfo).versionName, update.versionName)) {
+		const downloadedVersions: IUpdateInfo[] = Object.values(this.downloadsStore.store)
+
+		for (const version of downloadedVersions) {
+			if (semver.gte(version.versionName, update.versionName)) {
 				return
 			}
 		}

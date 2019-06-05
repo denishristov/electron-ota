@@ -32,7 +32,6 @@ export default observer(function Report({ client, errorMessage, timestamp, type 
 			</Modal.OpenTrigger>
 			{errorMessage && (
 				<Modal.Content
-					title='Error'
 					className={styles.errorModal}
 					component={<ErrorModal errorMessage={errorMessage} />}
 				/>

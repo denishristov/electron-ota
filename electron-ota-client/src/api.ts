@@ -73,11 +73,11 @@ export default class Api implements IApi {
 		return this.report(Server.Error, clientId, versionId, error)
 	}
 
-	private report(eventType: Server, clientId: string, versionId: string, error?: string) {
+	private report(eventType: Server, clientId: string, versionId: string, errorMessage?: string) {
 		return this.emit(eventType, {
 			id: clientId,
 			versionId,
-			error,
+			errorMessage,
 			timestamp: new Date(),
 		})
 	}

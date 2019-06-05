@@ -1,4 +1,3 @@
-import { EventType } from 'shared'
 import { IAdminsService } from '../services/AdminsService'
 import { IPreRespondHook, IClient } from '../util/mediator/interfaces'
 import { interfaces } from 'inversify'

@@ -20,7 +20,7 @@ interface IProps {
 export default observer(function Client({ client, timestamp, type, onClick }: IProps) {
 	return (
 		<Flex key={client.id + type} className={styles.client} list y onClick={onClick}>
-			<Tip message={capitalize(type)}>
+			<Tip message={capitalize(type.split(/(?=[A-Z])/).join(' '))}>
 				<SVG
 					className={styles.actionType}
 					src={icons[capitalize(type)]}

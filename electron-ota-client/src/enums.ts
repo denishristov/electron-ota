@@ -5,7 +5,7 @@ export enum Server {
 	Register = 'client.register',
 	Downloading = 'client.downloading',
 	Downloaded = 'client.downloaded',
-	Error = 'client.error',
+	Error = 'client.errorMessages',
 	Using = 'client.using',
 }
 
