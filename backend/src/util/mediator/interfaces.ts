@@ -5,7 +5,7 @@ import { EventEmitter } from 'events'
 export type Handler<Req = object, Res = object> = (request: Req) => Res | Promise<Res | void>
 
 export type ConstructedHandler = (client: IClient) =>
-	(request: object, respond: (res: Error | object) => void)	=> void
+	(request: object, respond: (res: Error | object) => void) => void
 
 type ClientPredicate = (client: IClient) => boolean
 
@@ -19,7 +19,7 @@ export interface IClient extends EventEmitter {
 		name: string,
 	}
 	request: {
-		cookies: {
+		signedCookies: {
 			authToken: string,
 		},
 	}

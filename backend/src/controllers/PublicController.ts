@@ -55,7 +55,7 @@ export default class PublicController extends BaseHttpController {
 	}
 
 	private authenticate(res: Response, authToken: string) {
-		res.cookie(TOKEN_KEY, authToken, { httpOnly: true })
+		res.cookie(TOKEN_KEY, authToken, { httpOnly: true, signed: true })
 
 		return this.ok()
 	}

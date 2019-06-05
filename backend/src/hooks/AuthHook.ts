@@ -27,11 +27,11 @@ export default class AuthHook implements IAuthHook {
 	constructor(
 		@inject(nameof<IAdminsService>())
 		private readonly userService: IAdminsService,
-	) {}
+	) { }
 
 	@bind
 	public async handle(client: IClient, data: object) {
-		const { authToken } = client.request.cookies
+		const { authToken } = client.request.signedCookies
 		const payload = await this.userService.verify(authToken)
 
 		return { ...data, authToken, payload }

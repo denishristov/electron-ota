@@ -25,7 +25,7 @@ import CreateClientMediatorHook, { ICreateClientMediatorHook } from '../hooks/Cr
 
 import socketio from 'socket.io'
 
-import { S3_CONFIG, PORT, CLIENT_ORIGIN } from '.'
+import { S3_CONFIG, PORT, CLIENT_ORIGIN, COOKIE_SECRET } from '.'
 
 import adminMediatorFactory, { AdminMediatorFactory } from '../mediators/AdminMediatorFactory'
 import clientsMediatorFactory, { ClientsMediatorFactory } from '../mediators/ClientsMediatorFactory'
@@ -42,7 +42,6 @@ import cors from 'cors'
 import cookieParser from 'cookie-parser'
 
 import socketioConfig from './socketioConfig'
-import { REGISTER_KEY } from './index'
 import PublicController from '../controllers/PublicController'
 import Seed from './seed'
 
@@ -58,13 +57,13 @@ container.bind<SocketIO.Server>(nameof<SocketIO.Server>())
 					origin: CLIENT_ORIGIN,
 					credentials: true,
 				}))
-				.use(cookieParser())
+				.use(cookieParser(COOKIE_SECRET))
 		})
 
 		const httpServer = server.build().listen(PORT)
 		const io = socketio(httpServer, socketioConfig)
 
-		io.use(require('socket.io-cookie-parser')())
+		io.use(require('socket.io-cookie-parser')(COOKIE_SECRET))
 
 		return io
 	})

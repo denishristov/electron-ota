@@ -26,6 +26,9 @@ invariant(PASS_SECRET_KEY, 'PASS_SECRET_KEY is undefined')
 export const REGISTER_KEY = process.env.REGISTER_KEY
 invariant(REGISTER_KEY, 'REGISTER_KEY is undefined')
 
+export const COOKIE_SECRET = process.env.COOKIE_SECRET
+invariant(COOKIE_SECRET, 'COOKIE_SECRET is undefined')
+
 export const AWS_CREDENTIALS = {
 	accessKeyId: process.env.AWS_ACCESS_KEY_ID,
 	secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
