@@ -27,9 +27,6 @@ This repo serves as a mono repo for the following components:
 * Company choice award from <b>VMware Bulgaria</b> at <b>TUES Fest 2019</b>
 * Company choice award from <b>TelebidPro</b> at <b>TUES Fest 2019</b>
 
-## Architecture
-![Architecture](https://i.imgur.com/MEWK7oW.png)
-
 ## Tech Stack:
 
 ### Back-end: 
@@ -46,6 +43,8 @@ This repo serves as a mono repo for the following components:
 * MobX
 * SASS
 * Webpack
+
+![Architecture](https://i.imgur.com/MEWK7oW.png)
 
 ## Demo:
 Starting a production optimized version of the services requires:
